@@ -457,6 +457,19 @@
         96
       ],
       "id": "0c0bdfb2-bf1d-4fd6-9e64-c910cb1755d3"
+    },
+    {
+      "parameters": {
+        "content": "blaj\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -576
+      ],
+      "id": "78541f2a-ad93-4162-bd8a-bc481c1cfc6a",
+      "name": "Sticky Note1"
     }
   ],
   "pinData": {},
@@ -708,7 +721,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "91d69fdb-b861-45d9-9a48-daad9f7723fc",
+  "versionId": "2648b486-4608-4753-a9f5-3784debeb1ee",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
