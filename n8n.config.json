@@ -1,0 +1,20 @@
+{
+  "executions": {
+    "saveDataManualExecutions": true,
+    "saveDataOnError": "all",
+    "saveDataOnSuccess": "none"
+  },
+  "versioning": {
+    "git": {
+      "enabled": true,
+      "repositoryUrl": "",
+      "branchName": "main"
+    }
+  },
+  "nodes": {
+    "exportCredentials": false
+  },
+  "workflows": {
+    "folderName": "workflows"
+  }
+}
