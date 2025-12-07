@@ -1,5 +1,5 @@
 {
-  "name": "Smartwatch Haptic Workflow",
+  "name": "Smartwatch Haptic Backend",
   "nodes": [
     {
       "parameters": {
@@ -15,7 +15,20 @@
         160
       ],
       "webhookId": "sun-data-imported",
-      "id": "1d0a66db-307a-4ec1-b002-7df2125c4f5d"
+      "id": "93b13d20-de4e-4ea4-a769-4df79bd2d07c"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "HTTP Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        160
+      ],
+      "id": "cf7ea25a-9fa0-4c74-a019-bd519c66f7e8"
     },
     {
       "parameters": {
@@ -30,7 +43,13 @@
         1408,
         160
       ],
-      "id": "70e76d7c-04e8-4fdd-8c43-dd9a11d970b4"
+      "id": "2c9a4292-f9bd-410d-b689-80b65fde3e7b",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -44,7 +63,7 @@
         1184,
         160
       ],
-      "id": "fc3c5148-abf2-43c2-b096-80db52d1bd1e"
+      "id": "a27f58d4-b91c-44ac-9488-a861ab270355"
     },
     {
       "parameters": {
@@ -58,7 +77,7 @@
         960,
         160
       ],
-      "id": "a8dab79c-b04e-49e4-9101-d25e1c2cae6c"
+      "id": "c749ea4c-0523-4f2f-8af6-05cf17e2c93f"
     },
     {
       "parameters": {
@@ -73,8 +92,14 @@
         736,
         160
       ],
-      "id": "ec943736-d6af-45f7-914d-c64a94e78167",
-      "alwaysOutputData": true
+      "id": "4de3b77c-31fc-4494-96a5-d8adac454e86",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -88,7 +113,7 @@
         512,
         160
       ],
-      "id": "458e73fe-a823-4399-b24d-c3de1242717a"
+      "id": "577affce-cd9c-4cd3-9bf4-cc219eb84a25"
     },
     {
       "parameters": {
@@ -118,22 +143,20 @@
         288,
         160
       ],
-      "id": "285c30bd-c9b4-4d87-81c4-be3673ebdbdd"
+      "id": "d3ce081c-90e4-48a3-a46d-0813adce7c89"
     },
     {
       "parameters": {
-        "content": "---------------------------------------------------------------------------------------------------------------------Checking Rules & API Requests & Sending Appropriate FeedBack----------------------------------------------------------------------------------------------------------------------------\n\n\n\n\nSun API\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/sun-data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMoon API\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/moon-data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHeart Rate Reading\nTo run it paste into CMD\ncurl -X POST \"http://localhost:5678/webhook-test/heart-rate-data\" -H \"Content-Type: application/json\" -d \"{\\\"UserID\\\":1,\\\"SmartWatchID\\\":2,\\\"AndroidID\\\":3,\\\"heartRate\\\":75}\"",
-        "height": 832,
-        "width": 2112
+        "options": {}
       },
-      "type": "n8n-nodes-base.stickyNote",
+      "name": "HTTP Response1",
+      "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        1616,
+        400
       ],
-      "id": "2e0f3cfd-ef0a-4fab-aba8-230767e02189",
-      "name": "Sticky Note"
+      "id": "3aa3d258-559c-463e-8db5-f3cadc8d352b"
     },
     {
       "parameters": {
@@ -148,7 +171,13 @@
         1392,
         400
       ],
-      "id": "c6d7a26f-2720-43c5-8416-8bff303dcdb0"
+      "id": "890d6d8f-4df2-4a97-8fec-9ce535641348",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -162,7 +191,7 @@
         1168,
         400
       ],
-      "id": "ced9dca7-e70f-412c-b87a-762175758701"
+      "id": "35d83a05-18fe-4567-85b9-349a906cfbe6"
     },
     {
       "parameters": {
@@ -176,23 +205,7 @@
         944,
         400
       ],
-      "id": "b656b29f-04a7-429a-a32a-3905a8c0d892"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM feedback_config_rules\nWHERE type = 'MoonAzimuth' AND active = true;\n",
-        "additionalFields": {}
-      },
-      "name": "Load SunAzimuth Rules1",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        720,
-        400
-      ],
-      "id": "1b6ba047-d722-4c9c-bfa2-b60132726cc5",
-      "alwaysOutputData": true
+      "id": "9f0647c5-8ce9-4be8-b811-84ff6fb0dc67"
     },
     {
       "parameters": {
@@ -206,7 +219,7 @@
         496,
         400
       ],
-      "id": "8a03d79c-bd7a-44cc-9d9b-64e5731bdc9a"
+      "id": "6cbf3f75-b3cb-4b50-b47b-ebec716860db"
     },
     {
       "parameters": {
@@ -236,7 +249,7 @@
         272,
         400
       ],
-      "id": "893c2c46-bdc9-4e35-91a6-f995f777ade9"
+      "id": "e7ad9cb6-916a-4603-82de-d93f40f0ab31"
     },
     {
       "parameters": {
@@ -252,7 +265,7 @@
         400
       ],
       "webhookId": "sun-data-imported",
-      "id": "23298f83-6ddb-490a-b592-fa1899b2adb2"
+      "id": "a34f48c7-c14d-4d23-8120-10be8e372989"
     },
     {
       "parameters": {
@@ -267,14 +280,14 @@
         48,
         656
       ],
-      "id": "21358c6c-3b6d-4517-a1d7-03645d75a1af",
+      "id": "9b8c4f90-c7ff-41b9-9231-12e8cddffc65",
       "name": "Heart Rate Webhook",
       "webhookId": "8a96e5cf-caf1-4451-96ca-4237ccc3148e"
     },
     {
       "parameters": {
         "language": "JavaScript",
-        "jsCode": "// Extract identifiers\nconst inputData = $input.first().json;\n\nconst userId = Number($input.first().json.body.UserID ?? 0);\nconst watchId = Number($input.first().json.body.SmartWatchID ?? 0);\nconst phoneId = Number($input.first().json.body.AndroidID ?? 0);\n\nconst monitoringType = inputData.MonitoringType ?? \"HeartRate\";\n\n\n// Prepare the query to fetch the last 10 readings\nconst query = `\n    SELECT value \n    FROM \"SensorData\" sd\n    JOIN \"SensorType\" st ON sd.sensorID = st.sensorID\n    WHERE sd.userID = $1 \n      AND sd.watchID = $2 \n      AND sd.phoneID = $3 \n      AND st.name = $4\n    ORDER BY time DESC\n    LIMIT 10;\n`;\n\nconst params = [userId, watchId, phoneId, monitoringType];\n\nreturn [\n    {\n        json: {\n            query,\n            params,\n            originalPayload: inputData,\n            metadata: { userId, watchId, phoneId, monitoringType }\n        }\n    }\n];"
+        "jsCode": "// Extract identifiers\nconst inputData = $input.first().json;\n\nconst userId = Number(inputData.UserID ?? inputData.userId ?? 0);\nconst watchId = Number(inputData.SmartWatchID ?? inputData.smartWatchId ?? 0);\nconst phoneId = Number(inputData.AndroidID ?? inputData.androidId ?? 0);\n\nconst monitoringType = inputData.MonitoringType ?? \"HeartRate\";\n\n\n// Prepare the query to fetch the last 10 readings\nconst query = `\n    SELECT value \n    FROM \"SensorData\" sd\n    JOIN \"SensorType\" st ON sd.sensorID = st.sensorID\n    WHERE sd.userID = $1 \n      AND sd.watchID = $2 \n      AND sd.phoneID = $3 \n      AND st.name = $4\n    ORDER BY time DESC\n    LIMIT 10;\n`;\n\nconst params = [userId, watchId, phoneId, monitoringType];\n\nreturn [\n    {\n        json: {\n            query,\n            params,\n            originalPayload: inputData,\n            metadata: { userId, watchId, phoneId, monitoringType }\n        }\n    }\n];"
       },
       "name": "fetchHeartRateWindowAndLastValidHeartRate",
       "type": "n8n-nodes-base.code",
@@ -283,7 +296,7 @@
         272,
         656
       ],
-      "id": "d5dd55b0-866c-4087-924a-87a5e3ca2c27"
+      "id": "e56ddc81-00c0-47bd-8f6c-fdc7d56294b0"
     },
     {
       "parameters": {
@@ -299,9 +312,15 @@
         496,
         656
       ],
-      "id": "20a03ee3-30f0-4c72-ace6-3b737fac4859",
+      "id": "dba87684-26cc-4168-a81f-033999abe0d1",
       "name": "Execute fetch heart rate query",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -313,7 +332,7 @@
         720,
         656
       ],
-      "id": "81f98c50-39f2-4564-be4a-cd114f8b84fc",
+      "id": "5e76a615-0770-4e0c-9543-1dc01fd33337",
       "name": "Data Cleaning"
     },
     {
@@ -330,8 +349,14 @@
         944,
         656
       ],
-      "id": "6163531e-9f5a-4296-880f-7e60ff11e88a",
-      "name": "Execute data cleaning query"
+      "id": "19d9ec57-0a09-47eb-bbef-358661af9125",
+      "name": "Execute data cleaning query",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -343,7 +368,7 @@
         1168,
         656
       ],
-      "id": "3a710834-f7c8-440a-a742-defea63ecff3",
+      "id": "2f15af89-780b-47a5-be78-7a83d676535c",
       "name": "Check Heart rate Feedback Rules"
     },
     {
@@ -356,7 +381,7 @@
         1392,
         656
       ],
-      "id": "d20943c1-f932-4550-aca1-04b866a47200",
+      "id": "30d5aeb7-5457-4cfa-b5c6-32566486da72",
       "name": "Setup Parameters For Heart Rate Queries"
     },
     {
@@ -373,74 +398,343 @@
         1616,
         656
       ],
-      "id": "eb559669-3b82-4be8-b0a6-ec6f7836bea8",
+      "id": "eddb3bd0-5334-47f2-bed5-1db27cca1ce6",
       "name": "Execute Setup Param query",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
         "options": {}
       },
-      "name": "HTTP Response Sun",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        1632,
-        160
-      ],
-      "id": "6ce9d4ee-a375-4300-8420-b17b269ef6d3"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "name": "HTTP Response Moon",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        1616,
-        400
-      ],
-      "id": "a3a820ac-6e1d-4d12-adae-a49cd68ca962"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "name": "HTTP Response HR",
+      "name": "HTTP Response2",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
         1840,
         656
       ],
-      "id": "d7a578a4-92e8-4461-a91a-774f0099e088"
+      "id": "64162a91-63b0-4b5e-80bf-9a5e29ab2495"
     },
     {
       "parameters": {
-        "content": "## I'm a note \n**Doubl\ne click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)"
+        "operation": "executeQuery",
+        "query": "SELECT * FROM feedback_config_rules\nWHERE type = 'MoonAzimuth' AND active = true;\n",
+        "additionalFields": {}
+      },
+      "name": "Load MoonAzimuth Rules1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        720,
+        400
+      ],
+      "id": "81bfa54d-be04-4434-b9d1-ed6d16890e93",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "give me a haiku about the heart beat",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1312,
+        944
+      ],
+      "id": "538de37f-9e54-4ddb-a73c-98576e27388a",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        1104
+      ],
+      "id": "816fff93-890e-464e-ba58-c2ed4091b5d0",
+      "name": "Google Gemini Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        944
+      ],
+      "id": "7b4ba6ee-f0b0-471f-8a70-0c40ad9de473",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        960
+      ],
+      "id": "ff43733f-d450-484d-a3c6-ff1e43666b99",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "---------------------------------------------------------------------------------------------------------------------Checking Rules & API Requests & Sending Appropriate FeedBack----------------------------------------------------------------------------------------------------------------------------\n\n\n\n\nSun API\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/sun-data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMoon API\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/moon-data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHeart Rate Reading\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/heart-rate-data",
+        "height": 1184,
+        "width": 2320
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1280,
-        -256
+        -288,
+        112
       ],
-      "id": "0c0bdfb2-bf1d-4fd6-9e64-c910cb1755d3"
+      "id": "b09fa701-cb84-4339-a91e-d5d9459e06fd",
+      "name": "Sticky Note"
     },
     {
       "parameters": {
-        "content": "blaj\n"
+        "language": "JavaScript",
+        "jsCode": "// Access the first item's JSON data\nconst originalPayload = $input.json;\n\n// 1. Get UserID from the original payload\n// Note: n8n typically uses JSON objects directly,\n// so 'originalPayload.UserID' should be available directly on the input item.\nconst userID = originalPayload.UserID;\n\n// 2. Define the dynamic delay (which can be changed by the user)\nconst dynamicDelay = 10000; // 10 seconds in milliseconds\n\n// 3. Construct the SQL query and parameters\n// In n8n's Postgres node, you typically separate the query and parameters.\nconst sqlQuery = `SELECT lastRequest FROM \"User\" WHERE userID = $1`;\nconst sqlParameters = [userID];\n\n// 4. Return the data, making it available for the next node.\n// We pass the new values in the 'json' property of the output item.\n// It's helpful to also pass the original payload if needed downstream.\nreturn [\n  {\n    json: {\n      ...originalPayload, // Keep original data\n      UserID: userID,\n      sqlQuery: sqlQuery,\n      sqlParameters: sqlParameters,\n      dynamicDelay: dynamicDelay,\n    }\n  }\n];"
       },
-      "type": "n8n-nodes-base.stickyNote",
+      "name": "prepareDelayQuery",
+      "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        352,
-        -576
+        144,
+        896
       ],
-      "id": "78541f2a-ad93-4162-bd8a-bc481c1cfc6a",
-      "id": "3a64e220-18fb-49bc-83f9-248b9e204d35",
-      "name": "Sticky Note1"
+      "id": "e6e5eef0-d28f-4ba6-aec6-44620c2c8bb0"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "heartRate",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        1584
+      ],
+      "id": "1d5890cc-22f0-437e-9756-b52227d44a12",
+      "webhookId": "ab04974b-c683-4224-90a1-cae7a4139bdc"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT \"lastrequest\", \"userid\"\nFROM \"User\" \nWHERE \"userid\" = {{ $json.body.UserID }};\n",
+        "additionalFields": {}
+      },
+      "name": "Get Last Request",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        64,
+        1584
+      ],
+      "id": "d855dbfa-6c32-4a11-844a-f722684624a2",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lastRequest = $input.first().json.lastrequest;\nconst userid = $input.first().json.userid\nconst now = new Date();\nconst dynamicDelay = 10000; // 10 seconds\n\nlet shouldWait = false;\n\nif (lastRequest) {\n  const elapsed = now.getTime() - new Date(lastRequest).getTime();\n  if (elapsed < dynamicDelay) {\n    shouldWait = true;\n  }\n}\n\nreturn [\n  {\n    json: {\n      userid,\n      shouldWait: shouldWait\n    }\n  }\n];"
+      },
+      "name": "Check Delay Logic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        288,
+        1584
+      ],
+      "id": "a40d4f5b-1c3d-48c2-b17b-03766946698f"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"shouldWait\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "If Wait Needed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1584
+      ],
+      "id": "de435163-ee97-483a-95d0-7eca3f8bdb2d"
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "name": "Wait 5s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1456
+      ],
+      "id": "b694c1f8-99e4-4efc-92a7-ad76a22fbe27",
+      "webhookId": "bad4a52f-ae34-4d95-a5e7-90a02cdb0d40"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\nRETURNING \"userid\";",
+        "additionalFields": {
+          "queryParams": "={{ $json.userid.toString() }}"
+        }
+      },
+      "name": "Update Last Request",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        960,
+        1584
+      ],
+      "id": "1ca2dc69-6e14-47b5-a528-19aed4c998ba",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorID = st.sensorID\nWHERE sd.userID = {{ $('Webhook').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
+        "additionalFields": {}
+      },
+      "name": "Fetch History",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        1584
+      ],
+      "id": "9aaa6477-7727-4563-b33b-eb741e681485",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM feedback_config_rules WHERE type = 'HeartRate' AND active = true;",
+        "additionalFields": {}
+      },
+      "name": "Get Config Rules",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        1584
+      ],
+      "id": "53a560e3-adec-4f2c-94ba-7cebc855d382",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate\nconst userID = $('Webhook').first().json.body.UserID\nconst SmartWatchID = $('Webhook').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [{ json: feedback  }];"
+      },
+      "name": "Check Feedback Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        1584
+      ],
+      "id": "51a9a334-13c5-46d9-954c-bcf579987570"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        1456
+      ],
+      "id": "9d55dc9a-f354-4c8c-9021-345c733fa63f"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'HeartRate',\n  '{{ $json.alertGiven }}',\n  {{ $('Data Cleaning1').item.json.heartRate }},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }}\n);",
+        "additionalFields": {}
+      },
+      "name": "Insert Data Log",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        1696
+      ],
+      "id": "dd2527df-1002-48b0-8af6-8be6cca1c263",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract database readings\nconst readings = items.map(item => parseFloat(item.json.value)).filter(v => !isNaN(v));\n\n// Extract raw sensor input from Webhook\nconst rawValue = parseFloat($('Webhook').item.json.body.Value || 0);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid\nif (!isOutlier(rawValue)) {\n    readings.push(rawValue);\n}\n\nlet smoothed = rawValue; // Default to raw if no history\nif (readings.length > 0) {\n    const total = readings.reduce((sum, val) => sum + val, 0);\n    smoothed = total / readings.length;\n}\n\nreturn [\n  {\n    json: {\n      heartRate: smoothed,\n      rawValue: rawValue\n    }\n  }\n];"
+      },
+      "name": "Data Cleaning1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        1584
+      ],
+      "id": "309aa002-5f93-43c6-b6cf-f13da4087fb3"
     }
   ],
   "pinData": {},
@@ -515,7 +809,7 @@
       "main": [
         [
           {
-            "node": "HTTP Response Sun",
+            "node": "HTTP Response",
             "type": "main",
             "index": 0
           }
@@ -526,7 +820,7 @@
       "main": [
         [
           {
-            "node": "HTTP Response Moon",
+            "node": "HTTP Response1",
             "type": "main",
             "index": 0
           }
@@ -555,22 +849,11 @@
         ]
       ]
     },
-    "Load SunAzimuth Rules1": {
-      "main": [
-        [
-          {
-            "node": "ChecksFeedBackRules1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "AssignPayloadToOriginalPayload1": {
       "main": [
         [
           {
-            "node": "Load SunAzimuth Rules1",
+            "node": "Load MoonAzimuth Rules1",
             "type": "main",
             "index": 0
           }
@@ -680,7 +963,173 @@
       "main": [
         [
           {
-            "node": "HTTP Response HR",
+            "node": "HTTP Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load MoonAzimuth Rules1": {
+      "main": [
+        [
+          {
+            "node": "ChecksFeedBackRules1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Last Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Request": {
+      "main": [
+        [
+          {
+            "node": "Check Delay Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Delay Logic": {
+      "main": [
+        [
+          {
+            "node": "If Wait Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Wait Needed": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Last Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s": {
+      "main": [
+        [
+          {
+            "node": "Update Last Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Last Request": {
+      "main": [
+        [
+          {
+            "node": "Fetch History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch History": {
+      "main": [
+        [
+          {
+            "node": "Data Cleaning1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Config Rules": {
+      "main": [
+        [
+          {
+            "node": "Check Feedback Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Feedback Rules": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Data Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Cleaning1": {
+      "main": [
+        [
+          {
+            "node": "Get Config Rules",
             "type": "main",
             "index": 0
           }
@@ -692,11 +1141,10 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2648b486-4608-4753-a9f5-3784debeb1ee",
-  "versionId": "0e41ec23-1044-4f1d-9478-3c2c07b7edc1",
+  "versionId": "bdf5f730-30bb-4e4b-8215-c38b3d192f4e",
   "meta": {
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
   },
-  "id": "XqS5khjoTn5pSMNP",
+  "id": "vfZIfwL7CbYY3Zwi",
   "tags": []
 }
