@@ -470,7 +470,12 @@
       ],
       "id": "816fff93-890e-464e-ba58-c2ed4091b5d0",
       "name": "Google Gemini Chat Model",
-      "disabled": true
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8EWsp4W3V5xq3xTR",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
     },
     {
       "parameters": {},
@@ -735,9 +740,140 @@
         1584
       ],
       "id": "309aa002-5f93-43c6-b6cf-f13da4087fb3"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        16,
+        2128
+      ],
+      "id": "f0656642-b7cf-466a-9c47-0d9bda1cc806",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0uPFXhDmV9wFsbyW",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-config",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Chat Config Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        1904
+      ],
+      "id": "b747df0b-bbd3-4e7c-89c8-4e269cdac53e",
+      "webhookId": "5269f3c6-231b-4f17-88c4-256baf69aec3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a strict JSON data extraction engine. Your ONLY job is to convert natural language commands into a structured JSON object for a database configuration.\n\n### Database Schema (Output Fields):\n- type: 'HeartRate', 'SunAzimuth', or 'MoonAzimuth' (Required)\n- active: boolean (Always true for new rules)\n- minvalue: number (The lower threshold. If user says \"above 120\", min=120, max=220)\n- maxvalue: number (The upper threshold. If user says \"below 60\", min=30, max=60)\n- minpulses, maxpulses: number (Vibration count. Low=1, Medium=3, High=5. Default=3)\n- minintensity, maxintensity: number (Vibration strength 0-255. Weak=50, Strong=255. Default=150)\n- minduration, maxduration: number (Pulse duration in ms. Short=100, Long=500. Default=200)\n- mininterval, maxinterval: number (Pause between pulses in ms. Default=100)\n\n### Strict Output Rules:\n1. Return ONLY the JSON object.\n2. Do NOT write \"Here is the JSON\".\n3. Do NOT wrap the output in markdown blocks (no ```json ... ```).\n4. If a value is missing, use reasonable defaults based on the context.\n\n### Example Output:\n{ \"type\": \"HeartRate\", \"active\": true, \"minvalue\": 120, \"maxvalue\": 220, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 200, \"maxintensity\": 255, \"minduration\": 200, \"maxduration\": 400, \"mininterval\": 100, \"maxinterval\": 200 }"
+            }
+          ]
+        }
+      },
+      "name": "Basic LLM Chain1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        16,
+        1904
+      ],
+      "id": "e0f530f3-433e-4ced-b53d-6cdbdfa3b6b5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw text from the AI (it might be in .output or .text)\nconst aiOutput = $input.first().json.output || $input.first().json.text || \"\";\n\n// 1. If it's already an object, return it directly\nif (typeof aiOutput === 'object') {\n  return [{ json: aiOutput }];\n}\n\n// 2. If it's a string, use Regex to find the JSON object inside it\n// This ignores text like \"Here is your JSON:\"\nconst jsonMatch = aiOutput.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch) {\n  throw new Error(\"No JSON found in AI response. Raw output: \" + aiOutput);\n}\n\ntry {\n  const parsedData = JSON.parse(jsonMatch[0]);\n  return [{ json: parsedData }];\n} catch (e) {\n  throw new Error(\"Found JSON-like text but failed to parse: \" + jsonMatch[0]);\n}"
+      },
+      "name": "Parse AI Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        1904
+      ],
+      "id": "5a018687-3443-4c4d-93f1-c69c71d15142"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Rule created successfully\",\n  \"ruleId\": {{ $json.id }}\n}",
+        "options": {}
+      },
+      "name": "Respond Success1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        1904
+      ],
+      "id": "3b55f0e1-928f-462c-a7e3-79787eb0fc7d"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n  type, active, minvalue, maxvalue, \n  minpulses, maxpulses, minintensity, maxintensity, \n  minduration, maxduration, mininterval, maxinterval\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n) RETURNING id;",
+        "additionalFields": {
+          "queryParams": "={{ [ $json.type, true, $json.minvalue, $json.maxvalue, $json.minpulses || 3, $json.maxpulses || 3, $json.minintensity || 150, $json.maxintensity || 150, $json.minduration || 200, $json.maxduration || 200, $json.mininterval || 100, $json.maxinterval || 100 ] }}"
+        }
+      },
+      "name": "Insert New Rule1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        576,
+        1904
+      ],
+      "id": "395c379c-3cbd-4f8e-886c-c4cf5a78972e",
+      "credentials": {
+        "postgres": {
+          "id": "YyfsMQ2rw9UKJp5I",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Chat Config Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "user-agent": "Java/19.0.2",
+            "host": "localhost:5678",
+            "accept": "*/*",
+            "connection": "keep-alive",
+            "content-length": "53"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": "Vibrate if my heart rate goes above 120"
+          },
+          "webhookUrl": "http://localhost:5678/webhook/chat-config",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
   "connections": {
     "Sun Data Webhook": {
       "main": [
@@ -1135,14 +1271,70 @@
           }
         ]
       ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Config Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response1": {
+      "main": [
+        [
+          {
+            "node": "Insert New Rule1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert New Rule1": {
+      "main": [
+        [
+          {
+            "node": "Respond Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "bdf5f730-30bb-4e4b-8215-c38b3d192f4e",
+  "versionId": "d50cec2e-ae53-4316-8815-53ca47ffe01c",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
   },
   "id": "vfZIfwL7CbYY3Zwi",
