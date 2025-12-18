@@ -15,7 +15,8 @@
         -1376
       ],
       "webhookId": "sun-data-imported",
-      "id": "3384d1ae-d550-49ff-8eab-4fa908dae635"
+      "id": "3384d1ae-d550-49ff-8eab-4fa908dae635",
+      "disabled": true
     },
     {
       "parameters": {
@@ -28,7 +29,8 @@
         -4736,
         -1376
       ],
-      "id": "3334c7eb-c64b-41d6-aaf2-75021b33db18"
+      "id": "3334c7eb-c64b-41d6-aaf2-75021b33db18",
+      "disabled": true
     },
     {
       "parameters": {
@@ -49,7 +51,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -63,7 +66,8 @@
         -5200,
         -1376
       ],
-      "id": "18f17508-4394-4825-9f11-86958303524b"
+      "id": "18f17508-4394-4825-9f11-86958303524b",
+      "disabled": true
     },
     {
       "parameters": {
@@ -77,7 +81,8 @@
         -5424,
         -1376
       ],
-      "id": "4092bf96-ed6f-4c65-9b5c-dfa87e52d5c0"
+      "id": "4092bf96-ed6f-4c65-9b5c-dfa87e52d5c0",
+      "disabled": true
     },
     {
       "parameters": {
@@ -99,7 +104,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -113,7 +119,8 @@
         -5872,
         -1376
       ],
-      "id": "bcab9387-7592-49bb-9cdd-a203f9fb2f62"
+      "id": "bcab9387-7592-49bb-9cdd-a203f9fb2f62",
+      "disabled": true
     },
     {
       "parameters": {
@@ -143,7 +150,8 @@
         -6096,
         -1376
       ],
-      "id": "db3d2d1b-d73a-49f7-a08a-7e880dbfd6f9"
+      "id": "db3d2d1b-d73a-49f7-a08a-7e880dbfd6f9",
+      "disabled": true
     },
     {
       "parameters": {
@@ -156,7 +164,8 @@
         -4752,
         -1136
       ],
-      "id": "464aaf76-c4c8-41da-8e10-3e999818a214"
+      "id": "464aaf76-c4c8-41da-8e10-3e999818a214",
+      "disabled": true
     },
     {
       "parameters": {
@@ -177,7 +186,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -191,7 +201,8 @@
         -5216,
         -1136
       ],
-      "id": "988a494e-a6b6-47c1-b57b-b04deb42177b"
+      "id": "988a494e-a6b6-47c1-b57b-b04deb42177b",
+      "disabled": true
     },
     {
       "parameters": {
@@ -205,7 +216,8 @@
         -5440,
         -1136
       ],
-      "id": "dd2d1d69-8968-449b-bd21-158e89ffff01"
+      "id": "dd2d1d69-8968-449b-bd21-158e89ffff01",
+      "disabled": true
     },
     {
       "parameters": {
@@ -219,7 +231,8 @@
         -5888,
         -1136
       ],
-      "id": "e38f1f5a-c701-410a-aa6c-9a3e9a2e8024"
+      "id": "e38f1f5a-c701-410a-aa6c-9a3e9a2e8024",
+      "disabled": true
     },
     {
       "parameters": {
@@ -249,7 +262,8 @@
         -6112,
         -1136
       ],
-      "id": "ba1a6476-2c81-4020-a47b-9fd155ef70fc"
+      "id": "ba1a6476-2c81-4020-a47b-9fd155ef70fc",
+      "disabled": true
     },
     {
       "parameters": {
@@ -265,7 +279,8 @@
         -1136
       ],
       "webhookId": "sun-data-imported",
-      "id": "e2e5c9de-7b1a-48f2-b7c9-df73fe5a137a"
+      "id": "e2e5c9de-7b1a-48f2-b7c9-df73fe5a137a",
+      "disabled": true
     },
     {
       "parameters": {
@@ -282,7 +297,8 @@
       ],
       "id": "5ef575a6-5803-497a-a92c-f6eb6b0040d9",
       "name": "Heart Rate Webhook",
-      "webhookId": "8a96e5cf-caf1-4451-96ca-4237ccc3148e"
+      "webhookId": "8a96e5cf-caf1-4451-96ca-4237ccc3148e",
+      "disabled": true
     },
     {
       "parameters": {
@@ -296,7 +312,8 @@
         -6112,
         -880
       ],
-      "id": "edf79307-72c9-4739-8444-50647c652ed2"
+      "id": "edf79307-72c9-4739-8444-50647c652ed2",
+      "disabled": true
     },
     {
       "parameters": {
@@ -320,7 +337,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -333,7 +351,8 @@
         -880
       ],
       "id": "a930fb64-6040-4bc6-86e6-1ecdad6c366c",
-      "name": "Data Cleaning"
+      "name": "Data Cleaning",
+      "disabled": true
     },
     {
       "parameters": {
@@ -356,7 +375,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -369,7 +389,8 @@
         -880
       ],
       "id": "886e304f-82a0-4d66-962c-9e4bce3a732f",
-      "name": "Check Heart rate Feedback Rules"
+      "name": "Check Heart rate Feedback Rules",
+      "disabled": true
     },
     {
       "parameters": {
@@ -382,7 +403,8 @@
         -880
       ],
       "id": "8ed47aee-cd58-4df7-bc4d-a9c028b0e419",
-      "name": "Setup Parameters For Heart Rate Queries"
+      "name": "Setup Parameters For Heart Rate Queries",
+      "disabled": true
     },
     {
       "parameters": {
@@ -406,7 +428,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -419,7 +442,8 @@
         -4528,
         -880
       ],
-      "id": "a5d612cb-662b-457c-b7be-68bf01cd0e40"
+      "id": "a5d612cb-662b-457c-b7be-68bf01cd0e40",
+      "disabled": true
     },
     {
       "parameters": {
@@ -441,7 +465,8 @@
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -518,7 +543,8 @@
         -6240,
         -640
       ],
-      "id": "ef388266-964c-410d-b396-9d08763932bf"
+      "id": "ef388266-964c-410d-b396-9d08763932bf",
+      "disabled": true
     },
     {
       "parameters": {
@@ -719,115 +745,6 @@
     },
     {
       "parameters": {
-        "modelName": "models/gemini-2.5-flash-lite",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        -1168,
-        -1360
-      ],
-      "id": "8a6fe1e6-69bc-4dd3-8c46-42acdb27569c",
-      "name": "Google Gemini Chat Model1",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "y3aPvN8D7zct4rPK",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "chat-config",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "name": "Chat Config Webhook1",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        -1456,
-        -1584
-      ],
-      "id": "e63c0ae2-97d6-4c6a-8704-20c72e1a7a5e",
-      "webhookId": "5269f3c6-231b-4f17-88c4-256baf69aec3"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.body.message }}",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "You are a strict JSON data extraction engine. Your ONLY job is to convert natural language commands into a structured JSON object for a database configuration.\n\n### Database Schema (Output Fields):\n- type: 'HeartRate', 'SunAzimuth', or 'MoonAzimuth' (Required)\n- active: boolean (Always true for new rules)\n- minvalue: number (The lower threshold. If user says \"above 120\", min=120, max=220)\n- maxvalue: number (The upper threshold. If user says \"below 60\", min=30, max=60)\n- minpulses, maxpulses: number (Vibration count. Low=1, Medium=3, High=5. Default=3)\n- minintensity, maxintensity: number (Vibration strength 0-255. Weak=50, Strong=255. Default=150)\n- minduration, maxduration: number (Pulse duration in ms. Short=100, Long=500. Default=200)\n- mininterval, maxinterval: number (Pause between pulses in ms. Default=100)\n\n### Strict Output Rules:\n1. Return ONLY the JSON object.\n2. Do NOT write \"Here is the JSON\".\n3. Do NOT wrap the output in markdown blocks (no ```json ... ```).\n4. If a value is missing, use reasonable defaults based on the context.\n\n### Example Output:\n{ \"type\": \"HeartRate\", \"active\": true, \"minvalue\": 120, \"maxvalue\": 220, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 200, \"maxintensity\": 255, \"minduration\": 200, \"maxduration\": 400, \"mininterval\": 100, \"maxinterval\": 200 }"
-            }
-          ]
-        }
-      },
-      "name": "Basic LLM Chain1",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.4,
-      "position": [
-        -1232,
-        -1584
-      ],
-      "id": "209da69b-129a-40aa-a63b-b223befc4c11"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Get the raw text from the AI (it might be in .output or .text)\nconst aiOutput = $input.first().json.output || $input.first().json.text || \"\";\n\n// 1. If it's already an object, return it directly\nif (typeof aiOutput === 'object') {\n  return [{ json: aiOutput }];\n}\n\n// 2. If it's a string, use Regex to find the JSON object inside it\n// This ignores text like \"Here is your JSON:\"\nconst jsonMatch = aiOutput.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch) {\n  throw new Error(\"No JSON found in AI response. Raw output: \" + aiOutput);\n}\n\ntry {\n  const parsedData = JSON.parse(jsonMatch[0]);\n  return [{ json: parsedData }];\n} catch (e) {\n  throw new Error(\"Found JSON-like text but failed to parse: \" + jsonMatch[0]);\n}"
-      },
-      "name": "Parse AI Response1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -880,
-        -1584
-      ],
-      "id": "8adb4ee6-66c8-4c7d-9dfb-7e29d750b0a1"
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Rule created successfully\",\n  \"ruleId\": {{ $json.id }}\n}",
-        "options": {}
-      },
-      "name": "Respond Success1",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        -432,
-        -1584
-      ],
-      "id": "31967445-1572-4eec-a32b-5525305f3af5"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO feedback_config_rules (\n  type, active, minvalue, maxvalue, \n  minpulses, maxpulses, minintensity, maxintensity, \n  minduration, maxduration, mininterval, maxinterval\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n) RETURNING id;",
-        "additionalFields": {
-          "queryParams": "={{ [ $json.type, true, $json.minvalue, $json.maxvalue, $json.minpulses || 3, $json.maxpulses || 3, $json.minintensity || 150, $json.maxintensity || 150, $json.minduration || 200, $json.maxduration || 200, $json.mininterval || 100, $json.maxinterval || 100 ] }}"
-        }
-      },
-      "name": "Insert New Rule1",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        -656,
-        -1584
-      ],
-      "id": "c9c52b69-cf98-4c97-95a9-b29f2ac87949",
-      "credentials": {
-        "postgres": {
-          "id": "zGIm06RFL9qYW60x",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "content": "Change heart rate feedback interval between 2 notifications",
         "height": 80,
         "width": 416,
@@ -894,20 +811,6 @@
           "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = items.map(i => i.json);\n\nconst sunAzimuthRanges = [];\nconst heartRateMappings = [];\nconst moonAzimuthRanges = [];\n\nfor (const row of rows) {\n  if (row.type === \"SunAzimuth\") sunAzimuthRanges.push(row);\n  else if (row.type === \"HeartRate\") heartRateMappings.push(row);\n  else if (row.type === \"MoonAzimuth\") moonAzimuthRanges.push(row);\n}\n\nreturn [\n  {\n    json: {\n      sunAzimuthRanges,\n      heartRateMappings,\n      moonAzimuthRanges,\n    }\n  }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -2576,
-        -1600
-      ],
-      "id": "f8ef69ed-3817-4dac-9d73-e1ff92f1e426",
-      "name": "Code in JavaScript",
-      "notesInFlow": false
     },
     {
       "parameters": {
@@ -1498,29 +1401,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "{{$json.query}}",
-        "options": {
-          "queryReplacement": "={{$json.params}}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -784,
-        -832
-      ],
-      "id": "5be3c45f-8e06-4d30-9558-34260c28cf9f",
-      "name": "Execute sun mapping query1",
-      "credentials": {
-        "postgres": {
-          "id": "zGIm06RFL9qYW60x",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "options": {
           "responseCode": "={{$json.statusCode || 200}}",
           "responseKey": "{ok:true}"
@@ -1704,23 +1584,6 @@
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "set-heart-rate-azimuth-threshold",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1456,
-        -320
-      ],
-      "id": "9e2a0a2d-1760-4ca1-be03-27147f893b3d",
-      "name": "set heart rate azimuth threshold",
-      "webhookId": "01c7e929-2bd8-49a9-bedb-ed7736aec1a2"
-    },
-    {
-      "parameters": {
         "content": "Checking Rules & API Requests & Sending Appropriate FeedBack",
         "height": 80,
         "width": 2640,
@@ -1789,15 +1652,7 @@
       "name": "Sticky Note14"
     },
     {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "seconds"
-            }
-          ]
-        }
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -2037,20 +1892,6 @@
     },
     {
       "parameters": {
-        "url": "={{$json.url}}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        2208,
-        -1232
-      ],
-      "id": "98f14e52-1539-4081-8477-f414fbd26e48",
-      "name": "HTTP Request"
-    },
-    {
-      "parameters": {
         "jsCode": "// Keep whatever you already had from earlier nodes (webhook body, etc.)\nconst originalPayload = $input.first().json.originalPayload ?? $input.first().json;\n\n// The HTTP response body\nconst api = $input.first().json;\n\n// Try common shapes \nconst currentAzimuth =\n  api?.sun_azimuth ??\n  api?.sun?.azimuth ??\n  api?.data?.sun_azimuth ??\n  api?.data?.sun?.azimuth;\n\nif (currentAzimuth === undefined || currentAzimuth === null) {\n  return [{ json: { statusCode: 500, payload: { error: \"Sun azimuth missing from API response\", api } } }];\n}\n\n// Preserve original input + attach computed value\noriginalPayload.sun_azimuth = Number(currentAzimuth);\n\n// Put the “main payload” as originalPayload (this is what Node-RED effectively does)\nreturn [{ json: { ...originalPayload } }];\n"
       },
       "type": "n8n-nodes-base.code",
@@ -2098,7 +1939,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const p = $input.first().json;\n\nconst userId  = parseInt($('Webhook sun data').first().json.body.UserID);\nconst watchId = parseInt($('Webhook sun data').first().json.body.SmartWatchID);\nconst phoneId = parseInt($('Webhook sun data').first().json.body.AndroidID);\n\nconst sensorName = $input.first().json.type || \"SunAzimuth\";\nconst alertGiven = $input.first().json.alertGiven || p.alertGiven || \"no\";\nconst value = parseFloat($('HTTP Request').first().json.sun_azimuth || 0);\n\nconst pulses = $input.first().json.pulses || 0;\nconst intensity = $input.first().json.intensity || 0;\nconst duration = $input.first().json.duration || 0;\nconst interval = $input.first().json.interval || 0;\nconst fbRangeID = $input.first().json.fbRangeID || 0;\n\nif (!userId || !watchId || !phoneId) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing ids (userId/watchId/phoneId)\", got: { userId, watchId, phoneId } } } }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`,\n    params: [userId, watchId, phoneId, sensorName, alertGiven, value, pulses, intensity, duration, interval, fbRangeID]\n  }\n}];\n"
+        "jsCode": "const p = $input.first().json;\n\nconst userId  = parseInt($('Webhook sun data').first().json.body.UserID);\nconst watchId = parseInt($('Webhook sun data').first().json.body.SmartWatchID);\nconst phoneId = parseInt($('Webhook sun data').first().json.body.AndroidID);\n\nconst sensorName = $input.first().json.type || \"SunAzimuth\";\nconst alertGiven = $input.first().json.alertGiven || p.alertGiven || \"no\";\nconst value = parseFloat($('HTTP sun API Request').first().json.sun_azimuth || 0);\n\nconst pulses = $input.first().json.pulses || 0;\nconst intensity = $input.first().json.intensity || 0;\nconst duration = $input.first().json.duration || 0;\nconst interval = $input.first().json.interval || 0;\nconst fbRangeID = $input.first().json.fbRangeID || 0;\n\nif (!userId || !watchId || !phoneId) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing ids (userId/watchId/phoneId)\", got: { userId, watchId, phoneId } } } }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`,\n    params: [userId, watchId, phoneId, sensorName, alertGiven, value, pulses, intensity, duration, interval, fbRangeID]\n  }\n}];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -2161,30 +2002,250 @@
       "typeVersion": 1,
       "id": "79c37f9c-5a10-463b-9c07-149a76a87baa",
       "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "this is GET /sensor-data on node-red",
+        "height": 80,
+        "width": 272,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3024,
+        -1104
+      ],
+      "typeVersion": 1,
+      "id": "6afe3264-69a8-4e9d-890c-3f56d784f5e0",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "this is GET /get-sensortypes on node-red",
+        "height": 80,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3008,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "670df7bb-5245-4b8d-947d-ddde4537953a",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "this is GET /get-monitoring-config on node-red",
+        "height": 80,
+        "width": 368,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3024,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "e9b762a1-a50e-4daf-8e93-c2cc5f75732d",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "set-heart-rate-threshold",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1456,
+        -320
+      ],
+      "id": "9e2a0a2d-1760-4ca1-be03-27147f893b3d",
+      "name": "set heart rate threshold",
+      "webhookId": "01c7e929-2bd8-49a9-bedb-ed7736aec1a2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -784,
+        -832
+      ],
+      "id": "5be3c45f-8e06-4d30-9558-34260c28cf9f",
+      "name": "Execute moon mapping query",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nconst sunAzimuthRanges = [];\nconst heartRateMappings = [];\nconst moonAzimuthRanges = [];\n\nfor (const row of rows) {\n  if (row.type === \"SunAzimuth\") sunAzimuthRanges.push(row);\n  else if (row.type === \"HeartRate\") heartRateMappings.push(row);\n  else if (row.type === \"MoonAzimuth\") moonAzimuthRanges.push(row);\n}\n\nreturn [\n  {\n    json: {\n      sunAzimuthRanges,\n      heartRateMappings,\n      moonAzimuthRanges,\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2576,
+        -1600
+      ],
+      "id": "f8ef69ed-3817-4dac-9d73-e1ff92f1e426",
+      "name": "Setting up response",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2208,
+        -1232
+      ],
+      "id": "98f14e52-1539-4081-8477-f414fbd26e48",
+      "name": "HTTP sun API Request"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemma-3-4b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        -1360
+      ],
+      "id": "d5f2084d-5a7e-45c7-9a0f-76132344caaf",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "y3aPvN8D7zct4rPK",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-config",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Chat Config Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1472,
+        -1584
+      ],
+      "id": "c8c8c3be-46a6-4c6e-919b-44de284149a1",
+      "webhookId": "5269f3c6-231b-4f17-88c4-256baf69aec3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "You are a strict JSON data extraction engine. Your ONLY job is to convert natural language commands into a structured JSON object for a database configuration.\n\n### Database Schema (Output Fields):\n- type: 'HeartRate', 'SunAzimuth', or 'MoonAzimuth' (Required)\n- active: boolean (Always true for new rules)\n- minvalue: number (The lower threshold. If user says \"above 120\", min=120, max=220)\n- maxvalue: number (The upper threshold. If user says \"below 60\", min=30, max=60)\n- minpulses, maxpulses: number (Vibration count. Low=1, Medium=3, High=5. Default=3)\n- minintensity, maxintensity: number (Vibration strength 0-255. Weak=50, Strong=255. Default=150)\n- minduration, maxduration: number (Pulse duration in ms. Short=100, Long=500. Default=200)\n- mininterval, maxinterval: number (Pause between pulses in ms. Default=100)\n\n### Strict Output Rules:\n1. Return ONLY the JSON object.\n2. Do NOT write \"Here is the JSON\".\n3. Do NOT wrap the output in markdown blocks (no ```json ... ```).\n4. If a value is missing, use reasonable defaults based on the context.\n5. Make sure all output fields are populated\n\n### Example Output:\n{ \"type\": \"HeartRate\", \"active\": true, \"minvalue\": 120, \"maxvalue\": 220, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 200, \"maxintensity\": 255, \"minduration\": 200, \"maxduration\": 400, \"mininterval\": 100, \"maxinterval\": 200 }"
+            }
+          ]
+        }
+      },
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -1264,
+        -1584
+      ],
+      "id": "027d06dc-f98f-42d6-bb04-58b881e265cb"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw text from the AI (it might be in .output or .text)\nconst aiOutput = $input.first().json.output || $input.first().json.text || \"\";\n\n// 1. If it's already an object, return it directly\nif (typeof aiOutput === 'object') {\n  return [{ json: aiOutput }];\n}\n\n// 2. If it's a string, use Regex to find the JSON object inside it\n// This ignores text like \"Here is your JSON:\"\nconst jsonMatch = aiOutput.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch) {\n  throw new Error(\"No JSON found in AI response. Raw output: \" + aiOutput);\n}\n\ntry {\n  const parsedData = JSON.parse(jsonMatch[0]);\n  return [{ json: parsedData }];\n} catch (e) {\n  throw new Error(\"Found JSON-like text but failed to parse: \" + jsonMatch[0]);\n}"
+      },
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -928,
+        -1584
+      ],
+      "id": "1af1002b-ba0e-4c04-bea3-c8f80c9c0aa6"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Rule created successfully\",\n  \"ruleId\": {{ $json.id }}\n}",
+        "options": {}
+      },
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -1584
+      ],
+      "id": "88061bcc-63be-49dc-af37-488387337b0f"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n  type, active, minvalue, maxvalue, \n  minpulses, maxpulses, minintensity, maxintensity, \n  minduration, maxduration, mininterval, maxinterval\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n) \nON CONFLICT (minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, minvalue, maxvalue, type)\nDO UPDATE SET active = EXCLUDED.active\nRETURNING *;",
+        "options": {
+          "queryReplacement": "={{ [ \n  $json.type, \n  true, \n  $json.minvalue, \n  $json.maxvalue, \n  $json.minpulses, \n  $json.maxpulses, \n  $json.minintensity, \n  $json.maxintensity, \n  $json.minduration, \n  $json.maxduration, \n  $json.mininterval, \n  $json.maxinterval\n].join(',') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -704,
+        -1584
+      ],
+      "id": "c8a1a503-3e0c-49c0-b5bd-2343d1ee6770",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST http://localhost:5678/webhook-test/chat-config -H \"Content-Type: application/json\" -d \"{\\\"message\\\":\\\"Vibrate softly if sun azimuth is at 150 \\\"}\"\n\nor your own message after {\\\"message\\\":\\ ",
+        "height": 192,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1600,
+        -1424
+      ],
+      "typeVersion": 1,
+      "id": "08b1fe6d-e7f0-45a4-888a-f77f281f16c6",
+      "name": "Sticky Note19"
     }
   ],
   "pinData": {
-    "Chat Config Webhook1": [
-      {
-        "json": {
-          "headers": {
-            "content-type": "application/json",
-            "user-agent": "Java/19.0.2",
-            "host": "localhost:5678",
-            "accept": "*/*",
-            "connection": "keep-alive",
-            "content-length": "53"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "message": "Vibrate if my heart rate goes above 120"
-          },
-          "webhookUrl": "http://localhost:5678/webhook/chat-config",
-          "executionMode": "production"
-        }
-      }
-    ],
     "Get current configurations": [
       {
         "json": {
@@ -2271,7 +2332,31 @@
         }
       }
     ],
-    "set heart rate azimuth threshold": [
+    "Webhook sun data": [
+      {
+        "json": {
+          "headers": {
+            "host": "localhost:5678",
+            "user-agent": "curl/8.16.0",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "content-length": "73"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "UserID": 100,
+            "SmartWatchID": 200,
+            "AndroidID": 2,
+            "lat": 32.794,
+            "lon": 34.989
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/sun-data",
+          "executionMode": "test"
+        }
+      }
+    ],
+    "set heart rate threshold": [
       {
         "json": {
           "headers": {
@@ -2302,30 +2387,6 @@
             ]
           },
           "webhookUrl": "http://localhost:5678/webhook-test/set-sun-azimuth-threshold",
-          "executionMode": "test"
-        }
-      }
-    ],
-    "Webhook sun data": [
-      {
-        "json": {
-          "headers": {
-            "host": "localhost:5678",
-            "user-agent": "curl/8.16.0",
-            "accept": "*/*",
-            "content-type": "application/json",
-            "content-length": "73"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "UserID": 100,
-            "SmartWatchID": 200,
-            "AndroidID": 2,
-            "lat": 32.794,
-            "lon": 34.989
-          },
-          "webhookUrl": "http://localhost:5678/webhook-test/sun-data",
           "executionMode": "test"
         }
       }
@@ -2707,61 +2768,6 @@
         ]
       ]
     },
-    "Google Gemini Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain1",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Chat Config Webhook1": {
-      "main": [
-        [
-          {
-            "node": "Basic LLM Chain1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Basic LLM Chain1": {
-      "main": [
-        [
-          {
-            "node": "Parse AI Response1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse AI Response1": {
-      "main": [
-        [
-          {
-            "node": "Insert New Rule1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Insert New Rule1": {
-      "main": [
-        [
-          {
-            "node": "Respond Success1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get current configurations": {
       "main": [
         [
@@ -2777,18 +2783,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook current-configuraion",
+            "node": "Setting up response",
             "type": "main",
             "index": 0
           }
@@ -3007,22 +3002,11 @@
         ]
       ]
     },
-    "Execute sun mapping query1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook4",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If1": {
       "main": [
         [
           {
-            "node": "Execute sun mapping query1",
+            "node": "Execute moon mapping query",
             "type": "main",
             "index": 0
           }
@@ -3081,17 +3065,6 @@
         [
           {
             "node": "Respond to Webhook on error2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "set heart rate azimuth threshold": {
-      "main": [
-        [
-          {
-            "node": "UpdatingChangedValuesIfExist2",
             "type": "main",
             "index": 0
           }
@@ -3247,18 +3220,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Extract Sun Azimuth And Preserve Original Payload",
+            "node": "HTTP sun API Request",
             "type": "main",
             "index": 0
           }
@@ -3319,13 +3281,112 @@
           }
         ]
       ]
+    },
+    "set heart rate threshold": {
+      "main": [
+        [
+          {
+            "node": "UpdatingChangedValuesIfExist2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute moon mapping query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setting up response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook current-configuraion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP sun API Request": {
+      "main": [
+        [
+          {
+            "node": "Extract Sun Azimuth And Preserve Original Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Config Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4b58cceb-bfb6-4a0e-934f-ce2381a3ff64",
+  "versionId": "f9158a39-a3d9-4809-9966-c495b1f82318",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
