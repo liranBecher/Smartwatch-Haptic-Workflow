@@ -456,7 +456,8 @@
         -592
       ],
       "id": "1709b29a-c8b0-4548-bb65-c0fed6fd1540",
-      "name": "AI Agent1"
+      "name": "AI Agent1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -475,18 +476,8 @@
           "id": "y3aPvN8D7zct4rPK",
           "name": "Google Gemini(PaLM) Api account"
         }
-      }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -5344,
-        -592
-      ],
-      "id": "f3f1865d-a149-4986-85f9-3cf912d16426",
-      "name": "When clicking ‘Execute workflow’"
+      },
+      "disabled": true
     },
     {
       "parameters": {},
@@ -497,7 +488,8 @@
         -576
       ],
       "id": "587e45ac-188f-4c7d-92f4-086a21d89570",
-      "name": "No Operation, do nothing"
+      "name": "No Operation, do nothing",
+      "disabled": true
     },
     {
       "parameters": {
@@ -527,22 +519,6 @@
         -640
       ],
       "id": "ef388266-964c-410d-b396-9d08763932bf"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "heartRate",
-        "options": {}
-      },
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        32,
-        -1520
-      ],
-      "id": "339aaebf-2c48-439e-b510-34bec10e458b",
-      "webhookId": "ab04974b-c683-4224-90a1-cae7a4139bdc"
     },
     {
       "parameters": {
@@ -640,7 +616,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorID = st.sensorID\nWHERE sd.userID = {{ $('Webhook').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
+        "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorID = st.sensorID\nWHERE sd.userID = {{ $('Webhook heart rate').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook heart rate').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook heart rate').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
         "additionalFields": {}
       },
       "name": "Fetch History",
@@ -681,7 +657,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate\nconst userID = $('Webhook').first().json.body.UserID\nconst SmartWatchID = $('Webhook').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [{ json: feedback  }];"
+        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate\nconst userID = $('Webhook heart rate').first().json.body.UserID\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [{ json: feedback  }];"
       },
       "name": "Check Feedback Rules",
       "type": "n8n-nodes-base.code",
@@ -730,7 +706,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extract database readings\nconst readings = items.map(item => parseFloat(item.json.value)).filter(v => !isNaN(v));\n\n// Extract raw sensor input from Webhook\nconst rawValue = parseFloat($('Webhook').item.json.body.Value || 0);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid\nif (!isOutlier(rawValue)) {\n    readings.push(rawValue);\n}\n\nlet smoothed = rawValue; // Default to raw if no history\nif (readings.length > 0) {\n    const total = readings.reduce((sum, val) => sum + val, 0);\n    smoothed = total / readings.length;\n}\n\nreturn [\n  {\n    json: {\n      heartRate: smoothed,\n      rawValue: rawValue\n    }\n  }\n];"
+        "jsCode": "// Extract database readings\nconst readings = items.map(item => parseFloat(item.json.value)).filter(v => !isNaN(v));\n\n// Extract raw sensor input from Webhook\nconst rawValue = parseFloat($('Webhook heart rate').item.json.body.Value || 0);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid\nif (!isOutlier(rawValue)) {\n    readings.push(rawValue);\n}\n\nlet smoothed = rawValue; // Default to raw if no history\nif (readings.length > 0) {\n    const total = readings.reduce((sum, val) => sum + val, 0);\n    smoothed = total / readings.length;\n}\n\nreturn [\n  {\n    json: {\n      heartRate: smoothed,\n      rawValue: rawValue\n    }\n  }\n];"
       },
       "name": "Data Cleaning1",
       "type": "n8n-nodes-base.code",
@@ -1128,7 +1104,10 @@
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "responseCode": "={{ $json.statusCode }}",
+          "responseKey": "={{ $json.payload.status }}"
+        }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
@@ -1143,7 +1122,7 @@
       "parameters": {
         "content": "--IMPORTANT--\nIn order for the monitoring config and monitoring type nodes to run: \n1. Set the workflow to active\n2. Set both nodes to production URL\n3. first run set and then get",
         "height": 368,
-        "width": 160,
+        "width": 224,
         "color": 3
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -1307,7 +1286,7 @@
     },
     {
       "parameters": {
-        "content": "curl -X POST \"http://localhost:5678/webhook/set-monitoring-type\" -H \"Content-Type: application/json\" -d \"{\\\"monitoringType\\\":\\\"HeartRate\\\"}\""
+        "content": "curl -X POST \"http://localhost:5678/webhook-test/set-monitoring-type\" -H \"Content-Type: application/json\" -d \"{\\\"monitoringType\\\":\\\"HeartRate\\\"}\""
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
@@ -1320,7 +1299,7 @@
     },
     {
       "parameters": {
-        "content": "C:\\Users\\97250>curl \"http://localhost:5678/webhook-test/monitoring-config\""
+        "content": "curl \"http://localhost:5678/webhook-test/monitoring-config\""
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
@@ -1744,7 +1723,7 @@
       "parameters": {
         "content": "Checking Rules & API Requests & Sending Appropriate FeedBack",
         "height": 80,
-        "width": 2512,
+        "width": 2640,
         "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -1771,6 +1750,417 @@
       "typeVersion": 1,
       "id": "4eda5031-ae07-40c1-8c5d-5b1bb65750e1",
       "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE OR REPLACE FUNCTION insert_sensor_data(\n    _userID INT,\n    _watchID INT,\n    _phoneID INT,\n    _sensorName VARCHAR,\n    _alertGiven VARCHAR,\n    _value FLOAT,\n    _pulses INT,\n    _intensity INT,\n    _duration INT,\n    _interval INT,\n    _fbRangeID INT\n) RETURNS VOID AS $$\nDECLARE\n    _sensorID INT;\n    _alertID INT;\nBEGIN\n    -- Insert users/devices if they don't exist\n    INSERT INTO \"User\"(userID) SELECT _userID WHERE NOT EXISTS (SELECT 1 FROM \"User\" WHERE userID = _userID);\n    INSERT INTO \"Watch\"(watchID) SELECT _watchID WHERE NOT EXISTS (SELECT 1 FROM \"Watch\" WHERE watchID = _watchID);\n    INSERT INTO \"AndroidPhone\"(phoneID) SELECT _phoneID WHERE NOT EXISTS (SELECT 1 FROM \"AndroidPhone\" WHERE phoneID = _phoneID);\n\n    INSERT INTO \"WatchAndroidPhone\"(watchID, phoneID)\n    SELECT _watchID, _phoneID\n    WHERE NOT EXISTS (\n        SELECT 1 FROM \"WatchAndroidPhone\" WHERE watchID = _watchID AND phoneID = _phoneID\n    );\n\n    INSERT INTO \"UserWatchAndroidPhone\"(userID, watchID, phoneID)\n    SELECT _userID, _watchID, _phoneID\n    WHERE NOT EXISTS (\n        SELECT 1 FROM \"UserWatchAndroidPhone\"\n        WHERE userID = _userID AND watchID = _watchID AND phoneID = _phoneID\n    );\n\n    INSERT INTO \"SensorType\"(name)\n    SELECT _sensorName\n    WHERE NOT EXISTS (SELECT 1 FROM \"SensorType\" WHERE name = _sensorName);\n\n    SELECT sensorID INTO _sensorID FROM \"SensorType\" WHERE name = _sensorName;\n\n    -- 🔁 Insert into Alert with fbRangeID instead of minvalue/maxvalue\n    INSERT INTO \"Alert\"(\n        alertGiven, pulses, intensity, duration, interval, type, fbRangeID\n    )\n    VALUES (\n        _alertGiven, _pulses, _intensity, _duration, _interval, _sensorName, _fbRangeID\n    )\n    RETURNING alertID INTO _alertID;\n\n    -- DeviceSensor mapping\n    INSERT INTO \"DeviceSensor\"(sensorID, userID, watchID, phoneID)\n    SELECT _sensorID, _userID, _watchID, _phoneID\n    WHERE NOT EXISTS (\n        SELECT 1 FROM \"DeviceSensor\"\n        WHERE sensorID = _sensorID AND userID = _userID AND watchID = _watchID AND phoneID = _phoneID\n    );\n\n    -- Final insert to SensorData\n    INSERT INTO \"SensorData\"(sensorID, userID, watchID, phoneID, alertID, value, time)\n    VALUES (_sensorID, _userID, _watchID, _phoneID, _alertID, _value, CURRENT_TIMESTAMP);\nEND;\n$$ LANGUAGE plpgsql;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -848,
+        -2048
+      ],
+      "id": "139400b4-6239-4fcb-a35a-7868a9415379",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "-NOTE-\nTo create the DB tables and insert data, run this only once before starting anything else",
+        "height": 240,
+        "width": 480,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1104,
+        -2144
+      ],
+      "typeVersion": 1,
+      "id": "252a5990-724f-40dd-bbb8-47cb6281b043",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1056,
+        -2048
+      ],
+      "id": "cbc778c6-1d6c-4fbc-b104-901dbf08de02",
+      "name": "Build Database",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "heartRate",
+        "options": {}
+      },
+      "name": "Webhook heart rate",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -1520
+      ],
+      "id": "339aaebf-2c48-439e-b510-34bec10e458b",
+      "webhookId": "ab04974b-c683-4224-90a1-cae7a4139bdc"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sun-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        -1232
+      ],
+      "id": "dd964360-3e89-409f-b456-576e68a8ddde",
+      "name": "Webhook sun data",
+      "webhookId": "bfaa76e2-1fb2-424b-a6e8-cf4467dd3d90"
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $input.first().json || {};\nconst body = req.body ?? req;\n\nconst userId = body.UserID ?? body.userid ?? body.userId;\nif (!userId) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing UserID\" } } }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    userId,\n    query: 'SELECT \"lastrequest\" FROM public.\"User\" WHERE \"userid\" = $1',\n    params: [userId],\n    // keep original request for later\n    body,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -1232
+      ],
+      "id": "efbe7d48-6017-4a8a-9108-1584e1814b6f",
+      "name": "prepare Delay Query"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b22a2d03-b418-45a2-a6cc-d0678f0ce3a8",
+              "leftValue": "={{$json.statusCode}}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -1232
+      ],
+      "id": "33604442-22c1-4adf-a114-db2c89e28920",
+      "name": "If status 400"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{$json.statusCode}}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        704,
+        -1328
+      ],
+      "id": "813cbb70-c623-4ba6-8343-9250a301d769",
+      "name": "Respond to Webhook on code 400"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        704,
+        -1136
+      ],
+      "id": "b61625ba-4118-4ce1-b2b7-6a0d2c21d11b",
+      "name": "SELECT lastRequest",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Bring forward the original data from the previous node (PrepareLastRequestQuery)\nconst prev = $('prepare Delay Query').first().json;\nconst userId = $('prepare Delay Query').first().json.body.UserID;\nconst body = $('prepare Delay Query').first().json.body;\n\n// Postgres results are in `items` for THIS node\nconst pgRows = $input.first().json;\nconst lastRequestRaw = pgRows[0]?.lastrequest\n  ?? pgRows[0]?.lastRequest\n  ?? null;\n\n// Decide delay policy (pick something sensible)\nconst cooldownMs = 60_000;\n\nlet shouldWait = false;\nlet waitSeconds = 0;\n\nif (lastRequestRaw) {\n  const last = new Date(lastRequestRaw).getTime();\n  const now = Date.now();\n  const elapsed = now - last;\n\n  if (elapsed < cooldownMs) {\n    shouldWait = true;\n    waitSeconds = Math.max(1, Math.ceil((cooldownMs - elapsed) / 1000));\n  }\n}\n\nreturn [{\n  json: {\n    userId,\n    body,\n    shouldWait,\n    waitSeconds,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -1136
+      ],
+      "id": "81f1c3b4-8fe3-405e-8dd3-613cb4268025",
+      "name": "Check If Delay Necessary"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "edd11ae0-8357-422f-b359-ad2dae566889",
+              "leftValue": "={{$json.shouldWait}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        -1232
+      ],
+      "id": "07875e72-ebb4-4b10-a442-01b2d88eae9e",
+      "name": "if should wait"
+    },
+    {
+      "parameters": {
+        "amount": "={{$json.waitSeconds}}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        -1312
+      ],
+      "id": "80d249a8-83ba-4492-b23f-366ceff7ed7a",
+      "name": "Wait",
+      "webhookId": "99ae071e-7ab4-4d91-9677-810632db319c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const userId = $input.first().json.userId;\n\nreturn [{\n  json: {\n    userId,\n    body: $input.first().json.body,\n    query: 'UPDATE public.\"User\" SET \"lastrequest\" = NOW() WHERE \"userid\" = $1',\n    params: [userId],\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        -1232
+      ],
+      "id": "d49665d8-6a1d-4d6f-a68a-aea340ff327c",
+      "name": "Build Update Last Request"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1760,
+        -1232
+      ],
+      "id": "421b9047-fd8c-4bc8-91a5-bf50e74a78a0",
+      "name": "Execute UPDATE",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const prev = $input.first().json;\nconst body = prev.body ?? {};\n\nconst lat = body.lat ?? 32.794;\nconst lon = body.lon ?? 34.989;\n\n// Same API, same key usage as Node-RED\nconst apiKey = \"b2b40f0636bb42c78ab922b7ef5a90fd\";\n\nif (!apiKey) {\n  return [{\n    json: {\n      statusCode: 500,\n      payload: { error: \"SUN_API_KEY not configured\" }\n    }\n  }];\n}\n\n// Example: if Node-RED used query param\nconst url =\n  `https://api.ipgeolocation.io/astronomy?apiKey=${apiKey}` +\n  `&lat=${encodeURIComponent(lat)}` +\n  `&long=${encodeURIComponent(lon)}`;\n\nreturn [{\n  json: {\n    url,\n    lat,\n    lon\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        -1232
+      ],
+      "id": "df7c1f23-19e7-4a59-8f17-62955acfc30b",
+      "name": "Construct Sun Api Request"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2208,
+        -1232
+      ],
+      "id": "98f14e52-1539-4081-8477-f414fbd26e48",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Keep whatever you already had from earlier nodes (webhook body, etc.)\nconst originalPayload = $input.first().json.originalPayload ?? $input.first().json;\n\n// The HTTP response body\nconst api = $input.first().json;\n\n// Try common shapes \nconst currentAzimuth =\n  api?.sun_azimuth ??\n  api?.sun?.azimuth ??\n  api?.data?.sun_azimuth ??\n  api?.data?.sun?.azimuth;\n\nif (currentAzimuth === undefined || currentAzimuth === null) {\n  return [{ json: { statusCode: 500, payload: { error: \"Sun azimuth missing from API response\", api } } }];\n}\n\n// Preserve original input + attach computed value\noriginalPayload.sun_azimuth = Number(currentAzimuth);\n\n// Put the “main payload” as originalPayload (this is what Node-RED effectively does)\nreturn [{ json: { ...originalPayload } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        -1232
+      ],
+      "id": "b7fb562f-56e5-450e-95ae-e226688435ca",
+      "name": "Extract Sun Azimuth And Preserve Original Payload"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM feedback_config_rules\nWHERE active = TRUE\n  AND type = 'SunAzimuth'\nORDER BY minvalue, maxvalue;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1536,
+        -1040
+      ],
+      "id": "b56a753e-379a-4232-ae99-38c454993c75",
+      "name": "Query To Fetch Current Sun Rules From DB",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Extract Sun Azimuth And Preserve Original Payload').first().json;\nconst rules = $input.all().map(i => i.json);\nconst az = $('Extract Sun Azimuth And Preserve Original Payload').first().json.sun_azimuth;\n\nlet chosen = null;\nfor (const r of rules) {\n  const minV = Number(r.minvalue);\n  const maxV = Number(r.maxvalue);\n  if (az >= minV && az <= maxV) { chosen = r; break; }\n}\n\n\n// Defaults when no match \nlet pulses = 0, intensity = 0, duration = 0, interval = 0, fbRangeID = 0;\n\nif (chosen) {\n  pulses = Number(chosen.minpulses ?? 0);\n  intensity = Number(chosen.minintensity ?? 0);\n  duration = Number(chosen.minduration ?? 0);\n  interval = Number(chosen.mininterval ?? 0);\n  fbRangeID = Number(chosen.id ?? 0);\n}\n\n// Attach vibration params for DB insert\nreturn [{\n  json: {\n    ...original,\n    monitoringType: \"SunAzimuth\",\n    alertGiven: chosen ? \"yes\" : \"no\",\n    pulses, intensity, duration, interval,\n    fbRangeID\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        -1040
+      ],
+      "id": "0d5b6036-48a1-4f3a-96a2-57fdacb86b1e",
+      "name": "Checks FeedBack Rules"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json;\n\nconst userId  = parseInt($('Webhook sun data').first().json.body.UserID);\nconst watchId = parseInt($('Webhook sun data').first().json.body.SmartWatchID);\nconst phoneId = parseInt($('Webhook sun data').first().json.body.AndroidID);\n\nconst sensorName = $input.first().json.type || \"SunAzimuth\";\nconst alertGiven = $input.first().json.alertGiven || p.alertGiven || \"no\";\nconst value = parseFloat($('HTTP Request').first().json.sun_azimuth || 0);\n\nconst pulses = $input.first().json.pulses || 0;\nconst intensity = $input.first().json.intensity || 0;\nconst duration = $input.first().json.duration || 0;\nconst interval = $input.first().json.interval || 0;\nconst fbRangeID = $input.first().json.fbRangeID || 0;\n\nif (!userId || !watchId || !phoneId) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing ids (userId/watchId/phoneId)\", got: { userId, watchId, phoneId } } } }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`,\n    params: [userId, watchId, phoneId, sensorName, alertGiven, value, pulses, intensity, duration, interval, fbRangeID]\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        -1040
+      ],
+      "id": "158bba5f-68da-4f88-b357-0e99a58ac530",
+      "name": "Setup Parameters For Sun Queries"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2208,
+        -1040
+      ],
+      "id": "c24de22c-d5d4-4e56-899c-a0bc79c0c37e",
+      "name": "Execute insert_sensor_data",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2432,
+        -1040
+      ],
+      "id": "f276d607-cd63-4da5-83f9-2973045744a7",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST \"http://localhost:5678/webhook-test/sun-data\" -H \"Content-Type: application/json\" -d \"{\\\"UserID\\\":100,\\\"SmartWatchID\\\":200,\\\"AndroidID\\\":2,\\\"lat\\\":32.794,\\\"lon\\\":34.989}\"",
+        "height": 96,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -1088
+      ],
+      "typeVersion": 1,
+      "id": "79c37f9c-5a10-463b-9c07-149a76a87baa",
+      "name": "Sticky Note15"
     }
   ],
   "pinData": {
@@ -1912,6 +2302,30 @@
             ]
           },
           "webhookUrl": "http://localhost:5678/webhook-test/set-sun-azimuth-threshold",
+          "executionMode": "test"
+        }
+      }
+    ],
+    "Webhook sun data": [
+      {
+        "json": {
+          "headers": {
+            "host": "localhost:5678",
+            "user-agent": "curl/8.16.0",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "content-length": "73"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "UserID": 100,
+            "SmartWatchID": 200,
+            "AndroidID": 2,
+            "lat": 32.794,
+            "lon": 34.989
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/sun-data",
           "executionMode": "test"
         }
       }
@@ -2171,33 +2585,11 @@
         ]
       ]
     },
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "AI Agent1": {
       "main": [
         [
           {
             "node": "No Operation, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Get Last Request",
             "type": "main",
             "index": 0
           }
@@ -2705,13 +3097,235 @@
           }
         ]
       ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        []
+      ]
+    },
+    "Build Database": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook heart rate": {
+      "main": [
+        [
+          {
+            "node": "Get Last Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook sun data": {
+      "main": [
+        [
+          {
+            "node": "prepare Delay Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare Delay Query": {
+      "main": [
+        [
+          {
+            "node": "If status 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If status 400": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook on code 400",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SELECT lastRequest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook on code 400": {
+      "main": [
+        []
+      ]
+    },
+    "SELECT lastRequest": {
+      "main": [
+        [
+          {
+            "node": "Check If Delay Necessary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Delay Necessary": {
+      "main": [
+        [
+          {
+            "node": "if should wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if should wait": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Update Last Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Build Update Last Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Update Last Request": {
+      "main": [
+        [
+          {
+            "node": "Execute UPDATE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute UPDATE": {
+      "main": [
+        [
+          {
+            "node": "Construct Sun Api Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construct Sun Api Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract Sun Azimuth And Preserve Original Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Sun Azimuth And Preserve Original Payload": {
+      "main": [
+        [
+          {
+            "node": "Query To Fetch Current Sun Rules From DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query To Fetch Current Sun Rules From DB": {
+      "main": [
+        [
+          {
+            "node": "Checks FeedBack Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks FeedBack Rules": {
+      "main": [
+        [
+          {
+            "node": "Setup Parameters For Sun Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Parameters For Sun Queries": {
+      "main": [
+        [
+          {
+            "node": "Execute insert_sensor_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute insert_sensor_data": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "cbea8b31-da7e-4322-994c-ee5ccf346291",
+  "versionId": "4b58cceb-bfb6-4a0e-934f-ce2381a3ff64",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
