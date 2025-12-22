@@ -1652,7 +1652,13 @@
       "name": "Sticky Note14"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -2243,6 +2249,241 @@
       "typeVersion": 1,
       "id": "08b1fe6d-e7f0-45a4-888a-f77f281f16c6",
       "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT \"lastrequest\", \"userid\"\nFROM \"User\" \nWHERE \"userid\" = {{ $json.body.UserID }};\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        240,
+        -848
+      ],
+      "id": "5b7b5442-1b4e-43c4-a7ed-265c557f3588",
+      "name": "Execute a SQL query2",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lastRequest = $input.first().json.lastrequest;\nconst userid = $input.first().json.userid\nconst now = new Date();\nconst dynamicDelay = 10000; // 10 seconds\n\nlet shouldWait = false;\n\nif (lastRequest) {\n  const elapsed = now.getTime() - new Date(lastRequest).getTime();\n  if (elapsed < dynamicDelay) {\n    shouldWait = true;\n  }\n}\n\nreturn [\n  {\n    json: {\n      userid,\n      shouldWait: shouldWait\n    }\n  }\n];"
+      },
+      "name": "Check Delay Logic1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -848
+      ],
+      "id": "7848c64b-810c-4cae-b166-f22b5712e608"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"shouldWait\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "If Wait Needed1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -848
+      ],
+      "id": "a2946b1c-7bf2-41d1-833a-38ee9560ef9e"
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "name": "Wait 5s1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -928
+      ],
+      "id": "212aad5b-5b80-442a-8986-baf23aea319d",
+      "webhookId": "bad4a52f-ae34-4d95-a5e7-90a02cdb0d40"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\nRETURNING \"userid\";",
+        "additionalFields": {
+          "queryParams": "={{ $json.userid.toString() }}"
+        }
+      },
+      "name": "Update Last Request1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        -848
+      ],
+      "id": "d0053a21-3c85-4a34-8bac-9679bea10e33",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2272,
+        -640
+      ],
+      "id": "2f1c8fec-c9fe-4b1a-8356-e26d32bd4a0d",
+      "name": "Execute insert_sensor_data1",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2464,
+        -640
+      ],
+      "id": "1fde1628-514b-401f-a972-0c11f30be8f7",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prev = $input.first().json;\nconst body = prev.body ?? {};\n\nconst lat = body.lat ?? 32.794;\nconst lon = body.lon ?? 34.989;\n\nconst apiKey = \"b2b40f0636bb42c78ab922b7ef5a90fd\";\n\nif (!apiKey) {\n  return [{\n    json: {\n      statusCode: 500,\n      payload: { error: \"SUN_API_KEY not configured\" }\n    }\n  }];\n}\nconst url =\n  `https://api.ipgeolocation.io/astronomy?apiKey=${apiKey}` +\n  `&lat=${encodeURIComponent(lat)}` +\n  `&long=${encodeURIComponent(lon)}`;\n\nreturn [{\n  json: {\n    url,\n    lat,\n    lon\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        -848
+      ],
+      "id": "99074c97-f2bf-4e78-bcb9-3fb0512a1b1c",
+      "name": "Construct Moon APi Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Keep whatever you already had from earlier nodes (webhook body, etc.)\nconst originalPayload = $input.first().json.originalPayload ?? $input.first().json;\n\n// The HTTP response body\nconst api = $input.first().json;\n\n// Try common shapes \nconst currentAzimuth =\n  api?.moon_azimuth ??\n  api?.moon?.azimuth ??\n  api?.data?.moon_azimuth ??\n  api?.data?.moon?.azimuth;\n\nif (currentAzimuth === undefined || currentAzimuth === null) {\n  return [{ json: { statusCode: 500, payload: { error: \"Moon azimuth missing from API response\", api } } }];\n}\n\n// Preserve original input + attach computed value\noriginalPayload.moon_azimuth = Number(currentAzimuth);\n\n// Put the “main payload” as originalPayload\nreturn [{ json: { ...originalPayload } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        -848
+      ],
+      "id": "727d838d-83b2-4c51-acdc-61774bb728db",
+      "name": "Extract Moon Azimuth And Preserve Original Payload"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM feedback_config_rules\nWHERE active = TRUE\n  AND type = 'MoonAzimuth'\nORDER BY minvalue, maxvalue;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1984,
+        -848
+      ],
+      "id": "d0cde6b8-7850-4b13-a2aa-17d5f04c700c",
+      "name": "Query To Fetch Current Moon Rules From DB",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Extract Moon Azimuth And Preserve Original Payload').first().json;\nconst rules = $input.all().map(i => i.json);\nconst az = $('Extract Moon Azimuth And Preserve Original Payload').first().json.sun_azimuth;\n\nlet chosen = null;\nfor (const r of rules) {\n  const minV = Number(r.minvalue);\n  const maxV = Number(r.maxvalue);\n  if (az >= minV && az <= maxV) { chosen = r; break; }\n}\n\n\n// Defaults when no match \nlet pulses = 0, intensity = 0, duration = 0, interval = 0, fbRangeID = 0;\n\nif (chosen) {\n  pulses = Number(chosen.minpulses ?? 0);\n  intensity = Number(chosen.minintensity ?? 0);\n  duration = Number(chosen.minduration ?? 0);\n  interval = Number(chosen.mininterval ?? 0);\n  fbRangeID = Number(chosen.id ?? 0);\n}\n\n// Attach vibration params for DB insert\nreturn [{\n  json: {\n    ...original,\n    monitoringType: \"MoonAzimuth\",\n    alertGiven: chosen ? \"yes\" : \"no\",\n    pulses, intensity, duration, interval,\n    fbRangeID\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        -848
+      ],
+      "id": "3d78fe06-9bac-4589-9105-acc374302819",
+      "name": "Checks FeedBack Rules1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json;\n\nconst userId  = parseInt($('Webhook moon data').first().json.body.UserID);\nconst watchId = parseInt($('Webhook moon data').first().json.body.SmartWatchID);\nconst phoneId = parseInt($('Webhook moon data').first().json.body.AndroidID);\n\nconst sensorName = $input.first().json.type || \"MoonAzimuth\";\nconst alertGiven = $input.first().json.alertGiven || p.alertGiven || \"no\";\nconst value = parseFloat($('HTTP Moon Request').first().json.moon_azimuth || 0);\n\nconst pulses = $input.first().json.pulses || 0;\nconst intensity = $input.first().json.intensity || 0;\nconst duration = $input.first().json.duration || 0;\nconst interval = $input.first().json.interval || 0;\nconst fbRangeID = $input.first().json.fbRangeID || null;\n\nif (!userId || !watchId || !phoneId) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing ids (userId/watchId/phoneId)\", got: { userId, watchId, phoneId } } } }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`,\n    params: [userId, watchId, phoneId, sensorName, alertGiven, value, pulses, intensity, duration, interval, fbRangeID]\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        -848
+      ],
+      "id": "a0d79e92-2c92-4978-af57-97d2cd2d8508",
+      "name": "Setup Parameters For Moon Queries"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1536,
+        -848
+      ],
+      "id": "dca69e26-b244-462d-838f-40dcc7e950e7",
+      "name": "HTTP Moon Request"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "moon-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        -848
+      ],
+      "id": "5154b879-b732-4757-b036-ce8886b8ad03",
+      "name": "Webhook moon data",
+      "webhookId": "3a44de6f-0d6f-4e5c-ae4f-c28a63514782"
     }
   ],
   "pinData": {
@@ -3380,13 +3621,163 @@
           }
         ]
       ]
+    },
+    "Execute a SQL query2": {
+      "main": [
+        [
+          {
+            "node": "Check Delay Logic1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Wait Needed1": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Last Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s1": {
+      "main": [
+        [
+          {
+            "node": "Update Last Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Delay Logic1": {
+      "main": [
+        [
+          {
+            "node": "If Wait Needed1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Last Request1": {
+      "main": [
+        [
+          {
+            "node": "Construct Moon APi Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute insert_sensor_data1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construct Moon APi Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Moon Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Moon Azimuth And Preserve Original Payload": {
+      "main": [
+        [
+          {
+            "node": "Query To Fetch Current Moon Rules From DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query To Fetch Current Moon Rules From DB": {
+      "main": [
+        [
+          {
+            "node": "Checks FeedBack Rules1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks FeedBack Rules1": {
+      "main": [
+        [
+          {
+            "node": "Setup Parameters For Moon Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Parameters For Moon Queries": {
+      "main": [
+        [
+          {
+            "node": "Execute insert_sensor_data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Moon Request": {
+      "main": [
+        [
+          {
+            "node": "Extract Moon Azimuth And Preserve Original Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook moon data": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f9158a39-a3d9-4809-9966-c495b1f82318",
+  "versionId": "4d797567-d6bd-4586-ab9d-da4628547d1c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
