@@ -627,8 +627,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 1,
       "position": [
-        1568,
-        -1056
+        1264,
+        -1008
       ],
       "id": "0027cec7-4a53-4cf4-b863-bd16d98ec369",
       "alwaysOutputData": true,
@@ -683,7 +683,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate\nconst userID = $('Webhook heart rate').first().json.body.UserID\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [{ json: feedback  }];"
+        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate;\nconst userID = $('Webhook heart rate').first().json.body.UserID\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [\n  {\n    json: feedback\n  }\n];"
       },
       "name": "Check Feedback Rules",
       "type": "n8n-nodes-base.code",
@@ -712,7 +712,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'HeartRate',\n  '{{ $json.alertGiven }}',\n  {{ $('Data Cleaning1').item.json.heartRate }},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }}\n);",
+        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'HeartRate',\n  '{{ $json.alertGiven }}',\n{{$('Data Cleaning1').first().json.heartRate}},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }}\n);",
         "additionalFields": {}
       },
       "name": "Insert Data Log",
@@ -1483,7 +1483,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json || {};\nconst data = $input.first().json.body.heartRateAzimuthRanges\n\nif (!Array.isArray(data)) {\n  return [{ json: { statusCode: 400, error: \"Expected 'moonAzimuthRanges' to be an array\" } }];\n}\n\nconst filtered = data.filter(e => e.id !== null && e.id !== undefined);\n\nif (filtered.length === 0) {\n  return [{ json: { statusCode: 200, message: \"No valid entries with ID > 0 to insert/update.\" } }];\n}\n\nconst values = [];\nconst params = [];\n\nfiltered.forEach((entry, i) => {\n  const base = i * 13;\n  values.push(\n    `($${base+1}, $${base+2}, $${base+3}, $${base+4}, $${base+5}, $${base+6}, $${base+7}, $${base+8}, $${base+9}, $${base+10}, $${base+11}, $${base+12}, $${base+13})`\n  );\n\n  params.push(\n    entry.id,\n    entry.minPulses,\n    entry.maxPulses,\n    entry.minIntensity,\n    entry.maxIntensity,\n    entry.minDuration,\n    entry.maxDuration,\n    entry.minInterval,\n    entry.maxInterval,\n    entry.minAzimuth,\n    entry.maxAzimuth,\n    \"HeartRate\",\n    entry.active === false ? false : true\n  );\n});\n\nconst query = `\n  INSERT INTO feedback_config_rules (\n    id, minpulses, maxpulses, minintensity, maxintensity,\n    minduration, maxduration, mininterval, maxinterval,\n    minvalue, maxvalue, type, active\n  )\n  VALUES ${values.join(\", \")}\n  ON CONFLICT (id)\n  DO UPDATE SET\n    minpulses = EXCLUDED.minpulses,\n    maxpulses = EXCLUDED.maxpulses,\n    minintensity = EXCLUDED.minintensity,\n    maxintensity = EXCLUDED.maxintensity,\n    minduration = EXCLUDED.minduration,\n    maxduration = EXCLUDED.maxduration,\n    mininterval = EXCLUDED.mininterval,\n    maxinterval = EXCLUDED.maxinterval,\n    minvalue = EXCLUDED.minvalue,\n    maxvalue = EXCLUDED.maxvalue,\n    type = EXCLUDED.type,\n    active = EXCLUDED.active\n`;\n\nreturn [{ json: { statusCode: 200, query, params } }];\n"
+        "jsCode": "const body = $input.first().json || {};\nconst data = $input.first().json.body.thresholds\n\nif (!Array.isArray(data)) {\n  return [{ json: { statusCode: 400, error: \"Expected 'moonAzimuthRanges' to be an array\" } }];\n}\n\nconst filtered = data.filter(e => e.id !== null && e.id !== undefined);\n\nif (filtered.length === 0) {\n  return [{ json: { statusCode: 200, message: \"No valid entries with ID > 0 to insert/update.\" } }];\n}\n\nconst values = [];\nconst params = [];\n\nfiltered.forEach((entry, i) => {\n  const base = i * 13;\n  values.push(\n    `($${base+1}, $${base+2}, $${base+3}, $${base+4}, $${base+5}, $${base+6}, $${base+7}, $${base+8}, $${base+9}, $${base+10}, $${base+11}, $${base+12}, $${base+13})`\n  );\n\n  params.push(\n    entry.id,\n    entry.minPulses,\n    entry.maxPulses,\n    entry.minIntensity,\n    entry.maxIntensity,\n    entry.minDuration,\n    entry.maxDuration,\n    entry.minInterval,\n    entry.maxInterval,\n    entry.minAzimuth,\n    entry.maxAzimuth,\n    \"HeartRate\",\n    entry.active === false ? false : true\n  );\n});\n\nconst query = `\n  INSERT INTO feedback_config_rules (\n    id, minpulses, maxpulses, minintensity, maxintensity,\n    minduration, maxduration, mininterval, maxinterval,\n    minvalue, maxvalue, type, active\n  )\n  VALUES ${values.join(\", \")}\n  ON CONFLICT (id)\n  DO UPDATE SET\n    minpulses = EXCLUDED.minpulses,\n    maxpulses = EXCLUDED.maxpulses,\n    minintensity = EXCLUDED.minintensity,\n    maxintensity = EXCLUDED.maxintensity,\n    minduration = EXCLUDED.minduration,\n    maxduration = EXCLUDED.maxduration,\n    mininterval = EXCLUDED.mininterval,\n    maxinterval = EXCLUDED.maxinterval,\n    minvalue = EXCLUDED.minvalue,\n    maxvalue = EXCLUDED.maxvalue,\n    type = EXCLUDED.type,\n    active = EXCLUDED.active\n`;\n\nreturn [{ json: { statusCode: 200, query, params } }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1673,6 +1673,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "heartRate",
+        "responseMode": "responseNode",
         "options": {}
       },
       "name": "Webhook heart rate",
@@ -1923,6 +1924,7 @@
       ],
       "id": "8acfe5b1-f71c-4cc7-8d96-7f583cc3bc5b",
       "name": "Query To Fetch Current Sun Rules From DB",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "PGGVkGCzTaoS4R2q",
@@ -3749,7 +3751,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "32c5877d-9052-4417-bc74-01eccc2ad6ce",
+  "versionId": "92794463-e31e-4779-9606-4804224339a0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
