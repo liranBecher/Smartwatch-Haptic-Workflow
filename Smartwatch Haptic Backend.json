@@ -556,8 +556,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 1,
       "position": [
-        1184,
-        -1184
+        1088,
+        -1248
       ],
       "id": "eb785ddb-378d-40a4-b200-d66e43c8d14b",
       "credentials": {
@@ -577,10 +577,11 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 1,
       "position": [
-        1760,
-        -1120
+        1664,
+        -1248
       ],
       "id": "48810dfd-b39b-464c-8dbf-3c87b448f513",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
@@ -590,14 +591,14 @@
     },
     {
       "parameters": {
-        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate;\nconst userID = $('Webhook heart rate').first().json.body.UserID\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [\n  {\n    json: feedback\n  }\n];"
+        "jsCode": "const heartRate = $('Data Cleaning1').first().json.heartRate;\nconst userID = $('Webhook heart rate').first().json.body.UserID\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID\nconst mappings = items.map(i => i.json); // Get all rules\n\n// Map function for proportional mapping\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    monitoringType: \"HeartRate\",\n    userID: userID,\n    SmartWatchID: SmartWatchID,\n    AndroidID: AndroidID\n\n};\n\nif (mappings == null) {\n  return [\n  {\n    json: feedback\n  }\n]; \n}\n\nfor (const m of mappings) {\n    const minHR = parseFloat(m.minvalue);\n    const maxHR = parseFloat(m.maxvalue);\n\n    if (heartRate >= minHR && heartRate <= maxHR) {\n        feedback.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n        feedback.pulses = Math.round(map(heartRate, minHR, maxHR, m.minpulses, m.maxpulses));\n        feedback.duration = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n        feedback.interval = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n        feedback.fbRangeID = parseInt(m.id);\n        feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n        break;\n    }\n}\nreturn [\n  {\n    json: feedback\n  }\n];"
       },
       "name": "Check Feedback Rules",
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        1984,
-        -1120
+        1888,
+        -1248
       ],
       "id": "20857dc3-9adb-4483-8a91-1e8e3bbfae18"
     },
@@ -612,22 +613,22 @@
       "typeVersion": 1,
       "position": [
         2208,
-        -1216
+        -1280
       ],
       "id": "ffc48ca4-66e6-4c70-ad11-81a8e4797080"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'HeartRate',\n  '{{ $json.alertGiven }}',\n{{$('Data Cleaning1').first().json.heartRate}},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }}\n);",
+        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'HeartRate',\n  '{{ $json.alertGiven }}',\n{{$('Data Cleaning1').first().json.rawValue}},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }}\n);",
         "additionalFields": {}
       },
       "name": "Insert Data Log",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 1,
       "position": [
-        2208,
-        -1024
+        2112,
+        -1152
       ],
       "id": "af61bd1a-cd06-41a9-9dbd-b4c4f7136fe1",
       "credentials": {
@@ -639,14 +640,14 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extract database readings\nconst readings = items.map(item => parseFloat(item.json.value)).filter(v => !isNaN(v));\n\n// Extract raw sensor input from Webhook\nconst rawValue = parseFloat($('Webhook heart rate').item.json.body.Value || 0);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid\nif (!isOutlier(rawValue)) {\n    readings.push(rawValue);\n}\n\nlet smoothed = rawValue; // Default to raw if no history\nif (readings.length > 0) {\n    const total = readings.reduce((sum, val) => sum + val, 0);\n    smoothed = total / readings.length;\n}\n\nreturn [\n  {\n    json: {\n      heartRate: smoothed,\n      rawValue: rawValue\n    }\n  }\n];"
+        "jsCode": "// Extract database readings\nconst readings = items.map(item => parseFloat(item.json.value)).filter(v => !isNaN(v));\n\n// Extract raw sensor input from Webhook\nconst rawValue = parseFloat($('Webhook heart rate').item.json.body.Value || 0);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid\nif (!isOutlier(rawValue)) {\n    readings.push(rawValue);\n}\n\nconst alpha = 0.4; // 0.3–0.5 is a good range for HR\n\nlet smoothed = rawValue; //default if no history\n\nif (readings.length > 0) {\n  //Exponential Moving Average to detact changes faster\n    const prev = readings[readings.length - 1];\n    smoothed = alpha * rawValue + (1 - alpha) * prev;\n}\n\n\nreturn [\n  {\n    json: {\n      heartRate: smoothed,\n      rawValue: rawValue\n    }\n  }\n];"
       },
       "name": "Data Cleaning1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        1536,
-        -1120
+        1440,
+        -1248
       ],
       "id": "0de0b4d2-26ed-48e2-8ce3-1be5649ca536"
     },
@@ -2402,7 +2403,7 @@
         "operation": "executeQuery",
         "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";\n",
         "options": {
-          "queryReplacement": "={{ [ $json.body.UserID, '5 minutes' ] }}"
+          "queryReplacement": "={{ [ $json.body.UserID, '1 minutes' ] }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -2474,8 +2475,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1312,
-        -1056
+        1472,
+        -1008
       ],
       "id": "cc27b03e-c4aa-42dc-9e57-8166816ff491",
       "name": "Empty Respond to Webhook8\\"
@@ -2494,6 +2495,27 @@
       ],
       "id": "54eb388a-9e3d-445c-91a9-3e8e3930adbc",
       "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'HeartRate',\n  '{{ $json.alertGiven }}',\n{{ $('Webhook heart rate').item.json.body.Value }},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 81 }}\n);",
+        "additionalFields": {}
+      },
+      "name": "Insert Data Log1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        -1120
+      ],
+      "id": "985c27e6-c4b5-45bd-a07e-398eb6dd4a52",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {
@@ -3728,6 +3750,11 @@
             "node": "Empty Respond to Webhook8\\",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Insert Data Log1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -3737,7 +3764,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ee5042e0-46de-4a53-9d2a-ad9eb5047c58",
+  "versionId": "e356a046-944b-4a72-9b09-1d4cdde32fa6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
