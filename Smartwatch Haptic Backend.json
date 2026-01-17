@@ -1090,7 +1090,7 @@
         -320
       ],
       "id": "fcde5e41-5c4e-4cad-81a1-85957b0ba8d7",
-      "name": "get sensir type query",
+      "name": "get sensor type query",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
@@ -3020,7 +3020,7 @@
       "main": [
         [
           {
-            "node": "get sensir type query",
+            "node": "get sensor type query",
             "type": "main",
             "index": 0
           }
@@ -3100,7 +3100,7 @@
         ]
       ]
     },
-    "get sensir type query": {
+    "get sensor type query": {
       "main": [
         [
           {
