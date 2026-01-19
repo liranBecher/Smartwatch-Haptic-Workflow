@@ -3,545 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "sun-data",
-        "options": {}
-      },
-      "name": "Sun Data Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        -5856,
-        688
-      ],
-      "webhookId": "sun-data-imported",
-      "id": "74c04337-ff79-492f-b87a-b87553f39a9e",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "name": "HTTP Response",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        -4272,
-        688
-      ],
-      "id": "501d430a-9c61-477b-a24c-5eee79d1504e",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM feedback_config_rules\nWHERE type = 'SunAzimuth' AND active = true;\n",
-        "additionalFields": {}
-      },
-      "name": "InsertSensorData (FN)",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        -4496,
-        688
-      ],
-      "id": "58d1c194-1562-4c38-8609-70acb967624e",
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// n8n Code node - SetupParametersForSunQueries\n// Mode: Run Once for All Items\n\n// 1. קלט מהאנדרואיד מגיע מה-webhook בתחילת ה-flow\nconst inputData = $node[\"Sun Data Webhook\"].json;\n\n// 2. ה-payload המעובד מגיע מה-node של ChecksFeedBackRules\nconst payload = $node[\"ChecksFeedBackRules\"].json.payload;\n\n// 3. חילוץ נתונים\nconst userId = Number(inputData.userId ?? 0);\nconst watchId = Number(inputData.smartWatchId ?? 0);\nconst phoneId = Number(inputData.androidId ?? 0);\n\nconst sensorName = payload.monitoringType ?? \"Unknown\";\nconst alertGiven = payload.alertGiven ?? \"no\";\n\nconst value = Number(\n  payload.sun_azimuth ??\n  payload.heartRate ??\n  payload.Value ??\n  0\n);\n\nconst pulses = Number(payload.pulses ?? 0);\nconst intensity = Number(payload.intensity ?? 0);\nconst duration = Number(payload.duration ?? 0);\nconst interval = Number(payload.interval ?? 0);\n\n// feedback range ID from DB\nconst fbRangeID = Number(payload.fbRangeID ?? 0);\n\n// 4. בניית מערך פרמטרים עבור Postgres\nconst params = [\n  userId,\n  watchId,\n  phoneId,\n  sensorName,\n  alertGiven,\n  value,\n  pulses,\n  intensity,\n  duration,\n  interval,\n  fbRangeID\n];\n\n// 5. החזרת items בצורה ש-n8n רוצה\nreturn [\n  {\n    json: {\n      query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`,\n      params\n    }\n  }\n];\n"
-      },
-      "name": "SetupParametersForSunQueries",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -4736,
-        688
-      ],
-      "id": "cf0917dd-e88c-4f50-bbb4-7a5de6258ea9",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// Mode: Run Once for All Items\n\n// 1. Get all DB rows from previous Postgres node\nconst sunAzimuthRanges = $input.all().map(item => item.json);\n\n// 2. Get sun_azimuth from AssignPayloadToOriginalPayload node\nconst currentAzimuth =\n  $node[\"AssignPayloadToOriginalPayload\"].json.originalPayload.sun_azimuth;\n\nfunction map(value, inMin, inMax, outMin, outMax) {\n  if (inMin === inMax) return outMin;\n  return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nconst payload = {\n  monitoringType: \"SunAzimuth\",\n  sun_azimuth: currentAzimuth,\n  pulses: 0,\n  intensity: 0,\n  duration: 0,\n  interval: 0,\n  fbRangeID: null,\n  alertGiven: \"no\",\n  message: \"\"\n};\n\nif (Array.isArray(sunAzimuthRanges) && sunAzimuthRanges.length > 0) {\n  let matched = false;\n\n  for (const range of sunAzimuthRanges) {\n    const minAz = Number(range.minvalue);\n    const maxAz = Number(range.maxvalue);\n\n    if (!Number.isFinite(minAz) || !Number.isFinite(maxAz)) continue;\n    if (currentAzimuth < minAz || currentAzimuth > maxAz) continue;\n\n    matched = true;\n\n    const minPulses = Number(range.minpulses ?? 0);\n    const maxPulses = Number(range.maxpulses ?? minPulses);\n    const minIntensity = Number(range.minintensity ?? 0);\n    const maxIntensity = Number(range.maxintensity ?? minIntensity);\n    const minDuration = Number(range.minduration ?? 0);\n    const maxDuration = Number(range.maxduration ?? minDuration);\n    const minInterval = Number(range.mininterval ?? 0);\n    const maxInterval = Number(range.maxinterval ?? minInterval);\n\n    payload.pulses = Math.round(\n      map(currentAzimuth, minAz, maxAz, minPulses, maxPulses)\n    );\n    payload.intensity = Math.round(\n      map(currentAzimuth, minAz, maxAz, minIntensity, maxIntensity)\n    );\n    payload.duration = Math.round(\n      map(currentAzimuth, minAz, maxAz, minDuration, maxDuration)\n    );\n    payload.interval = Math.round(\n      map(currentAzimuth, minAz, maxAz, minInterval, maxInterval)\n    );\n\n    payload.fbRangeID = Number(range.id);\n    payload.alertGiven = payload.pulses > 0 ? \"yes\" : \"no\";\n    payload.message =\n      \"✅ Mapped SunAzimuth range with proportional vibration settings.\";\n    break;\n  }\n\n  if (!matched) {\n    payload.message = \"⛔ No SunAzimuth match found in DB.\";\n  }\n} else {\n  payload.message = \"⚠️ No mappings retrieved from database for SunAzimuth.\";\n}\n\nconst originalPayload = {\n  sun_azimuth: currentAzimuth\n};\n\nreturn [\n  {\n    json: {\n      payload,\n      originalPayload\n    }\n  }\n];\n"
-      },
-      "name": "ChecksFeedBackRules",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -4960,
-        688
-      ],
-      "id": "5f93d3b9-9fd3-4910-9fd3-a0355e0b0137",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM feedback_config_rules\nWHERE type = 'SunAzimuth' AND active = true;\n",
-        "additionalFields": {}
-      },
-      "name": "Load SunAzimuth Rules",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        -5184,
-        688
-      ],
-      "id": "1277a504-7ad9-4afe-be58-673757916c10",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// n8n expects an array of items: [{ json: {...} }, ...]\n// The previous HTTP Request node returned the astronomy API response in item.json.\n// Here we just copy it into originalPayload (and keep the fields themselves too).\n\nreturn items.map(item => {\n  const apiResponse = item.json;        // response from Astronomy API\n\n  return {\n    json: {\n      originalPayload: apiResponse,     // keep a copy under originalPayload\n      ...apiResponse                    // also keep the fields at the top level\n    }\n  };\n});\n"
-      },
-      "name": "AssignPayloadToOriginalPayload",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -5408,
-        688
-      ],
-      "id": "ca44831b-ffbb-430f-8b79-c54506dbcf47",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "url": "https://api.ipgeolocation.io/astronomy",
-        "options": {},
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "apiKey",
-              "value": "b2b40f0636bb42c78ab922b7ef5a90fd"
-            },
-            {
-              "name": "lat",
-              "value": "={{ $json.lat ?? 32.794 }}\n"
-            },
-            {
-              "name": "long",
-              "value": "={{ $json.lon ?? $json.long ?? 34.989 }}\n"
-            }
-          ]
-        }
-      },
-      "name": "Astronomy API",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [
-        -5632,
-        688
-      ],
-      "id": "97233d20-2904-4da9-87a0-80fb8d9b2e8b",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "name": "HTTP Response1",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        -4288,
-        928
-      ],
-      "id": "ac6a0671-b4f2-4fcd-a06d-89e8475cd471",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM feedback_config_rules\nWHERE type = 'MoonAzimuth' AND active = true;\n",
-        "additionalFields": {}
-      },
-      "name": "InsertSensorData (FN)1",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        -4512,
-        928
-      ],
-      "id": "52ea2aa9-202f-4658-b933-9d1f53bbc6c4",
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// n8n Code node - SetupParametersForSunQueries\n// Mode: Run Once for All Items\n\n// 1. קלט מהאנדרואיד מגיע מה-webhook בתחילת ה-flow\nconst inputData = $node[\"Moon Data Webhook\"].json;\n\n// 2. ה-payload המעובד מגיע מה-node של ChecksFeedBackRules\nconst payload = $node[\"ChecksFeedBackRules1\"].json.payload;\n\n// 3. חילוץ נתונים\nconst userId = Number(inputData.userId ?? 0);\nconst watchId = Number(inputData.smartWatchId ?? 0);\nconst phoneId = Number(inputData.androidId ?? 0);\n\nconst sensorName = payload.monitoringType ?? \"Unknown\";\nconst alertGiven = payload.alertGiven ?? \"no\";\n\nconst value = Number(\n  payload.moon_azimuth ??\n  payload.heartRate ??\n  payload.Value ??\n  0\n);\n\nconst pulses = Number(payload.pulses ?? 0);\nconst intensity = Number(payload.intensity ?? 0);\nconst duration = Number(payload.duration ?? 0);\nconst interval = Number(payload.interval ?? 0);\n\n// feedback range ID from DB\nconst fbRangeID = Number(payload.fbRangeID ?? 0);\n\n// 4. בניית מערך פרמטרים עבור Postgres\nconst params = [\n  userId,\n  watchId,\n  phoneId,\n  sensorName,\n  alertGiven,\n  value,\n  pulses,\n  intensity,\n  duration,\n  interval,\n  fbRangeID\n];\n\n// 5. החזרת items בצורה ש-n8n רוצה\nreturn [\n  {\n    json: {\n      query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`,\n      params\n    }\n  }\n];\n"
-      },
-      "name": "SetupParametersForSunQueries1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -4752,
-        928
-      ],
-      "id": "459d066d-5d03-4f94-9d01-682674f3b601",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// Mode: Run Once for All Items\n\n// 1. Get all DB rows from previous Postgres node\nconst moonAzimuthRanges = $input.all().map(item => item.json);\n\n// 2. Get sun_azimuth from AssignPayloadToOriginalPayload node\nconst currentAzimuth =\n  $node[\"AssignPayloadToOriginalPayload1\"].json.originalPayload.moon_azimuth;\n\nfunction map(value, inMin, inMax, outMin, outMax) {\n  if (inMin === inMax) return outMin;\n  return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nconst payload = {\n  monitoringType: \"MoonAzimuth\",\n  moon_azimuth: currentAzimuth,\n  pulses: 0,\n  intensity: 0,\n  duration: 0,\n  interval: 0,\n  fbRangeID: null,\n  alertGiven: \"no\",\n  message: \"\"\n};\n\nif (Array.isArray(moonAzimuthRanges) && moonAzimuthRanges.length > 0) {\n  let matched = false;\n\n  for (const range of moonAzimuthRanges) {\n    const minAz = Number(range.minvalue);\n    const maxAz = Number(range.maxvalue);\n\n    if (!Number.isFinite(minAz) || !Number.isFinite(maxAz)) continue;\n    if (currentAzimuth < minAz || currentAzimuth > maxAz) continue;\n\n    matched = true;\n\n    const minPulses = Number(range.minpulses ?? 0);\n    const maxPulses = Number(range.maxpulses ?? minPulses);\n    const minIntensity = Number(range.minintensity ?? 0);\n    const maxIntensity = Number(range.maxintensity ?? minIntensity);\n    const minDuration = Number(range.minduration ?? 0);\n    const maxDuration = Number(range.maxduration ?? minDuration);\n    const minInterval = Number(range.mininterval ?? 0);\n    const maxInterval = Number(range.maxinterval ?? minInterval);\n\n    payload.pulses = Math.round(\n      map(currentAzimuth, minAz, maxAz, minPulses, maxPulses)\n    );\n    payload.intensity = Math.round(\n      map(currentAzimuth, minAz, maxAz, minIntensity, maxIntensity)\n    );\n    payload.duration = Math.round(\n      map(currentAzimuth, minAz, maxAz, minDuration, maxDuration)\n    );\n    payload.interval = Math.round(\n      map(currentAzimuth, minAz, maxAz, minInterval, maxInterval)\n    );\n\n    payload.fbRangeID = Number(range.id);\n    payload.alertGiven = payload.pulses > 0 ? \"yes\" : \"no\";\n    payload.message =\n      \"✅ Mapped MoonAzimuth range with proportional vibration settings.\";\n    break;\n  }\n\n  if (!matched) {\n    payload.message = \"⛔ No SunAzimuth match found in DB.\";\n  }\n} else {\n  payload.message = \"⚠️ No mappings retrieved from database for MoonAzimuth.\";\n}\n\nconst originalPayload = {\n  moon_azimuth: currentAzimuth\n};\n\nreturn [\n  {\n    json: {\n      payload,\n      originalPayload\n    }\n  }\n];\n"
-      },
-      "name": "ChecksFeedBackRules1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -4976,
-        928
-      ],
-      "id": "04d17550-8832-47bc-a397-11bed178e754",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// n8n expects an array of items: [{ json: {...} }, ...]\n// The previous HTTP Request node returned the astronomy API response in item.json.\n// Here we just copy it into originalPayload (and keep the fields themselves too).\n\nreturn items.map(item => {\n  const apiResponse = item.json;        // response from Astronomy API\n\n  return {\n    json: {\n      originalPayload: apiResponse,     // keep a copy under originalPayload\n      ...apiResponse                    // also keep the fields at the top level\n    }\n  };\n});\n"
-      },
-      "name": "AssignPayloadToOriginalPayload1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -5424,
-        928
-      ],
-      "id": "cbd8b5c5-9cea-4f58-bd8c-7c85a7da365f",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "url": "https://api.ipgeolocation.io/astronomy",
-        "options": {},
-        "queryParametersUi": {
-          "parameter": [
-            {
-              "name": "apiKey",
-              "value": "b2b40f0636bb42c78ab922b7ef5a90fd"
-            },
-            {
-              "name": "lat",
-              "value": "={{ $json.lat ?? 32.794 }}\n"
-            },
-            {
-              "name": "long",
-              "value": "={{ $json.lon ?? $json.long ?? 34.989 }}\n"
-            }
-          ]
-        }
-      },
-      "name": "Astronomy API1",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [
-        -5648,
-        928
-      ],
-      "id": "992cdb3f-dc83-42fc-8642-910784f9b0e2",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "moon-data",
-        "options": {}
-      },
-      "name": "Moon Data Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        -5872,
-        928
-      ],
-      "webhookId": "sun-data-imported",
-      "id": "f75e2bc6-f1ea-4321-af8d-cea372070fcf",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "heart-rate-data",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -5872,
-        1184
-      ],
-      "id": "0a874ab2-caf2-4724-8ece-302d6d7bd9bd",
-      "name": "Heart Rate Webhook",
-      "webhookId": "8a96e5cf-caf1-4451-96ca-4237ccc3148e",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// Extract identifiers\nconst inputData = $input.first().json;\n\nconst userId = Number(inputData.UserID ?? inputData.userId ?? 0);\nconst watchId = Number(inputData.SmartWatchID ?? inputData.smartWatchId ?? 0);\nconst phoneId = Number(inputData.AndroidID ?? inputData.androidId ?? 0);\n\nconst monitoringType = inputData.MonitoringType ?? \"HeartRate\";\n\n\n// Prepare the query to fetch the last 10 readings\nconst query = `\n    SELECT value \n    FROM \"SensorData\" sd\n    JOIN \"SensorType\" st ON sd.sensorID = st.sensorID\n    WHERE sd.userID = $1 \n      AND sd.watchID = $2 \n      AND sd.phoneID = $3 \n      AND st.name = $4\n    ORDER BY time DESC\n    LIMIT 10;\n`;\n\nconst params = [userId, watchId, phoneId, monitoringType];\n\nreturn [\n    {\n        json: {\n            query,\n            params,\n            originalPayload: inputData,\n            metadata: { userId, watchId, phoneId, monitoringType }\n        }\n    }\n];"
-      },
-      "name": "fetchHeartRateWindowAndLastValidHeartRate",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -5648,
-        1184
-      ],
-      "id": "6344c6ac-d0b6-4b60-bea1-e779a3f82e80",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "{{ $json.query }}\n",
-        "options": {
-          "queryReplacement": "={{ $json.params }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -5424,
-        1184
-      ],
-      "id": "e3c476e7-0b28-4306-bf17-428c175be3ca",
-      "name": "Execute fetch heart rate query",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "jsCode": "// Extract database readings\nconst dbRows = $input.all().map(item => item.json);\nconst webhookData = $node[\"Heart Rate Webhook\"].json;\n\n// Extract raw sensor input\nconst rawValue = Number(\n  webhookData.Value ??\n  webhookData.heartRate ??\n  0\n);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid\nconst readings = dbRows\n  .map(row => Number(row.value))\n  .filter(v => Number.isFinite(v) && !isOutlier(v));\n\nif (!isOutlier(rawValue)) {\n  readings.push(rawValue);\n} else {\n  console.log(`⚠️ Raw value ${rawValue} is an outlier and excluded from smoothing.`);\n}\n\nlet smoothed = null;\n\nif (readings.length > 0) {\n  const total = readings.reduce((sum, v) => sum + v, 0);\n  smoothed = Math.round(total / readings.length);\n} else {\n  console.log(\"⚠️ No valid readings found, falling back to raw value.\");\n  smoothed = rawValue; // fallback\n}\n\nconst payload = {\n  monitoringType: \"HeartRate\",\n  heartRate: smoothed,\n  Value: rawValue,\n};\n\nconst originalPayload = {\n  heartRate: smoothed,\n  Value: rawValue,\n};\n\nconst query = `\n  SELECT *\n  FROM feedback_config_rules\n  WHERE type = 'HeartRate'\n    AND active = TRUE;\n`;\n\nconst params = [];\n\nreturn [\n  {\n    json: {\n      payload,\n      originalPayload,\n      query,\n      params,\n    },\n  },\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -5200,
-        1184
-      ],
-      "id": "b908dc90-41bc-401e-954f-fa1923792aff",
-      "name": "Data Cleaning",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "{{ $json.query }}\n",
-        "options": {
-          "queryReplacement": "={{ $json.params}}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -4976,
-        1184
-      ],
-      "id": "331bed16-a0ad-4825-a205-6d879d72ce03",
-      "name": "Execute data cleaning query",
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "jsCode": "const hrData = $node[\"fetchHeartRateWindowAndLastValidHeartRate\"].json;\nconst heartRate = Number(hrData.originalPayload?.heartRate ?? null);\n\n// Map function for proportional mapping\nconst mappings = $input.all().map(item => item.json);\n\nfunction map(value, inMin, inMax, outMin, outMax) {\n    if (inMin === inMax) return outMin;\n    return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\n// Output structure\nconst out = {\n    heartRate,\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    Value: hrData.originalPayload?.Value ?? null    // keep raw reading\n};\n\n// If no heart rate reading\nif (heartRate === null || Number.isNaN(heartRate)) {\n    return [\n        {\n            json: {\n                payload: out,\n                originalPayload: out\n            }\n        }\n    ];\n}\n\n\n// Match and map values proportionally\nfor (const m of mappings) {\n    const minHR = Number(m.minvalue);\n    const maxHR = Number(m.maxvalue);\n\n    if (Number.isFinite(minHR) && Number.isFinite(maxHR)) {\n        if (heartRate >= minHR && heartRate <= maxHR) {\n            out.intensity = Math.round(map(heartRate, minHR, maxHR, m.minintensity, m.maxintensity));\n            out.pulses    = Math.round(map(heartRate, minHR, maxHR, m.minpulses,    m.maxpulses));\n            out.duration  = Math.round(map(heartRate, minHR, maxHR, m.minduration, m.maxduration));\n            out.interval  = Math.round(map(heartRate, minHR, maxHR, m.mininterval, m.maxinterval));\n\n            out.fbRangeID = Number(m.id);\n            break;\n        }\n    }\n}\n\n// Determine alert status\nout.alertGiven = out.pulses > 0 ? \"yes\" : \"no\";\n\nreturn [\n    {\n        json: {\n            payload: out,\n            originalPayload: out,\n\n            // for next Postgres node\n            query: `SELECT * FROM feedback_config_rules WHERE type = 'HeartRate' AND active = TRUE;`,\n            params: []\n        }\n    }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -4752,
-        1184
-      ],
-      "id": "a1ace71b-b3db-42c2-b802-9bd121a7963c",
-      "name": "Check Heart rate Feedback Rules",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nconst p = item.payload ?? item;\n\n// Extract identifiers\nconst userId    = Number(p.UserID        ?? p.userId        ?? 0);\nconst watchId   = Number(p.SmartWatchID  ?? p.smartWatchId  ?? 0);\nconst phoneId   = Number(p.AndroidID     ?? p.androidId     ?? 0);\n\n// Sensor name & alert flag\nconst sensorName = p.MonitoringType ?? p.monitoringType ?? \"HeartRate\";\nconst alertGiven = p.alertGiven ?? \"no\";\n\n\n// Main value\nconst value = Number(\n  p.heartRate ??\n  p.Value ??\n  0\n);\n\nconst pulses    = Number(p.pulses    ?? 0);\nconst intensity = Number(p.intensity ?? 0);\nconst duration  = Number(p.duration  ?? 0);\nconst interval  = Number(p.interval  ?? 0);\n\nconst fbRangeID = Number(p.fbRangeID ?? 0);\n\n\n// Build SQL and params\nconst query = `\n  SELECT insert_sensor_data(\n    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11\n  );\n`;\n\nconst params = [\n  userId,\n  watchId,\n  phoneId,\n  sensorName,\n  alertGiven,\n  value,\n  pulses,\n  intensity,\n  duration,\n  interval,\n  fbRangeID,\n];\n\n\n// Return as n8n item\nreturn [\n  {\n    json: {\n      query,\n      params,\n      payload: p,\n    },\n  },\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -4512,
-        1184
-      ],
-      "id": "2bc853df-547c-4c74-b5ed-2cf38a0136eb",
-      "name": "Setup Parameters For Heart Rate Queries",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "{{ $json.query }}",
-        "options": {
-          "queryReplacement": "={{ $json.params }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -4288,
-        1184
-      ],
-      "id": "120f3a5a-549f-49fb-8bbd-97287c4ecaf2",
-      "name": "Execute Setup Param query",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "name": "HTTP Response2",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        -4064,
-        1184
-      ],
-      "id": "81d9ce6e-0365-435f-96da-79a0fc324b26",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM feedback_config_rules\nWHERE type = 'MoonAzimuth' AND active = true;\n",
-        "additionalFields": {}
-      },
-      "name": "Load MoonAzimuth Rules1",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        -5200,
-        928
-      ],
-      "id": "c9b380ae-967a-4a4c-8927-48d754cc7902",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "give me a haiku about the heart beat",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3,
-      "position": [
-        -4592,
-        1472
-      ],
-      "id": "75d45da2-abbc-48bf-aeba-d3d6e041b16e",
-      "name": "AI Agent1",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        -4592,
-        1648
-      ],
-      "id": "07e3b198-872e-4f1d-9833-acf1de426e95",
-      "name": "Google Gemini Chat Model",
-      "disabled": true
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        -4192,
-        1488
-      ],
-      "id": "0d77df55-4ba3-44b1-8e75-b784ccd54dcd",
-      "name": "No Operation, do nothing",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "content": "---------------------------------------------------------------------------------------------------------------------Checking Rules & API Requests & Sending Appropriate FeedBack----------------------------------------------------------------------------------------------------------------------------\n\n\n\n\nSun API\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/sun-data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMoon API\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/moon-data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHeart Rate Reading\nTo run it paste into CMD\ncurl -X POST http://localhost:5678/webhook-test/heart-rate-data",
-        "height": 768,
-        "width": 528
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -6448,
-        576
-      ],
-      "id": "470fa11f-9da8-441f-8f79-88ec361feecd",
-      "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "language": "JavaScript",
-        "jsCode": "// Access the first item's JSON data\nconst originalPayload = $input.json;\n\n// 1. Get UserID from the original payload\n// Note: n8n typically uses JSON objects directly,\n// so 'originalPayload.UserID' should be available directly on the input item.\nconst userID = originalPayload.UserID;\n\n// 2. Define the dynamic delay (which can be changed by the user)\nconst dynamicDelay = 10000; // 10 seconds in milliseconds\n\n// 3. Construct the SQL query and parameters\n// In n8n's Postgres node, you typically separate the query and parameters.\nconst sqlQuery = `SELECT lastRequest FROM \"User\" WHERE userID = $1`;\nconst sqlParameters = [userID];\n\n// 4. Return the data, making it available for the next node.\n// We pass the new values in the 'json' property of the output item.\n// It's helpful to also pass the original payload if needed downstream.\nreturn [\n  {\n    json: {\n      ...originalPayload, // Keep original data\n      UserID: userID,\n      sqlQuery: sqlQuery,\n      sqlParameters: sqlParameters,\n      dynamicDelay: dynamicDelay,\n    }\n  }\n];"
-      },
-      "name": "prepareDelayQuery",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        -5776,
-        1424
-      ],
-      "id": "244b1387-f720-49cf-be25-7c812809a581",
-      "disabled": true
-    },
-    {
-      "parameters": {
         "operation": "executeQuery",
         "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorID = st.sensorID\nWHERE sd.userID = {{ $('Webhook heart rate').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook heart rate').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook heart rate').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
         "additionalFields": {}
@@ -655,8 +116,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        544,
-        448
+        496,
+        400
       ],
       "id": "0b569300-3046-42b8-bba0-efbab681ac30",
       "name": "Sticky Note1"
@@ -748,6 +209,7 @@
     },
     {
       "parameters": {
+        "respondWith": "allIncomingItems",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
@@ -1505,22 +967,6 @@
     },
     {
       "parameters": {
-        "content": "old stuff & tests\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<\n<<<",
-        "height": 1616,
-        "width": 150,
-        "color": 2
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -3792,
-        400
-      ],
-      "typeVersion": 1,
-      "id": "5f9d6fbb-637e-4ff5-bd1b-ffe6c062c4ff",
-      "name": "Sticky Note13"
-    },
-    {
-      "parameters": {
         "operation": "executeQuery",
         "query": "CREATE OR REPLACE FUNCTION insert_sensor_data(\n    _userID INT,\n    _watchID INT,\n    _phoneID INT,\n    _sensorName VARCHAR,\n    _alertGiven VARCHAR,\n    _value FLOAT,\n    _pulses INT,\n    _intensity INT,\n    _duration INT,\n    _interval INT,\n    _fbRangeID INT\n) RETURNS VOID AS $$\nDECLARE\n    _sensorID INT;\n    _alertID INT;\nBEGIN\n    -- Insert users/devices if they don't exist\n    INSERT INTO \"User\"(userID) SELECT _userID WHERE NOT EXISTS (SELECT 1 FROM \"User\" WHERE userID = _userID);\n    INSERT INTO \"Watch\"(watchID) SELECT _watchID WHERE NOT EXISTS (SELECT 1 FROM \"Watch\" WHERE watchID = _watchID);\n    INSERT INTO \"AndroidPhone\"(phoneID) SELECT _phoneID WHERE NOT EXISTS (SELECT 1 FROM \"AndroidPhone\" WHERE phoneID = _phoneID);\n\n    INSERT INTO \"WatchAndroidPhone\"(watchID, phoneID)\n    SELECT _watchID, _phoneID\n    WHERE NOT EXISTS (\n        SELECT 1 FROM \"WatchAndroidPhone\" WHERE watchID = _watchID AND phoneID = _phoneID\n    );\n\n    INSERT INTO \"UserWatchAndroidPhone\"(userID, watchID, phoneID)\n    SELECT _userID, _watchID, _phoneID\n    WHERE NOT EXISTS (\n        SELECT 1 FROM \"UserWatchAndroidPhone\"\n        WHERE userID = _userID AND watchID = _watchID AND phoneID = _phoneID\n    );\n\n    INSERT INTO \"SensorType\"(name)\n    SELECT _sensorName\n    WHERE NOT EXISTS (SELECT 1 FROM \"SensorType\" WHERE name = _sensorName);\n\n    SELECT sensorID INTO _sensorID FROM \"SensorType\" WHERE name = _sensorName;\n\n    -- 🔁 Insert into Alert with fbRangeID instead of minvalue/maxvalue\n    INSERT INTO \"Alert\"(\n        alertGiven, pulses, intensity, duration, interval, type, fbRangeID\n    )\n    VALUES (\n        _alertGiven, _pulses, _intensity, _duration, _interval, _sensorName, _fbRangeID\n    )\n    RETURNING alertID INTO _alertID;\n\n    -- DeviceSensor mapping\n    INSERT INTO \"DeviceSensor\"(sensorID, userID, watchID, phoneID)\n    SELECT _sensorID, _userID, _watchID, _phoneID\n    WHERE NOT EXISTS (\n        SELECT 1 FROM \"DeviceSensor\"\n        WHERE sensorID = _sensorID AND userID = _userID AND watchID = _watchID AND phoneID = _phoneID\n    );\n\n    -- Final insert to SensorData\n    INSERT INTO \"SensorData\"(sensorID, userID, watchID, phoneID, alertID, value, time)\n    VALUES (_sensorID, _userID, _watchID, _phoneID, _alertID, _value, CURRENT_TIMESTAMP);\nEND;\n$$ LANGUAGE plpgsql;\n",
         "options": {}
@@ -1585,8 +1031,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        544,
-        544
+        496,
+        560
       ],
       "id": "c92a9016-451c-4644-978a-8e7d9d70bd55",
       "webhookId": "ab04974b-c683-4224-90a1-cae7a4139bdc"
@@ -1602,7 +1048,7 @@
       "typeVersion": 2.1,
       "position": [
         544,
-        832
+        944
       ],
       "id": "4157817c-ff13-477f-89f1-a944d07545bf",
       "name": "Webhook sun data",
@@ -1616,7 +1062,7 @@
       "typeVersion": 2,
       "position": [
         768,
-        832
+        944
       ],
       "id": "ffdeb1bc-fac2-4310-ac0e-89a156e3ada7",
       "name": "prepare Delay Query"
@@ -1649,7 +1095,7 @@
       "typeVersion": 2.2,
       "position": [
         992,
-        832
+        944
       ],
       "id": "21a54d73-df70-4b46-a93b-d5b85f43ead3",
       "name": "If status 400"
@@ -1664,7 +1110,7 @@
       "typeVersion": 1.4,
       "position": [
         1232,
-        768
+        880
       ],
       "id": "23899715-5f5c-4c47-a32a-e44feb140eda",
       "name": "Respond to Webhook on code 400"
@@ -1681,7 +1127,7 @@
       "typeVersion": 2.6,
       "position": [
         1216,
-        928
+        1040
       ],
       "id": "8c56b1e9-26f9-4d80-a89b-59bde1f1947f",
       "name": "SELECT lastRequest",
@@ -1700,7 +1146,7 @@
       "typeVersion": 2,
       "position": [
         1440,
-        928
+        1040
       ],
       "id": "df336b72-35d6-4388-aa00-3d0082fd4b74",
       "name": "Check If Delay Necessary"
@@ -1734,7 +1180,7 @@
       "typeVersion": 2.2,
       "position": [
         1600,
-        832
+        944
       ],
       "id": "6d21f656-8c32-49f6-af60-e059381e1499",
       "name": "if should wait"
@@ -1747,7 +1193,7 @@
       "typeVersion": 1.1,
       "position": [
         1824,
-        752
+        864
       ],
       "id": "d54a596c-89e6-4877-9eeb-81e907c94eef",
       "name": "Wait",
@@ -1761,7 +1207,7 @@
       "typeVersion": 2,
       "position": [
         2048,
-        832
+        944
       ],
       "id": "9d025fb2-05d6-4560-8d94-c62a4cd5c1f5",
       "name": "Build Update Last Request"
@@ -1778,7 +1224,7 @@
       "typeVersion": 2.6,
       "position": [
         2272,
-        832
+        944
       ],
       "id": "656335e2-1ffb-442f-8f07-8341c25d3857",
       "name": "Execute UPDATE",
@@ -1797,7 +1243,7 @@
       "typeVersion": 2,
       "position": [
         2496,
-        832
+        944
       ],
       "id": "9139db07-e0d8-447a-8189-3c39353b6aa3",
       "name": "Construct Sun Api Request"
@@ -1810,7 +1256,7 @@
       "typeVersion": 2,
       "position": [
         2944,
-        832
+        944
       ],
       "id": "d251afda-f785-4c07-8c8d-4811c7ce4fa8",
       "name": "Extract Sun Azimuth And Preserve Original Payload"
@@ -1825,7 +1271,7 @@
       "typeVersion": 2.6,
       "position": [
         2048,
-        1024
+        1136
       ],
       "id": "5f1a22af-d2e9-4a25-9447-fda62ca0b8b5",
       "name": "Query To Fetch Current Sun Rules From DB",
@@ -1845,7 +1291,7 @@
       "typeVersion": 2,
       "position": [
         2272,
-        1024
+        1136
       ],
       "id": "3417cdf4-daf8-44c7-b253-6786cfb7415d",
       "name": "Checks FeedBack Rules"
@@ -1858,7 +1304,7 @@
       "typeVersion": 2,
       "position": [
         2496,
-        1024
+        1136
       ],
       "id": "8ed61953-1ddc-4438-a4a8-636e5853fd4f",
       "name": "Setup Parameters For Sun Queries"
@@ -1875,7 +1321,7 @@
       "typeVersion": 2.6,
       "position": [
         2720,
-        1024
+        1136
       ],
       "id": "c7dd3536-3b0e-460c-b8a9-2d0220e0e776",
       "name": "Execute insert_sensor_data",
@@ -1896,7 +1342,7 @@
       "typeVersion": 1.4,
       "position": [
         2944,
-        1024
+        1136
       ],
       "id": "8b09d2f5-7e7e-4bc5-a2ff-84b4979d70a1",
       "name": "Respond to Webhook6"
@@ -1910,7 +1356,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         512,
-        976
+        1088
       ],
       "typeVersion": 1,
       "id": "071fd01a-abd7-4124-b547-dd81fdf9a4b9",
@@ -2027,7 +1473,7 @@
       "typeVersion": 4.3,
       "position": [
         2720,
-        832
+        944
       ],
       "id": "4d02eda4-343a-4ad9-926e-7a86eb063985",
       "name": "HTTP sun API Request"
@@ -2044,12 +1490,18 @@
         704
       ],
       "id": "fc860819-dd38-4b29-8c6c-6db7b495e518",
-      "name": "Google Gemini Chat Model2"
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0uPFXhDmV9wFsbyW",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "chat-config",
+        "path": "chat-config-old",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -2144,7 +1596,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -1136,
+        -1120,
         640
       ],
       "typeVersion": 1,
@@ -2161,7 +1613,7 @@
       "typeVersion": 2.6,
       "position": [
         752,
-        1216
+        1328
       ],
       "id": "0847efb2-8b35-4c1f-8bc2-04935641bfff",
       "name": "Execute a SQL query2",
@@ -2181,7 +1633,7 @@
       "typeVersion": 1,
       "position": [
         960,
-        1216
+        1328
       ],
       "id": "fcfa210a-5cf8-4370-aee2-9d8eca66e08e"
     },
@@ -2201,7 +1653,7 @@
       "typeVersion": 1,
       "position": [
         1152,
-        1216
+        1328
       ],
       "id": "b95b4b87-dedc-4875-b232-223fd4b74e4c"
     },
@@ -2215,7 +1667,7 @@
       "typeVersion": 1,
       "position": [
         1376,
-        1136
+        1248
       ],
       "id": "ad2bd575-5288-4933-aa37-1df4e9ba7e94",
       "webhookId": "bad4a52f-ae34-4d95-a5e7-90a02cdb0d40"
@@ -2233,7 +1685,7 @@
       "typeVersion": 1,
       "position": [
         1600,
-        1216
+        1328
       ],
       "id": "ad4dbd8e-49a9-4911-8be2-f56db4570dc3",
       "alwaysOutputData": true,
@@ -2256,7 +1708,7 @@
       "typeVersion": 2.6,
       "position": [
         2784,
-        1424
+        1536
       ],
       "id": "1406b643-97b6-4e62-8024-524853633209",
       "name": "Execute insert_sensor_data1",
@@ -2277,7 +1729,7 @@
       "typeVersion": 1.4,
       "position": [
         2976,
-        1424
+        1536
       ],
       "id": "ea1849c2-00b4-44ed-acf1-6eafed7fec85",
       "name": "Respond to Webhook7"
@@ -2290,7 +1742,7 @@
       "typeVersion": 2,
       "position": [
         1824,
-        1216
+        1328
       ],
       "id": "1f43e8c3-a80d-41f1-b8c9-7a228410c8b7",
       "name": "Construct Moon APi Request"
@@ -2303,7 +1755,7 @@
       "typeVersion": 2,
       "position": [
         2272,
-        1216
+        1328
       ],
       "id": "a442434b-3687-42a2-a24f-763d16265553",
       "name": "Extract Moon Azimuth And Preserve Original Payload"
@@ -2318,7 +1770,7 @@
       "typeVersion": 2.6,
       "position": [
         2496,
-        1216
+        1328
       ],
       "id": "4fe8d6c7-f26f-4e03-91a2-4ef74a643370",
       "name": "Query To Fetch Current Moon Rules From DB",
@@ -2337,7 +1789,7 @@
       "typeVersion": 2,
       "position": [
         2720,
-        1216
+        1328
       ],
       "id": "06c1c264-29a4-4e9d-9e47-fb13268d950c",
       "name": "Checks FeedBack Rules1"
@@ -2350,7 +1802,7 @@
       "typeVersion": 2,
       "position": [
         2960,
-        1216
+        1328
       ],
       "id": "dcdd01e6-50db-4ffe-98a3-fcb0f872b853",
       "name": "Setup Parameters For Moon Queries"
@@ -2364,7 +1816,7 @@
       "typeVersion": 4.3,
       "position": [
         2048,
-        1216
+        1328
       ],
       "id": "8efae195-145f-4b46-a471-6f0572daaf9f",
       "name": "HTTP Moon Request"
@@ -2380,7 +1832,7 @@
       "typeVersion": 2.1,
       "position": [
         544,
-        1216
+        1328
       ],
       "id": "516fc6b0-2b16-470d-b8e0-f6ea84d5d4eb",
       "name": "Webhook moon data",
@@ -2391,14 +1843,14 @@
         "operation": "executeQuery",
         "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";\n",
         "options": {
-          "queryReplacement": "={{ [ $json.body.UserID, '20 minutes' ] }}"
+          "queryReplacement": "={{ [ $('Webhook heart rate').item.json.body.UserID, '20 minutes' ] }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        752,
-        544
+        880,
+        560
       ],
       "id": "c8c6eabf-98fd-477b-8dee-b1976edf89b4",
       "name": "Try Claim Slot",
@@ -2415,7 +1867,7 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict",
+            "typeValidation": "loose",
             "version": 2
           },
           "conditions": [
@@ -2431,7 +1883,7 @@
             },
             {
               "id": "234c6393-d66d-49cc-a147-ca6bf5f119af",
-              "leftValue": "={{ $json.Value }}",
+              "leftValue": "={{ $('Webhook heart rate').item.json.body.Value }}",
               "rightValue": 120,
               "operator": {
                 "type": "number",
@@ -2441,26 +1893,27 @@
           ],
           "combinator": "or"
         },
+        "looseTypeValidation": true,
         "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        960,
-        544
+        1056,
+        560
       ],
       "id": "ba6650fe-2936-4244-a3d2-99e42e20ff2f",
       "name": "If should vibrate"
     },
     {
       "parameters": {
-        "jsCode": "//this should  send empty vibration if its not been 5 minutes\nconst userID = $('Webhook heart rate').first().json.body.UserID;\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID;\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID;\n\nreturn [\n  {\n    json: {\n      monitoringType: 'HeartRate',\n      userID,\n      SmartWatchID,\n      AndroidID,\n      alertGiven: 'no',\n      pulses: 0,\n      intensity: 0,\n      duration: 0,\n      interval: 0,\n      fbRangeID: null,\n      reason: 'rate_limited'\n    }\n  }\n];\n"
+        "jsCode": "//this should  send empty vibration if its not been 5 minutes\nconst userID = $('Webhook heart rate').first().json.body.UserID;\nconst SmartWatchID = $('Webhook heart rate').first().json.body.SmartWatchID;\nconst AndroidID = $('Webhook heart rate').first().json.body.AndroidID;\nconst rawValue = $('Webhook heart rate').first().json.body.Value;\n\nreturn [\n  {\n    json: {\n      monitoringType: 'HeartRate',\n      userID,\n      SmartWatchID,\n      AndroidID,\n      alertGiven: 'no',\n      pulses: 0,\n      intensity: 0,\n      duration: 0,\n      interval: 0,\n      fbRangeID: null,\n      reason: 'rate_limited',\n      rawValue\n    }\n  }\n];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1264,
-        592
+        1312,
+        624
       ],
       "id": "1753d201-1b90-4887-9ea4-1082f0d6f56a",
       "name": "Build Rate-Limited Response"
@@ -2472,8 +1925,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1680,
-        640
+        1648,
+        576
       ],
       "id": "6d3f5a26-8e27-4e59-b788-5a0aafe74581",
       "name": "Empty Respond to Webhook8\\"
@@ -2487,8 +1940,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        736,
-        704
+        864,
+        720
       ],
       "id": "2f4e8da3-1412-4d1c-a3b1-72cd448a8870",
       "name": "Sticky Note20"
@@ -2503,8 +1956,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 1,
       "position": [
-        1472,
-        528
+        1648,
+        736
       ],
       "id": "fb2dc3c2-e459-4422-acbc-d0e5e3cc79b1",
       "credentials": {
@@ -2513,6 +1966,278 @@
           "name": "Postgres account 2"
         }
       }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-config",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Chat Config Webhook2",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -64
+      ],
+      "id": "dd227c93-508e-46c9-b75f-947230d8b2ec",
+      "webhookId": "5269f3c6-231b-4f17-88c4-256baf69aec3"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"output\": $json.message } }}",
+        "options": {}
+      },
+      "name": "Respond Success1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        112
+      ],
+      "id": "9a2326ab-e3a2-4368-a4de-7181236005dd"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==== PRIORITY INSTRUCTIONS ===\nYou are a Haptic Research Assistant. Follow these steps in order for every user request:\n\nSTEP 1: Check for Confirmation. \nIf the user says \"Yes\", \"Go ahead\", \"Save\", \"No\", or \"Cancel\", you MUST set db_action to 'EXECUTE'. \nIn the 'message' field, say: \"Understood. Processing your choice now.\"\n\nSTEP 2: Check for General Chat. \nIf the user says \"Hi\", \"Hello\", or asks a question not about a specific rule, set db_action to 'NONE'. \nIf the topic is NOT haptics/sensors/vibration, say you can only discuss Haptic Feedback.\n\nSTEP 3: Check for Rule Description. \nIf the user describes a vibration or rule, set db_action to 'PROPOSAL'. \nYou MUST list these 11 parameters as bullets: Type, MinValue, MaxValue, MinPulses, MaxPulses, MinIntensity, MaxIntensity, MinDuration, MaxDuration, MinInterval, MaxInterval.\nEnd with: \"Shall I save this mapping?\"\n\n=== NO HARDWARE QUESTIONS ===\nNever ask for sensor types like ECG or PPG. They are irrelevant to the database.\n\n=== OUTPUT JSON FORMAT ===\nRespond ONLY with this JSON structure:\n{\n  \"message\": \"Your response text\",\n  \"db_action\": \"EXECUTE\" | \"PROPOSAL\" | \"NONE\",\n  \"payload\": { \"type\": \"HeartRate\", ...all 11 fields... }\n}\n\n=== USER REQUEST ===\n{{ $json.body.chatInput }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "ca455e06-eb70-4128-a3ba-b4451b51da89",
+      "name": "AI Agent2",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        160
+      ],
+      "id": "129f59b0-dba2-4117-9bed-45ce9ec8cb93",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.db_action.toUpperCase() }}",
+                    "rightValue": "EXECUTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "19dc73ae-028c-4c8a-8e65-2a317f32502a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5d87e74c-ab72-411a-8265-5e10deff1abf",
+                    "leftValue": "={{ $json.db_action.toUpperCase() }}",
+                    "rightValue": "PROPOSAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bcafd9fc-dc49-4cea-b841-2b5c79bff50a",
+                    "leftValue": "={{ $json.db_action.toUpperCase() }}",
+                    "rightValue": "NONE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1312,
+        -96
+      ],
+      "id": "831a5134-c377-4d1f-81c1-8597ea35454d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the raw text from the AI Agent\nconst rawOutput = $json.output || \"\";\n\n// 2. Use a Regular Expression to find the first '{' and the last '}'\n// This ignores any \"Okay, sure!\" text outside the brackets\nconst jsonMatch = rawOutput.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch) {\n  // If no JSON is found, return the message as \"NONE\" so the flow doesn't crash\n  return [{ \n    json: { \n      message: rawOutput, \n      db_action: \"NONE\", \n      payload: null \n    } \n  }];\n}\n\ntry {\n  // 3. Parse only the part inside the curly braces\n  const parsedData = JSON.parse(jsonMatch[0]);\n  return [{ json: parsedData }];\n} catch (e) {\n  // 4. Fallback if the AI generates broken JSON\n  return [{ \n    json: { \n      message: \"The AI generated a malformed response. Raw: \" + rawOutput, \n      db_action: \"NONE\", \n      payload: null \n    } \n  }];\n}"
+      },
+      "name": "Parse AI Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "155d473d-7101-45b5-aab3-3be7a391242e"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n  type, active, minvalue, maxvalue, \n  minpulses, maxpulses, minintensity, maxintensity, \n  minduration, maxduration, mininterval, maxinterval\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n) \nON CONFLICT (minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, minvalue, maxvalue, type)\nDO UPDATE SET active = EXCLUDED.active\nRETURNING *;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1520,
+        -160
+      ],
+      "id": "6a48cbc5-cb2f-4a00-ae88-f5e9dd401da3",
+      "name": "Execute a SQL query3",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"output\": \"Rule successfully saved to the research database!\"\n}",
+        "options": {}
+      },
+      "name": "Respond Success2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        -160
+      ],
+      "id": "bf6e7e0a-06bb-459b-a31e-579b91ec3769"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemma-3-4b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        112
+      ],
+      "id": "3ced6cb6-7b38-45fa-bd80-68454e5e1af1",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0uPFXhDmV9wFsbyW",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "404a2c44-4a55-41d9-a543-12c7e8c92679",
+              "leftValue": "={{ $('Webhook heart rate').item.json.body.Value }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            },
+            {
+              "id": "bb921885-90aa-4ad1-9023-55de92a7653b",
+              "leftValue": "={{ $('Webhook heart rate').item.json.body.Value }}",
+              "rightValue": 220,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        560
+      ],
+      "id": "50b55d41-b401-4ff2-afd2-1ad4e29ee806",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1008,
+        400
+      ],
+      "id": "149f3a56-58ca-420f-a100-15399ee8cdc3",
+      "name": "Empty Respond to Webhook8\\1"
     }
   ],
   "pinData": {
@@ -2645,270 +2370,6 @@
     ]
   },
   "connections": {
-    "Sun Data Webhook": {
-      "main": [
-        [
-          {
-            "node": "Astronomy API",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SetupParametersForSunQueries": {
-      "main": [
-        [
-          {
-            "node": "InsertSensorData (FN)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ChecksFeedBackRules": {
-      "main": [
-        [
-          {
-            "node": "SetupParametersForSunQueries",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Load SunAzimuth Rules": {
-      "main": [
-        [
-          {
-            "node": "ChecksFeedBackRules",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AssignPayloadToOriginalPayload": {
-      "main": [
-        [
-          {
-            "node": "Load SunAzimuth Rules",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Astronomy API": {
-      "main": [
-        [
-          {
-            "node": "AssignPayloadToOriginalPayload",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "InsertSensorData (FN)": {
-      "main": [
-        [
-          {
-            "node": "HTTP Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "InsertSensorData (FN)1": {
-      "main": [
-        [
-          {
-            "node": "HTTP Response1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SetupParametersForSunQueries1": {
-      "main": [
-        [
-          {
-            "node": "InsertSensorData (FN)1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ChecksFeedBackRules1": {
-      "main": [
-        [
-          {
-            "node": "SetupParametersForSunQueries1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AssignPayloadToOriginalPayload1": {
-      "main": [
-        [
-          {
-            "node": "Load MoonAzimuth Rules1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Astronomy API1": {
-      "main": [
-        [
-          {
-            "node": "AssignPayloadToOriginalPayload1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Moon Data Webhook": {
-      "main": [
-        [
-          {
-            "node": "Astronomy API1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Heart Rate Webhook": {
-      "main": [
-        [
-          {
-            "node": "fetchHeartRateWindowAndLastValidHeartRate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "fetchHeartRateWindowAndLastValidHeartRate": {
-      "main": [
-        [
-          {
-            "node": "Execute fetch heart rate query",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Execute fetch heart rate query": {
-      "main": [
-        [
-          {
-            "node": "Data Cleaning",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Data Cleaning": {
-      "main": [
-        [
-          {
-            "node": "Execute data cleaning query",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Execute data cleaning query": {
-      "main": [
-        [
-          {
-            "node": "Check Heart rate Feedback Rules",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Heart rate Feedback Rules": {
-      "main": [
-        [
-          {
-            "node": "Setup Parameters For Heart Rate Queries",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Setup Parameters For Heart Rate Queries": {
-      "main": [
-        [
-          {
-            "node": "Execute Setup Param query",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Execute Setup Param query": {
-      "main": [
-        [
-          {
-            "node": "HTTP Response2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Load MoonAzimuth Rules1": {
-      "main": [
-        [
-          {
-            "node": "ChecksFeedBackRules1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Gemini Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Agent1": {
-      "main": [
-        [
-          {
-            "node": "No Operation, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Fetch History": {
       "main": [
         [
@@ -3276,7 +2737,7 @@
       "main": [
         [
           {
-            "node": "Try Claim Slot",
+            "node": "If3",
             "type": "main",
             "index": 0
           }
@@ -3744,12 +3205,126 @@
       "main": [
         [
           {
-            "node": "Empty Respond to Webhook8\\",
+            "node": "Insert Data Log1",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Insert Data Log1",
+            "node": "Empty Respond to Webhook8\\",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Config Webhook2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond Success1": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Success1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query3": {
+      "main": [
+        [
+          {
+            "node": "Respond Success2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Empty Respond to Webhook8\\1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Claim Slot",
             "type": "main",
             "index": 0
           }
@@ -3761,7 +3336,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "48d2c61c-b632-43dc-bb6c-ae33c2457efc",
+  "versionId": "ab18b97b-c71c-419f-9d79-ef0851229d2e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
