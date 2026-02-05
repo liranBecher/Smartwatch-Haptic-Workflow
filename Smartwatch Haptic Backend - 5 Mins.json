@@ -2198,7 +2198,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Access global workflow memory\nconst staticData = $getWorkflowStaticData('global');\n\n// Get current sensor data\nconst currentHR = parseFloat($('Webhook heart rate').item.json.body.Value); \nconst currentTime = new Date().getTime();\n\nlet trendTrigger = false;\n\n// Initialize snapshot if it doesn't exist yet\nif (staticData.snapshotHR == null) {\n    staticData.snapshotHR = currentHR;\n    staticData.snapshotTime = currentTime;\n}\n\n// Calculate time since last snapshot\nconst timeDiff = currentTime - staticData.snapshotTime;\n\n// Check if 1 minute (60,000 ms) has passed\nif (timeDiff >= 60000) {\n    // 1. Compare Current vs Snapshot\n    const pastHR = parseFloat(staticData.snapshotHR);\n    \n    // Check for 15 BPM difference (Absolute value handles up or down)\n    if (Math.abs(currentHR - pastHR) >= 15) {\n        trendTrigger = true;\n    }\n\n    // 2. UPDATE the snapshot for the next minute comparison\n    // We update this regardless of whether we triggered or not\n    staticData.snapshotHR = currentHR;\n    staticData.snapshotTime = currentTime;\n}\n\n// Output the flag so the next node can see it\nreturn [\n  {\n    json: {\n      ...items[0].json, \n      trendTrigger: trendTrigger\n    }\n  }\n];"
+        "jsCode": "// Access global workflow memory\nconst staticData = $getWorkflowStaticData('global');\n\n// Get current sensor data\nconst currentHR = parseFloat($('Webhook heart rate').item.json.body.Value); \nconst currentTime = new Date().getTime();\n\nlet trendTrigger = false;\n\n// Initialize snapshot if it doesn't exist yet\nif (staticData.snapshotHR == null) {\n    staticData.snapshotHR = currentHR;\n    staticData.snapshotTime = currentTime;\n}\n\n// Calculate time since last snapshot\nconst timeDiff = currentTime - staticData.snapshotTime;\n\n// Check if 0.5 minutes have passed\nif (timeDiff >= 30000) {\n    // 1. Compare Current vs Snapshot\n    const pastHR = parseFloat(staticData.snapshotHR);\n    \n    // Check for 15 BPM difference (Absolute value handles up or down)\n    if (Math.abs(currentHR - pastHR) >= 15) {\n        trendTrigger = true;\n    }\n\n    // 2. UPDATE the snapshot for the next minute comparison\n    // We update this regardless of whether we triggered or not\n    staticData.snapshotHR = currentHR;\n    staticData.snapshotTime = currentTime;\n}\n\n// Output the flag so the next node can see it\nreturn [\n  {\n    json: {\n      ...items[0].json, \n      trendTrigger: trendTrigger\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -2280,7 +2280,7 @@
               "leftValue": "={{ $json.userid }}",
               "rightValue": "",
               "operator": {
-                "type": "string",
+                "type": "number",
                 "operation": "notEmpty",
                 "singleValue": true
               }
@@ -3431,7 +3431,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "79a54413-88dc-41d3-89cf-3bdfe3f42311",
+  "versionId": "0837d6e1-d176-42ce-b98a-995081b96664",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
