@@ -4028,6 +4028,85 @@
       ],
       "id": "6689c1a5-4423-416f-b433-50dcdb360b7e",
       "name": "Set type Wind Speed"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "id": "dda6a778-6319-4bcd-9a9a-63cae6e9c35d",
+      "name": "Every 2 Nights",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -5024,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    ROUND(AVG(value)) as avg_hr,\n    userID\nFROM \"SensorData\"\nWHERE time > NOW() - INTERVAL '2 days'\nGROUP BY userID;",
+        "options": {}
+      },
+      "id": "10da398c-aa05-4a58-a7fb-ece3ba19d51d",
+      "name": "Get User Baselines",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -4800,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT minvalue, maxvalue FROM feedback_config_rules WHERE type = 'HeartRate';",
+        "options": {}
+      },
+      "id": "55e86d78-4d75-4f99-b53e-60267a307975",
+      "name": "Get Current Rules",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -4576,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const baseline = $('Get User Baselines').first().json.avg_hr;\nconst existingRules = $(\"Get Current Rules\").all().map(r => r.json);\n\n// Logic: Create an \"Alert Zone\" rule starting 20% above baseline\nconst minVal = Math.round(baseline * 1.2);\nconst maxVal = minVal + 20;\n\n// Check if this range overlaps with any existing rule\nconst ruleExists = existingRules.some(r => \n  (minVal >= r.minvalue && minVal <= r.maxvalue) ||\n  (maxVal >= r.minvalue && maxVal <= r.maxvalue)\n);\n\nif (ruleExists) {\n  return []; // Stop flow if rule exists\n}\n\nreturn [{\n  json: {\n    type: 'HeartRate',\n    active: true,\n    minvalue: minVal,\n    maxvalue: maxVal,\n    minpulses: 5, \n    maxpulses: 8,\n    minintensity: 200,\n    maxintensity: 255,\n    minduration: 400,\n    maxduration: 600,\n    mininterval: 50,\n    maxinterval: 100\n  }\n}];"
+      },
+      "id": "bd3ed88d-3a31-4d71-802d-c782f4cd9777",
+      "name": "Calculate Personalized Rule",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4352,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n  type, active, minvalue, maxvalue, \n  minpulses, maxpulses, minintensity, maxintensity, \n  minduration, maxduration, mininterval, maxinterval\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n);",
+        "options": {
+          "queryReplacement": "={{ [$json.type, $json.active, $json.minvalue, $json.maxvalue, $json.minpulses, $json.maxpulses, $json.minintensity, $json.maxintensity, $json.minduration, $json.maxduration, $json.mininterval, $json.maxinterval] }}"
+        }
+      },
+      "id": "10e50212-47c5-4980-acff-4c34f8a75075",
+      "name": "Save New Rule",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -4144,
+        720
+      ]
     }
   ],
   "connections": {
@@ -5771,6 +5850,50 @@
         [
           {
             "node": "Normalize1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 2 Nights": {
+      "main": [
+        [
+          {
+            "node": "Get User Baselines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Baselines": {
+      "main": [
+        [
+          {
+            "node": "Get Current Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current Rules": {
+      "main": [
+        [
+          {
+            "node": "Calculate Personalized Rule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Personalized Rule": {
+      "main": [
+        [
+          {
+            "node": "Save New Rule",
             "type": "main",
             "index": 0
           }
