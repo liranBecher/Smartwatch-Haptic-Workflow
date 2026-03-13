@@ -3675,7 +3675,7 @@
         "operation": "executeQuery",
         "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";",
         "options": {
-          "queryReplacement": "={{ [ $json.body.UserID, '1 minutes' ] }}"
+          "queryReplacement": "={{ [ $json.body.userId, '1 minutes' ] }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -3742,7 +3742,7 @@
       "typeVersion": 1.4,
       "position": [
         -6176,
-        608
+        576
       ],
       "id": "88265c0b-8067-43e5-8f1c-7cad9df71175",
       "name": "Respond (rate-limited)1"
@@ -3772,7 +3772,7 @@
       "typeVersion": 1.2,
       "position": [
         -6416,
-        48
+        -16
       ],
       "id": "5d8de395-7cf9-4241-866a-e838ac6fcbfb",
       "name": "Schedule Trigger",
@@ -3788,7 +3788,7 @@
       "typeVersion": 2.6,
       "position": [
         -6160,
-        48
+        -16
       ],
       "id": "9f239262-8510-4de6-a4f2-ba01ae0b6ba0",
       "name": "insert pollution for testing",
@@ -3851,7 +3851,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const aqi = $('Fetch AQI Data1').first().json.data.aqi;\nconst rules = $input.all().map(r => r.json);\n\nlet feedback = {\n    aqi: aqi,\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    userID: $('Webhook pollution data1').first().json.body.UserID,\n    SmartWatchID:$('Webhook pollution data1').first().json.body.SmartWatchID,\n    AndroidID:$('Webhook pollution data1').first().json.body.AndroidID\n};\n\nfor (const rule of rules) {\n    if (aqi >= rule.minvalue && aqi <= rule.maxvalue) {\n        feedback.intensity = rule.minintensity || 150;\n        feedback.pulses = rule.minpulses || 3;\n        feedback.duration = rule.minduration || 200;\n        feedback.interval = rule.mininterval || 100;\n        feedback.fbRangeID = rule.id;\n        feedback.alertGiven = \"yes\";\n        break;\n    }\n}\n\nreturn [{ json: feedback }];"
+        "jsCode": "const aqi = $('Fetch AQI Data1').first().json.data.aqi;\nconst rules = $input.all().map(r => r.json);\n\nlet feedback = {\n    aqi: aqi,\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: null,\n    userID: $('Webhook pollution data1').first().json.body.userId,\nSmartWatchID: $('Webhook pollution data1').first().json.body.smartWatchId,\nAndroidID: $('Webhook pollution data1').first().json.body.androidId\n};\n\nfor (const rule of rules) {\n    if (aqi >= rule.minvalue && aqi <= rule.maxvalue) {\n        feedback.intensity = rule.minintensity || 150;\n        feedback.pulses = rule.minpulses || 3;\n        feedback.duration = rule.minduration || 200;\n        feedback.interval = rule.mininterval || 100;\n        feedback.fbRangeID = rule.id;\n        feedback.alertGiven = \"yes\";\n        break;\n    }\n}\n\nreturn [{ json: feedback }];"
       },
       "id": "7aae787d-f5bd-4ae1-a261-19a939346624",
       "name": "Calculate Haptics1",
@@ -3906,7 +3906,7 @@
       "typeVersion": 1,
       "position": [
         -6816,
-        0
+        -64
       ],
       "id": "50d2cbdf-9902-4f5a-bb59-f2df0a39ed64",
       "name": "Sticky Note28"
@@ -3921,7 +3921,7 @@
       "typeVersion": 1,
       "position": [
         -6528,
-        -80
+        -144
       ],
       "id": "47b79f3f-c461-4c04-bcc6-f983e9414a1c",
       "name": "Sticky Note29"
@@ -3952,7 +3952,7 @@
       "typeVersion": 1,
       "position": [
         -7120,
-        0
+        -64
       ],
       "id": "e5f14e36-55c1-4b7f-a382-c28094e6c81c",
       "name": "Sticky Note30"
@@ -5885,7 +5885,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -6176,
+        -6160,
         400
       ],
       "credentials": {
@@ -8675,7 +8675,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "57bc0277-dfe0-4855-8060-8bb37cac2741",
+  "versionId": "2104ec80-1bff-4220-ae2a-9f4c4302567a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
