@@ -1,0 +1,660 @@
+{
+  "name": "Chat Orchestrator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "94e9d68b-af9a-44c1-b686-1af185738e4f",
+      "name": "Webhook",
+      "webhookId": "b40ed98c-5a4a-4d05-bc57-da70df7c87da"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO agent_session (session_id, current_usecase_id)\nVALUES ($1, $2)\nON CONFLICT (session_id) DO UPDATE\n  SET current_usecase_id = EXCLUDED.current_usecase_id,\n      updated_at         = now()\nRETURNING session_id, current_usecase_id, conversation_history, active_workflow;",
+        "options": {
+          "queryReplacement": "={{ $json.session_id }},{{ $json.usecase_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e7070d9b-b506-4700-b24d-1a0ea8584dc9",
+      "name": "Session Upsert",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM v_agent_context WHERE session_id = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.session_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a5a5a0f1-3865-43e3-ba1d-76e833d24553",
+      "name": "Load Context",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = ($input.first().json.text ?? '')\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch(e) {\n  const cleaned = raw.replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\nconst validIntents = ['mapping', 'knowledge', 'api_fetch', 'personalization', 'clarify'];\nif (!validIntents.includes(parsed.intent)) {\n  parsed.intent = 'clarify';\n}\n\nreturn [{\n  json: {\n    intent:      parsed.intent,\n    reply:       parsed.reply,\n    payload:     parsed.payload ?? {},\n    session_id:  $('Build prompt').first().json.session_id,\n    message:     $('Build prompt').first().json.message,\n    history:     $('Build prompt').first().json.history,\n    usecase_id:  $('Build prompt').first().json.usecase_id,\n    usecase_name: $('Build prompt').first().json.usecase_name,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "aaf2a237-5266-4bcf-915e-98e8b0b79a72",
+      "name": "Parse GPT Response"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "mapping",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "863df9e6-12ac-4b8b-87c7-f7c5121c0ac0"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5704a543-bffa-40cb-9760-39cf0fe6561d",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "knowledge",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6307c064-de21-46de-92f1-9011fb34e238",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "api_fetch",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ebcda350-260e-4c5d-ae6b-24af0de5783d",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "personalization",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1568,
+        -32
+      ],
+      "id": "df8cc46a-69b8-4255-9998-dc8aca5b6362",
+      "name": "Intent Router"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE agent_session\nSET conversation_history = conversation_history || $2::jsonb,\n    updated_at           = now()\nWHERE session_id = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.session_id }},={{ JSON.stringify([{ role: 'user', content: $('Build prompt').first().json.message }, { role: 'assistant', content: $json.reply }]) }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2400,
+        0
+      ],
+      "id": "9f4e71fe-eaa5-40fe-80c9-53aa37d5bafc",
+      "name": "Save History",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2224,
+        0
+      ],
+      "id": "4968b16d-d43a-4005-8d26-e1cc88f7bc00",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\n\nconst session_id = (body.session_id ?? '').trim();\nconst usecase_id = parseInt(body.usecase_id ?? 0);\nconst message    = (body.message ?? '').trim();\n\nif (!session_id) throw new Error('Missing session_id');\nif (!usecase_id) throw new Error('Missing usecase_id');\nif (!message)    throw new Error('Missing message');\n\nreturn [{ json: { session_id, usecase_id, message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ddf92d4a-dbb7-4a9f-ac45-fc8ba69aaed9",
+      "name": "Validate input"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        144
+      ],
+      "id": "cb8601b6-0aa3-4fa2-a5fd-90d6ea494b1f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=={{ $json.messages_as_text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "2a8545b7-941b-472d-903d-2ee4bac4e8f4",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $input.first().json;\n\nconst message = $('Validate input').first().json.message;\nconst session_id = $('Validate input').first().json.session_id;\n\nconst history = Array.isArray(ctx.conversation_history)\n  ? ctx.conversation_history\n  : JSON.parse(ctx.conversation_history ?? '[]');\n\nconst systemPrompt = `You are a research assistant embedded in a haptic feedback research application.\n\nCurrent experiment: ${ctx.usecase_name ?? 'Unknown'}\n${ctx.usecase_description ? `Description: ${ctx.usecase_description}` : ''}\n\nActive feedback mappings for this experiment:\n${JSON.stringify(ctx.global_mappings ?? [], null, 2)}\n\nYour job is to help researchers with ONE of the following tasks. Decide which one applies to the message, then respond ONLY with a JSON object in this exact format:\n\n{\n  \"intent\": \"<one of: mapping | knowledge | api_fetch | personalization | clarify>\",\n  \"reply\": \"<your response to the researcher in plain language>\",\n  \"payload\": {\n    \"action\": \"<for mapping intent: list | add | remove | brainstorm>\",\n    \"params\": {}\n  }\n}\n\nIntent rules:\n- \"mapping\"        → researcher wants to view, add, remove, or brainstorm feedback_config_rules\n- \"knowledge\"      → question about haptic feedback, sensory substitution, or experiment design\n- \"api_fetch\"      → researcher wants to pull or explore available API parameters\n- \"personalization\"→ researcher wants to create automation rules for a specific participant\n- \"clarify\"        → message is ambiguous, you need to ask one follow-up question\n\nPayload rules by intent:\n- mapping + list:       { \"action\": \"list\", \"params\": {} }\n- mapping + add:        { \"action\": \"add\", \"params\": { \"minvalue\": 80, \"maxvalue\": 100, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 60, \"maxintensity\": 80, \"minduration\": 200, \"maxduration\": 300, \"mininterval\": 100, \"maxinterval\": 150 } }\n- mapping + add: ALWAYS route to \"add\" even if you think the mapping already exists. \n  The database will handle duplicate detection and inform the user. Never route to \"list\" \n  when the researcher is asking to add something.\n- mapping + remove:     { \"action\": \"remove\", \"params\": { \"id\": 123 } } — ONLY when researcher gives explicit numeric ID\n- mapping + brainstorm: { \"action\": \"brainstorm\", \"params\": {} }\n- personalization:      { \"user_id\": null, \"lookback_days\": 14 }\n- all others:           { \"action\": \"\", \"params\": {} }\n\nIMPORTANT: For \"add\", ALWAYS set action to \"add\" and extract ALL numeric values from the \nmessage into params. Do NOT second-guess whether the mapping exists — always send it to \nthe add workflow regardless. The system handles duplicates automatically.\nIMPORTANT: \"add\" and \"remove\" are completely different. Adding range values is ALWAYS \"add\". \"remove\" needs an explicit ID.\n\nDo not respond with anything outside the JSON object.`;\n\nconst messages = [\n  { role: 'system', content: systemPrompt },\n  ...history,\n  { role: 'user', content: message }\n];\n\nconst messagesAsText = messages.map(m => {\n  const role = m.role === 'system' ? 'SYSTEM' : m.role === 'assistant' ? 'ASSISTANT' : 'USER';\n  return `${role}: ${m.content}`;\n}).join('\\n\\n');\n\nreturn [{\n  json: {\n    session_id,\n    message,\n    messages,\n    messages_as_text: messagesAsText,\n    usecase_name:    ctx.usecase_name,\n    usecase_id:      ctx.usecase_id,\n    global_mappings: ctx.global_mappings,\n    history\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "5b3119cc-dea9-4d7d-b1bd-3fdb22e984e3",
+      "name": "Build prompt"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6mbZSpha6phxwD1v",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6mbZSpha6phxwD1v",
+          "cachedResultName": "Mapping Manager"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "action": "={{ $json.payload.action }}",
+            "params": "={{ $json.payload.params }}",
+            "session_id": "={{ $json.session_id }}",
+            "usecase_id": "={{ $json.usecase_id }}",
+            "usecase_name": "={{ $json.usecase_name }}",
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1776,
+        -240
+      ],
+      "id": "83a25d0d-1db8-4005-9998-60359ccdf932",
+      "name": "Call 'Mapping Manager'"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    reply: $input.first().json.reply,\n    session_id: $input.first().json.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        0
+      ],
+      "id": "266f96e0-ed0a-4e22-847d-31bbf934840e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "NBGENe1uYYpTnN5l",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/NBGENe1uYYpTnN5l",
+          "cachedResultName": "Knowledge Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $json.session_id }}",
+            "usecase_name": "={{ $json.usecase_name }}",
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1776,
+        -80
+      ],
+      "id": "ddf20d87-0e0e-4919-9adc-36d1cea99a40",
+      "name": "Call 'Knowledge Agent'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session Upsert": {
+      "main": [
+        [
+          {
+            "node": "Load Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Context": {
+      "main": [
+        [
+          {
+            "node": "Build prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse GPT Response": {
+      "main": [
+        [
+          {
+            "node": "Intent Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Router": {
+      "main": [
+        [
+          {
+            "node": "Call 'Mapping Manager'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Knowledge Agent'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save History": {
+      "main": [
+        []
+      ]
+    },
+    "Validate input": {
+      "main": [
+        [
+          {
+            "node": "Session Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse GPT Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build prompt": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Mapping Manager'": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook4": {
+      "main": [
+        [
+          {
+            "node": "Save History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Knowledge Agent'": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1f7d025e-1ff4-4836-8788-67b0fe533459",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "6HLjUnFkjKxhDhsb",
+  "tags": []
+}
