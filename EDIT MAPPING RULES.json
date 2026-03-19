@@ -1,0 +1,879 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "content": "LLM to insert new mappings",
+        "height": 80,
+        "width": 224,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4640,
+        -4816
+      ],
+      "typeVersion": 1,
+      "id": "e441cd3c-7408-4dd6-a655-a4399f93838f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "set-sun-azimuth-threshold",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4624,
+        -4288
+      ],
+      "id": "54501f29-a7d2-4ed7-831f-02b31af93675",
+      "name": "set sun azimuth threshold",
+      "webhookId": "01c7e929-2bd8-49a9-bedb-ed7736aec1a2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3952,
+        -4384
+      ],
+      "id": "cb315a91-dd47-48e7-8300-5cbd16f0858c",
+      "name": "Execute sun mapping query",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "set-heart-rate-threshold",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4624,
+        -3440
+      ],
+      "id": "e5e547c7-80f2-44f3-bb6c-255881916ac2",
+      "name": "set heart rate threshold",
+      "webhookId": "01c7e929-2bd8-49a9-bedb-ed7736aec1a2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3952,
+        -3968
+      ],
+      "id": "0bb5eb8a-c423-46f8-acff-93f6b3f4cd6b",
+      "name": "Execute moon mapping query",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemma-3-4b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -4432,
+        -4496
+      ],
+      "id": "82da879a-af33-421f-8c90-9f0c2c84b158",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2BLJwFkx4jdN0L6z",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-config-old",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Chat Config Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -4640,
+        -4720
+      ],
+      "id": "70ed0653-d56f-4533-8cf0-077b40babdab",
+      "webhookId": "5269f3c6-231b-4f17-88c4-256baf69aec3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw text from the AI (it might be in .output or .text)\nconst aiOutput = $input.first().json.output || $input.first().json.text || \"\";\n\n// 1. If it's already an object, return it directly\nif (typeof aiOutput === 'object') {\n  return [{ json: aiOutput }];\n}\n\n// 2. If it's a string, use Regex to find the JSON object inside it\n// This ignores text like \"Here is your JSON:\"\nconst jsonMatch = aiOutput.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch) {\n  throw new Error(\"No JSON found in AI response. Raw output: \" + aiOutput);\n}\n\ntry {\n  const parsedData = JSON.parse(jsonMatch[0]);\n  return [{ json: parsedData }];\n} catch (e) {\n  throw new Error(\"Found JSON-like text but failed to parse: \" + jsonMatch[0]);\n}"
+      },
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4096,
+        -4720
+      ],
+      "id": "bd2d14d8-a9f0-4dc6-9b46-892f2b769ec7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "You are a strict JSON data extraction engine. Your ONLY job is to convert natural language commands into a structured JSON object for a database configuration.\n\n### Database Schema (Output Fields):\n- type: 'HeartRate', 'SunAzimuth', or 'MoonAzimuth' (Required)\n- active: boolean (Always true for new rules)\n- minvalue: number (The lower threshold. If user says \"above 120\", min=120, max=220)\n- maxvalue: number (The upper threshold. If user says \"below 60\", min=30, max=60)\n- minpulses, maxpulses: number (Vibration count. Low=1, Medium=3, High=5. Default=3)\n- minintensity, maxintensity: number (Vibration strength 0-255. Weak=50, Strong=255. Default=150)\n- minduration, maxduration: number (Pulse duration in ms. Short=100, Long=500. Default=200)\n- mininterval, maxinterval: number (Pause between pulses in ms. Default=100)\n\n### Strict Output Rules:\n1. Return ONLY the JSON object.\n2. Do NOT write \"Here is the JSON\".\n3. Do NOT wrap the output in markdown blocks (no ```json ... ```).\n4. If a value is missing, use reasonable defaults based on the context.\n5. Make sure all output fields are populated\n\n### Example Output:\n{ \"type\": \"HeartRate\", \"active\": true, \"minvalue\": 120, \"maxvalue\": 220, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 200, \"maxintensity\": 255, \"minduration\": 200, \"maxduration\": 400, \"mininterval\": 100, \"maxinterval\": 200 }"
+            }
+          ]
+        }
+      },
+      "name": "Command to JSON LLM query",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -4432,
+        -4720
+      ],
+      "id": "09b8ca93-1154-4897-a612-7d97cd4dd4e4"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n  type, active, minvalue, maxvalue, \n  minpulses, maxpulses, minintensity, maxintensity, \n  minduration, maxduration, mininterval, maxinterval\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n) \nON CONFLICT (minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, minvalue, maxvalue, type)\nDO UPDATE SET active = EXCLUDED.active\nRETURNING *;",
+        "options": {
+          "queryReplacement": "={{ [ \n  $json.type, \n  true, \n  $json.minvalue, \n  $json.maxvalue, \n  $json.minpulses, \n  $json.maxpulses, \n  $json.minintensity, \n  $json.maxintensity, \n  $json.minduration, \n  $json.maxduration, \n  $json.mininterval, \n  $json.maxinterval\n].join(',') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3872,
+        -4720
+      ],
+      "id": "1967a86c-5443-411c-bc18-d8fe3e308c3a",
+      "name": "Insert new rule from AI response",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{$json.statusCode || 200}}",
+          "responseKey": "{ok:true}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -3728,
+        -4384
+      ],
+      "id": "3653736f-fd55-4a19-838c-4be537bd239f",
+      "name": "Respond to Webhook set sun azimuth threshold"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "set-moon-azimuth-threshold",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4624,
+        -3872
+      ],
+      "id": "1b5f61f7-8144-4e6f-8fbf-a43e4657f9a2",
+      "name": "set moon azimuth threshold",
+      "webhookId": "01c7e929-2bd8-49a9-bedb-ed7736aec1a2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json || {};\nconst data = $input.first().json.body.sunAzimuthRanges\n\nif (!Array.isArray(data)) {\n  return [{ json: { statusCode: 400, error: \"Expected 'sunAzimuthRanges' to be an array\" } }];\n}\n\nconst filtered = data.filter(e => e.id !== null && e.id !== undefined);\n\nif (filtered.length === 0) {\n  return [{ json: { statusCode: 200, message: \"No valid entries with ID > 0 to insert/update.\" } }];\n}\n\nconst values = [];\nconst params = [];\n\nfiltered.forEach((entry, i) => {\n  const base = i * 13;\n  values.push(\n    `($${base+1}, $${base+2}, $${base+3}, $${base+4}, $${base+5}, $${base+6}, $${base+7}, $${base+8}, $${base+9}, $${base+10}, $${base+11}, $${base+12}, $${base+13})`\n  );\n\n  params.push(\n    entry.id,\n    entry.minPulses,\n    entry.maxPulses,\n    entry.minIntensity,\n    entry.maxIntensity,\n    entry.minDuration,\n    entry.maxDuration,\n    entry.minInterval,\n    entry.maxInterval,\n    entry.minAzimuth,\n    entry.maxAzimuth,\n    \"SunAzimuth\",\n    entry.active === false ? false : true\n  );\n});\n\nconst query = `\n  INSERT INTO feedback_config_rules (\n    id, minpulses, maxpulses, minintensity, maxintensity,\n    minduration, maxduration, mininterval, maxinterval,\n    minvalue, maxvalue, type, active\n  )\n  VALUES ${values.join(\", \")}\n  ON CONFLICT (id)\n  DO UPDATE SET\n    minpulses = EXCLUDED.minpulses,\n    maxpulses = EXCLUDED.maxpulses,\n    minintensity = EXCLUDED.minintensity,\n    maxintensity = EXCLUDED.maxintensity,\n    minduration = EXCLUDED.minduration,\n    maxduration = EXCLUDED.maxduration,\n    mininterval = EXCLUDED.mininterval,\n    maxinterval = EXCLUDED.maxinterval,\n    minvalue = EXCLUDED.minvalue,\n    maxvalue = EXCLUDED.maxvalue,\n    type = EXCLUDED.type,\n    active = EXCLUDED.active\n`;\n\nreturn [{ json: { statusCode: 200, query, params } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4400,
+        -4288
+      ],
+      "id": "d7836d7c-9f3a-4f45-9b09-0c84294edddb",
+      "name": "Updating Changed sun Values If Exist"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json || {};\nconst data = $input.first().json.body.moonAzimuthRanges\n\nif (!Array.isArray(data)) {\n  return [{ json: { statusCode: 400, error: \"Expected 'moonAzimuthRanges' to be an array\" } }];\n}\n\nconst filtered = data.filter(e => e.id !== null && e.id !== undefined);\n\nif (filtered.length === 0) {\n  return [{ json: { statusCode: 200, message: \"No valid entries with ID > 0 to insert/update.\" } }];\n}\n\nconst values = [];\nconst params = [];\n\nfiltered.forEach((entry, i) => {\n  const base = i * 13;\n  values.push(\n    `($${base+1}, $${base+2}, $${base+3}, $${base+4}, $${base+5}, $${base+6}, $${base+7}, $${base+8}, $${base+9}, $${base+10}, $${base+11}, $${base+12}, $${base+13})`\n  );\n\n  params.push(\n    entry.id,\n    entry.minPulses,\n    entry.maxPulses,\n    entry.minIntensity,\n    entry.maxIntensity,\n    entry.minDuration,\n    entry.maxDuration,\n    entry.minInterval,\n    entry.maxInterval,\n    entry.minAzimuth,\n    entry.maxAzimuth,\n    \"MoonAzimuth\",\n    entry.active === false ? false : true\n  );\n});\n\nconst query = `\n  INSERT INTO feedback_config_rules (\n    id, minpulses, maxpulses, minintensity, maxintensity,\n    minduration, maxduration, mininterval, maxinterval,\n    minvalue, maxvalue, type, active\n  )\n  VALUES ${values.join(\", \")}\n  ON CONFLICT (id)\n  DO UPDATE SET\n    minpulses = EXCLUDED.minpulses,\n    maxpulses = EXCLUDED.maxpulses,\n    minintensity = EXCLUDED.minintensity,\n    maxintensity = EXCLUDED.maxintensity,\n    minduration = EXCLUDED.minduration,\n    maxduration = EXCLUDED.maxduration,\n    mininterval = EXCLUDED.mininterval,\n    maxinterval = EXCLUDED.maxinterval,\n    minvalue = EXCLUDED.minvalue,\n    maxvalue = EXCLUDED.maxvalue,\n    type = EXCLUDED.type,\n    active = EXCLUDED.active\n`;\n\nreturn [{ json: { statusCode: 200, query, params } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4400,
+        -3872
+      ],
+      "id": "52ce1a03-3411-4b2f-bcb4-31e177d6fc4b",
+      "name": "Updating Changed moon Values If Exist"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1a10251c-6689-401a-9890-5b6886b99c0d",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4176,
+        -4288
+      ],
+      "id": "4d4a0386-3dc4-44c7-a431-2170f0f8512a",
+      "name": "If sun data exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1a10251c-6689-401a-9890-5b6886b99c0d",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4176,
+        -3872
+      ],
+      "id": "967b98c4-836b-4c1c-a9c8-cf48b3bdb133",
+      "name": "If moon data exists"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $('Updating Changed sun Values If Exist').item.json.statusCode }}",
+          "responseKey": "={{ $('Updating Changed sun Values If Exist').item.json.error }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -3952,
+        -4192
+      ],
+      "id": "8a0b7a63-6c9c-435a-8884-462c708955e5",
+      "name": "Respond to Webhook sun data doesn't exist"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $('Updating Changed moon Values If Exist').item.json.statusCode }}",
+          "responseKey": "={{ $('Updating Changed moon Values If Exist').item.json.error }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -3952,
+        -3776
+      ],
+      "id": "1b3355cd-97d1-4620-882f-2059ad472ebe",
+      "name": "Respond to Webhook moon data doesn't exist"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json || {};\nconst data = $input.first().json.body.thresholds\n\nif (!Array.isArray(data)) {\n  return [{ json: { statusCode: 400, error: \"Expected 'moonAzimuthRanges' to be an array\" } }];\n}\n\nconst filtered = data.filter(e => e.id !== null && e.id !== undefined);\n\nif (filtered.length === 0) {\n  return [{ json: { statusCode: 200, message: \"No valid entries with ID > 0 to insert/update.\" } }];\n}\n\nconst values = [];\nconst params = [];\n\nfiltered.forEach((entry, i) => {\n  const base = i * 13;\n  values.push(\n    `($${base+1}, $${base+2}, $${base+3}, $${base+4}, $${base+5}, $${base+6}, $${base+7}, $${base+8}, $${base+9}, $${base+10}, $${base+11}, $${base+12}, $${base+13})`\n  );\n\n  params.push(\n    entry.id,\n    entry.minPulses,\n    entry.maxPulses,\n    entry.minIntensity,\n    entry.maxIntensity,\n    entry.minDuration,\n    entry.maxDuration,\n    entry.minInterval,\n    entry.maxInterval,\n    entry.minAzimuth,\n    entry.maxAzimuth,\n    \"HeartRate\",\n    entry.active === false ? false : true\n  );\n});\n\nconst query = `\n  INSERT INTO feedback_config_rules (\n    id, minpulses, maxpulses, minintensity, maxintensity,\n    minduration, maxduration, mininterval, maxinterval,\n    minvalue, maxvalue, type, active\n  )\n  VALUES ${values.join(\", \")}\n  ON CONFLICT (id)\n  DO UPDATE SET\n    minpulses = EXCLUDED.minpulses,\n    maxpulses = EXCLUDED.maxpulses,\n    minintensity = EXCLUDED.minintensity,\n    maxintensity = EXCLUDED.maxintensity,\n    minduration = EXCLUDED.minduration,\n    maxduration = EXCLUDED.maxduration,\n    mininterval = EXCLUDED.mininterval,\n    maxinterval = EXCLUDED.maxinterval,\n    minvalue = EXCLUDED.minvalue,\n    maxvalue = EXCLUDED.maxvalue,\n    type = EXCLUDED.type,\n    active = EXCLUDED.active\n`;\n\nreturn [{ json: { statusCode: 200, query, params } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4400,
+        -3440
+      ],
+      "id": "86973594-0396-4468-83cb-cb3483e12b64",
+      "name": "Updating Changed heartrate Values If Exist"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1a10251c-6689-401a-9890-5b6886b99c0d",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4176,
+        -3440
+      ],
+      "id": "65b282ee-3aed-4c4f-b428-f5d0c05b3180",
+      "name": "If heartrate data exists"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $('Updating Changed heartrate Values If Exist').item.json.statusCode }}",
+          "responseKey": "={{ $('Updating Changed heartrate Values If Exist').item.json.error }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -3952,
+        -3344
+      ],
+      "id": "a43981ea-fa35-4daf-8796-3df5f2b925db",
+      "name": "Respond to Webhook heartrate data doesn't exist"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3952,
+        -3536
+      ],
+      "id": "17b40bae-e606-4129-bf4f-d89c9d3e6cac",
+      "name": "Execute heartrate mapping query",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{$json.statusCode || 200}}",
+          "responseKey": "{ok:true}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -3728,
+        -3968
+      ],
+      "id": "306c59d8-d068-41eb-83be-43a17e6e1551",
+      "name": "Respond to Webhook set moon azimuth threshold"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{$json.statusCode || 200}}",
+          "responseKey": "{ok:true}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -3728,
+        -3536
+      ],
+      "id": "0615e691-e604-40aa-8970-25138d5b7d25",
+      "name": "Respond to Webhook set heartrate threshold"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Rule created successfully\",\n  \"ruleId\": {{ $json.id }}\n}",
+        "options": {}
+      },
+      "name": "Respond Success query execution",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -3648,
+        -4720
+      ],
+      "id": "b5ce3240-ec3d-4848-9b29-38f846f4b923"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "set-rules",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4624,
+        -3088
+      ],
+      "id": "7d2d891e-ffef-440c-a551-b5731aec7a15",
+      "name": "add Mapping",
+      "webhookId": "9d253cce-73cb-4598-a738-2f8e053a8309"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body",
+        "options": {}
+      },
+      "name": "Split Array (If List)",
+      "type": "n8n-nodes-base.itemLists",
+      "position": [
+        -4384,
+        -3088
+      ],
+      "notesInFlow": true,
+      "id": "0af978a8-47f6-48eb-8a9f-34a37198ed99",
+      "typeVersion": 3.1,
+      "notes": "Ensures n8n loops through each rule if Java sends a List<SensorRuleConfig>"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n    type, \n    minvalue, maxvalue, \n    minpulses, maxpulses, \n    minintensity, maxintensity, \n    minduration, maxduration, \n    mininterval, maxinterval, \n    active\n) VALUES (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n);",
+        "options": {
+          "queryReplacement": "={{ $json[\"0\"].type }}, {{ $json[\"0\"].minvalue }}, {{ $json[\"0\"].maxvalue }},{{ $json[\"0\"].minpulses }}, {{ $json[\"0\"].maxpulses }}, {{ $json[\"0\"].minintensity }}, {{ $json[\"0\"].maxintensity }},{{ $json[\"0\"].minduration }},{{ $json[\"0\"].maxduration }},{{ $json[\"0\"].mininterval }},{{ $json[\"0\"].maxinterval }},{{ $json[\"0\"].active }}"
+        }
+      },
+      "name": "DB: Upsert Rule",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        -4176,
+        -3088
+      ],
+      "id": "3010d991-c6a3-4d0f-bb07-1d8c01f2e1eb",
+      "typeVersion": 2.6,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "Check what we should do when having duplicate data"
+    }
+  ],
+  "connections": {
+    "set sun azimuth threshold": {
+      "main": [
+        [
+          {
+            "node": "Updating Changed sun Values If Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute sun mapping query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook set sun azimuth threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set heart rate threshold": {
+      "main": [
+        [
+          {
+            "node": "Updating Changed heartrate Values If Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute moon mapping query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook set moon azimuth threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Command to JSON LLM query",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Config Webhook": {
+      "main": [
+        [
+          {
+            "node": "Command to JSON LLM query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Insert new rule from AI response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Command to JSON LLM query": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert new rule from AI response": {
+      "main": [
+        [
+          {
+            "node": "Respond Success query execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set moon azimuth threshold": {
+      "main": [
+        [
+          {
+            "node": "Updating Changed moon Values If Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating Changed sun Values If Exist": {
+      "main": [
+        [
+          {
+            "node": "If sun data exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating Changed moon Values If Exist": {
+      "main": [
+        [
+          {
+            "node": "If moon data exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If sun data exists": {
+      "main": [
+        [
+          {
+            "node": "Execute sun mapping query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook sun data doesn't exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If moon data exists": {
+      "main": [
+        [
+          {
+            "node": "Execute moon mapping query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook moon data doesn't exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating Changed heartrate Values If Exist": {
+      "main": [
+        [
+          {
+            "node": "If heartrate data exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If heartrate data exists": {
+      "main": [
+        [
+          {
+            "node": "Execute heartrate mapping query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook heartrate data doesn't exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute heartrate mapping query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook set heartrate threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add Mapping": {
+      "main": [
+        [
+          {
+            "node": "Split Array (If List)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Array (If List)": {
+      "main": [
+        [
+          {
+            "node": "DB: Upsert Rule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "set sun azimuth threshold": [
+      {
+        "headers": {
+          "content-type": "application/json",
+          "user-agent": "Java/19.0.2",
+          "host": "localhost:5678",
+          "accept": "*/*",
+          "connection": "keep-alive",
+          "content-length": "157"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "sunAzimuthRanges": [
+            {
+              "id": 0,
+              "minAzimuth": 122,
+              "maxAzimuth": 222,
+              "pulses": 2,
+              "intensity": 2,
+              "duration": 22,
+              "interval": 22,
+              "active": true
+            }
+          ],
+          "moonAzimuthRanges": null
+        },
+        "webhookUrl": "http://localhost:5678/webhook/set-sun-azimuth-threshold",
+        "executionMode": "production"
+      }
+    ],
+    "set heart rate threshold": [
+      {
+        "headers": {
+          "host": "localhost:5678",
+          "user-agent": "curl/8.16.0",
+          "accept": "*/*",
+          "content-type": "application/json",
+          "content-length": "211"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "heartRateAzimuthRanges": [
+            {
+              "id": 148,
+              "minPulses": 1,
+              "maxPulses": 5,
+              "minIntensity": 10,
+              "maxIntensity": 80,
+              "minDuration": 50,
+              "maxDuration": 250,
+              "minInterval": 100,
+              "maxInterval": 600,
+              "minAzimuth": 0,
+              "maxAzimuth": 90,
+              "active": true
+            }
+          ]
+        },
+        "webhookUrl": "http://localhost:5678/webhook-test/set-sun-azimuth-threshold",
+        "executionMode": "test"
+      }
+    ],
+    "set moon azimuth threshold": [
+      {
+        "headers": {
+          "host": "localhost:5678",
+          "user-agent": "curl/8.16.0",
+          "accept": "*/*",
+          "content-type": "application/json",
+          "content-length": "211"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "moonAzimuthRanges": [
+            {
+              "id": 0,
+              "minPulses": 1,
+              "maxPulses": 5,
+              "minIntensity": 10,
+              "maxIntensity": 80,
+              "minDuration": 50,
+              "maxDuration": 250,
+              "minInterval": 100,
+              "maxInterval": 600,
+              "minAzimuth": 0,
+              "maxAzimuth": 90,
+              "active": true
+            }
+          ]
+        },
+        "webhookUrl": "http://localhost:5678/webhook-test/set-sun-azimuth-threshold",
+        "executionMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+  }
+}

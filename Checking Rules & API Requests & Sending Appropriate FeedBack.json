@@ -1,0 +1,2248 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Change heart rate feedback interval between 2 notifications",
+        "height": 80,
+        "width": 416,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3152,
+        -4752
+      ],
+      "id": "2d32f44e-3d0a-475c-be69-e3f3305b0e30",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "heartRate",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook heart rate",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -3088,
+        -4576
+      ],
+      "id": "c9a2d393-d3c7-4c9f-a229-1e948db41f37",
+      "webhookId": "ab04974b-c683-4224-90a1-cae7a4139bdc"
+    },
+    {
+      "parameters": {
+        "content": "^ delay time is ^ hard-coded here",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2464,
+        -4256
+      ],
+      "id": "47081e3a-1463-45bc-920d-c5e1be29b3cb",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.vibrationReason = \"significant_change\";\n\nreturn [{\n  json: {\n    ...items[0].json,\n    vibrationReason: staticData.vibrationReason\n  }\n}];\n"
+      },
+      "name": "set significant change reason",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        -4752
+      ],
+      "id": "298f559a-aa8f-4926-8f36-599d475b0cf1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.vibrationReason = \"time_interval\";\n\nreturn [{\n  json: {\n    ...items[0].json,\n    vibrationReason: staticData.vibrationReason\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2048,
+        -4576
+      ],
+      "id": "dc5287e1-43f6-4aa0-bf99-32c4e5f8e67b",
+      "name": "set timer interval reason"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "type",
+              "value": "SunAzimuth"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3136,
+        -3808
+      ],
+      "id": "9f21248c-fc36-4cc3-82b7-06b61a78cddf",
+      "name": "Set type SunAzimuth"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "type",
+              "value": "MoonAzimuth"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3136,
+        -3616
+      ],
+      "id": "862c6ba5-f270-432c-8ef5-721702a6fc5c",
+      "name": "Set type MoonAzimuth"
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize sun/moon azimuth').first().json;   // <-- the payload with type+body+ids\nconst type = normalized.type;\n\nconst api = $input.first().json;\n\nlet azimuth = null;\n\nif (type === 'SunAzimuth') {\n  azimuth = api?.sun_azimuth ?? api?.sun?.azimuth ?? api?.data?.sun_azimuth ?? api?.data?.sun?.azimuth;\n} else if (type === 'MoonAzimuth') {\n  azimuth = api?.moon_azimuth ?? api?.moon?.azimuth ?? api?.data?.moon_azimuth ?? api?.data?.moon?.azimuth;\n}\n\nif (azimuth == null) {\n  return [{\n    json: { statusCode: 500, error: `${type} azimuth missing`, rawApi: api }\n  }];\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    azimuth: Number(azimuth)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2272,
+        -3712
+      ],
+      "id": "9b5a5050-1d26-4902-a53e-5b7e01f8b8ce",
+      "name": "Extract Azimuth"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2608,
+        -3104
+      ],
+      "id": "7bba5c00-ba5e-4ebc-946e-dc7b7c362b48",
+      "name": "Schedule Trigger",
+      "executeOnce": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (type, active, minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval)\nVALUES ('Pollution', true, 50, 500, 3, 5,  200, 250, 300,350,  150,200);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2352,
+        -3104
+      ],
+      "id": "aa528bfc-d03e-407a-b3ca-9016dd472837",
+      "name": "insert pollution for testing",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST \"http://localhost:5678/webhook-test/sun-data\" -H \"Content-Type: application/json\" -d \"{\\\"userId\\\":100,\\\"smartWatchId\\\":200,\\\"androidId\\\":2,\\\"lat\\\":32.794,\\\"lon\\\":34.989}\"",
+        "height": 96,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3376,
+        -3936
+      ],
+      "typeVersion": 1,
+      "id": "206dcbbb-6a7c-465c-8a44-50652c8d8a4b",
+      "name": "Sticky Note27"
+    },
+    {
+      "parameters": {
+        "content": "https://aqicn.org/api/\nAPI for pollution\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3040,
+        -2944
+      ],
+      "id": "a1999815-9c7c-4afe-b933-6900bd66e1b1",
+      "name": "Sticky Note28"
+    },
+    {
+      "parameters": {
+        "content": "For this flow to trigger a vibration, you must add a pollution rule to your database. Run this SQL once:\nINSERT INTO feedback_config_rules (type, active, minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval)\nVALUES ('Pollution', true, 50, 500, 3, 5,  200, 250, 300,350,  150,200);\n",
+        "height": 256,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2704,
+        -3392
+      ],
+      "id": "3082d026-4f68-4731-b07b-4d9c39670b0d",
+      "name": "Sticky Note29"
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST \"http://localhost:5678/webhook-test/pollution-data\" -H \"Content-Type: application/json\" -d \"{\\\"userId\\\":100,\\\"smartWatchId\\\":200,\\\"androidId\\\":2,\\\"lat\\\":32.794,\\\"lon\\\":34.989}\"",
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3408,
+        -2944
+      ],
+      "id": "7938ec92-373e-4e34-a638-4ba206bc1ad8",
+      "name": "Sticky Note30"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "temperature-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3328,
+        -2464
+      ],
+      "id": "f74fc950-36c0-410d-8f00-08b7dca21e60",
+      "name": "Webhook temperature",
+      "webhookId": "2066fb99-2712-4d4e-a519-2e77e949e5fe"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "humidity-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3328,
+        -2272
+      ],
+      "id": "1b8ddd87-a57f-4264-80ed-8e8dea6fab4c",
+      "name": "Webhook humidity",
+      "webhookId": "2066fb99-2712-4d4e-a519-2e77e949e5fe"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "precipitation-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3328,
+        -2080
+      ],
+      "id": "96851af9-6b36-497d-b2dc-e46acf48b7b7",
+      "name": "Webhook precipitation",
+      "webhookId": "2066fb99-2712-4d4e-a519-2e77e949e5fe"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wind-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3328,
+        -1888
+      ],
+      "id": "f21ba0ca-cb85-464c-91cf-35114a76cc49",
+      "name": "Webhook wind speed",
+      "webhookId": "2066fb99-2712-4d4e-a519-2e77e949e5fe"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "weatherType",
+              "value": "Temperature"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3104,
+        -2464
+      ],
+      "id": "bd29f954-3b70-4827-a124-80edcd84482e",
+      "name": "Set type Temperature"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "weatherType",
+              "value": "Humidity"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3104,
+        -2272
+      ],
+      "id": "65635728-0d98-4e5d-9978-2abc6b517bb3",
+      "name": "Set type Humidity"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "weatherType",
+              "value": "Precipitation"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3104,
+        -2080
+      ],
+      "id": "6d486566-f2ae-4aea-ab37-db940e905baa",
+      "name": "Set type Precipitation"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "weatherType",
+              "value": "WindSpeed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -3104,
+        -1888
+      ],
+      "id": "49c6f264-b53a-4916-9a15-2a1e679a1e7a",
+      "name": "Set type Wind Speed"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "404a2c44-4a55-41d9-a543-12c7e8c92679",
+              "leftValue": "={{ $('Webhook heart rate').item.json.body.Value }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            },
+            {
+              "id": "bb921885-90aa-4ad1-9023-55de92a7653b",
+              "leftValue": "={{ $('Webhook heart rate').item.json.body.Value }}",
+              "rightValue": 220,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2912,
+        -4576
+      ],
+      "id": "40e1b67f-ce76-4ccf-9361-7303acec9463",
+      "name": "If heartrate value detected"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2672,
+        -4752
+      ],
+      "id": "3d922b77-631a-464f-bf25-dcb39b0b71b5",
+      "name": "Empty Respond to Webhook heartrate not detected"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sun-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3360,
+        -3808
+      ],
+      "id": "0724cc7b-84b7-44d8-9832-4b17a82a4e73",
+      "name": "Webhook sun data",
+      "webhookId": "2066fb99-2712-4d4e-a519-2e77e949e5fe"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "moon-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3360,
+        -3616
+      ],
+      "id": "a6d170f8-1f4c-43e3-ae48-83fccc75e14e",
+      "name": "Webhook moon data",
+      "webhookId": "228be428-5881-4c59-95ed-fe73e2872daf"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? {};\n\nif (body.userId == null) throw new Error('Missing UserID');\nif (body.smartWatchId == null) throw new Error('Missing SmartWatchID');\nif (body.androidId == null) throw new Error('Missing AndroidID');\nif (!$json.type) throw new Error('Missing type (should come from Set node)');\n\nreturn [{\n  json: {\n    userID: Number(body.userId),\n    watchID: Number(body.smartWatchId),\n    phoneID: Number(body.androidId),\n    type: String($json.type),\n    lat: body.lat ?? null,\n    lon: body.lon ?? null,\n    body\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2912,
+        -3712
+      ],
+      "id": "1bb06dd0-8e02-4f0f-b2e7-ac8b7aeb3a29",
+      "name": "Normalize sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prev = $input.first().json;\nconst body = prev.body ?? {};\n\nif (body.lat == null || body.lon == null) {\n  return [{ json: { statusCode: 400, error: 'Missing lat/lon', got: { lat: body.lat, lon: body.lon }}}];\n}\n\nconst lat = body.lat;\nconst lon = body.lon;\n\nconst apiKey = \"b2b40f0636bb42c78ab922b7ef5a90fd\";\n\nif (!apiKey) {\n  return [{\n    json: {\n      statusCode: 500,\n      payload: { error: \"SUN_API_KEY not configured\" }\n    }\n  }];\n}\n\nconst url =\n  `https://api.ipgeolocation.io/astronomy?apiKey=${apiKey}` +\n  `&lat=${encodeURIComponent(lat)}` +\n  `&long=${encodeURIComponent(lon)}`;\n\nreturn [{\n  json: {\n    url,\n    lat,\n    lon\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2704,
+        -3712
+      ],
+      "id": "ddbecc29-3f3d-4d87-80d3-f7bd695d163f",
+      "name": "Construct API Request for sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize sun/moon azimuth').first().json;\nconst claim = $json; // Try Claim Slot output\n\nreturn [{\n  json: {\n    ...n,\n    body: n.body,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1824,
+        -3712
+      ],
+      "id": "43859607-6319-40e1-b200-edce0a8f2535",
+      "name": "Merge Inputs sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.claimUserid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1536,
+        -3696
+      ],
+      "id": "d70dd950-83f2-4803-a91f-fed956bb8801",
+      "name": "Allowed (timer expired) for sun/moon azimuth?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM feedback_config_rules\nWHERE active = TRUE\n  AND type = $1\nORDER BY minvalue, maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [ $json.type ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1344,
+        -3808
+      ],
+      "id": "bc8c7806-35be-414a-9e4b-997422422d35",
+      "name": "Fetch Active sun/moon azimuth Rules",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Extract Azimuth').first().json;\nconst rules = $input.all().map(i => i.json);\n\nconst az = Number(normalized.azimuth);\nconst type = normalized.type;\n\nlet chosen = null;\n\nfor (const r of rules) {\n  const minV = Number(r.minvalue);\n  const maxV = Number(r.maxvalue);\n\n  if (az >= minV && az <= maxV) {\n    chosen = r;\n    break;\n  }\n}\n\nlet pulses = 0;\nlet intensity = 0;\nlet duration = 0;\nlet interval = 0;\nlet fbRangeID = 0;\n\nif (chosen) {\n  pulses = Number(chosen.minpulses ?? 0);\n  intensity = Number(chosen.minintensity ?? 0);\n  duration = Number(chosen.minduration ?? 0);\n  interval = Number(chosen.mininterval ?? 0);\n  fbRangeID = Number(chosen.id ?? 0);\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    alertGiven: chosen ? 'yes' : 'no',\n    pulses,\n    intensity,\n    duration,\n    interval,\n    fbRangeID,\n    reason: 'time_interval'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        -3808
+      ],
+      "id": "77b4cd10-890e-44ab-ac7f-bf17b3f034db",
+      "name": "Evaluate sun/moon azimuth Feedback Rules"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  type: $json.type,\n  azimuth: $json.azimuth,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -896,
+        -3712
+      ],
+      "id": "62359944-2b88-400e-a794-162ee2dcac29",
+      "name": "Respond to Webhook success sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $json;\n\nif (!p.userID || !p.watchID || !p.phoneID) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: 'Missing identifiers',\n      payload: p\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.azimuth),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      String(p.reason)\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        -3904
+      ],
+      "id": "d3c1d291-0c75-41c9-ae4b-aefb9a2d33df",
+      "name": "Build insert_sensor_data Query for sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -672,
+        -3904
+      ],
+      "id": "f0017be6-66dc-4d05-a903-2087a923d6d0",
+      "name": "Execute insert_sensor_data for sun/moon azimuth",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize sun/moon azimuth').first().json;\n\nreturn [{\n  json: {\n    type: n.type,\n    userID: n.userID,\n    watchID: n.watchID,\n    phoneID: n.phoneID,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited',\n    azimuth: $('Extract Azimuth').first().json.azimuth\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1328,
+        -3616
+      ],
+      "id": "084155cf-82b3-4b45-8ca7-14adc49871e7",
+      "name": "Build Rate-Limited Response for sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1104,
+        -3616
+      ],
+      "id": "b8177d1a-4102-40ed-bcb3-ce618c5f8e1e",
+      "name": "Respond (rate-limited) sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.waqi.info/feed/geo:{{ $json.body.lat }};{{ $json.body.lon }}/?token=e0d7d00db3bd0335708c7ac9343ec38db757a4e8",
+        "options": {}
+      },
+      "id": "1426493c-1a5c-4b86-9501-207b7a56514d",
+      "name": "Fetch AQI Data pollution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -3104,
+        -2768
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2496,
+        -3712
+      ],
+      "id": "95a84b1a-8c26-414f-bc67-e77a1c6e69a2",
+      "name": "Fetch API data for sun/moon azimuth"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.userid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2704,
+        -2768
+      ],
+      "id": "91a096cb-4514-47f3-b8cd-cf021eb4cf47",
+      "name": "Allowed (timer expired) for pollution?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM feedback_config_rules WHERE type = 'Pollution' AND active = true;",
+        "options": {}
+      },
+      "id": "63226329-5a3d-4db1-95f5-04846d23d2dc",
+      "name": "Get Pollution Rules",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -2432,
+        -2864
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'Pollution',\n  '{{ $json.alertGiven }}',\n  {{ $json.aqi }},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }},\n  'time_interval'\n);",
+        "options": {}
+      },
+      "id": "98096a6f-a84e-4693-bd58-86ff4b56ff59",
+      "name": "Log Pollution Event",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -1984,
+        -2768
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const aqi = $('Fetch AQI Data pollution').first().json.data.aqi;\nconst rules = $input.all().map(r => r.json);\nconst n = $('Webhook pollution data').first().json;\n\nlet feedback = {\n    aqi: aqi,\n    intensity: 0,\n    pulses: 0,\n    duration: 0,\n    interval: 0,\n    alertGiven: \"no\",\n    fbRangeID: \"\",\n    userID: n.body.userId,\n    SmartWatchID: n.body.smartWatchId,\n    AndroidID: n.body.androidId,\n};\n\nfor (const rule of rules) {\n    if (aqi >= rule.minvalue && aqi <= rule.maxvalue) {\n        feedback.intensity = rule.minintensity || 150;\n        feedback.pulses = rule.minpulses || 3;\n        feedback.duration = rule.minduration || 200;\n        feedback.interval = rule.mininterval || 100;\n        feedback.fbRangeID = rule.id;\n        feedback.alertGiven = \"yes\";\n        break;\n    }\n}\n\nreturn [{ json: feedback }];"
+      },
+      "id": "0826b693-6c10-421c-a1c5-4285bb5b490d",
+      "name": "Calculate pollution Haptics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2208,
+        -2864
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "119ceb00-f463-4a32-8f1b-a1285c175c08",
+      "name": "Response to Watch success on pollution",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        -2976
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Webhook pollution data').first().json;\nconst aqi = $('Fetch AQI Data pollution').first().json.data.aqi;\n\nreturn [{\n  json: {\n    userID: n.body.userId,\n    SmartWatchID: n.body.smartWatchId,\n    AndroidID: n.body.androidId,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited',\n    aqi: aqi\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2432,
+        -2656
+      ],
+      "id": "f96b3a76-d12d-4f70-9dab-ac867ea22b0a",
+      "name": "Build Rate-Limited Response for pollution"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT insert_sensor_data(\n  {{ $json.userID }},\n  {{ $json.SmartWatchID }},\n  {{ $json.AndroidID }},\n  'Pollution',\n  '{{ $json.alertGiven }}',\n  {{ $json.aqi }},\n  {{ $json.pulses }},\n  {{ $json.intensity }},\n  {{ $json.duration }},\n  {{ $json.interval }},\n  {{ $json.fbRangeID || 0 }},\n  '{{ $json.reason }}'\n);",
+        "options": {}
+      },
+      "id": "d5e223fa-a7f4-468f-8010-286bf6705ab0",
+      "name": "Log Rate-limited Pollution Event",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -2208,
+        -2496
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2208,
+        -2704
+      ],
+      "id": "0e23e3ee-881e-4bf8-8563-85e53c58a0ca",
+      "name": "Respond (rate-limited) pollution"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pollution-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3328,
+        -2768
+      ],
+      "id": "eac315a2-dffd-4298-8dd0-587cfcea6505",
+      "name": "Webhook pollution data",
+      "webhookId": "bfaa76e2-1fb2-424b-a6e8-cf4467dd3d90"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? {};\n\nif (body.userId == null) throw new Error('Missing UserID');\nif (body.smartWatchId == null) throw new Error('Missing SmartWatchID');\nif (body.androidId == null) throw new Error('Missing AndroidID');\nif (!$json.weatherType) throw new Error('Missing weatherType (should come from Set node)');\n\nreturn [{\n  json: {\n    userID: Number(body.userId),\n    watchID: Number(body.smartWatchId),\n    phoneID: Number(body.androidId),\n    type: String($json.weatherType),\n    lat: body.lat ?? null,\n    lon: body.lon ?? null,\n    body\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2880,
+        -2176
+      ],
+      "id": "d430a368-a1df-4792-87ea-0527cb46144a",
+      "name": "Normalize weather"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prev = $input.first().json;\nconst body = prev.body ?? {};\n\nif (body.lat == null || body.lon == null) {\n  return [{ json: { statusCode: 400, error: 'Missing lat/lon', got: { lat: body.lat, lon: body.lon }}}];\n}\n\nconst lat = body.lat;\nconst lon = body.lon;\n\n// fetches forcast by lat&lon for current temperature, humidity, precipitation and wind\nconst url =\n  `https://api.open-meteo.com/v1/forecast?` +\n  `latitude=${encodeURIComponent(lat)}` +\n  `&longitude=${encodeURIComponent(lon)}` +\n  '&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&timezone=auto';\n\nreturn [{\n  json: {\n    url,\n    lat,\n    lon\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2656,
+        -2176
+      ],
+      "id": "befd4b2b-8333-4221-b005-f19af66b3d01",
+      "name": "Construct API Request for weather"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2432,
+        -2176
+      ],
+      "id": "93bcde7b-4a5a-4252-8374-98e9942c0d83",
+      "name": "Fetch API data for weather"
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize weather').first().json;   // <-- the payload with type+body+ids\nconst type = normalized.type;\n\nconst api = $input.first().json;\n\nlet value = null;\nconst cur = api?.current;\n\n// all the weather types\nif (type === 'Temperature') {\n  value = cur?.temperature_2m;\n} else if (type === 'Humidity') {\n  value = cur?.relative_humidity_2m;\n} else if (type === 'Precipitation') {\n  value = cur?.precipitation;\n} else if (type === 'Wind') {\n  value = cur?.wind_speed_10m;\n}\n\nif (value == null) {\n  return [{\n    json: { statusCode: 500, error: `${type} value missing`, rawApi: api }\n  }];\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    value: Number(value)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2208,
+        -2176
+      ],
+      "id": "b5e8b964-a960-45b3-9dc9-ce3e72124b0a",
+      "name": "Extract weather data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize weather').first().json;\nconst claim = $json; // Try Claim Slot output\nconst value = $('Extract weather data').first().json.value\n\nreturn [{\n  json: {\n    ...n,\n    body: n.body,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null,\n    value\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        -2176
+      ],
+      "id": "6148e6ae-585e-4aec-b6ca-9d8839df5102",
+      "name": "Merge Inputs weather"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.claimUserid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1536,
+        -2176
+      ],
+      "id": "283b34f7-a655-4bef-a35a-00fdb57d679b",
+      "name": "Allowed (timer expired) for weather?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM feedback_config_rules\nWHERE active = TRUE\n  AND type = $1\nORDER BY minvalue, maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [ $json.type ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1312,
+        -2272
+      ],
+      "id": "0276b475-d5a1-462b-823a-afa8c11b2ba6",
+      "name": "Fetch Active weather Rules",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Merge Inputs weather').first().json;\nconst rules = $input.all().map(i => i.json);\n\nconst az = Number(normalized.value);\n\nlet chosen = null;\n\nfor (const r of rules) {\n  const minV = Number(r.minvalue);\n  const maxV = Number(r.maxvalue);\n\n  if (az >= minV && az <= maxV) {\n    chosen = r;\n    break;\n  }\n}\n\nlet pulses = 0;\nlet intensity = 0;\nlet duration = 0;\nlet interval = 0;\nlet fbRangeID = 0;\n\nif (chosen) {\n  pulses = Number(chosen.minpulses ?? 0);\n  intensity = Number(chosen.minintensity ?? 0);\n  duration = Number(chosen.minduration ?? 0);\n  interval = Number(chosen.mininterval ?? 0);\n  fbRangeID = Number(chosen.id ?? 0);\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    alertGiven: chosen ? 'yes' : 'no',\n    pulses,\n    intensity,\n    duration,\n    interval,\n    fbRangeID,\n    reason: 'time_interval'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1088,
+        -2272
+      ],
+      "id": "e5bff63b-f532-4b20-bcde-7b2fe25027c0",
+      "name": "Evaluate weather Feedback Rules"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $json;\n\nif (!p.userID || !p.watchID || !p.phoneID) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: 'Missing identifiers',\n      payload: p\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.value),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      'time_interval'\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        -2368
+      ],
+      "id": "e0545b2e-7594-4a09-84a9-c2fb40bbe9e6",
+      "name": "Build insert_sensor_data Query for weather"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -640,
+        -2368
+      ],
+      "id": "2e1facd1-6950-47b2-981f-8130c13ba6b7",
+      "name": "Execute insert_sensor_data for weather",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  type: $json.type,\n  value: $json.value,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -640,
+        -2176
+      ],
+      "id": "f70c274e-e403-4076-90d1-d3d3af332194",
+      "name": "Respond to Webhook success weather"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize weather').first().json;\nconst value = $('Merge Inputs weather').first().json.value;\n\nreturn [{\n  json: {\n    type: n.type,\n    userID: n.userID,\n    watchID: n.watchID,\n    phoneID: n.phoneID,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited',\n    value\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        -2080
+      ],
+      "id": "be1201ad-260d-4562-afa6-cbb56cef57a1",
+      "name": "Build Rate-Limited Response for weather"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1088,
+        -1936
+      ],
+      "id": "a725a186-c7bd-423f-a21e-a52ace693d7c",
+      "name": "Respond (rate-limited) weather"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -864,
+        -2112
+      ],
+      "id": "2d7282d2-5403-4f31-a8bf-dcd007c0ac50",
+      "name": "log rate limited for weather",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $json;\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.value),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      'rate_limited'\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1088,
+        -2112
+      ],
+      "id": "36069906-0558-45f9-8396-ce46e9b2ef66",
+      "name": "Transform weather data to PGSQL db node"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Access global workflow memory\nconst staticData = $getWorkflowStaticData('global');\n\n// Get current sensor data\nconst currentHR = parseFloat($('Webhook heart rate').item.json.body.Value); \nconst currentTime = new Date().getTime();\n\nlet trendTrigger = false;\n\n// Initialize snapshot if it doesn't exist yet\nif (staticData.snapshotHR == null) {\n    staticData.snapshotHR = currentHR;\n    staticData.snapshotTime = currentTime;\n}\n\n// Calculate time since last snapshot\nconst timeDiff = currentTime - staticData.snapshotTime;\n\n// Check if 0.5 minutes have passed\nif (timeDiff >= 30000) {\n    // 1. Compare Current vs Snapshot\n    const pastHR = parseFloat(staticData.snapshotHR);\n    \n    // Check for 15 BPM difference (Absolute value handles up or down)\n    if (Math.abs(currentHR - pastHR) >= 15) {\n        trendTrigger = true;\n    }\n\n    // 2. UPDATE the snapshot for the next minute comparison\n    // We update this regardless of whether we triggered or not\n    staticData.snapshotHR = currentHR;\n    staticData.snapshotTime = currentTime;\n}\n\nconst diff = staticData.snapshotHR == null ? 0 : Math.abs(currentHR - staticData.snapshotHR);\n\nreturn [{\n  json: {\n    ...items[0].json,\n    trendTrigger,\n    debug_timeDiffMs: timeDiff,\n    debug_diff: diff,\n    debug_snapshotHR: staticData.snapshotHR,\n    debug_currentHR: currentHR\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2720,
+        -4576
+      ],
+      "id": "1c62034e-698c-4ef7-be8e-14b1ac97838f",
+      "name": "Calculate heartrate Trend"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c5da5823-dd44-44a4-8a96-279bc92c1580",
+              "leftValue": "={{ $json.trendTrigger }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2576,
+        -4576
+      ],
+      "id": "64335c80-0c9f-483c-bd10-de8a03804c44",
+      "name": "if heartrate trend detected"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\nRETURNING \"userid\", \"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [ $('Webhook heart rate').item.json.body.UserID ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2400,
+        -4752
+      ],
+      "id": "b25cfb6c-365a-4351-ac45-f23ce95f6282",
+      "name": "Force Update Slot heartrate",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d616b709-a66d-4e0b-91d1-cf2508fdbcfa",
+              "leftValue": "={{ $json.userid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2256,
+        -4432
+      ],
+      "id": "8f99d019-308e-4547-a921-52c192bf86d7",
+      "name": "Allowed (timer expired) for heartrate?"
+    },
+    {
+      "parameters": {
+        "jsCode": "//this should send empty vibration if its not been 5 minutes\nconst userID = parseInt($('Webhook heart rate').first().json.body.UserID);\nconst SmartWatchID = parseInt($('Webhook heart rate').first().json.body.SmartWatchID);\nconst AndroidID = parseInt($('Webhook heart rate').first().json.body.AndroidID);\nconst rawValue = parseFloat($('Webhook heart rate').first().json.body.Value);\n\nreturn [\n  {\n    json: {\n      monitoringType: 'HeartRate',\n      userID,\n      SmartWatchID,\n      AndroidID,\n      alertGiven: 'no',\n      pulses: 0,\n      intensity: 0,\n      duration: 0,\n      interval: 0,\n      fbRangeID: 9999,\n      reason: 'rate_limited',\n      rawValue,\n      vibrationReason: null\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2032,
+        -4400
+      ],
+      "id": "7c9585d0-c79d-4d44-894f-94c9c24d1ccf",
+      "name": "Build Rate-Limited Response for heartrate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1776,
+        -4480
+      ],
+      "id": "f2d2e299-412a-4057-bc4b-ba9e7bebcb4d",
+      "name": "Empty Respond to Webhook heartrate"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    userID: $node[\"Webhook heart rate\"].json.body.UserID,\n    SmartWatchID: $node[\"Webhook heart rate\"].json.body.SmartWatchID,\n    AndroidID: $node[\"Webhook heart rate\"].json.body.AndroidID,\n    vibrationReason: $json.vibrationReason\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1856,
+        -4656
+      ],
+      "id": "e4d5230f-0f1b-4024-99c6-f7363419999e",
+      "name": "carry heartrate context"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorID = st.sensorID\nWHERE sd.userID = {{ $('Webhook heart rate').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook heart rate').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook heart rate').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
+        "additionalFields": {}
+      },
+      "name": "Fetch heartrate History",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        -1664,
+        -4768
+      ],
+      "id": "1dec629b-2067-4250-91cd-10e133eb3fc2",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract database readings\n// These are ordered by time DESC (Index 0 is the most recent DB entry)\nconst readings = items.map(item => parseFloat(item.json.value)).filter(v => !isNaN(v));\n\n// Extract raw sensor input from Webhook\nconst rawValue = parseFloat($('Webhook heart rate').item.json.body.Value || 0);\n\n// Outlier definition\nconst isOutlier = (v) => v < 40 || v > 220;\n\n// Add raw value if it's valid (for logic consistency)\nif (!isOutlier(rawValue)) {\n    readings.push(rawValue); \n}\n\n// LOWER the alpha to make smoothing stronger against vibration noise\n// 0.1 means \"Trust the history 90%, trust the new value 10%\"\nconst alpha = 0.1; \n\nlet smoothed = rawValue; // Default if no history\n\nif (readings.length > 0) {\n    // FIX: Use readings[0] because your SQL sorts by DESC (Newest First)\n    // This gets the most recent saved value from the database\n    const prev = readings[0]; \n    smoothed = alpha * rawValue + (1 - alpha) * prev;\n}\n\nreturn [\n  {\n    json: {\n      heartRate: Math.round(smoothed),\n      rawValue: rawValue\n    }\n  }\n];"
+      },
+      "name": "Data Cleaning heartrate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -1472,
+        -4768
+      ],
+      "id": "af58cc8f-3020-448d-953a-e3ff3f98d890"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM feedback_config_rules WHERE type = 'HeartRate' AND active = true;",
+        "additionalFields": {}
+      },
+      "name": "Get heartrate Config Rules",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        -4768
+      ],
+      "id": "467eadc6-ada4-4233-8671-cf5f6c8d890e",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const heartRate = $node[\"Data Cleaning heartrate\"].json.heartRate;\n\nconst userID = $node[\"Webhook heart rate\"].json.body.UserID;\nconst SmartWatchID = $node[\"Webhook heart rate\"].json.body.SmartWatchID;\nconst AndroidID = $node[\"Webhook heart rate\"].json.body.AndroidID;\n\nconst mappings = items.map(i => i.json);\n\nfunction map(value, inMin, inMax, outMin, outMax) {\n  if (inMin === inMax) return outMin;\n  return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);\n}\n\nlet feedback = {\n  intensity: 0,\n  pulses: 0,\n  duration: 0,\n  interval: 0,\n  alertGiven: \"no\",\n  fbRangeID: null,\n  monitoringType: \"HeartRate\",\n  userID,\n  SmartWatchID,\n  AndroidID,\n};\n\nif (!mappings || mappings.length === 0) {\n  return [{ json: feedback }];\n}\n\nfor (const m of mappings) {\n  const minHR = parseFloat(m.minvalue);\n  const maxHR = parseFloat(m.maxvalue);\n\n  if (heartRate >= minHR && heartRate <= maxHR) {\n    feedback.intensity = Math.round(\n      map(heartRate, minHR, maxHR, Number(m.minintensity), Number(m.maxintensity))\n    );\n    feedback.pulses = 10;\n\n    feedback.duration = Math.round(\n      map(heartRate, minHR, maxHR, Number(m.minduration), Number(m.maxduration))\n    );\n\n    const totalCycleTimeMs = 60000 / heartRate;\n    feedback.interval = Math.max(0, Math.round(totalCycleTimeMs - feedback.duration));\n\n    feedback.fbRangeID = parseInt(m.id);\n    feedback.alertGiven = feedback.pulses > 0 ? \"yes\" : \"no\";\n    break;\n  }\n}\n\nreturn [{ json: feedback }];\n"
+      },
+      "name": "Check heartrate Feedback Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        -4768
+      ],
+      "id": "4c7c9348-eabb-418a-acbc-897a749897a7"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT insert_sensor_data($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+        "options": {
+          "queryReplacement": "={{ [$json.userID, $json.SmartWatchID, $json.AndroidID, 'HeartRate', $json.alertGiven, $json.rawValue, $json.pulses, $json.intensity, $json.duration, $json.interval, $json.fbRangeID, $json.vibrationReason] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1776,
+        -4320
+      ],
+      "id": "5c170755-70f6-4bc8-9f5c-6147b450575a",
+      "name": "Insert Rate-Limited heartrate Data Log",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -960,
+        -4368
+      ],
+      "id": "747135ac-66a5-41c1-9788-f8b2f141da94",
+      "name": "merge heartrate reason + feedback"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Respond to Webhook success heartrate",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        -4592
+      ],
+      "id": "5e00c18a-15f1-440b-b2dd-712ebc6bb77d"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT insert_sensor_data($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+        "options": {
+          "queryReplacement": "={{ [$json.userID, $json.SmartWatchID, $json.AndroidID, 'HeartRate', $json.alertGiven, $node[\"Data Cleaning heartrate\"].json.rawValue, $json.pulses, $json.intensity, $json.duration, $json.interval, $json.fbRangeID, $json.vibrationReason ?? null] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -688,
+        -4272
+      ],
+      "id": "541e65f5-45ed-4ccb-b6ea-821e87729fe5",
+      "name": "Insert heartrate Data Log",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";\n",
+        "options": {
+          "queryReplacement": "={{ [ $('Webhook heart rate').item.json.body.UserID, '1 minutes' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2432,
+        -4416
+      ],
+      "id": "6683d405-0db1-4a7d-bf83-3ed46a6a617a",
+      "name": "Rate Limit Guard heartrate",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [ $json.body.userId, '1 minutes' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2048,
+        -3712
+      ],
+      "id": "d1f65b8d-3b1d-4162-aa0f-26e00c700970",
+      "name": "Rate Limit Guard sun/moon azimuth",
+      "alwaysOutputData": true,
+      "notesInFlow": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "change time interval here"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [ $('Webhook pollution data').item.json.body.userId, '1 minutes' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2896,
+        -2768
+      ],
+      "id": "a348cb7b-1fd9-4b68-bff2-f98fa9aa6086",
+      "name": "Rate Limit Guard pollution",
+      "alwaysOutputData": true,
+      "notesInFlow": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "change time interval here"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize weather').item.json.body.userId, '1 minutes' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1984,
+        -2176
+      ],
+      "id": "89dd8906-8817-45bf-8d40-942e6f76730b",
+      "name": "Rate Limit Guard weather",
+      "alwaysOutputData": true,
+      "notesInFlow": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "change time interval here"
+    }
+  ],
+  "connections": {
+    "Webhook heart rate": {
+      "main": [
+        [
+          {
+            "node": "If heartrate value detected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set significant change reason": {
+      "main": [
+        [
+          {
+            "node": "carry heartrate context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set timer interval reason": {
+      "main": [
+        [
+          {
+            "node": "carry heartrate context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type SunAzimuth": {
+      "main": [
+        [
+          {
+            "node": "Normalize sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type MoonAzimuth": {
+      "main": [
+        [
+          {
+            "node": "Normalize sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Azimuth": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Guard sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "insert pollution for testing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook temperature": {
+      "main": [
+        [
+          {
+            "node": "Set type Temperature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook humidity": {
+      "main": [
+        [
+          {
+            "node": "Set type Humidity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook precipitation": {
+      "main": [
+        [
+          {
+            "node": "Set type Precipitation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook wind speed": {
+      "main": [
+        [
+          {
+            "node": "Set type Wind Speed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type Temperature": {
+      "main": [
+        [
+          {
+            "node": "Normalize weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type Humidity": {
+      "main": [
+        [
+          {
+            "node": "Normalize weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type Precipitation": {
+      "main": [
+        [
+          {
+            "node": "Normalize weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type Wind Speed": {
+      "main": [
+        [
+          {
+            "node": "Normalize weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If heartrate value detected": {
+      "main": [
+        [
+          {
+            "node": "Empty Respond to Webhook heartrate not detected",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calculate heartrate Trend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook sun data": {
+      "main": [
+        [
+          {
+            "node": "Set type SunAzimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook moon data": {
+      "main": [
+        [
+          {
+            "node": "Set type MoonAzimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Construct API Request for sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construct API Request for sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Fetch API data for sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Inputs sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Allowed (timer expired) for sun/moon azimuth?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed (timer expired) for sun/moon azimuth?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active sun/moon azimuth Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited Response for sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active sun/moon azimuth Rules": {
+      "main": [
+        [
+          {
+            "node": "Evaluate sun/moon azimuth Feedback Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate sun/moon azimuth Feedback Rules": {
+      "main": [
+        [
+          {
+            "node": "Build insert_sensor_data Query for sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook success sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build insert_sensor_data Query for sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Execute insert_sensor_data for sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited Response for sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Respond (rate-limited) sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch AQI Data pollution": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Guard pollution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch API data for sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Extract Azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed (timer expired) for pollution?": {
+      "main": [
+        [
+          {
+            "node": "Get Pollution Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited Response for pollution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pollution Rules": {
+      "main": [
+        [
+          {
+            "node": "Calculate pollution Haptics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate pollution Haptics": {
+      "main": [
+        [
+          {
+            "node": "Response to Watch success on pollution",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Pollution Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited Response for pollution": {
+      "main": [
+        [
+          {
+            "node": "Log Rate-limited Pollution Event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond (rate-limited) pollution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook pollution data": {
+      "main": [
+        [
+          {
+            "node": "Fetch AQI Data pollution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize weather": {
+      "main": [
+        [
+          {
+            "node": "Construct API Request for weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construct API Request for weather": {
+      "main": [
+        [
+          {
+            "node": "Fetch API data for weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch API data for weather": {
+      "main": [
+        [
+          {
+            "node": "Extract weather data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract weather data": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Guard weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Inputs weather": {
+      "main": [
+        [
+          {
+            "node": "Allowed (timer expired) for weather?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed (timer expired) for weather?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active weather Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited Response for weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active weather Rules": {
+      "main": [
+        [
+          {
+            "node": "Evaluate weather Feedback Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate weather Feedback Rules": {
+      "main": [
+        [
+          {
+            "node": "Build insert_sensor_data Query for weather",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook success weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build insert_sensor_data Query for weather": {
+      "main": [
+        [
+          {
+            "node": "Execute insert_sensor_data for weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited Response for weather": {
+      "main": [
+        [
+          {
+            "node": "Respond (rate-limited) weather",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Transform weather data to PGSQL db node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform weather data to PGSQL db node": {
+      "main": [
+        [
+          {
+            "node": "log rate limited for weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate heartrate Trend": {
+      "main": [
+        [
+          {
+            "node": "if heartrate trend detected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if heartrate trend detected": {
+      "main": [
+        [
+          {
+            "node": "Force Update Slot heartrate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rate Limit Guard heartrate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Force Update Slot heartrate": {
+      "main": [
+        [
+          {
+            "node": "set significant change reason",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed (timer expired) for heartrate?": {
+      "main": [
+        [
+          {
+            "node": "set timer interval reason",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited Response for heartrate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited Response for heartrate": {
+      "main": [
+        [
+          {
+            "node": "Empty Respond to Webhook heartrate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Rate-Limited heartrate Data Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "carry heartrate context": {
+      "main": [
+        [
+          {
+            "node": "Fetch heartrate History",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "merge heartrate reason + feedback",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Fetch heartrate History": {
+      "main": [
+        [
+          {
+            "node": "Data Cleaning heartrate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Cleaning heartrate": {
+      "main": [
+        [
+          {
+            "node": "Get heartrate Config Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get heartrate Config Rules": {
+      "main": [
+        [
+          {
+            "node": "Check heartrate Feedback Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check heartrate Feedback Rules": {
+      "main": [
+        [
+          {
+            "node": "merge heartrate reason + feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge heartrate reason + feedback": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook success heartrate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert heartrate Data Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Guard heartrate": {
+      "main": [
+        [
+          {
+            "node": "Allowed (timer expired) for heartrate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Guard sun/moon azimuth": {
+      "main": [
+        [
+          {
+            "node": "Merge Inputs sun/moon azimuth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Guard pollution": {
+      "main": [
+        [
+          {
+            "node": "Allowed (timer expired) for pollution?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Guard weather": {
+      "main": [
+        [
+          {
+            "node": "Merge Inputs weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+  }
+}
