@@ -865,7 +865,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE feedback_config_rules \nSET isactive = false \nWHERE id = $1\nRETURNING id, isactive, sensorname;",
+        "query": "UPDATE feedback_config_rules \nSET active = false \nWHERE id = $1\nRETURNING id, active, type;",
         "options": {
           "queryReplacement": "={{ [$json.mappingId] }}"
         }

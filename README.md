@@ -12,6 +12,8 @@ This repository contains the n8n automation workflows and the PostgreSQL schema 
 1. **Database:** Run `DB_NEW.sql` in your PostgreSQL instance.
 2. **n8n:** Import `Smartwatch Haptic Backend.json`.
 3. **Rules:** Use the `feedback_config_rules` table to define your active haptic ranges.
+4. **Restore database:** Open PSQL tool workspace and run: 
+<br> CREATE DATABASE smartwatchsys_db; <br> \c smartwatchsys_db <br> \i 'C:<YOUR-DIRECTORY-PATH>/<DB-FILE-NAME>.sql'
 
 ## 🔗 Project Ecosystem
 - [Researcher Dashboard](https://github.com/TTaliR/ResearcherSideApp-FULL) - The GUI for managing the rules stored in this DB.
