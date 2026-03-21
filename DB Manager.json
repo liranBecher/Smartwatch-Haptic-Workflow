@@ -10,10 +10,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        192
+        288,
+        48
       ],
-      "id": "feb73b72-ccef-49af-aa8b-3ccbf054b113",
+      "id": "2d9666a4-86a4-4145-8b62-be7a1c25bc58",
       "name": "Get current configurations",
       "webhookId": "1b044278-5d6b-4f82-ad44-d93bb6524635"
     },
@@ -26,15 +26,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        80,
-        192
+        512,
+        48
       ],
-      "id": "91c4574a-1c72-45bc-89fe-795c7bb8eab4",
+      "id": "519f3a99-08de-4611-abdd-8be6e50d5d83",
       "name": "FetchCurrentRulesFromDB",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -47,10 +47,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        416
+        288,
+        272
       ],
-      "id": "135ccc49-24c4-4c53-9ccc-9f08d4867a48",
+      "id": "ea35fa87-325b-4323-a291-4ed6ba3bc98d",
       "name": "Get users",
       "webhookId": "36b477ed-3989-424e-8961-91732079009a"
     },
@@ -62,10 +62,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        304,
-        416
+        736,
+        272
       ],
-      "id": "b3582d21-aa67-45f6-bada-ee879a09f0fc",
+      "id": "f935fc0c-dc06-4bdc-b9f0-7b629db05701",
       "name": "Respond to Webhook Get-users"
     },
     {
@@ -77,10 +77,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        528,
-        192
+        960,
+        48
       ],
-      "id": "ad5733f4-4ab6-4e3f-a0c0-04912a54406a",
+      "id": "269f659b-bac9-49ce-b49f-3ff83568850e",
       "name": "Respond to Webhook current-configuraion"
     },
     {
@@ -92,10 +92,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        736
+        288,
+        592
       ],
-      "id": "3cf86f69-da75-4571-b191-2b828bfa0b1f",
+      "id": "e45c4e3a-e07c-4b21-a7e1-dd20da35fcfa",
       "name": "Get sensor data",
       "webhookId": "de1c4e46-405a-4089-8974-3935dfcc72eb"
     },
@@ -106,10 +106,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        752,
-        640
+        1184,
+        496
       ],
-      "id": "999e1c8b-751e-43f0-b33b-58c0f99a5e56",
+      "id": "3778dd18-ba91-4a56-b610-29f9a13718c0",
       "name": "check if empty"
     },
     {
@@ -121,10 +121,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        976,
-        640
+        1408,
+        496
       ],
-      "id": "f9803ac2-d7a8-40c7-9368-708ce48fb489",
+      "id": "651b75e2-09f5-4d8b-992e-64e6c8fb506c",
       "name": "Respond to Webhook sensor data"
     },
     {
@@ -137,10 +137,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        528,
-        832
+        960,
+        688
       ],
-      "id": "1ba7e1a5-668f-48da-a951-6e3386fd233d",
+      "id": "42454cbf-7769-4b6e-8893-f1fd406ab385",
       "name": "Respond to Webhook sensor data error"
     },
     {
@@ -152,10 +152,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        1056
+        288,
+        912
       ],
-      "id": "ac5e048f-215b-4ca9-ad10-a6139ef22e5d",
+      "id": "ac7229a2-c73a-45b1-b5f7-cab07683cc9f",
       "name": "Get sensor types",
       "webhookId": "10535e70-e76c-457c-ac76-c5ad131f790a"
     },
@@ -167,10 +167,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        304,
-        1056
+        736,
+        912
       ],
-      "id": "42012bb6-fbff-4da4-916c-8bb8faa736ea",
+      "id": "6a4eeb43-4f08-4e45-8dea-235519ae7b92",
       "name": "Respond to Webhook get sensor type"
     },
     {
@@ -182,10 +182,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        1280
+        288,
+        1136
       ],
-      "id": "97619e9c-c90c-4299-99ef-a2349e16c7cb",
+      "id": "d1e90ffe-6733-47ad-b396-8e6f1094ca8e",
       "name": "Get monitoring config",
       "webhookId": "10afb919-71f3-4f73-8a2b-7d6d697dbd97"
     },
@@ -199,10 +199,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        1520
+        288,
+        1376
       ],
-      "id": "c7f81bbd-847c-4e09-8bdd-5aa634c47782",
+      "id": "64b39108-2320-464a-a758-07f485f634fe",
       "name": "Set monitoring type",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -215,11 +215,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        512,
-        1264
+        944,
+        1120
       ],
       "typeVersion": 1,
-      "id": "78976321-a705-420c-ae75-92f14554737b",
+      "id": "3a862387-d0e9-4e92-b2ba-6a6f17505d69",
       "name": "Sticky Note4"
     },
     {
@@ -228,11 +228,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        720
+        0,
+        576
       ],
       "typeVersion": 1,
-      "id": "7a3a6c23-5c58-42c3-8acc-29c73d7c99d8",
+      "id": "7fb6a9f1-5832-4419-9d55-7db085ae3934",
       "name": "Sticky Note5"
     },
     {
@@ -241,11 +241,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        144
+        0,
+        0
       ],
       "typeVersion": 1,
-      "id": "c5aff98f-4723-4824-8c86-cbaa84e688f8",
+      "id": "3afba9bc-d58e-4ede-9092-7560c930eb90",
       "name": "Sticky Note6"
     },
     {
@@ -254,11 +254,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        368
+        0,
+        224
       ],
       "typeVersion": 1,
-      "id": "9c800cad-0ee2-415d-a6eb-86e86338ba6e",
+      "id": "bc4039ea-7e8c-4004-82a2-ab4a0d6965b1",
       "name": "Sticky Note7"
     },
     {
@@ -270,15 +270,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        80,
-        416
+        512,
+        272
       ],
-      "id": "63abec0c-ea48-4804-93a5-247dd6ea8aa6",
+      "id": "f9acc1a3-770c-4cfb-8a9b-4b29c8ceb899",
       "name": "get users query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -289,10 +289,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        80,
-        736
+        512,
+        592
       ],
-      "id": "58aa8b1e-774c-408a-a868-bebcda210a6f",
+      "id": "72fb24c4-fb0d-4da1-983a-d9751569be1b",
       "name": "parse request"
     },
     {
@@ -322,10 +322,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        304,
-        736
+        736,
+        592
       ],
-      "id": "0c2e10c4-6ee4-40d2-9ab0-4c459a87a08e",
+      "id": "523c7d94-e13f-4962-8eb4-e0196e423fa9",
       "name": "If not empty"
     },
     {
@@ -339,15 +339,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        528,
-        640
+        960,
+        496
       ],
-      "id": "a5ab2ad4-f749-4b25-8b46-ad50bd0848a1",
+      "id": "5aebe330-bc21-43ea-bda1-36cda10fd384",
       "name": "Execute get sensor data query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -357,11 +357,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        1472
+        0,
+        1328
       ],
       "typeVersion": 1,
-      "id": "475a8ed1-0b2a-4de3-822c-3cb56e0129a5",
+      "id": "8ae502ca-d189-4ba8-802d-bb8a4fbe916c",
       "name": "Sticky Note8"
     },
     {
@@ -370,11 +370,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        1248
+        0,
+        1104
       ],
       "typeVersion": 1,
-      "id": "bce8537b-d7a0-4f6d-abc8-08832a304a7c",
+      "id": "00f95a23-787a-408c-8055-438c25b8f57e",
       "name": "Sticky Note9"
     },
     {
@@ -384,10 +384,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        80,
-        1280
+        512,
+        1136
       ],
-      "id": "f4757dd2-4ffd-4c44-9028-30b89bf8e8a4",
+      "id": "6e0c21ac-6e6b-44ae-8520-dd136aff5cab",
       "name": "Get config info from global data"
     },
     {
@@ -397,10 +397,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        80,
-        1520
+        512,
+        1376
       ],
-      "id": "f45a3035-517c-4f2c-91ad-3847c790a2eb",
+      "id": "89eaa915-318d-4685-9791-fac65aa4cecf",
       "name": "Set monitoring data into global data"
     },
     {
@@ -409,11 +409,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        1024
+        0,
+        880
       ],
       "typeVersion": 1,
-      "id": "7cceb7ed-53ef-4b47-8159-809979e05e96",
+      "id": "73b4164b-7443-4f59-9ea8-62826642c14a",
       "name": "Sticky Note10"
     },
     {
@@ -423,10 +423,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        304,
-        192
+        736,
+        48
       ],
-      "id": "72b20adc-ba11-4699-90cd-8acf6107ff68",
+      "id": "5c2571a8-b1af-4248-890b-60f3d75a3286",
       "name": "Setting up response",
       "notesInFlow": false
     },
@@ -439,10 +439,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        1744
+        288,
+        1600
       ],
-      "id": "7224dfe0-89b3-4766-bac4-aa3ecf8c33a0",
+      "id": "a67fab99-28cd-49d8-8aad-c458b3d192ea",
       "name": "get usecases",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -454,10 +454,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        288,
-        1744
+        720,
+        1600
       ],
-      "id": "ee695f3b-cb2e-425d-8d16-6e4c688510db",
+      "id": "a21203cf-9820-4fab-9ea8-4a913ad740aa",
       "name": "Respond to Webhook get usecases"
     },
     {
@@ -466,11 +466,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        1712
+        0,
+        1568
       ],
       "typeVersion": 1,
-      "id": "1488dd72-c677-4228-97c7-987c1e0c4941",
+      "id": "c2836c4f-698f-487b-9fe9-a1ab057c5907",
       "name": "Sticky Note24"
     },
     {
@@ -482,15 +482,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        80,
-        1744
+        512,
+        1600
       ],
-      "id": "ee4bda4f-3fe6-421c-aee8-db1a38e8b216",
+      "id": "ab320a80-9d6d-4353-a6ff-9fe6dc4608e7",
       "name": "get usecases query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -500,11 +500,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        1936
+        0,
+        1792
       ],
       "typeVersion": 1,
-      "id": "20ae9ca4-6a4d-41e8-8d97-72061514e4c4",
+      "id": "15e61781-e916-4e8e-a458-9649e5631ce7",
       "name": "Sticky Note25"
     },
     {
@@ -517,10 +517,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        1984
+        288,
+        1840
       ],
-      "id": "e5067751-fc3f-4af6-8213-da7e0925066f",
+      "id": "92b60a9c-9705-4dd9-a869-dee5ffff8907",
       "name": "assign usecase to user",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -531,10 +531,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        80,
-        1984
+        512,
+        1840
       ],
-      "id": "fcef5f59-7b09-4d7c-b1ed-69471a6fbada",
+      "id": "3618ae2c-78ac-4264-9902-fceb9045841a",
       "name": "extract parameters for users and usecase"
     },
     {
@@ -548,15 +548,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        288,
-        1984
+        720,
+        1840
       ],
-      "id": "8b5f20f2-9dbc-4755-b9c5-8ca1408f4788",
+      "id": "42170a7d-1212-4cc3-af80-1fd5f3e7ca3d",
       "name": "update user usecase",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -567,10 +567,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
-        1984
+        912,
+        1840
       ],
-      "id": "d15458d0-9033-40c0-b7c4-50f186ea037a",
+      "id": "547e236a-cf19-4751-9698-93dd0ea1c96a",
       "name": "format response5"
     },
     {
@@ -582,10 +582,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        688,
-        1984
+        1120,
+        1840
       ],
-      "id": "3e90ad42-0cba-4d1e-92c9-54d744aad25d",
+      "id": "f1d6c109-8f8f-42f7-98d4-748668b41bbf",
       "name": "Respond to Webhook assign usecase"
     },
     {
@@ -594,11 +594,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -432,
-        2160
+        0,
+        2016
       ],
       "typeVersion": 1,
-      "id": "08f23e20-b9a3-43bb-9bf7-2ec4d7684c6f",
+      "id": "e2d33cdb-62a7-48ca-ba40-f7b2c79a6ead",
       "name": "Sticky Note26"
     },
     {
@@ -608,10 +608,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        496,
-        2208
+        928,
+        2064
       ],
-      "id": "84251e7d-dda2-432f-9065-227efe7e9e5c",
+      "id": "b5111b3b-49de-45bf-856a-68fbd34d215a",
       "name": "format response6",
       "onError": "continueRegularOutput"
     },
@@ -625,10 +625,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        2208
+        288,
+        2064
       ],
-      "id": "eadb790b-eead-41bc-9fb8-53b82f64b485",
+      "id": "3d39a483-b26d-495e-a578-833308e1c0ab",
       "name": "create use case",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -639,10 +639,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        80,
-        2208
+        512,
+        2064
       ],
-      "id": "419e3d3a-47b0-427e-823d-621dc78f831a",
+      "id": "d20d5354-2e1a-4cc2-b50e-74b441241d70",
       "name": "extract and validate"
     },
     {
@@ -654,16 +654,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        288,
-        2208
+        720,
+        2064
       ],
-      "id": "a5c4511e-df04-4a63-8d16-c9e8c7ba0a96",
+      "id": "fafdb3c5-516c-4723-a0ea-26c170a98b82",
       "name": "insert use case",
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       },
       "onError": "continueRegularOutput"
@@ -677,10 +677,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        688,
-        2208
+        1120,
+        2064
       ],
-      "id": "cdc50990-8535-4729-8e02-e598ba755cdb",
+      "id": "beddd8e9-6a33-4b66-afc9-48bd4f9d33b6",
       "name": "Respond to Webhook create usecase"
     },
     {
@@ -692,15 +692,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        80,
-        1056
+        512,
+        912
       ],
-      "id": "d7f486d2-73fa-404e-891e-51183eb3eee1",
+      "id": "c89c2bb5-8364-40ac-a2b0-f49781f15813",
       "name": "get sensor type query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -711,11 +711,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -416,
-        2384
+        16,
+        2240
       ],
       "typeVersion": 1,
-      "id": "c901d0c2-b3d3-4011-836c-d94dfe02492a",
+      "id": "13563eb8-51c2-4564-bdce-19cf2fc23886",
       "name": "Sticky Note34"
     },
     {
@@ -725,10 +725,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        304,
-        1280
+        736,
+        1136
       ],
-      "id": "9bb83586-ee29-4615-bd9e-95c3684d5734",
+      "id": "d5788fde-4a96-40fb-af0e-16bc3883ff88",
       "name": "Respond to Webhook Get monitoring config"
     },
     {
@@ -741,10 +741,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        304,
-        1520
+        736,
+        1376
       ],
-      "id": "7e37873f-fa4b-4a89-9f4b-14a48adb5e02",
+      "id": "c3c532ed-c891-414c-8d2f-13b61434d6f4",
       "name": "Respond to Webhook Set monitoring type"
     },
     {
@@ -754,13 +754,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "1b661efe-7838-4fe6-be53-5ac45bfeb4d6",
+      "id": "3ad059ba-d45a-4233-8f11-013010e4e292",
       "name": "Check Connection",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        2416
+        288,
+        2272
       ],
       "webhookId": "a9d1958f-39d3-46b3-b200-f5979feacf97"
     },
@@ -770,13 +770,13 @@
           "responseCode": 200
         }
       },
-      "id": "dd1fefe2-fe94-4fa0-a3d9-f7aa34284f14",
+      "id": "af743805-3290-4154-9d00-638562c5e6ae",
       "name": "Respond to Webhook Check Connection",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        80,
-        2416
+        512,
+        2272
       ]
     },
     {
@@ -789,10 +789,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1344,
-        176
+        1776,
+        32
       ],
-      "id": "7853ac71-0239-48b7-8295-f9f07d092e40",
+      "id": "2f2c8348-a6a0-493b-80c2-85f05e431fee",
       "name": "add Mapping",
       "webhookId": "9d253cce-73cb-4598-a738-2f8e053a8309"
     },
@@ -804,11 +804,11 @@
       "name": "Split Array (If List)",
       "type": "n8n-nodes-base.itemLists",
       "position": [
-        1584,
-        176
+        2016,
+        32
       ],
       "notesInFlow": true,
-      "id": "2d25fcc9-510e-4fb5-8ddd-534e8054f064",
+      "id": "493e3ab1-8210-4af7-9082-0741683c7249",
       "typeVersion": 3.1,
       "notes": "Ensures n8n loops through each rule if Java sends a List<SensorRuleConfig>"
     },
@@ -823,15 +823,15 @@
       "name": "DB: Upsert Rule",
       "type": "n8n-nodes-base.postgres",
       "position": [
-        1792,
-        176
+        2224,
+        32
       ],
-      "id": "c6448501-845d-4224-b4fd-eda859d15bf4",
+      "id": "5ed02543-f516-4430-9bdd-e84f22056095",
       "typeVersion": 2.6,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       },
       "notes": "Check what we should do when having duplicate data"
@@ -842,24 +842,24 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1040,
-        144
+        1472,
+        0
       ],
       "typeVersion": 1,
-      "id": "48a6b127-23f7-4e27-aad3-3dd1766be38f",
+      "id": "4cccc6b0-95c5-4a9b-b7a7-a95dc76a4fbe",
       "name": "Sticky Note"
     },
     {
       "parameters": {
         "jsCode": "const body = $input.first().json.body || {};\nconst mappingId = parseInt(body.mappingId);\n\nif (!mappingId || isNaN(mappingId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    mappingId: mappingId\n  }\n}];"
       },
-      "id": "e746dbeb-c391-4c47-b535-a0e8eafa29af",
+      "id": "78a5fbff-2a82-4d84-bc49-8b6561cb0475",
       "name": "Extract Mapping ID",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2848,
-        192
+        3280,
+        48
       ]
     },
     {
@@ -870,18 +870,18 @@
           "queryReplacement": "={{ [$json.mappingId] }}"
         }
       },
-      "id": "3015b1b7-d5a9-4d5a-bc3d-88abc756b556",
+      "id": "620be71a-d671-4aa3-9890-ae89f0e73d68",
       "name": "Postgres: Deactivate Rule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3056,
-        192
+        3488,
+        48
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -889,13 +889,13 @@
       "parameters": {
         "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"Mapping ID not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Mapping deactivated successfully\",\n    data: {\n      mappingId: result.id,\n      sensor: result.sensorname,\n      active: result.isactive\n    }\n  }\n}];"
       },
-      "id": "c38eb582-1c23-4e15-aaaf-7f471597e468",
+      "id": "7023fc9f-72fb-4c91-ab8d-df1855ae0b14",
       "name": "Format Final Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3280,
-        192
+        3712,
+        48
       ]
     },
     {
@@ -905,13 +905,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "db261eb5-38e3-4f5b-b68f-cfd9d5a62355",
+      "id": "e6dde9bf-e5e8-478d-a952-c509654d6dfa",
       "name": "Deactivate Mapping",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2624,
-        192
+        3056,
+        48
       ],
       "webhookId": "9c75af57-eec3-458e-8ee5-d541d853e577"
     },
@@ -921,13 +921,13 @@
           "responseCode": "={{ $json.statusCode || 200 }}"
         }
       },
-      "id": "3394589c-de71-40da-9b54-56adb9ee68f0",
+      "id": "b134e49d-d05d-495e-ad7d-0155fb59c8e0",
       "name": "Respond to Webhook deactivated mapping",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3504,
-        192
+        3936,
+        48
       ]
     },
     {
@@ -936,12 +936,143 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        2320,
-        160
+        2752,
+        16
       ],
       "typeVersion": 1,
-      "id": "87e0bdf9-7d4a-4175-a70e-41ddd8293cc2",
+      "id": "eac8e802-94fe-47a2-8521-6808141e1c1b",
       "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "path": "get-use-case-params",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "3b3986b6-98dd-4407-9519-8b8ccf147469",
+      "name": "Webhook: Get Parameters",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        4560,
+        224
+      ],
+      "webhookId": "2bfcdf3f-96a0-4dd1-9bfe-e0079c55f95c"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT * FROM public.\"UseCaseDictionary\" WHERE usecase_name = '{{ $json.query.usecase_name }}';",
+        "options": {}
+      },
+      "id": "03b1489c-e821-4b29-8349-67229569c1cc",
+      "name": "DB: Fetch Parameters",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4784,
+        224
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "e875e6d7-3d3c-4329-bc8f-2d88488da6d3",
+      "name": "Respond with Params",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        5008,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "add-use-case",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "88c80614-7054-4863-b870-61d0e2e93220",
+      "name": "Webhook: Add Use Case",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        4560,
+        48
+      ],
+      "webhookId": "39bb5e0b-da2e-43e1-9a7a-cebab0e42b37"
+    },
+    {
+      "parameters": {
+        "jsCode": "const usecase = items[0].json.usecase_name;\nconst params = items[0].json.parameters;\n\nreturn params.map(p => ({\n  json: {\n    usecase_name: usecase,\n    parameter_name: p.parameter_name,\n    parameter_format: p.parameter_format,\n    is_required: p.is_required !== undefined ? p.is_required : true,\n    description: p.description || ''\n  }\n}));"
+      },
+      "id": "7f8492e1-de0f-4306-bdf2-f990139e3e2e",
+      "name": "Format Parameters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4784,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO public.\"UseCaseDictionary\" \n  (usecase_name, parameter_name, parameter_format, is_required, description) \nVALUES \n  ('{{ $json.usecase_name }}', '{{ $json.parameter_name }}', '{{ $json.parameter_format }}', {{ $json.is_required }}, '{{ $json.description }}')\nON CONFLICT (usecase_name, parameter_name) \nDO UPDATE SET \n  parameter_format = EXCLUDED.parameter_format,\n  is_required = EXCLUDED.is_required,\n  description = EXCLUDED.description;",
+        "options": {}
+      },
+      "id": "54a284b8-138e-4e4f-85ad-1c6a8e9df8d4",
+      "name": "DB: SQL Insert",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        5008,
+        48
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "id": "b288e3a1-2a49-450b-90ae-47a8bb633352",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        5232,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Use-case dictionary"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4224,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "bf0664a4-885f-43c2-abc0-f65fec9f71f8",
+      "name": "Sticky Note2"
     }
   ],
   "pinData": {},
@@ -1315,17 +1446,72 @@
           }
         ]
       ]
+    },
+    "Webhook: Get Parameters": {
+      "main": [
+        [
+          {
+            "node": "DB: Fetch Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Fetch Parameters": {
+      "main": [
+        [
+          {
+            "node": "Respond with Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Add Use Case": {
+      "main": [
+        [
+          {
+            "node": "Format Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Parameters": {
+      "main": [
+        [
+          {
+            "node": "DB: SQL Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: SQL Insert": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7a118f11-977c-4c18-8d86-42fbbbeedc43",
+  "versionId": "90230f97-5e9b-456a-a5bc-b91afd6a07cd",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "nFeUS2F9bOFH6AUd",
+  "id": "Nmg5YCtndYDbzdGd",
   "tags": []
 }
