@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        0,
-        0
+        -1776,
+        240
       ],
-      "id": "94e9d68b-af9a-44c1-b686-1af185738e4f",
+      "id": "3434e2c9-91e7-4881-baaa-87bc3d1d7182",
       "name": "Webhook",
       "webhookId": "b40ed98c-5a4a-4d05-bc57-da70df7c87da"
     },
@@ -29,15 +29,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        416,
-        0
+        -1360,
+        240
       ],
-      "id": "e7070d9b-b506-4700-b24d-1a0ea8584dc9",
+      "id": "ac90af36-5fda-414d-a410-bbe8f3f104ec",
       "name": "Session Upsert",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -52,15 +52,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        624,
-        0
+        -1152,
+        240
       ],
-      "id": "a5a5a0f1-3865-43e3-ba1d-76e833d24553",
+      "id": "2d706165-5237-4fe2-a2e8-4cd5f340eab8",
       "name": "Load Context",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -71,10 +71,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1360,
-        0
+        -416,
+        240
       ],
-      "id": "aaf2a237-5266-4bcf-915e-98e8b0b79a72",
+      "id": "d64f80d6-6fde-460c-942a-6c29108291d8",
       "name": "Parse GPT Response"
     },
     {
@@ -181,10 +181,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        1568,
-        -32
+        -208,
+        208
       ],
-      "id": "df8cc46a-69b8-4255-9998-dc8aca5b6362",
+      "id": "b9fd5f6a-2883-4fb7-8c74-f6d38a279ec8",
       "name": "Intent Router"
     },
     {
@@ -198,30 +198,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2400,
-        0
+        624,
+        240
       ],
-      "id": "9f4e71fe-eaa5-40fe-80c9-53aa37d5bafc",
+      "id": "b3a92dae-10af-44ca-bf8c-d7dcdd6f46b7",
       "name": "Save History",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        2224,
-        0
-      ],
-      "id": "4968b16d-d43a-4005-8d26-e1cc88f7bc00",
-      "name": "Respond to Webhook4"
     },
     {
       "parameters": {
@@ -230,10 +217,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        0
+        -1568,
+        240
       ],
-      "id": "ddf92d4a-dbb7-4a9f-ac45-fc8ba69aaed9",
+      "id": "1332de9c-6f19-41cb-96d8-407b42248fb9",
       "name": "Validate input"
     },
     {
@@ -250,14 +237,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        1008,
-        144
+        -768,
+        384
       ],
-      "id": "cb8601b6-0aa3-4fa2-a5fd-90d6ea494b1f",
+      "id": "e7b5bc40-319a-4068-a87c-9afdf56cedee",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "PZrrVTzGmheg0FUW",
+          "id": "C6PPGVshBukmGMJ7",
           "name": "OpenAi account"
         }
       }
@@ -271,10 +258,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        1008,
-        0
+        -768,
+        240
       ],
-      "id": "2a8545b7-941b-472d-903d-2ee4bac4e8f4",
+      "id": "63bd4d37-31ae-4880-8496-7e9b37268c53",
       "name": "Basic LLM Chain"
     },
     {
@@ -284,10 +271,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        832,
-        0
+        -944,
+        240
       ],
-      "id": "5b3119cc-dea9-4d7d-b1bd-3fdb22e984e3",
+      "id": "9130d83a-1f77-48c5-97f3-44a7b4cce4d1",
       "name": "Build prompt"
     },
     {
@@ -382,24 +369,11 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        1776,
-        -240
-      ],
-      "id": "83a25d0d-1db8-4005-9998-60359ccdf932",
-      "name": "Call 'Mapping Manager'"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [{\n  json: {\n    reply: $input.first().json.reply,\n    session_id: $input.first().json.session_id\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1984,
+        0,
         0
       ],
-      "id": "266f96e0-ed0a-4e22-847d-31bbf934840e",
-      "name": "Edit Fields1"
+      "id": "a7900136-b050-46dd-90ad-53302b90cd2c",
+      "name": "Call 'Mapping Manager'"
     },
     {
       "parameters": {
@@ -460,11 +434,37 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        1776,
-        -80
+        0,
+        160
       ],
-      "id": "ddf20d87-0e0e-4919-9adc-36d1cea99a40",
+      "id": "77cffe45-2b1f-437d-a593-9c6949fbb2be",
       "name": "Call 'Knowledge Agent'"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    reply: $input.first().json.reply,\n    session_id: $input.first().json.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        240
+      ],
+      "id": "58fdfb31-8382-4206-b86c-61f01628e71c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        448,
+        240
+      ],
+      "id": "84cf6291-ad91-43b4-ad74-ed9df45844ec",
+      "name": "Respond to Webhook"
     }
   ],
   "pinData": {},
@@ -531,30 +531,25 @@
         ],
         [
           {
-            "node": "Edit Fields1",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Edit Fields1",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Edit Fields1",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
         ]
-      ]
-    },
-    "Save History": {
-      "main": [
-        []
       ]
     },
     "Validate input": {
@@ -605,29 +600,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Respond to Webhook4": {
-      "main": [
-        [
-          {
-            "node": "Save History",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook4",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
@@ -638,7 +611,29 @@
       "main": [
         [
           {
-            "node": "Edit Fields1",
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Save History",
             "type": "main",
             "index": 0
           }
@@ -646,15 +641,15 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1f7d025e-1ff4-4836-8788-67b0fe533459",
+  "versionId": "0f0d6152-0b11-4e1b-91e5-b9a2c2c8109f",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "6HLjUnFkjKxhDhsb",
+  "id": "UqOtVUntzN2Gh75O",
   "tags": []
 }

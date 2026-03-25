@@ -10,10 +10,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -1968
+        -6736,
+        -1728
       ],
-      "id": "5972b8ce-e6f9-4289-aaaf-755a1d990c1c",
+      "id": "505a7351-79bc-4fe6-9883-29a807208e86",
       "name": "Get current configurations",
       "webhookId": "1b044278-5d6b-4f82-ad44-d93bb6524635"
     },
@@ -26,15 +26,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -13520,
-        -1968
+        -6512,
+        -1728
       ],
-      "id": "7ba8fd78-2260-4219-a774-7d7f853a2dee",
+      "id": "5d66f07d-e909-4f06-9d51-5a59a5751488",
       "name": "FetchCurrentRulesFromDB",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -47,10 +47,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -1744
+        -6736,
+        -1504
       ],
-      "id": "c80a645a-6854-4ce6-a6f6-38da0fbb5d15",
+      "id": "084a4919-c054-489a-8b1f-dee204426169",
       "name": "Get users",
       "webhookId": "36b477ed-3989-424e-8961-91732079009a"
     },
@@ -62,10 +62,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13280,
-        -1744
+        -6272,
+        -1504
       ],
-      "id": "2f33bff8-cca4-4322-a23b-8ae699a4f9b2",
+      "id": "c1057cd9-386e-4970-9767-195ed07c8a64",
       "name": "Respond to Webhook Get-users"
     },
     {
@@ -77,10 +77,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13056,
-        -1968
+        -6048,
+        -1728
       ],
-      "id": "0cbf210b-e31f-4381-b74b-6eb5290165c8",
+      "id": "4feda172-f2cd-4b8e-a713-073dcbcd67a1",
       "name": "Respond to Webhook current-configuraion"
     },
     {
@@ -92,25 +92,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -1424
+        -6736,
+        -1184
       ],
-      "id": "8953ff03-a04e-4770-914f-82f4084191d6",
+      "id": "c2657363-66c2-4549-bb33-2fe0f7e42b15",
       "name": "Get sensor data",
       "webhookId": "de1c4e46-405a-4089-8974-3935dfcc72eb"
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = items.map(i => i.json);\n\nif (!rows || rows.length === 0) {\n  return [{ json: { statusCode: 404, payload: [] } }];\n}\n\nreturn [{ json: { statusCode: 200, payload: rows } }];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -12832,
-        -1520
-      ],
-      "id": "93c54cab-1deb-4be4-99fb-5914cd36d67c",
-      "name": "check if empty"
     },
     {
       "parameters": {
@@ -121,26 +108,26 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -12608,
-        -1520
+        -5600,
+        -1280
       ],
-      "id": "ecfff8df-2375-47ae-ac03-e4885224b798",
+      "id": "9772127f-5397-4f0d-ac7f-6b3d678d3a04",
       "name": "Respond to Webhook sensor data"
     },
     {
       "parameters": {
         "options": {
           "responseCode": 400,
-          "responseKey": "={{ $('parse request').item.json.payload.error }}"
+          "responseKey": "={{ $('parse sensor data request').item.json.payload.error }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13056,
-        -1328
+        -6048,
+        -1088
       ],
-      "id": "4bacfb03-b508-4e6b-994d-17c68c4a7d3a",
+      "id": "d53c1622-de52-4fc2-8760-aca359ef9847",
       "name": "Respond to Webhook sensor data error"
     },
     {
@@ -151,10 +138,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13280,
-        -1104
+        -6272,
+        -864
       ],
-      "id": "875fa488-57dc-405c-b2b1-261e09b95484",
+      "id": "6407d3ae-b9e1-4213-b380-2401f012ad44",
       "name": "Respond to Webhook get sensor type"
     },
     {
@@ -166,10 +153,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -880
+        -6736,
+        -640
       ],
-      "id": "9360b86c-0c08-44b8-88aa-1b0fe736cae2",
+      "id": "fa037b2a-9dfc-4445-bad5-21f95db51944",
       "name": "Get monitoring config",
       "webhookId": "10afb919-71f3-4f73-8a2b-7d6d697dbd97"
     },
@@ -183,10 +170,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -640
+        -6736,
+        -400
       ],
-      "id": "3242189b-9656-4c26-9776-2498ed137143",
+      "id": "0b7b028c-ba65-4bc0-8176-bfb5bee52eaf",
       "name": "Set monitoring type",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -199,11 +186,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -13072,
-        -896
+        -6064,
+        -656
       ],
       "typeVersion": 1,
-      "id": "dd586034-9981-469c-b47b-2df4d8c6926b",
+      "id": "b2fbe80d-f276-43b4-b3cc-d9fef8ae1290",
       "name": "Sticky Note4"
     },
     {
@@ -212,11 +199,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -1440
+        -7024,
+        -1200
       ],
       "typeVersion": 1,
-      "id": "0f302445-4561-4db3-8399-c49212c06a2e",
+      "id": "8f6ed43c-97cc-4b49-8e3e-a45c87525791",
       "name": "Sticky Note5"
     },
     {
@@ -225,11 +212,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -2016
+        -7024,
+        -1776
       ],
       "typeVersion": 1,
-      "id": "6a6ca9e9-05cb-481f-993d-32e7aff928ff",
+      "id": "c97a43ee-e3c8-426e-a2a4-9f1a3cfdb53c",
       "name": "Sticky Note6"
     },
     {
@@ -238,11 +225,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -1792
+        -7024,
+        -1552
       ],
       "typeVersion": 1,
-      "id": "96d58d75-e36a-4714-8829-da2945e88295",
+      "id": "e454d9ad-7332-4fb6-8582-a89822c1ebca",
       "name": "Sticky Note7"
     },
     {
@@ -254,63 +241,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -13520,
-        -1744
+        -6512,
+        -1504
       ],
-      "id": "771738c3-a7bb-4058-9daf-e86940628f5a",
+      "id": "b5a47b18-1459-4950-9e83-06e99da37f43",
       "name": "get users query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const q = $input.first().json.query || {};\nconst range = q.range || \"All Time\";\nconst alertTypeRaw = q.alert_type;\nconst userIdRaw = q.userid;\nconst startDateRaw = q.start_date;\nconst endDateRaw = q.end_date;\n\nif (!userIdRaw) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing required userid parameter\" } } }];\n}\nif (alertTypeRaw === undefined || alertTypeRaw === null || String(alertTypeRaw).trim() === \"\") {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing required alert_type parameter\" } } }];\n}\n\nconst userId = Number(userIdRaw);\nif (!Number.isFinite(userId)) {\n  return [{ json: { statusCode: 400, payload: { error: \"userid must be a number\" } } }];\n}\n\nconst alertTypeStr = String(alertTypeRaw).trim();\nconst isNumericAlertType = /^[0-9]+$/.test(alertTypeStr);\n\nconst now = new Date();\nlet dateFrom = null;\nlet dateTo = null;\n\nswitch (range) {\n  case \"Last 24 Hours\":\n  case \"Last+24+Hours\":\n    dateFrom = new Date(now.getTime() - 24 * 60 * 60 * 1000);\n    break;\n  case \"Last 7 Days\":\n  case \"Last+7+Days\":\n    dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);\n    break;\n  case \"Last 30 Days\":\n  case \"Last+30+Days\":\n    dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);\n    break;\n  case \"custom\":\n  case \"Custom Date Range\":\n  case \"Custom+Date+Range\":\n    // Parse custom date range\n    if (startDateRaw) {\n      dateFrom = new Date(startDateRaw + \"T00:00:00\");\n    }\n    if (endDateRaw) {\n      // Set to end of day (23:59:59)\n      dateTo = new Date(endDateRaw + \"T23:59:59\");\n    }\n    break;\n  default:\n    dateFrom = null;\n    dateTo = null;\n}\n\nlet query = `\n  SELECT sd.id, sd.time, sd.value,\n         COALESCE(a.type, 'No Alert') AS alert_type,\n         COALESCE(a.pulses, 0) AS pulses,\n         COALESCE(a.intensity, 0) AS intensity,\n         COALESCE(a.duration, 0) AS duration,\n         COALESCE(a.interval, 0) AS interval,\n         sd.userid,\n         sd.usecase_id,\n         a.vibration_reason AS reason\n  FROM public.\"SensorData\" sd\n  LEFT JOIN public.\"Alert\" a ON sd.alertid = a.alertid\n`;\n\nlet where = [];\nlet params = [];\nlet p = 1;\n\n// time filter - start date\nif (dateFrom) {\n  where.push(`sd.time >= $${p++}`);\n  params.push(dateFrom.toISOString());\n}\n\n// time filter - end date (for custom range)\nif (dateTo) {\n  where.push(`sd.time <= $${p++}`);\n  params.push(dateTo.toISOString());\n}\n\n// user filter\nwhere.push(`sd.userid = $${p++}`);\nparams.push(userId);\n\n// alert filter: by type OR by sensorid\nif (isNumericAlertType) {\n  where.push(`sd.usecase_id = $${p++}`);\n  params.push(Number(alertTypeStr));\n} else {\n  where.push(`a.type = $${p++}`);\n  params.push(alertTypeStr);\n}\n\nquery += ` WHERE ${where.join(\" AND \")} ORDER BY sd.time;`;\n\nreturn [{\n  json: {\n    statusCode: 200,\n    query,\n    params,\n    meta: { range, alertTypeRaw: alertTypeStr, interpretedAs: isNumericAlertType ? \"sensorid\" : \"type\", dateFrom, dateTo }\n  }\n}];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -13520,
-        -1424
-      ],
-      "id": "c01b741f-e0b1-423b-beb6-b04bcb493d56",
-      "name": "parse request"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "a154f1c1-4b58-4f22-b69e-412922720005",
-              "leftValue": "={{ $json.statusCode }}",
-              "rightValue": 400,
-              "operator": {
-                "type": "number",
-                "operation": "notEquals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -13280,
-        -1424
-      ],
-      "id": "ce2a31e5-b2b3-41f3-9512-ed24882430b0",
-      "name": "If not empty"
     },
     {
       "parameters": {
@@ -323,15 +264,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -13056,
-        -1520
+        -6048,
+        -1280
       ],
-      "id": "42e8e562-adcb-4bb2-83c6-19a13572829c",
+      "id": "31497ebc-f4ad-4b8c-ac38-d82a6f3599c9",
       "name": "Execute get sensor data query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -341,11 +282,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -688
+        -7024,
+        -448
       ],
       "typeVersion": 1,
-      "id": "9feb53fb-bd3f-4f36-b31a-7db1900f2e6e",
+      "id": "d9e26554-4ca1-468a-ae8a-7eb1a37c1a2a",
       "name": "Sticky Note8"
     },
     {
@@ -354,11 +295,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -912
+        -7024,
+        -672
       ],
       "typeVersion": 1,
-      "id": "cce7da1b-1e71-4dc9-82fd-1eccc40a45e3",
+      "id": "565cabbf-6490-41f2-bddc-b76df29855cd",
       "name": "Sticky Note9"
     },
     {
@@ -368,10 +309,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -13520,
-        -880
+        -6512,
+        -640
       ],
-      "id": "9191a5b3-e703-45a7-8601-eafaf79c0011",
+      "id": "20c97b06-2e08-4497-b020-6f359ba364f4",
       "name": "Get config info from global data"
     },
     {
@@ -381,10 +322,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -13520,
-        -640
+        -6512,
+        -400
       ],
-      "id": "5a8bb4ef-73fd-4edd-8c39-96ebb3293f00",
+      "id": "dbdda4e3-339e-418b-a577-09f166beb004",
       "name": "Set monitoring data into global data"
     },
     {
@@ -393,26 +334,12 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -1136
+        -7024,
+        -896
       ],
       "typeVersion": 1,
-      "id": "8caaac9d-723f-4f58-8ee7-3397507acdf3",
+      "id": "70ddccc1-153a-42a5-8b2c-056af429af19",
       "name": "Sticky Note10"
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = items.map(i => i.json);\n\nreturn [\n  {\n    json: {\n      rows\n    }\n  }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -13280,
-        -1968
-      ],
-      "id": "8ee9e546-1dce-4d78-ac74-aa083f20ae7c",
-      "name": "Setting up response",
-      "notesInFlow": false
     },
     {
       "parameters": {
@@ -420,11 +347,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -416
+        -7024,
+        -176
       ],
       "typeVersion": 1,
-      "id": "5587ec7e-59c8-48b5-922a-1860b0cb19a4",
+      "id": "54e5d7e4-39ee-43f1-b975-af8eff153d09",
       "name": "Sticky Note25"
     },
     {
@@ -437,10 +364,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -368
+        -6736,
+        -128
       ],
-      "id": "afa9248d-58e2-469f-8dd8-e4e747a744ae",
+      "id": "58847ddd-0c7a-4a85-b8b0-ba3cc78502ed",
       "name": "assign usecase to user",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -451,10 +378,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -13520,
-        -368
+        -6512,
+        -128
       ],
-      "id": "797f3e1c-9382-44f0-9bbc-71d4cefc631f",
+      "id": "6259324d-f35a-4ade-a323-52f5e9158fc9",
       "name": "extract parameters for users and usecase"
     },
     {
@@ -468,30 +395,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -13296,
-        -368
+        -6288,
+        -128
       ],
-      "id": "cf895f84-fdf4-4209-8a3e-2671cc9de444",
+      "id": "6f1ace9c-108a-46df-8dc8-23d26628e605",
       "name": "update user usecase",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const result = $input.first().json;\n\nif (!result || result.length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Use case assigned successfully\",\n    data: {\n      userId: result.userid,\n      activeUsecaseId: result.active_usecase_id\n    }\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -13104,
-        -368
-      ],
-      "id": "2b6aaa67-ac23-45eb-bacc-fc4660e7e0d7",
-      "name": "format response5"
     },
     {
       "parameters": {
@@ -502,10 +416,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -12896,
-        -368
+        -5888,
+        -128
       ],
-      "id": "af540d50-d5a6-48b8-9178-cf45b4fb978c",
+      "id": "aa1e1c91-88af-4e92-8aa1-89804e80f32a",
       "name": "Respond to Webhook assign usecase"
     },
     {
@@ -514,26 +428,12 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14032,
-        -192
+        -7024,
+        48
       ],
       "typeVersion": 1,
-      "id": "2f88b051-c1ce-4225-8713-e18772274efc",
+      "id": "6cb62ba9-413c-4fb8-b7f4-0baaf894b7a6",
       "name": "Sticky Note26"
-    },
-    {
-      "parameters": {
-        "jsCode": "const input = $input.first().json;\n\n// Check if this is an error from the database\nif (input.code || input.message) {\n  // Check if it's a duplicate key error (unique constraint violation)\n  if (input.code === '23505' || (input.message && input.message.includes('duplicate key'))) {\n    return [{\n      json: {\n        statusCode: 409,\n        error: \"A use case with this name already exists\"\n      }\n    }];\n  }\n  \n  // Other database errors\n  return [{\n    json: {\n      statusCode: 500,\n      error: \"Failed to create use case: \" + (input.message || \"Unknown error\")\n    }\n  }];\n}\n\n// Success case - format the successful insert result\nreturn [{\n  json: {\n    statusCode: 201,\n    message: \"Use case created successfully\",\n    data: {\n      usecaseId: input.usecase_id,\n      name: input.name,\n      description: input.description\n    }\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -13088,
-        -144
-      ],
-      "id": "ae796260-67dc-4abe-8c41-f4b4dc1e7ce2",
-      "name": "format response6",
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -545,10 +445,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -144
+        -6736,
+        96
       ],
-      "id": "0ee5d9ba-c9ab-49be-a339-04ac58829511",
+      "id": "d4d7c40e-0f69-4e8f-9cab-31dabf347e84",
       "name": "create use case",
       "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     },
@@ -559,10 +459,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -13520,
-        -144
+        -6512,
+        96
       ],
-      "id": "72fb67b6-23e5-4cf9-85af-445ed8f67084",
+      "id": "54ed0e9b-9c59-431e-b435-ef060eb535fb",
       "name": "extract and validate"
     },
     {
@@ -574,16 +474,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -13296,
-        -144
+        -6288,
+        96
       ],
-      "id": "1c1f3bed-bb4b-48b9-a2e3-e109f8bae566",
+      "id": "af85e5fd-431f-45e0-858b-4a93c12a838b",
       "name": "insert use case",
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       },
       "onError": "continueRegularOutput"
@@ -597,10 +497,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -12896,
-        -144
+        -5888,
+        96
       ],
-      "id": "48a41fb9-2ec0-4a3e-ae7b-1e4154ecdb74",
+      "id": "fe1127b4-94e2-4d24-9da5-278048eb09e5",
       "name": "Respond to Webhook create usecase"
     },
     {
@@ -610,11 +510,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -14016,
-        48
+        -7008,
+        288
       ],
       "typeVersion": 1,
-      "id": "e0347ff5-d72f-41de-b2df-e784d0eabce8",
+      "id": "fad6d725-7ad6-4174-80ea-d7eae9a0e75b",
       "name": "Sticky Note34"
     },
     {
@@ -624,10 +524,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13280,
-        -880
+        -6272,
+        -640
       ],
-      "id": "39911ed1-9d5b-42dc-ab0a-1842e18db9f9",
+      "id": "8593856c-269a-460b-9531-040e39955975",
       "name": "Respond to Webhook Get monitoring config"
     },
     {
@@ -640,10 +540,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13280,
-        -640
+        -6272,
+        -400
       ],
-      "id": "6638f99f-2bbf-430d-8f54-7a7ff108fe39",
+      "id": "333a089c-58cb-4ed3-b4a2-5c290359875c",
       "name": "Respond to Webhook Set monitoring type"
     },
     {
@@ -653,13 +553,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "f79e4c2b-2135-4ee1-9058-a06a285c7960",
+      "id": "dba1018f-c028-4e67-8578-c44cd2791ca6",
       "name": "Check Connection",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        80
+        -6736,
+        320
       ],
       "webhookId": "a9d1958f-39d3-46b3-b200-f5979feacf97"
     },
@@ -669,13 +569,13 @@
           "responseCode": 200
         }
       },
-      "id": "5435cb4c-629a-4a3f-8ee1-6d6079b60ea5",
+      "id": "68b7f9e9-04e9-4071-9cf5-5f0d7be23e49",
       "name": "Respond to Webhook Check Connection",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -13520,
-        80
+        -6512,
+        320
       ]
     },
     {
@@ -688,28 +588,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -11840,
-        -2000
+        -4832,
+        -1760
       ],
-      "id": "e8500073-fd15-4eb9-8ec8-7780cdd91686",
+      "id": "eda2bcf7-c5a5-4a3e-9f2b-4148871b4363",
       "name": "add Mapping",
       "webhookId": "9d253cce-73cb-4598-a738-2f8e053a8309"
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "body",
-        "options": {}
-      },
-      "name": "Split Array (If List)",
-      "type": "n8n-nodes-base.itemLists",
-      "position": [
-        -11600,
-        -2000
-      ],
-      "notesInFlow": true,
-      "id": "7f063857-25cd-46e4-876d-1cee4ac4e6c9",
-      "typeVersion": 3.1,
-      "notes": "Ensures n8n loops through each rule if Java sends a List<SensorRuleConfig>"
     },
     {
       "parameters": {
@@ -722,15 +606,15 @@
       "name": "DB: Upsert Rule",
       "type": "n8n-nodes-base.postgres",
       "position": [
-        -11392,
-        -2000
+        -4384,
+        -1760
       ],
-      "id": "cb187597-93fb-4d71-9741-a5513fbf77dd",
+      "id": "f06f6fcd-d67f-4f20-813b-6d11341af724",
       "typeVersion": 2.6,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       },
       "notes": "Check what we should do when having duplicate data"
@@ -741,24 +625,24 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -12144,
-        -2032
+        -5136,
+        -1792
       ],
       "typeVersion": 1,
-      "id": "d66d839e-2ee2-40fe-af8c-323fbe562efc",
+      "id": "ec1f9845-528a-4c26-addf-2974af6aa339",
       "name": "Sticky Note"
     },
     {
       "parameters": {
         "jsCode": "const body = $input.first().json.body || {};\nconst mappingId = parseInt(body.mappingId);\n\nif (!mappingId || isNaN(mappingId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    mappingId: mappingId\n  }\n}];"
       },
-      "id": "e59022a8-6e65-4ff3-995f-b9c409fd125b",
+      "id": "66bf05fd-21de-4f73-8a82-24d261b6e0d0",
       "name": "Extract Mapping ID",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -11616,
-        -1664
+        -4608,
+        -1424
       ]
     },
     {
@@ -769,33 +653,20 @@
           "queryReplacement": "={{ [$json.mappingId] }}"
         }
       },
-      "id": "a4a8b483-170b-404c-a731-44b330e2449a",
+      "id": "1e0c23f0-6bc7-439e-ae89-d6bf31629faf",
       "name": "Postgres: Deactivate Rule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -11408,
-        -1664
+        -4400,
+        -1424
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"Mapping ID not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Mapping deactivated successfully\",\n    data: {\n      mappingId: result.id,\n      sensor: result.sensorname,\n      active: result.isactive\n    }\n  }\n}];"
-      },
-      "id": "3f8ebca4-43fe-4caa-a20e-e9019c9d07d0",
-      "name": "Format Final Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -11184,
-        -1664
-      ]
     },
     {
       "parameters": {
@@ -804,13 +675,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "f4a25766-a007-42a9-b61b-77a1a60d777b",
+      "id": "14c40d72-4bd3-4c29-97ab-1da50028762f",
       "name": "Deactivate Mapping",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -11840,
-        -1664
+        -4832,
+        -1424
       ],
       "webhookId": "9c75af57-eec3-458e-8ee5-d541d853e577"
     },
@@ -820,13 +691,13 @@
           "responseCode": "={{ $json.statusCode || 200 }}"
         }
       },
-      "id": "36223607-c6f3-407f-b4bc-3cb2f8809c0a",
+      "id": "0a8fa204-65bf-44a3-9932-480c49d9fe5a",
       "name": "Respond to Webhook deactivated mapping",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -10960,
-        -1664
+        -3952,
+        -1424
       ]
     },
     {
@@ -835,11 +706,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -12144,
-        -1696
+        -5136,
+        -1456
       ],
       "typeVersion": 1,
-      "id": "36986ee9-6c44-42e6-ae41-da4c5278c98f",
+      "id": "a70fc675-8b4d-4e56-a603-186af3c92862",
       "name": "Sticky Note1"
     },
     {
@@ -849,13 +720,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "935391d4-df90-4972-b38d-014b55acd02d",
+      "id": "61a6ed02-1f92-4939-90b7-61b816a51338",
       "name": "Webhook: Add Use Case",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -10240,
-        -1984
+        -3232,
+        -1744
       ],
       "webhookId": "39bb5e0b-da2e-43e1-9a7a-cebab0e42b37"
     },
@@ -865,11 +736,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -10576,
-        -1984
+        -3568,
+        -1744
       ],
       "typeVersion": 1,
-      "id": "47fe82ac-bd69-4ecf-af01-c3aa58a89abe",
+      "id": "297e854d-0a82-4a11-b7bd-005dee84927a",
       "name": "Sticky Note2"
     },
     {
@@ -881,10 +752,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -13744,
-        -1104
+        -6736,
+        -864
       ],
-      "id": "440bf300-3942-4607-9cd6-7f8dedd253a9",
+      "id": "05d11a9a-e22d-420f-b795-f8a815bc712c",
       "name": "Get usecases",
       "webhookId": "10535e70-e76c-457c-ac76-c5ad131f790a"
     },
@@ -897,15 +768,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -13520,
-        -1104
+        -6512,
+        -864
       ],
-      "id": "9503541c-f61d-4373-987f-3605f2e34945",
+      "id": "c6eca91e-fbfa-431d-be27-3df8c88b5590",
       "name": "get usecase query",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -915,11 +786,11 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -9184,
-        -2016
+        -2176,
+        -1776
       ],
       "typeVersion": 1,
-      "id": "b4cec1f1-e5b2-4161-a1b0-a7594c029a77",
+      "id": "a51e9fa9-df08-4aab-b97c-1f0f79e0fd83",
       "name": "Sticky Note3"
     },
     {
@@ -933,13 +804,13 @@
           ]
         }
       },
-      "id": "edc07a02-c677-4052-85fd-8bbb8ba827e4",
+      "id": "d51a8a17-e5ca-47e0-bd13-61a3cef8ceff",
       "name": "Daily Trigger (00:01)",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
       "position": [
-        -8848,
-        -2032
+        -1840,
+        -1792
       ]
     },
     {
@@ -948,34 +819,21 @@
         "query": "SELECT * FROM user_schedules WHERE next_run_date <= CURRENT_DATE and active = TRUE;",
         "options": {}
       },
-      "id": "b6edfb6a-77f8-47ed-b37f-75f5425703c6",
+      "id": "8e24ebd5-0b34-4bdd-97f4-5e4d622ebafa",
       "name": "Get Due Schedules",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -8640,
-        -2032
+        -1632,
+        -1792
       ],
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const baseline = $input.first().json.measure;\nconst schedule = $('Get Due Schedules').first().json;\n\n// Tracking object for performance monitoring\nconst tracking = {\n  user_id: schedule.user_id,\n  interval_days: schedule.interval_days || 7,\n  processed_at: new Date().toISOString(),\n  status: 'calculated'\n};\n\nif (!baseline) {\n  return [{ json: { ...tracking, status: 'skipped', reason: 'No sensor data' } }];\n}\n\nconst minVal = Math.round(baseline * (1+0.01*$('Get Due Schedules').first().json.trigger_percentage));\nconst maxVal = minVal + 20;\n\nreturn [{\n  json: {\n    ...tracking,\n    minvalue: minVal,\n    maxvalue: maxVal,\n    type: 'HeartRate'\n  }\n}];"
-      },
-      "id": "3541d3aa-e533-46ea-ac3a-9009ac418993",
-      "name": "Calculate Parameters",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -7536,
-        -2032
-      ]
     },
     {
       "parameters": {
@@ -985,19 +843,19 @@
           "queryReplacement": "={{ [$json.type, $json.minvalue, $json.maxvalue] }}"
         }
       },
-      "id": "f1936eb3-197e-481f-9235-0480de0fc728",
+      "id": "3e319f14-da49-4fca-8cd3-3894b9e4e7b1",
       "name": "Search for Existing Rule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -7344,
-        -2032
+        -336,
+        -1792
       ],
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -1006,21 +864,21 @@
         "operation": "executeQuery",
         "query": "INSERT INTO feedback_config_rules (type, active, minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval) \nVALUES ('HeartRate', true, $1, $2, 5, 8, 200, 255, 400, 600, 50, 100);",
         "options": {
-          "queryReplacement": "={{ [$node[\"Calculate Parameters\"].json.minvalue, $node[\"Calculate Parameters\"].json.maxvalue] }}"
+          "queryReplacement": "={{ [$node[\"Calculate new rule Parameters\"].json.minvalue, $node[\"Calculate new rule Parameters\"].json.maxvalue] }}"
         }
       },
-      "id": "d7ea9587-e9c7-430c-976b-f9a094dac584",
+      "id": "734337a6-ff45-49c6-8c68-149461255305",
       "name": "Create New Rule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -6976,
-        -2272
+        32,
+        -2032
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -1032,18 +890,18 @@
           "queryReplacement": "={{ [$json.id] }}"
         }
       },
-      "id": "88da6880-dd71-41fb-90b2-4b2f564e4f4b",
+      "id": "2fe86d92-975f-4a51-8329-b251a7fd3112",
       "name": "Activate Existing Rule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -6864,
-        -2048
+        144,
+        -1808
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -1052,21 +910,21 @@
         "operation": "executeQuery",
         "query": "UPDATE user_schedules \nSET next_run_date = CURRENT_DATE + ($2 || ' days')::interval \nWHERE user_id = $1;",
         "options": {
-          "queryReplacement": "={{ [$node[\"Calculate Parameters\"].json.user_id, $node[\"Calculate Parameters\"].json.interval_days] }}"
+          "queryReplacement": "={{ [$node[\"Calculate new rule Parameters\"].json.user_id, $node[\"Calculate new rule Parameters\"].json.interval_days] }}"
         }
       },
-      "id": "df3a5960-5644-46fc-8b68-f697dfe95ed4",
+      "id": "81c64ea1-5c06-4af0-95f4-0f580e75d619",
       "name": "Update Next Run Date",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -6416,
-        -2032
+        592,
+        -1792
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -1081,13 +939,13 @@
           ]
         }
       },
-      "id": "fa25e071-87e1-418b-a70c-47d4c2b8333a",
+      "id": "c2d4028b-a89b-4c1a-9b65-5f81f692c393",
       "name": "Rule Doesn't Exist?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -7152,
-        -2032
+        -144,
+        -1792
       ]
     },
     {
@@ -1118,10 +976,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -8464,
-        -2032
+        -1456,
+        -1792
       ],
-      "id": "b961d455-a4a7-4164-bc7d-49464468927b",
+      "id": "f51aca2f-82d4-4e83-a7d4-fa48bfb6cb80",
       "name": "If schedule is due"
     },
     {
@@ -1131,10 +989,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -8288,
-        -2048
+        -1280,
+        -1808
       ],
-      "id": "18f1e184-8804-42c8-8fe2-9e935f8bd5a3",
+      "id": "8aafea71-349b-4e8f-9c8f-b9ceead30c02",
       "name": "Loop Over Schedules"
     },
     {
@@ -1149,13 +1007,13 @@
           ]
         }
       },
-      "id": "e7b76bcc-7a6e-425d-8080-1002d0dda3bc",
+      "id": "f20f054b-bf77-464e-bfc3-1dc0d05009c3",
       "name": "Is the rule found Inactive?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -7024,
-        -1872
+        -16,
+        -1632
       ]
     },
     {
@@ -1163,11 +1021,457 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -8176,
-        -1808
+        -1168,
+        -1568
       ],
-      "id": "4746f642-67fd-451b-95f2-9c477334e38e",
+      "id": "e4e07e23-b477-44d9-9b57-ab364db0af36",
       "name": "No schedules to examine"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT ROUND(AVG(value)) as measure FROM \"SensorData\" WHERE userID = $1 AND time > NOW() - ($2 || ' days')::interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
+        }
+      },
+      "id": "d541d406-d585-445d-a401-bbd23cc71dd6",
+      "name": "Get User Baselines avg",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        -1984
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    ROUND(\n        percentile_cont(0.5) WITHIN GROUP (ORDER BY value)::numeric\n    ) as measure\nFROM \"SensorData\"\nWHERE userID = $1 \n  AND time > NOW() - ($2 || ' days')::interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
+        }
+      },
+      "id": "4bd75104-d1ef-4e96-ac7a-47293d635ff2",
+      "name": "Get User Baselines median",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        -1792
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    mode() WITHIN GROUP (ORDER BY value) as measure\nFROM \"SensorData\"\nWHERE userID = $1 \n  AND time > NOW() - ($2 || ' days')::interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
+        }
+      },
+      "id": "1d1f6a51-a301-49e9-8d75-23f2055e2adb",
+      "name": "Get User Baselines mode",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        -1552
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const usecase = items[0].json.usecase_name;\nconst params = items[0].json.parameters;\n\nreturn params.map(p => ({\n  json: {\n    usecase_name: usecase,\n    parameter_name: p.parameter_name,\n    parameter_format: p.parameter_format,\n    is_required: p.is_required !== undefined ? p.is_required : true,\n    description: p.description || ''\n  }\n}));"
+      },
+      "id": "540c2ecf-c4dd-4105-9138-f25afb63c6e5",
+      "name": "Format use-case Parameters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3008,
+        -1744
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO public.\"UseCaseDictionary\" \n  (usecase_name, parameter_name, parameter_format, is_required, description) \nVALUES \n  ('{{ $json.usecase_name }}', '{{ $json.parameter_name }}', '{{ $json.parameter_format }}', {{ $json.is_required }}, '{{ $json.description }}')\nON CONFLICT (usecase_name, parameter_name) \nDO UPDATE SET \n  parameter_format = EXCLUDED.parameter_format,\n  is_required = EXCLUDED.is_required,\n  description = EXCLUDED.description;",
+        "options": {}
+      },
+      "id": "77806629-4528-4d35-b765-b93e3b8b7f1f",
+      "name": "DB: SQL Insert use case",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2784,
+        -1744
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "id": "9dbf23a3-3e92-47e7-ac00-f3484d50eab8",
+      "name": "Respond Success use case added",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2560,
+        -1744
+      ]
+    },
+    {
+      "parameters": {
+        "path": "get-use-case-params",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "59a1a192-55e4-48b7-8dcb-de3ef64aea47",
+      "name": "Webhook: Get use case Parameters",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3232,
+        -1568
+      ],
+      "webhookId": "2bfcdf3f-96a0-4dd1-9bfe-e0079c55f95c"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT * FROM public.\"UseCaseDictionary\" WHERE usecase_name = '{{ $json.query.usecase_name }}';",
+        "options": {}
+      },
+      "id": "09109f9f-785d-43ce-adf1-cc75cae53137",
+      "name": "DB: Fetch use case Parameters",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3008,
+        -1568
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "312f339c-988a-493b-9843-d0686b298f1f",
+      "name": "Respond with use case Params",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2784,
+        -1568
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "add-schedule",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0d323830-32f8-44a0-839e-a08b16842a1e",
+      "name": "Webhook: Add Schedule",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1840,
+        -1264
+      ],
+      "webhookId": "19b747a8-b762-4c2a-a382-22075dc3a223"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    user_id: $json.user_id,\n    interval_days: parseInt($json.interval_days) || 7,\n    next_run_date: $json.next_run_date || new Date().toISOString(),\n    measure_type: $json.measure_type || 'avg',\n    trigger_percentage: parseFloat($json.trigger_percentage) || 10.0,\n    active: $json.active !== undefined ? $json.active : true\n  }\n}];"
+      },
+      "id": "bdbe02eb-6e63-4569-a170-57a946368605",
+      "name": "Format Schedule Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1616,
+        -1264
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO public.\"Schedules\" \n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, {{ $json.active }});",
+        "options": {}
+      },
+      "id": "fc98c800-f223-459d-8c9b-a64f84d2e491",
+      "name": "DB: SQL Insert Schedule",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1392,
+        -1264
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "id": "db8bb170-a854-4a2c-9cdb-f8b746b27c17",
+      "name": "Respond Success schedule added",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1168,
+        -1264
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deactivate-schedule",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0cfdee45-465c-4936-be80-703bf3030f64",
+      "name": "Webhook: Deactivate Schedule",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1840,
+        -1040
+      ],
+      "webhookId": "188a6735-2701-4247-82f7-a3f630b9f2da"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    schedule_id: $json.schedule_id\n  }\n}];"
+      },
+      "id": "0c6d5233-7523-4a37-a271-22f9c0e3ce39",
+      "name": "Extract Schedule ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1616,
+        -1040
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE public.\"Schedules\" \nSET active = false \nWHERE id = {{ $json.schedule_id }};",
+        "options": {}
+      },
+      "id": "fe929909-d98c-4fdf-a21d-758da6369fe4",
+      "name": "DB: Set Active False",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1392,
+        -1040
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "8c13836e-9b19-4603-bafb-65512c131594",
+      "name": "Respond Deactivated schedule",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1168,
+        -1040
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nreturn [\n  {\n    json: {\n      rows\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6272,
+        -1728
+      ],
+      "id": "32c743a4-70be-45a4-af30-be90247086c1",
+      "name": "Setting up configutations response",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = $input.first().json.query || {};\nconst range = q.range || \"All Time\";\nconst alertTypeRaw = q.alert_type;\nconst userIdRaw = q.userid;\nconst startDateRaw = q.start_date;\nconst endDateRaw = q.end_date;\n\nif (!userIdRaw) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing required userid parameter\" } } }];\n}\nif (alertTypeRaw === undefined || alertTypeRaw === null || String(alertTypeRaw).trim() === \"\") {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing required alert_type parameter\" } } }];\n}\n\nconst userId = Number(userIdRaw);\nif (!Number.isFinite(userId)) {\n  return [{ json: { statusCode: 400, payload: { error: \"userid must be a number\" } } }];\n}\n\nconst alertTypeStr = String(alertTypeRaw).trim();\nconst isNumericAlertType = /^[0-9]+$/.test(alertTypeStr);\n\nconst now = new Date();\nlet dateFrom = null;\nlet dateTo = null;\n\nswitch (range) {\n  case \"Last 24 Hours\":\n  case \"Last+24+Hours\":\n    dateFrom = new Date(now.getTime() - 24 * 60 * 60 * 1000);\n    break;\n  case \"Last 7 Days\":\n  case \"Last+7+Days\":\n    dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);\n    break;\n  case \"Last 30 Days\":\n  case \"Last+30+Days\":\n    dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);\n    break;\n  case \"custom\":\n  case \"Custom Date Range\":\n  case \"Custom+Date+Range\":\n    // Parse custom date range\n    if (startDateRaw) {\n      dateFrom = new Date(startDateRaw + \"T00:00:00\");\n    }\n    if (endDateRaw) {\n      // Set to end of day (23:59:59)\n      dateTo = new Date(endDateRaw + \"T23:59:59\");\n    }\n    break;\n  default:\n    dateFrom = null;\n    dateTo = null;\n}\n\nlet query = `\n  SELECT sd.id, sd.time, sd.value,\n         COALESCE(a.type, 'No Alert') AS alert_type,\n         COALESCE(a.pulses, 0) AS pulses,\n         COALESCE(a.intensity, 0) AS intensity,\n         COALESCE(a.duration, 0) AS duration,\n         COALESCE(a.interval, 0) AS interval,\n         sd.userid,\n         sd.usecase_id,\n         a.vibration_reason AS reason\n  FROM public.\"SensorData\" sd\n  LEFT JOIN public.\"Alert\" a ON sd.alertid = a.alertid\n`;\n\nlet where = [];\nlet params = [];\nlet p = 1;\n\n// time filter - start date\nif (dateFrom) {\n  where.push(`sd.time >= $${p++}`);\n  params.push(dateFrom.toISOString());\n}\n\n// time filter - end date (for custom range)\nif (dateTo) {\n  where.push(`sd.time <= $${p++}`);\n  params.push(dateTo.toISOString());\n}\n\n// user filter\nwhere.push(`sd.userid = $${p++}`);\nparams.push(userId);\n\n// alert filter: by type OR by sensorid\nif (isNumericAlertType) {\n  where.push(`sd.usecase_id = $${p++}`);\n  params.push(Number(alertTypeStr));\n} else {\n  where.push(`a.type = $${p++}`);\n  params.push(alertTypeStr);\n}\n\nquery += ` WHERE ${where.join(\" AND \")} ORDER BY sd.time;`;\n\nreturn [{\n  json: {\n    statusCode: 200,\n    query,\n    params,\n    meta: { range, alertTypeRaw: alertTypeStr, interpretedAs: isNumericAlertType ? \"sensorid\" : \"type\", dateFrom, dateTo }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6512,
+        -1184
+      ],
+      "id": "cba5a4de-6506-4ac7-83fa-a3726ab69691",
+      "name": "parse sensor data request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a154f1c1-4b58-4f22-b69e-412922720005",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -6272,
+        -1184
+      ],
+      "id": "284ee2ee-d51f-42fd-83e4-a28fcb7f03a2",
+      "name": "If sensor database not empty"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nif (!rows || rows.length === 0) {\n  return [{ json: { statusCode: 404, payload: [] } }];\n}\n\nreturn [{ json: { statusCode: 200, payload: rows } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5824,
+        -1280
+      ],
+      "id": "2fab3c86-d389-49ca-9c53-1c52108d396f",
+      "name": "check if sensor data query empty"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || result.length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Use case assigned successfully\",\n    data: {\n      userId: result.userid,\n      activeUsecaseId: result.active_usecase_id\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6096,
+        -128
+      ],
+      "id": "fd09da6f-442c-48f2-be62-cb5c52df5ad3",
+      "name": "format response assign usecase to user"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Check if this is an error from the database\nif (input.code || input.message) {\n  // Check if it's a duplicate key error (unique constraint violation)\n  if (input.code === '23505' || (input.message && input.message.includes('duplicate key'))) {\n    return [{\n      json: {\n        statusCode: 409,\n        error: \"A use case with this name already exists\"\n      }\n    }];\n  }\n  \n  // Other database errors\n  return [{\n    json: {\n      statusCode: 500,\n      error: \"Failed to create use case: \" + (input.message || \"Unknown error\")\n    }\n  }];\n}\n\n// Success case - format the successful insert result\nreturn [{\n  json: {\n    statusCode: 201,\n    message: \"Use case created successfully\",\n    data: {\n      usecaseId: input.usecase_id,\n      name: input.name,\n      description: input.description\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6080,
+        96
+      ],
+      "id": "c41d5921-48d0-40f5-ab47-34cc3c9c93ac",
+      "name": "format response insert usecase",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body",
+        "options": {}
+      },
+      "name": "Split Array of mapping (If List)",
+      "type": "n8n-nodes-base.itemLists",
+      "position": [
+        -4592,
+        -1760
+      ],
+      "notesInFlow": true,
+      "id": "009d3fd4-cd3a-4eb1-951d-6018ef4905bd",
+      "typeVersion": 3.1,
+      "notes": "Ensures n8n loops through each rule if Java sends a List<SensorRuleConfig>"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"Mapping ID not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Mapping deactivated successfully\",\n    data: {\n      mappingId: result.id,\n      sensor: result.sensorname,\n      active: result.isactive\n    }\n  }\n}];"
+      },
+      "id": "8b479946-f5ee-4244-9b43-8ef930443fd5",
+      "name": "Format Final Response deactivate mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4176,
+        -1424
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const baseline = $input.first().json.measure;\nconst schedule = $('Get Due Schedules').first().json;\n\n// Tracking object for performance monitoring\nconst tracking = {\n  user_id: schedule.user_id,\n  interval_days: schedule.interval_days || 7,\n  processed_at: new Date().toISOString(),\n  status: 'calculated'\n};\n\nif (!baseline) {\n  return [{ json: { ...tracking, status: 'skipped', reason: 'No sensor data' } }];\n}\n\nconst minVal = Math.round(baseline * (1+0.01*$('Get Due Schedules').first().json.trigger_percentage));\nconst maxVal = minVal + 20;\n\nreturn [{\n  json: {\n    ...tracking,\n    minvalue: minVal,\n    maxvalue: maxVal,\n    type: 'HeartRate'\n  }\n}];"
+      },
+      "id": "d9a1490d-d7fd-4c30-b5e2-aa03719e5ea9",
+      "name": "Calculate new rule Parameters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        -1792
+      ]
     },
     {
       "parameters": {
@@ -1248,315 +1552,11 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -8096,
-        -2048
-      ],
-      "id": "08d4fcd9-d7c2-4ab8-965e-3c71fe6b2b86",
-      "name": "Switch"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT ROUND(AVG(value)) as measure FROM \"SensorData\" WHERE userID = $1 AND time > NOW() - ($2 || ' days')::interval;",
-        "options": {
-          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
-        }
-      },
-      "id": "e1865e52-3a45-4698-9a54-b183a21e75bd",
-      "name": "Get User Baselines avg",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.1,
-      "position": [
-        -7808,
-        -2224
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT \n    ROUND(\n        percentile_cont(0.5) WITHIN GROUP (ORDER BY value)::numeric\n    ) as measure\nFROM \"SensorData\"\nWHERE userID = $1 \n  AND time > NOW() - ($2 || ' days')::interval;",
-        "options": {
-          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
-        }
-      },
-      "id": "6d6e40bd-72e5-4c57-a2a8-f83fc2f1b8e5",
-      "name": "Get User Baselines median",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.1,
-      "position": [
-        -7808,
-        -2032
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT \n    mode() WITHIN GROUP (ORDER BY value) as measure\nFROM \"SensorData\"\nWHERE userID = $1 \n  AND time > NOW() - ($2 || ' days')::interval;",
-        "options": {
-          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
-        }
-      },
-      "id": "d93c14ac-f1d8-4512-881c-e966c436f402",
-      "name": "Get User Baselines mode",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.1,
-      "position": [
-        -7808,
-        -1792
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const usecase = items[0].json.usecase_name;\nconst params = items[0].json.parameters;\n\nreturn params.map(p => ({\n  json: {\n    usecase_name: usecase,\n    parameter_name: p.parameter_name,\n    parameter_format: p.parameter_format,\n    is_required: p.is_required !== undefined ? p.is_required : true,\n    description: p.description || ''\n  }\n}));"
-      },
-      "id": "7bce8dba-8aae-4f4d-a2ef-152fea94ff3e",
-      "name": "Format use-case Parameters",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -10016,
-        -1984
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "=INSERT INTO public.\"UseCaseDictionary\" \n  (usecase_name, parameter_name, parameter_format, is_required, description) \nVALUES \n  ('{{ $json.usecase_name }}', '{{ $json.parameter_name }}', '{{ $json.parameter_format }}', {{ $json.is_required }}, '{{ $json.description }}')\nON CONFLICT (usecase_name, parameter_name) \nDO UPDATE SET \n  parameter_format = EXCLUDED.parameter_format,\n  is_required = EXCLUDED.is_required,\n  description = EXCLUDED.description;",
-        "options": {}
-      },
-      "id": "3fe02b27-da20-4bf2-9ff2-abfebca1857e",
-      "name": "DB: SQL Insert use case",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -9792,
-        -1984
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 201
-        }
-      },
-      "id": "b3c9351a-4801-4510-889d-ace2f2d68555",
-      "name": "Respond Success use case added",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -9568,
-        -1984
-      ]
-    },
-    {
-      "parameters": {
-        "path": "get-use-case-params",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "7f4acd81-5b25-4a9a-a814-398bcf6b7e84",
-      "name": "Webhook: Get use case Parameters",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -10240,
+        -1088,
         -1808
       ],
-      "webhookId": "2bfcdf3f-96a0-4dd1-9bfe-e0079c55f95c"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "=SELECT * FROM public.\"UseCaseDictionary\" WHERE usecase_name = '{{ $json.query.usecase_name }}';",
-        "options": {}
-      },
-      "id": "92a0cd01-0b90-4b10-977c-f8b16565304f",
-      "name": "DB: Fetch use case Parameters",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -10016,
-        -1808
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {}
-      },
-      "id": "0c0f4e53-99e4-4b81-b132-0c9ec4135f42",
-      "name": "Respond with use case Params",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -9792,
-        -1808
-      ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "add-schedule",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "442d3d8f-d2a1-4f29-813e-3d7428456406",
-      "name": "Webhook: Add Schedule",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -8848,
-        -1504
-      ],
-      "webhookId": "19b747a8-b762-4c2a-a382-22075dc3a223"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [{\n  json: {\n    user_id: $json.user_id,\n    interval_days: parseInt($json.interval_days) || 7,\n    next_run_date: $json.next_run_date || new Date().toISOString(),\n    measure_type: $json.measure_type || 'avg',\n    trigger_percentage: parseFloat($json.trigger_percentage) || 10.0,\n    active: $json.active !== undefined ? $json.active : true\n  }\n}];"
-      },
-      "id": "07ebc464-23bd-48ff-ba43-ccff453ece7e",
-      "name": "Format Schedule Data",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -8624,
-        -1504
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "=INSERT INTO public.\"Schedules\" \n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, {{ $json.active }});",
-        "options": {}
-      },
-      "id": "acdb6838-c882-4e40-883b-6290b1fdee57",
-      "name": "DB: SQL Insert Schedule",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -8400,
-        -1504
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 201
-        }
-      },
-      "id": "d951e843-2e1a-42b8-b9c6-813009a6739c",
-      "name": "Respond Success schedule added",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -8176,
-        -1504
-      ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "deactivate-schedule",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "6beb0c72-475b-4022-90c2-0ad9105c91fb",
-      "name": "Webhook: Deactivate Schedule",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -8848,
-        -1280
-      ],
-      "webhookId": "188a6735-2701-4247-82f7-a3f630b9f2da"
-    },
-    {
-      "parameters": {
-        "jsCode": "return [{\n  json: {\n    schedule_id: $json.schedule_id\n  }\n}];"
-      },
-      "id": "26632366-7014-4d4d-8661-43180669a49b",
-      "name": "Extract Schedule ID",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -8624,
-        -1280
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "=UPDATE public.\"Schedules\" \nSET active = false \nWHERE id = {{ $json.schedule_id }};",
-        "options": {}
-      },
-      "id": "2729a93d-e4e1-407b-91c5-be5bdd686f27",
-      "name": "DB: Set Active False",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -8400,
-        -1280
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "id": "810e9457-8392-44a0-b7df-2ac31ea5585d",
-      "name": "Respond Deactivated schedule",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -8176,
-        -1280
-      ]
+      "id": "87a2b7d5-d669-49bb-ade1-f23a83539c28",
+      "name": "Switch between measures"
     }
   ],
   "pinData": {},
@@ -1576,7 +1576,7 @@
       "main": [
         [
           {
-            "node": "Setting up response",
+            "node": "Setting up configutations response",
             "type": "main",
             "index": 0
           }
@@ -1598,18 +1598,7 @@
       "main": [
         [
           {
-            "node": "parse request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "check if empty": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook sensor data",
+            "node": "parse sensor data request",
             "type": "main",
             "index": 0
           }
@@ -1649,40 +1638,11 @@
         ]
       ]
     },
-    "parse request": {
-      "main": [
-        [
-          {
-            "node": "If not empty",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If not empty": {
-      "main": [
-        [
-          {
-            "node": "Execute get sensor data query",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Respond to Webhook sensor data error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Execute get sensor data query": {
       "main": [
         [
           {
-            "node": "check if empty",
+            "node": "check if sensor data query empty",
             "type": "main",
             "index": 0
           }
@@ -1705,17 +1665,6 @@
         [
           {
             "node": "Respond to Webhook Set monitoring type",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Setting up response": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook current-configuraion",
             "type": "main",
             "index": 0
           }
@@ -1748,29 +1697,7 @@
       "main": [
         [
           {
-            "node": "format response5",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "format response5": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook assign usecase",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "format response6": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook create usecase",
+            "node": "format response assign usecase to user",
             "type": "main",
             "index": 0
           }
@@ -1803,7 +1730,7 @@
       "main": [
         [
           {
-            "node": "format response6",
+            "node": "format response insert usecase",
             "type": "main",
             "index": 0
           }
@@ -1825,18 +1752,7 @@
       "main": [
         [
           {
-            "node": "Split Array (If List)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Split Array (If List)": {
-      "main": [
-        [
-          {
-            "node": "DB: Upsert Rule",
+            "node": "Split Array of mapping (If List)",
             "type": "main",
             "index": 0
           }
@@ -1858,18 +1774,7 @@
       "main": [
         [
           {
-            "node": "Format Final Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Final Response": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook deactivated mapping",
+            "node": "Format Final Response deactivate mapping",
             "type": "main",
             "index": 0
           }
@@ -1936,17 +1841,6 @@
         [
           {
             "node": "If schedule is due",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Calculate Parameters": {
-      "main": [
-        [
-          {
-            "node": "Search for Existing Rule",
             "type": "main",
             "index": 0
           }
@@ -2033,7 +1927,7 @@
         ],
         [
           {
-            "node": "Switch",
+            "node": "Switch between measures",
             "type": "main",
             "index": 0
           }
@@ -2058,36 +1952,11 @@
         ]
       ]
     },
-    "Switch": {
-      "main": [
-        [
-          {
-            "node": "Get User Baselines avg",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Get User Baselines median",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Get User Baselines mode",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get User Baselines avg": {
       "main": [
         [
           {
-            "node": "Calculate Parameters",
+            "node": "Calculate new rule Parameters",
             "type": "main",
             "index": 0
           }
@@ -2098,7 +1967,7 @@
       "main": [
         [
           {
-            "node": "Calculate Parameters",
+            "node": "Calculate new rule Parameters",
             "type": "main",
             "index": 0
           }
@@ -2109,7 +1978,7 @@
       "main": [
         [
           {
-            "node": "Calculate Parameters",
+            "node": "Calculate new rule Parameters",
             "type": "main",
             "index": 0
           }
@@ -2225,17 +2094,148 @@
           }
         ]
       ]
+    },
+    "Setting up configutations response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook current-configuraion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse sensor data request": {
+      "main": [
+        [
+          {
+            "node": "If sensor database not empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If sensor database not empty": {
+      "main": [
+        [
+          {
+            "node": "Execute get sensor data query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook sensor data error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check if sensor data query empty": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook sensor data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response assign usecase to user": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook assign usecase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response insert usecase": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook create usecase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Array of mapping (If List)": {
+      "main": [
+        [
+          {
+            "node": "DB: Upsert Rule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Response deactivate mapping": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook deactivated mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate new rule Parameters": {
+      "main": [
+        [
+          {
+            "node": "Search for Existing Rule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch between measures": {
+      "main": [
+        [
+          {
+            "node": "Get User Baselines avg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get User Baselines median",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get User Baselines mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2ee9b6a2-04f2-47c6-b3ed-d9859983fdd5",
+  "versionId": "7a385e25-bda8-4f7e-9191-1fec3ed7c86e",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "nFeUS2F9bOFH6AUd",
+  "id": "Nmg5YCtndYDbzdGd",
   "tags": []
 }
