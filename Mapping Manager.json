@@ -105,10 +105,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -208,
-        160
+        -1392,
+        -592
       ],
-      "id": "fc84048a-15fb-44ee-a706-2a342ee2d5ea",
+      "id": "19623e6d-e8b3-4bdb-a842-28ff6b9641a1",
       "name": "Switch on action"
     },
     {
@@ -122,15 +122,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        0
+        -1184,
+        -752
       ],
-      "id": "5064e461-4b7b-4278-b3a2-a98a6c21ef3e",
+      "id": "3ee7bd25-f186-42db-889e-2e77c8251030",
       "name": "DB - list mappings",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -141,10 +141,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        0
+        -976,
+        -752
       ],
-      "id": "d7cb9dfa-9610-4a6a-a88d-df2c91d45dff",
+      "id": "7eed079c-8453-4f68-b516-5ca8439e33f2",
       "name": "Format - list"
     },
     {
@@ -154,10 +154,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        176
+        -1184,
+        -576
       ],
-      "id": "eeebe00c-59f4-4869-9758-92807a1782fc",
+      "id": "7c5485e8-2596-4a0b-8545-4eae19b36343",
       "name": "Validate - add params"
     },
     {
@@ -171,15 +171,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        384,
-        176
+        -800,
+        -576
       ],
-      "id": "23196662-904c-4b64-982e-5ebc1496c2c0",
+      "id": "c4f33db0-0a10-46ba-8057-dfa7e2333a72",
       "name": "DB - insert mapping",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -190,10 +190,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        592,
-        176
+        -592,
+        -576
       ],
-      "id": "83ad702f-bc31-46d7-aa76-5d8aefabd952",
+      "id": "e67a1cda-2030-4791-a7ef-6ac7cc1be757",
       "name": "Format - add success"
     },
     {
@@ -207,15 +207,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        400,
-        384
+        -784,
+        -368
       ],
-      "id": "5ce105b9-5963-45d2-b1d7-5c2ed8521dfc",
+      "id": "6d0eb2be-293b-46aa-86e1-b52b3b845c71",
       "name": "DB - deactivate mapping",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -226,16 +226,16 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        592,
-        384
+        -592,
+        -368
       ],
-      "id": "ce31c1a9-21da-482e-a1a0-2299076aa20c",
+      "id": "81810b1f-cca3-4529-a314-d3a66d987998",
       "name": "Format - remove"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT\n  ROUND(MIN(sd.value)::numeric, 2) AS min_seen,\n  ROUND(MAX(sd.value)::numeric, 2) AS max_seen,\n  ROUND(AVG(sd.value)::numeric, 2) AS avg_seen,\n  COUNT(*) AS total_readings\nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorid = st.sensorid\nWHERE st.name = $1\n  AND sd.time > NOW() - INTERVAL '30 days';",
+        "query": "SELECT\n  ROUND(MIN(sd.value)::numeric, 2) AS min_seen,\n  ROUND(MAX(sd.value)::numeric, 2) AS max_seen,\n  ROUND(AVG(sd.value)::numeric, 2) AS avg_seen,\n  COUNT(*) AS total_readings\nFROM \"SensorData\" sd\nJOIN \"UseCase\" st ON sd.usecase_id = st.usecase_id\nWHERE st.name = $1\n  AND sd.time > NOW() - INTERVAL '30 days';",
         "options": {
           "queryReplacement": "=={{ $json.usecase_name }}"
         }
@@ -243,15 +243,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        384,
-        576
+        -800,
+        -176
       ],
-      "id": "3f66db5f-d263-44f5-8277-420a8e7e81b3",
+      "id": "db8213b3-79a6-4da3-a521-42b09e87bb0a",
       "name": "DB - historical range",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -264,10 +264,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        768,
-        576
+        -416,
+        -176
       ],
-      "id": "bf66ea1f-fb6c-4d18-b3b7-8e2b35d86300",
+      "id": "0a234c54-5dea-46f4-820a-7300bc270898",
       "name": "GPT - Brainstorm"
     },
     {
@@ -284,30 +284,24 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        768,
-        752
+        -416,
+        0
       ],
-      "id": "1fe9ff3a-b6d3-4bea-8d38-12dc82ab5a70",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "C6PPGVshBukmGMJ7",
-          "name": "OpenAi account"
-        }
-      }
+      "id": "0a679010-b898-4bdb-ad0b-e186612400d4",
+      "name": "OpenAI Chat Model"
     },
     {
       "parameters": {
         "inputSource": "jsonExample",
         "jsonExample": "{\n  \"action\":       \"={{ $json.payload.action }}\",\n  \"params\":       \"={{ $json.payload.params }}\",\n  \"session_id\":   \"={{ $json.session_id }}\",\n  \"usecase_id\":   \"={{ $json.usecase_id }}\",\n  \"usecase_name\": \"={{ $json.usecase_name }}\",\n  \"message\":      \"={{ $json.message }}\"\n}"
       },
-      "id": "500ff4a3-e553-4c1a-880b-413d72f794d9",
+      "id": "bd35c7a8-34f4-4c4a-9987-fbc6496692de",
       "typeVersion": 1.1,
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        -576,
-        192
+        -1760,
+        -560
       ]
     },
     {
@@ -317,10 +311,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1056,
-        576
+        -128,
+        -176
       ],
-      "id": "5fbd9743-0a8b-4cac-81c4-affbd6525187",
+      "id": "00ef3a28-07a3-4dba-a63d-a80171e837d1",
       "name": "Format - brainstorm"
     },
     {
@@ -330,10 +324,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1248,
-        160
+        80,
+        -592
       ],
-      "id": "0bad3ff7-df97-408d-88ac-d3902f0bfc36",
+      "id": "72e1bd50-1dbe-4439-b95e-02586f7d99b5",
       "name": "Merge all branches"
     },
     {
@@ -343,10 +337,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        368
+        -1184,
+        -384
       ],
-      "id": "24a214dd-88b7-4bfc-aa1a-2b48d7c11196",
+      "id": "72fe0683-85b2-456f-9f23-d55c9e10db9b",
       "name": "Validate - remove params"
     },
     {
@@ -356,10 +350,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -416,
-        192
+        -1600,
+        -560
       ],
-      "id": "109d4a03-8f0d-41e9-9850-0b2b87b1c06f",
+      "id": "1c608444-4de7-4a98-b54c-45d90291def2",
       "name": "Parse incoming"
     },
     {
@@ -373,15 +367,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        576
+        -1184,
+        -176
       ],
-      "id": "a4269197-2688-4821-b087-8541b422da69",
+      "id": "997005e7-06f4-4ccd-9613-0e0958ce2375",
       "name": "DB - current mappings for brainstorm",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -392,10 +386,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        576
+        -976,
+        -176
       ],
-      "id": "c486e065-74eb-4dbf-9629-b81e3ecc1cba",
+      "id": "0c109e68-3652-4a58-b77c-501ca0c53f03",
       "name": "Package mappings"
     },
     {
@@ -405,10 +399,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        592,
-        576
+        -592,
+        -176
       ],
-      "id": "06d86349-9535-4484-9384-7b1b8b212919",
+      "id": "f3f7cb29-e343-4dcb-9a6d-0ab80ff8e947",
       "name": "Combine brainstorm data"
     },
     {
@@ -418,10 +412,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        752,
-        896
+        -432,
+        144
       ],
-      "id": "ea79328f-0d00-4433-a2b2-2ba5f1e50115",
+      "id": "6acde2ed-9f56-4458-8f15-90b37c2f702b",
       "name": "Sticky Note"
     },
     {
@@ -452,10 +446,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        208,
-        176
+        -976,
+        -576
       ],
-      "id": "39f212a9-b469-4f07-937d-28d00a66cdee",
+      "id": "a75651c0-1ba0-43eb-b643-cdda72412fd1",
       "name": "If added parameters are valid"
     },
     {
@@ -486,10 +480,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        208,
-        368
+        -976,
+        -384
       ],
-      "id": "cd677d3f-9fe7-4137-8b99-f655e0b04f85",
+      "id": "e0a37d68-9fd9-4bba-898a-7bdbf0d87a82",
       "name": "If removed parameters are not valid"
     }
   ],
@@ -755,11 +749,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f8852359-e86c-40d7-9bef-278569653d39",
+  "versionId": "fd994b75-9cc5-4fbe-a6d0-2bc6b71044ae",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
   },
-  "id": "pBa7G9TGnaWdUxoj",
+  "id": "6mbZSpha6phxwD1v",
   "tags": []
 }

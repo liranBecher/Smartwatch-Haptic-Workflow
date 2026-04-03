@@ -43,8 +43,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -800,
-        512
+        -848,
+        560
       ],
       "id": "83319a3a-ff57-4bd1-9d09-7fb24a3f5d60",
       "name": "Sticky Note20"
@@ -1208,7 +1208,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorID = st.sensorID\nWHERE sd.userID = {{ $('Webhook heart rate').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook heart rate').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook heart rate').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
+        "query": "=SELECT value \nFROM \"SensorData\" sd\nJOIN \"UseCase\" st ON sd.usecase_id = st.usecase_id\nWHERE sd.userID = {{ $('Webhook heart rate').item.json.body.UserID }}\nAND sd.watchID = {{ $('Webhook heart rate').item.json.body.SmartWatchID }}\nAND sd.phoneID = {{ $('Webhook heart rate').item.json.body.AndroidID }}\nAND st.name = 'HeartRate'\nORDER BY time DESC\nLIMIT 10;",
         "additionalFields": {}
       },
       "name": "Fetch heartrate History",
@@ -2224,11 +2224,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "604ca18e-ac01-4f33-a5d0-41e31e6f4416",
+  "versionId": "c73187d3-018e-4edf-91b8-93f2a5221bab",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
