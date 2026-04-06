@@ -658,7 +658,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -480,
+        -464,
         1296
       ],
       "credentials": {
@@ -696,7 +696,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -32,
+        -16,
         1296
       ]
     },
@@ -1456,7 +1456,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -256,
+        -240,
         1296
       ]
     },
@@ -1565,7 +1565,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -720,
+        -704,
         1648
       ],
       "id": "378e8fa4-66f2-4f54-a0ee-e316aed5aa39",
@@ -1582,7 +1582,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -512,
+        -480,
         1648
       ],
       "id": "24671c5b-3572-49ea-9bb0-f61b5bad611d",
@@ -1620,7 +1620,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -272,
+        -256,
         1648
       ]
     },
@@ -1635,7 +1635,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -48,
+        -32,
         1648
       ]
     },
@@ -1651,6 +1651,98 @@
       "typeVersion": 1,
       "id": "7608ab21-37cb-42b9-bd82-6269b2d7e703",
       "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "## edit users info"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1232,
+        1984
+      ],
+      "typeVersion": 1,
+      "id": "4f3ea792-3480-4bd6-8ca9-909016fdd624",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "edit-users",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -928,
+        2016
+      ],
+      "id": "5651aae0-d047-4868-be7d-38039871b982",
+      "name": "edit users",
+      "webhookId": "ac4ac46a-8d37-4510-bd78-070d23d78298"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst fName = body.fName;\nconst lName = body.lName;\nconst id = Number(body.userId);\n\nif (!fName || !lName || !id || isNaN(id)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    fName: fName,\n    lName: lName, \n    id: id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        2016
+      ],
+      "id": "e705ad5c-2477-4f3a-a45c-a9f049523a84",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET fname = $1, lname = $2\nWHERE userid = $3\nRETURNING userid;",
+        "options": {
+          "queryReplacement": "={{ [$json.fName, $json.lName, $json.id] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -480,
+        2016
+      ],
+      "id": "d5da2571-f4c7-4790-92e2-a0c9f15d3e3a",
+      "name": "edit names query",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"User name updated successfully\",\n    data: {\n      userId: result.userid\n    }\n  }\n}];"
+      },
+      "id": "c0ef6167-42ef-4142-93fd-58535e5c8c25",
+      "name": "Format Final Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        2016
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -32,
+        2016
+      ],
+      "id": "ac1f16d8-3c9f-4fc0-8ee2-b107a0f9f71d",
+      "name": "Respond to Webhook1"
     }
   ],
   "pinData": {},
@@ -2363,6 +2455,50 @@
           }
         ]
       ]
+    },
+    "edit users": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "edit names query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "edit names query": {
+      "main": [
+        [
+          {
+            "node": "Format Final Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Response1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2370,7 +2506,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "56fff539-4a87-48ed-a138-365074339319",
+  "versionId": "9f853826-fb50-4274-bd35-072465090760",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
