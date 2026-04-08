@@ -10,9 +10,9 @@
       "typeVersion": 1.1,
       "position": [
         -1616,
-        256
+        -64
       ],
-      "id": "1cd50b3c-bfcb-450e-b916-85110eae630b",
+      "id": "7fe2eaa1-8bed-4a7c-bcd8-8d47aab62f14",
       "name": "Execute Workflow Trigger"
     },
     {
@@ -25,14 +25,14 @@
       "typeVersion": 2.6,
       "position": [
         -416,
-        640
+        320
       ],
-      "id": "d46dca32-1a66-443b-8217-cc5de096b3b3",
+      "id": "49c469d9-a61a-4a15-bfbc-86b76fca9e6d",
       "name": "List all schedules",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        144,
-        320
+        224,
+        -64
       ],
-      "id": "b97d9efa-b6d9-432f-94f3-72a74356959b",
+      "id": "ccd02b5e-0ca4-417b-ac6e-25f942786fba",
       "name": "Merge"
     },
     {
@@ -146,26 +146,26 @@
         },
         "options": {}
       },
-      "id": "25818208-5fa7-4da3-884d-4c17897552cd",
+      "id": "3fc33ed3-184f-43b2-9ac5-c7db87d6c6a1",
       "name": "Action Router",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
         -1152,
-        208
+        -112
       ]
     },
     {
       "parameters": {
         "jsCode": "const input = $input.first().json;\nconst payload = input.payload || {};\nconst action = payload.action || 'list';\nconst params = payload.params || {};\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\n// Logic to differentiate between actions\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // 1. ADD: Needs user_id, interval, and type\n    // 2. CHANGE: Needs schedule_id and the fields to update\n    // 3. DEACTIVATE: Needs schedule_id\n    // 4. LIST: Often just needs usecase_id or user_id\n    \n    schedule_id: params.schedule_id ? parseInt(params.schedule_id) : null,\n    user_id: params.user_id ? parseInt(params.user_id) : null,\n    interval_days: params.interval_days ? parseInt(params.interval_days) : null,\n    measure_type: params.measure_type || 'average',\n    \n    // Validation flag to help the downstream Switch/If nodes\n    isValid: (action === 'list') || \n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id)\n  }\n}];"
       },
-      "id": "8556e549-ca0a-4579-a33a-6b1ad70251ec",
+      "id": "e14b0424-386c-4261-a5bc-aef74c6eed31",
       "name": "Parse Schedule Params",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         -1392,
-        256
+        -64
       ]
     },
     {
@@ -174,19 +174,19 @@
         "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3 WHERE schedule_id = $1",
         "options": {}
       },
-      "id": "f402d64b-3ff1-4d7c-a229-c03b70d8c1f7",
+      "id": "091ee9b6-a05e-406e-9355-56c3fead0c27",
       "name": "DB: Set Schedule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -416,
-        224
+        -96
       ],
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -196,18 +196,18 @@
         "query": "UPDATE public.\"Schedules\" \nSET active = false \nWHERE id = {{ $json.schedule_id }};",
         "options": {}
       },
-      "id": "8210e4d5-b2a1-4304-8dc1-64e2026bbfb7",
+      "id": "aca6b43d-c948-4441-9b84-1e26e80cfabd",
       "name": "DB: Set Active False",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -416,
-        448
+        128
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -217,21 +217,73 @@
         "query": "INSERT INTO public.\"Schedules\" \n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, {{ $json.active }});",
         "options": {}
       },
-      "id": "8f713af8-985b-41c9-89d2-7d223c66f114",
+      "id": "cb5d2b72-9934-44e7-b240-fd8655e0fa97",
       "name": "DB: SQL Insert Schedule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -400,
-        32
+        -288
       ],
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => \n  `• ID ${r.id}: Every ${r.interval_days} days (Type: ${r.measure_type}) - Next run: ${r.next_run_date || 'N/A'}`\n).join('\\n');\n\nreturn [{ json: {\n  reply: `Active schedules for ${name} (${rows.length} total):\\n\\n${lines}`,\n  session_id\n}}];"
+      },
+      "id": "4c7a9624-dc7e-40f7-ad38-feca1b66910e",
+      "name": "Format List Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].id}. New interval: ${rows[0].interval_days} days, new measure: ${rows[0].measure_type}.`,\n  session_id\n}}];"
+      },
+      "id": "d62f645a-d28b-4763-af1b-5ae1f53a15df",
+      "name": "Format Update Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length > 0 ? `🚫 Schedule ${rows[0].id} deactivated.` : \"Schedule not found.\",\n  session_id\n}}];"
+      },
+      "id": "01398d71-05d4-4dc5-825d-94d242402cab",
+      "name": "Format Deactivate Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: `✨ New schedule created with ID ${rows[0].id} for user ${rows[0].user_id}.`,\n  session_id\n}}];"
+      },
+      "id": "6537bdd9-e8a8-4d33-8716-1df18d8d005e",
+      "name": "Format Insert Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -272
+      ]
     }
   ],
   "pinData": {},
@@ -251,9 +303,9 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Format List Response",
             "type": "main",
-            "index": 3
+            "index": 0
           }
         ]
       ]
@@ -305,14 +357,47 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Format Update Response",
             "type": "main",
-            "index": 1
+            "index": 0
           }
         ]
       ]
     },
     "DB: Set Active False": {
+      "main": [
+        [
+          {
+            "node": "Format Deactivate Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: SQL Insert Schedule": {
+      "main": [
+        [
+          {
+            "node": "Format Insert Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format List Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Format Deactivate Response": {
       "main": [
         [
           {
@@ -323,7 +408,18 @@
         ]
       ]
     },
-    "DB: SQL Insert Schedule": {
+    "Format Update Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Insert Response": {
       "main": [
         [
           {
@@ -339,11 +435,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "79dac33b-e67b-42a5-90de-1c4fd26f9ce5",
+  "versionId": "929c01de-0650-4358-81c2-aa9ef21d91d1",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "pgTUdS8Nux8YQO13",
+  "id": "rua5bDoahkpNyxTq",
   "tags": []
 }
