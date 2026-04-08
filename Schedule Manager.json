@@ -3,92 +3,51 @@
   "nodes": [
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO public.\"Schedules\" \n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, {{ $json.active }});",
-        "options": {}
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"action\":       \"={{ $json.payload.action }}\",\n  \"params\":       \"={{ $json.payload.params }}\",\n  \"session_id\":   \"={{ $json.session_id }}\",\n  \"usecase_id\":   \"={{ $json.usecase_id }}\",\n  \"usecase_name\": \"={{ $json.usecase_name }}\",\n  \"message\":      \"={{ $json.message }}\"\n}"
       },
-      "id": "7ce3cab3-ddf7-4278-920b-c7caf2d77e7c",
-      "name": "DB: SQL Insert Schedule",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        352,
-        16
-      ],
-      "alwaysOutputData": false,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE public.\"Schedules\" \nSET active = false \nWHERE id = {{ $json.schedule_id }};",
-        "options": {}
-      },
-      "id": "7c8e7962-9083-419c-ab92-79d024a6d037",
-      "name": "DB: Set Active False",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        336,
-        432
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3 WHERE schedule_id = $1",
-        "options": {}
-      },
-      "id": "f6f79d59-17f5-44c2-af18-aa5b90da5dc4",
-      "name": "DB: Set Schedule",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        336,
-        208
-      ],
-      "alwaysOutputData": false,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "id": "858b5abd-7542-415a-a4da-41496587c50d",
-      "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1,
+      "typeVersion": 1.1,
       "position": [
-        -864,
-        240
-      ]
+        -1616,
+        256
+      ],
+      "id": "1cd50b3c-bfcb-450e-b916-85110eae630b",
+      "name": "Execute Workflow Trigger"
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst payload = input.payload || {};\nconst action = payload.action || 'list';\nconst params = payload.params || {};\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\n// Logic to differentiate between actions\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // 1. ADD: Needs user_id, interval, and type\n    // 2. CHANGE: Needs schedule_id and the fields to update\n    // 3. DEACTIVATE: Needs schedule_id\n    // 4. LIST: Often just needs usecase_id or user_id\n    \n    schedule_id: params.schedule_id ? parseInt(params.schedule_id) : null,\n    user_id: params.user_id ? parseInt(params.user_id) : null,\n    interval_days: params.interval_days ? parseInt(params.interval_days) : null,\n    measure_type: params.measure_type || 'average',\n    \n    // Validation flag to help the downstream Switch/If nodes\n    isValid: (action === 'list') || \n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id)\n  }\n}];"
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_schedules WHERE active = TRUE;",
+        "options": {}
       },
-      "id": "b24fad55-e05b-45c6-b1b9-e61f728a823c",
-      "name": "Parse Schedule Params",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
       "position": [
-        -640,
-        240
-      ]
+        -416,
+        640
+      ],
+      "id": "d46dca32-1a66-443b-8217-cc5de096b3b3",
+      "name": "List all schedules",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        144,
+        320
+      ],
+      "id": "b97d9efa-b6d9-432f-94f3-72a74356959b",
+      "name": "Merge"
     },
     {
       "parameters": {
@@ -171,7 +130,7 @@
                 "conditions": [
                   {
                     "id": "1bce94f3-3f7f-48bb-a06e-f425a292fbe2",
-                    "leftValue": "{{ $json.action }}",
+                    "leftValue": "={{ $json.action }}",
                     "rightValue": "list",
                     "operator": {
                       "type": "string",
@@ -187,85 +146,96 @@
         },
         "options": {}
       },
-      "id": "b49edf2a-f04d-408f-9fd5-905598ce53b1",
+      "id": "25818208-5fa7-4da3-884d-4c17897552cd",
       "name": "Action Router",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -400,
-        192
+        -1152,
+        208
       ]
     },
     {
       "parameters": {
-        "numberInputs": 4
+        "jsCode": "const input = $input.first().json;\nconst payload = input.payload || {};\nconst action = payload.action || 'list';\nconst params = payload.params || {};\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\n// Logic to differentiate between actions\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // 1. ADD: Needs user_id, interval, and type\n    // 2. CHANGE: Needs schedule_id and the fields to update\n    // 3. DEACTIVATE: Needs schedule_id\n    // 4. LIST: Often just needs usecase_id or user_id\n    \n    schedule_id: params.schedule_id ? parseInt(params.schedule_id) : null,\n    user_id: params.user_id ? parseInt(params.user_id) : null,\n    interval_days: params.interval_days ? parseInt(params.interval_days) : null,\n    measure_type: params.measure_type || 'average',\n    \n    // Validation flag to help the downstream Switch/If nodes\n    isValid: (action === 'list') || \n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id)\n  }\n}];"
       },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
+      "id": "8556e549-ca0a-4579-a33a-6b1ad70251ec",
+      "name": "Parse Schedule Params",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        896,
-        304
-      ],
-      "id": "00617a1f-a1cd-4d9a-a57c-c96f7599af55",
-      "name": "Merge"
+        -1392,
+        256
+      ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM user_schedules WHERE active = TRUE;",
+        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3 WHERE schedule_id = $1",
         "options": {}
       },
+      "id": "f402d64b-3ff1-4d7c-a229-c03b70d8c1f7",
+      "name": "DB: Set Schedule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        336,
-        624
+        -416,
+        224
       ],
-      "id": "04e26b9e-93ac-4b4a-898f-7915c99b1fa0",
-      "name": "List all schedules",
+      "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"Schedules\" \nSET active = false \nWHERE id = {{ $json.schedule_id }};",
+        "options": {}
+      },
+      "id": "8210e4d5-b2a1-4304-8dc1-64e2026bbfb7",
+      "name": "DB: Set Active False",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -416,
+        448
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.\"Schedules\" \n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, {{ $json.active }});",
+        "options": {}
+      },
+      "id": "8f713af8-985b-41c9-89d2-7d223c66f114",
+      "name": "DB: SQL Insert Schedule",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -400,
+        32
+      ],
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     }
   ],
   "pinData": {},
   "connections": {
-    "DB: SQL Insert Schedule": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: Set Active False": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 2
-          }
-        ]
-      ]
-    },
-    "DB: Set Schedule": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
     "Execute Workflow Trigger": {
       "main": [
         [
@@ -277,13 +247,13 @@
         ]
       ]
     },
-    "Parse Schedule Params": {
+    "List all schedules": {
       "main": [
         [
           {
-            "node": "Action Router",
+            "node": "Merge",
             "type": "main",
-            "index": 0
+            "index": 3
           }
         ]
       ]
@@ -320,18 +290,46 @@
         ]
       ]
     },
-    "Merge": {
+    "Parse Schedule Params": {
       "main": [
-        []
+        [
+          {
+            "node": "Action Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
-    "List all schedules": {
+    "DB: Set Schedule": {
       "main": [
         [
           {
             "node": "Merge",
             "type": "main",
-            "index": 3
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "DB: Set Active False": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "DB: SQL Insert Schedule": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -341,11 +339,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8691d2a3-12ab-487a-a8de-174e85362428",
+  "versionId": "79dac33b-e67b-42a5-90de-1c4fd26f9ce5",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
   },
-  "id": "rua5bDoahkpNyxTq",
+  "id": "pgTUdS8Nux8YQO13",
   "tags": []
 }
