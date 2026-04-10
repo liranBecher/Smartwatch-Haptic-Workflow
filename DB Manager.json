@@ -715,36 +715,6 @@
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "add-use-case",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "7ecf4cc1-002d-47fb-9357-3e1e21037021",
-      "name": "Webhook: Add Use Case",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -4096,
-        208
-      ],
-      "webhookId": "39bb5e0b-da2e-43e1-9a7a-cebab0e42b37"
-    },
-    {
-      "parameters": {
-        "content": "## Use-case dictionary"
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -4432,
-        208
-      ],
-      "typeVersion": 1,
-      "id": "05ff548f-c53a-4f45-b4a0-1345e4c2ffc1",
-      "name": "Sticky Note2"
-    },
-    {
-      "parameters": {
         "path": "get-sensor-types",
         "responseMode": "responseNode",
         "options": {}
@@ -786,7 +756,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -3040,
+        -4352,
         176
       ],
       "typeVersion": 1,
@@ -809,7 +779,7 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
       "position": [
-        -2704,
+        -4016,
         160
       ]
     },
@@ -824,7 +794,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -2496,
+        -3808,
         160
       ],
       "alwaysOutputData": false,
@@ -848,7 +818,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -1200,
+        -2512,
         160
       ],
       "alwaysOutputData": true,
@@ -872,7 +842,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -832,
+        -2144,
         -80
       ],
       "credentials": {
@@ -895,7 +865,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -720,
+        -2032,
         144
       ],
       "credentials": {
@@ -918,7 +888,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -272,
+        -1584,
         160
       ],
       "credentials": {
@@ -944,7 +914,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -1008,
+        -2320,
         160
       ]
     },
@@ -976,7 +946,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2320,
+        -3632,
         160
       ],
       "id": "dcca7c82-cc99-4afd-87b4-3e1a4f01fc4c",
@@ -989,7 +959,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -2144,
+        -3456,
         144
       ],
       "id": "f499fa50-179a-46d9-9253-9b4fa5e893cb",
@@ -1012,7 +982,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -880,
+        -2192,
         320
       ]
     },
@@ -1021,7 +991,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -2032,
+        -3344,
         384
       ],
       "id": "679f6616-40f4-4600-a688-919edbe67970",
@@ -1040,7 +1010,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -1664,
+        -2976,
         -32
       ],
       "credentials": {
@@ -1063,7 +1033,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -1664,
+        -2976,
         160
       ],
       "credentials": {
@@ -1086,7 +1056,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        -1664,
+        -2976,
         400
       ],
       "credentials": {
@@ -1095,107 +1065,6 @@
           "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const usecase = items[0].json.usecase_name;\nconst params = items[0].json.parameters;\n\nreturn params.map(p => ({\n  json: {\n    usecase_name: usecase,\n    parameter_name: p.parameter_name,\n    parameter_format: p.parameter_format,\n    is_required: p.is_required !== undefined ? p.is_required : true,\n    description: p.description || ''\n  }\n}));"
-      },
-      "id": "cb115f17-8f48-45e8-84ef-cdf55a08ef25",
-      "name": "Format use-case Parameters",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -3872,
-        208
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO public.\"UseCaseDictionary\" \n  (usecase_name, parameter_name, parameter_format, is_required, description) \nVALUES \n  ('{{ $json.usecase_name }}', '{{ $json.parameter_name }}', '{{ $json.parameter_format }}', {{ $json.is_required }}, '{{ $json.description }}')\nON CONFLICT (usecase_name, parameter_name) \nDO UPDATE SET \n  parameter_format = EXCLUDED.parameter_format,\n  is_required = EXCLUDED.is_required,\n  description = EXCLUDED.description;",
-        "options": {}
-      },
-      "id": "d8462b35-66f9-492a-874a-aec8f41a11cc",
-      "name": "DB: SQL Insert use case",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -3648,
-        208
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 201
-        }
-      },
-      "id": "2a4d579b-0335-4788-834c-a55ed75a3470",
-      "name": "Respond Success use case added",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -3424,
-        208
-      ]
-    },
-    {
-      "parameters": {
-        "path": "get-use-case-params",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "295473a7-d525-4c79-8574-95e865f1de29",
-      "name": "Webhook: Get use case Parameters",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -4096,
-        384
-      ],
-      "webhookId": "2bfcdf3f-96a0-4dd1-9bfe-e0079c55f95c"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM public.\"UseCaseDictionary\" WHERE usecase_name = '{{ $json.query.usecase_name }}';",
-        "options": {}
-      },
-      "id": "ff306bcc-41d2-4427-b784-d3908456e799",
-      "name": "DB: Fetch use case Parameters",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -3872,
-        384
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {}
-      },
-      "id": "bba1f043-e7d5-46da-886b-5c4bdaaa3ce1",
-      "name": "Respond with use case Params",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -3648,
-        384
-      ]
     },
     {
       "parameters": {
@@ -1335,7 +1204,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1392,
+        -2704,
         160
       ]
     },
@@ -1418,7 +1287,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -1952,
+        -3264,
         144
       ],
       "id": "945dd4d7-f3e1-452d-a083-47f7e2137c17",
@@ -1844,17 +1713,6 @@
         ]
       ]
     },
-    "Webhook: Add Use Case": {
-      "main": [
-        [
-          {
-            "node": "Format use-case Parameters",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get usecases": {
       "main": [
         [
@@ -2031,50 +1889,6 @@
         [
           {
             "node": "Calculate new rule Parameters",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format use-case Parameters": {
-      "main": [
-        [
-          {
-            "node": "DB: SQL Insert use case",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: SQL Insert use case": {
-      "main": [
-        [
-          {
-            "node": "Respond Success use case added",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook: Get use case Parameters": {
-      "main": [
-        [
-          {
-            "node": "DB: Fetch use case Parameters",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: Fetch use case Parameters": {
-      "main": [
-        [
-          {
-            "node": "Respond with use case Params",
             "type": "main",
             "index": 0
           }
@@ -2305,7 +2119,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9a4f0cfe-bc4f-40d7-8bdd-a6d254e773da",
+  "versionId": "385bdb4f-f479-4e66-8437-204486b48642",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"

@@ -1,0 +1,432 @@
+{
+  "name": "Dictionary Manager",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"action\": \"list\",\n  \"params\": {},\n  \"session_id\": \"uuid\",\n  \"message\": \"show me the dictionary\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        784
+      ],
+      "id": "19fa0627-08fd-4892-857e-d6f9035cab47",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "list",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "list",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "list"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "add",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "add",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "add"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "remove",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "/^remove/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "remove"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "edit",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "edit"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1008,
+        752
+      ],
+      "id": "052b54af-4c83-4912-aa4c-bf261fcb38fc",
+      "name": "Action Router"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM public.\"UseCaseDictionary\" ORDER BY usecase_name, parameter_name;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1312,
+        560
+      ],
+      "id": "3a4ec891-317c-4362-b189-0adc05739574",
+      "name": "List Dictionary",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.\"UseCaseDictionary\" (usecase_name, parameter_name, parameter_format, is_required, description) \nVALUES ($1, $2, $3, $4, $5) RETURNING *;",
+        "options": {
+          "queryReplacement": "={{ $json.params.usecase_name }}, {{ $json.params.parameter_name }}, {{ $json.params.parameter_format }}, {{ $json.params.is_required }}, {{ $json.params.description }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1312,
+        720
+      ],
+      "id": "e998608e-82d4-4136-a663-d05892cc5456",
+      "name": "Add Entry",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.action === 'remove_usecase' ? 'DELETE FROM public.\"UseCaseDictionary\" WHERE usecase_name = $1' : 'DELETE FROM public.\"UseCaseDictionary\" WHERE id = $1' }}",
+        "options": {
+          "queryReplacement": "={{ $json.action === 'remove_usecase' ? $json.params.usecase_name : $json.params.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1312,
+        864
+      ],
+      "id": "0c159ad7-b381-4905-8cce-e3b4edf8c41b",
+      "name": "Delete Entry",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"UseCaseDictionary\" \nSET usecase_name = COALESCE($2, usecase_name), \n    parameter_name = COALESCE($3, parameter_name), \n    parameter_format = COALESCE($4, parameter_format) \nWHERE id = $1 RETURNING *;",
+        "options": {
+          "queryReplacement": "={{ $json.params.id }}, {{ $json.params.usecase_name }}, {{ $json.params.parameter_name }}, {{ $json.params.parameter_format }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1312,
+        1040
+      ],
+      "id": "f203639f-179a-4815-b860-737dd9c7f6c3",
+      "name": "Edit Entry",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: \"The use case dictionary is currently empty.\",\n    session_id\n  }}];\n}\n\n// Group parameters by use case name for better readability\nconst grouped = rows.reduce((acc, row) => {\n  if (!acc[row.usecase_name]) acc[row.usecase_name] = [];\n  acc[row.usecase_name].push(`   • ${row.parameter_name} (${row.parameter_format})${row.is_required ? ' [Required]' : ''}`);\n  return acc;\n}, {});\n\nconst lines = Object.keys(grouped).map(name => \n  `📂 **${name}**\\n${grouped[name].join('\\n')}`\n).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `Here are the available use cases and their parameters:\\n\\n${lines}`,\n  session_id\n}}];"
+      },
+      "id": "7df01906-dd26-4b82-ace8-ef1a50ba1fa0",
+      "name": "Format Dict List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: `✅ Successfully added parameter **${rows[0].parameter_name}** to the **${rows[0].usecase_name}** use case (ID: ${rows[0].id}).`,\n  session_id\n}}];"
+      },
+      "id": "496463c5-af31-46de-a84d-475a9ead6865",
+      "name": "Format Dict Add",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const action = $('Execute Workflow Trigger').first().json.action;\nconst params = $('Execute Workflow Trigger').first().json.params;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nlet message = \"\";\nif (action === 'remove_usecase') {\n  message = `🗑️ All parameters for the use case **${params.usecase_name}** have been removed.`;\n} else {\n  message = `🗑️ Parameter ID **${params.id}** has been deleted from the dictionary.`;\n}\n\nreturn [{ json: { reply: message, session_id }}];"
+      },
+      "id": "e1c5e449-627c-478b-84bc-ee17653c89d4",
+      "name": "Format Dict Delete",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. The specified ID was not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `🔧 Updated **${rows[0].usecase_name}**. The parameter is now defined as **${rows[0].parameter_name}** (${rows[0].parameter_format}).`,\n  session_id\n}}];"
+      },
+      "id": "0d3e963a-57fb-4c99-92cf-a8c37bf266b3",
+      "name": "Format Dict Edit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1936,
+        768
+      ],
+      "id": "0a3de8a0-c02a-45f5-b646-3570260ffdf2",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Action Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action Router": {
+      "main": [
+        [
+          {
+            "node": "List Dictionary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Entry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Entry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Dictionary": {
+      "main": [
+        [
+          {
+            "node": "Format Dict List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Entry": {
+      "main": [
+        [
+          {
+            "node": "Format Dict Add",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Entry": {
+      "main": [
+        [
+          {
+            "node": "Format Dict Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Entry": {
+      "main": [
+        [
+          {
+            "node": "Format Dict Edit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Dict List": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Dict Add": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Dict Delete": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Format Dict Edit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b510315f-e7e5-4323-8a2d-2c96793ec039",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+  },
+  "id": "YDFXGzvKMDZJev5h",
+  "tags": []
+}

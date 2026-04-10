@@ -66,7 +66,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const raw = ($input.first().json.text ?? '')\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch(e) {\n  const cleaned = raw.replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\nconst validIntents = ['mapping', 'knowledge', 'api_fetch', 'scheduling', 'clarify'];\nif (!validIntents.includes(parsed.intent)) {\n  parsed.intent = 'clarify';\n}\n\nreturn [{\n  json: {\n    intent:      parsed.intent,\n    reply:       parsed.reply,\n    payload:     parsed.payload ?? {},\n    session_id:  $('Build prompt').first().json.session_id,\n    message:     $('Build prompt').first().json.message,\n    history:     $('Build prompt').first().json.history,\n    usecase_id:  $('Build prompt').first().json.usecase_id,\n    usecase_name: $('Build prompt').first().json.usecase_name,\n  }\n}];"
+        "jsCode": "const raw = ($input.first().json.text ?? '')\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch(e) {\n  const cleaned = raw.replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\nconst validIntents = ['mapping', 'knowledge', 'dictionary', 'scheduling', 'clarify'];\nif (!validIntents.includes(parsed.intent)) {\n  parsed.intent = 'clarify';\n}\n\nreturn [{\n  json: {\n    intent:      parsed.intent,\n    reply:       parsed.reply,\n    payload:     parsed.payload ?? {},\n    session_id:  $('Build prompt').first().json.session_id,\n    message:     $('Build prompt').first().json.message,\n    history:     $('Build prompt').first().json.history,\n    usecase_id:  $('Build prompt').first().json.usecase_id,\n    usecase_name: $('Build prompt').first().json.usecase_name,\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -138,7 +138,7 @@
                   {
                     "id": "6307c064-de21-46de-92f1-9011fb34e238",
                     "leftValue": "={{ $json.intent }}",
-                    "rightValue": "api_fetch",
+                    "rightValue": "dictionary",
                     "operator": {
                       "type": "string",
                       "operation": "equals",
@@ -181,8 +181,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -208,
-        208
+        -224,
+        192
       ],
       "id": "b9fd5f6a-2883-4fb7-8c74-f6d38a279ec8",
       "name": "Intent Router"
@@ -198,8 +198,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        624,
-        240
+        864,
+        288
       ],
       "id": "b3a92dae-10af-44ca-bf8c-d7dcdd6f46b7",
       "name": "Save History",
@@ -266,7 +266,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const ctx = $input.first().json;\n\nconst message = $('Validate input').first().json.message;\nconst session_id = $('Validate input').first().json.session_id;\n\nconst history = Array.isArray(ctx.conversation_history)\n  ? ctx.conversation_history\n  : JSON.parse(ctx.conversation_history ?? '[]');\n\nconst systemPrompt = `You are a research assistant embedded in a haptic feedback research application.\n\nCurrent experiment: ${ctx.usecase_name ?? 'Unknown'}\n${ctx.usecase_description ? `Description: ${ctx.usecase_description}` : ''}\n\nActive feedback mappings for this experiment:\n${JSON.stringify(ctx.global_mappings ?? [], null, 2)}\n\nYour job is to help researchers with ONE of the following tasks. Decide which one applies to the message, then respond ONLY with a JSON object in this exact format:\n\n{\n  \"intent\": \"<one of: mapping | knowledge | api_fetch | scheduling | clarify>\",\n  \"reply\": \"<your response to the researcher in plain language>\",\n  \"payload\": {\n    \"action\": \"<for mapping intent: list | add | remove | brainstorm>\",\n    \"params\": {}\n  }\n}\n\nIntent rules:\n- \"mapping\"        → researcher wants to view, add, remove, or brainstorm feedback_config_rules\n- \"knowledge\"      → question about haptic feedback, sensory substitution, or experiment design\n- \"api_fetch\"      → researcher wants to pull or explore available API parameters\n- \"personalization\"→ researcher wants to add, list, delete, or change user schedules\n- \"clarify\"        → message is ambiguous, you need to ask one follow-up question\n\nPayload rules by intent:\n- mapping + list:       { \"action\": \"list\", \"params\": {} }\n- mapping + add:        { \"action\": \"add\", \"params\": { \"minvalue\": 80, \"maxvalue\": 100, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 60, \"maxintensity\": 80, \"minduration\": 200, \"maxduration\": 300, \"mininterval\": 100, \"maxinterval\": 150 } }\n- mapping + add: ALWAYS route to \"add\" even if you think the mapping already exists. \n  The database will handle duplicate detection and inform the user. Never route to \"list\" \n  when the researcher is asking to add something.\n- mapping + remove:     { \"action\": \"remove\", \"params\": { \"id\": 123 } } — ONLY when researcher gives explicit numeric ID\n- mapping + brainstorm: { \"action\": \"brainstorm\", \"params\": {} }\n- personalization:      { \"user_id\": null, \"lookback_days\": 14 }\n- all others:           { \"action\": \"\", \"params\": {} }\n\nPayload rules for scheduling:\n- \"add\": { \"action\": \"add\", \"params\": { \"user_id\": 1, \"interval_days\": 2, \"measure_type\": \"average\", \"trigger_percentage\": 20 } }\n- \"change\": { \"action\": \"change\", \"params\": { \"schedule_id\": 10, \"interval_days\": 3 } }\n- \"deactivate\": { \"action\": \"deactivate\", \"params\": { \"schedule_id\": 10 } }\n- \"listAll\": { \"action\": \"listAll\", \"params\": {} }\n\nIMPORTANT: For \"add\", ALWAYS set action to \"add\" and extract ALL numeric values from the \nmessage into params. Do NOT second-guess whether the mapping exists — always send it to \nthe add workflow regardless. The system handles duplicates automatically.\nIMPORTANT: \"add\" and \"remove\" are completely different. Adding range values is ALWAYS \"add\". \"remove\" needs an explicit ID.\n\nDo not respond with anything outside the JSON object.`;\n\nconst messages = [\n  { role: 'system', content: systemPrompt },\n  ...history,\n  { role: 'user', content: message }\n];\n\nconst messagesAsText = messages.map(m => {\n  const role = m.role === 'system' ? 'SYSTEM' : m.role === 'assistant' ? 'ASSISTANT' : 'USER';\n  return `${role}: ${m.content}`;\n}).join('\\n\\n');\n\nreturn [{\n  json: {\n    session_id,\n    message,\n    messages,\n    messages_as_text: messagesAsText,\n    usecase_name:    ctx.usecase_name,\n    usecase_id:      ctx.usecase_id,\n    global_mappings: ctx.global_mappings,\n    history\n  }\n}];"
+        "jsCode": "const ctx = $input.first().json;\n\nconst message = $('Validate input').first().json.message;\nconst session_id = $('Validate input').first().json.session_id;\n\nconst history = Array.isArray(ctx.conversation_history)\n  ? ctx.conversation_history\n  : JSON.parse(ctx.conversation_history ?? '[]');\n\nconst systemPrompt = `You are a research assistant embedded in a haptic feedback research application.\n\nCurrent experiment: ${ctx.usecase_name ?? 'Unknown'}\n${ctx.usecase_description ? `Description: ${ctx.usecase_description}` : ''}\n\nActive feedback mappings for this experiment:\n${JSON.stringify(ctx.global_mappings ?? [], null, 2)}\n\nYour job is to help researchers with ONE of the following tasks. Decide which one applies to the message, then respond ONLY with a JSON object in this exact format:\n\n{\n  \"intent\": \"<one of: mapping | knowledge | dictionary | scheduling | clarify>\",\n  \"reply\": \"<your response to the researcher in plain language>\",\n  \"payload\": {\n    \"action\": \"<for mapping intent: list | add | remove | brainstorm>\",\n    \"params\": {}\n  }\n}\n\nIntent rules:\n- \"mapping\"        → researcher wants to view, add, remove, or brainstorm feedback_config_rules\n- \"knowledge\"      → question about haptic feedback, sensory substitution, or experiment design\n- \"dictionary\" → researcher wants to see use cases, add/delete use cases, or modify parameters.\n- \"personalization\"→ researcher wants to add, list, delete, or change user schedules\n- \"clarify\"        → message is ambiguous, you need to ask one follow-up question\n\nPayload rules by intent:\n- mapping + list:       { \"action\": \"list\", \"params\": {} }\n- mapping + add:        { \"action\": \"add\", \"params\": { \"minvalue\": 80, \"maxvalue\": 100, \"minpulses\": 3, \"maxpulses\": 5, \"minintensity\": 60, \"maxintensity\": 80, \"minduration\": 200, \"maxduration\": 300, \"mininterval\": 100, \"maxinterval\": 150 } }\n- mapping + add: ALWAYS route to \"add\" even if you think the mapping already exists. \n  The database will handle duplicate detection and inform the user. Never route to \"list\" \n  when the researcher is asking to add something.\n- mapping + remove:     { \"action\": \"remove\", \"params\": { \"id\": 123 } } — ONLY when researcher gives explicit numeric ID\n- mapping + brainstorm: { \"action\": \"brainstorm\", \"params\": {} }\n- personalization:      { \"user_id\": null, \"lookback_days\": 14 }\n- all others:           { \"action\": \"\", \"params\": {} }\n\nPayload rules for scheduling:\n- \"add\": { \"action\": \"add\", \"params\": { \"user_id\": 1, \"interval_days\": 2, \"measure_type\": \"average\", \"trigger_percentage\": 20 } }\n- \"change\": { \"action\": \"change\", \"params\": { \"schedule_id\": 10, \"interval_days\": 3 } }\n- \"deactivate\": { \"action\": \"deactivate\", \"params\": { \"schedule_id\": 10 } }\n- \"listAll\": { \"action\": \"listAll\", \"params\": {} }\n\nPayload rules for dictionary intent:\n- list: { \"action\": \"list\", \"params\": {} }\n- add: { \"action\": \"add\", \"params\": { \"usecase_name\": \"...\", \"parameter_name\": \"...\", \"parameter_format\": \"...\", \"is_required\": true, \"description\": \"...\" } }\n- delete usecase: { \"action\": \"remove_usecase\", \"params\": { \"usecase_name\": \"...\" } }\n- delete parameter: { \"action\": \"remove_parameter\", \"params\": { \"id\": 123 } }\n- edit: { \"action\": \"edit\", \"params\": { \"id\": 123, \"usecase_name\": \"...\", \"parameter_name\": \"...\" } }\n\nIMPORTANT: For \"add\", ALWAYS set action to \"add\" and extract ALL numeric values from the \nmessage into params. Do NOT second-guess whether the mapping exists — always send it to \nthe add workflow regardless. The system handles duplicates automatically.\nIMPORTANT: \"add\" and \"remove\" are completely different. Adding range values is ALWAYS \"add\". \"remove\" needs an explicit ID.\n\nDo not respond with anything outside the JSON object.`;\n\nconst messages = [\n  { role: 'system', content: systemPrompt },\n  ...history,\n  { role: 'user', content: message }\n];\n\nconst messagesAsText = messages.map(m => {\n  const role = m.role === 'system' ? 'SYSTEM' : m.role === 'assistant' ? 'ASSISTANT' : 'USER';\n  return `${role}: ${m.content}`;\n}).join('\\n\\n');\n\nreturn [{\n  json: {\n    session_id,\n    message,\n    messages,\n    messages_as_text: messagesAsText,\n    usecase_name:    ctx.usecase_name,\n    usecase_id:      ctx.usecase_id,\n    global_mappings: ctx.global_mappings,\n    history\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -447,8 +447,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        240
+        368,
+        288
       ],
       "id": "58fdfb31-8382-4206-b86c-61f01628e71c",
       "name": "Edit Fields"
@@ -460,8 +460,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        448,
-        240
+        640,
+        288
       ],
       "id": "84cf6291-ad91-43b4-ad74-ed9df45844ec",
       "name": "Respond to Webhook"
@@ -477,7 +477,149 @@
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
-          "value": {}
+          "value": {
+            "action": "{{ $json.payload.action }}",
+            "session_id": "{{ $json.session_id }}",
+            "usecase_id": "{{ $json.usecase_id }}",
+            "usecase_name": "{{ $json.usecase_name }}",
+            "params": "{{ $json.payload.params }}",
+            "message": "{{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        592
+      ],
+      "id": "5fad2dcb-f089-44a6-ab90-e88ca316fa84",
+      "name": "Call 'Schedule Manager'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YDFXGzvKMDZJev5h",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/YDFXGzvKMDZJev5h",
+          "cachedResultName": "Dictionary Manager"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "action": "={{ $json.payload.action }}",
+            "params": "={{ $json.payload.params }}",
+            "session_id": "={{ $json.session_id }}",
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
         },
         "options": {}
       },
@@ -487,8 +629,8 @@
         0,
         400
       ],
-      "id": "5fad2dcb-f089-44a6-ab90-e88ca316fa84",
-      "name": "Call 'Schedule Manager'"
+      "id": "7c963d90-1a4c-443f-88fc-e1a37a54d937",
+      "name": "Call 'Dictionary Manager'"
     }
   ],
   "pinData": {},
@@ -555,7 +697,7 @@
         ],
         [
           {
-            "node": "Edit Fields",
+            "node": "Call 'Dictionary Manager'",
             "type": "main",
             "index": 0
           }
@@ -674,13 +816,24 @@
           }
         ]
       ]
+    },
+    "Call 'Dictionary Manager'": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "824ac8bd-3554-48ec-8d1e-064afcbe3eed",
+  "versionId": "3de150e5-32f3-4723-85c8-a55ab1c8c6d6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
