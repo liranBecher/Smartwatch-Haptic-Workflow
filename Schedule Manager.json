@@ -157,7 +157,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst payload = input.payload || {};\nconst action = payload.action || 'list';\nconst params = payload.params || {};\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\n// Logic to differentiate between actions\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // 1. ADD: Needs user_id, interval, and type\n    // 2. CHANGE: Needs schedule_id and the fields to update\n    // 3. DEACTIVATE: Needs schedule_id\n    // 4. LIST: Often just needs usecase_id or user_id\n    \n    schedule_id: params.schedule_id ? parseInt(params.schedule_id) : null,\n    user_id: params.user_id ? parseInt(params.user_id) : null,\n    interval_days: params.interval_days ? parseInt(params.interval_days) : null,\n    measure_type: params.measure_type || 'average',\n    \n    // Validation flag to help the downstream Switch/If nodes\n    isValid: (action === 'list') || \n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id)\n  }\n}];"
+        "jsCode": "const input = $input.first().json;\nconst payload = input.payload || {};\nconst action = input.action || 'list';\nconst params = input.params || {};\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\n// Logic to differentiate between actions\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // 1. ADD: Needs user_id, interval, and type\n    // 2. CHANGE: Needs schedule_id and the fields to update\n    // 3. DEACTIVATE: Needs schedule_id\n    // 4. LIST: Often just needs usecase_id or user_id\n    \n    schedule_id: params.schedule_id ? parseInt(params.schedule_id) : null,\n    user_id: params.user_id ? parseInt(params.user_id) : null,\n    interval_days: params.interval_days ? parseInt(params.interval_days) : null,\n    measure_type: params.measure_type || 'average',\n    \n    // Validation flag to help the downstream Switch/If nodes\n    isValid: (action === 'list') || \n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id)\n  }\n}];"
       },
       "id": "25349e7a-e9f5-4e5c-96a3-5b007513b716",
       "name": "Parse Schedule Params",
@@ -172,7 +172,9 @@
       "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3 WHERE schedule_id = $1",
-        "options": {}
+        "options": {
+          "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }}"
+        }
       },
       "id": "9cee6e33-7043-4a53-9d6e-5b3e967a445f",
       "name": "DB: Set Schedule",
@@ -286,7 +288,20 @@
       ]
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Execute Workflow Trigger": [
+      {
+        "json": {
+          "action": "change",
+          "params": "{\"schedule_id\":1,\"interval_days\":4}",
+          "session_id": "9b67bdd6-6c22-4aa5-a6f4-fecf6dc68ff9",
+          "usecase_id": "1",
+          "usecase_name": "HeartRate",
+          "message": "change the frequency of user 101's schedule to every 4 days"
+        }
+      }
+    ]
+  },
   "connections": {
     "Execute Workflow Trigger": {
       "main": [
@@ -435,7 +450,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4773d603-10a8-4e50-bc8c-0c1710e2a577",
+  "versionId": "f05fadf8-981e-40ed-984a-6b7eb03ce20e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
