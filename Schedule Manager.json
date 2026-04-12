@@ -171,9 +171,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3 WHERE schedule_id = $1",
+        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3, trigger_percentage = $4 WHERE schedule_id = $1\nRETURNING schedule_id, interval_days, measure_type,trigger_percentage;",
         "options": {
-          "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }}"
+          "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }},{{ $json.trigger_percentage }}"
         }
       },
       "id": "0547b1ed-1c0b-49d4-813f-88c1ec41598e",
@@ -195,7 +195,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE user_schedules\nSET active = false \nWHERE schedule_id = {{ $json.schedule_id }};",
+        "query": "UPDATE user_schedules\nSET active = false \nWHERE schedule_id = {{ $json.schedule_id }}\nreturning schedule_id;",
         "options": {}
       },
       "id": "db9a6303-330d-43fe-a08f-5ac735327023",
@@ -216,7 +216,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO user_schedules\n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, TRUE);",
+        "query": "INSERT INTO user_schedules\n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, TRUE)\n  RETURNING schedule_id, user_id;",
         "options": {}
       },
       "id": "91843d1b-c87c-4dc4-9d43-8109978c8a1a",
@@ -237,7 +237,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => \n  `• ID ${r.schedule_id}: Every ${r.interval_days} days (Type: ${r.measure_type}) - Next run: ${r.next_run_date || 'N/A'}`\n).join('\\n');\n\nreturn [{ json: {\n  reply: `Active schedules for ${name} (${rows.length} total):\\n\\n${lines}`,\n  session_id\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
       },
       "id": "60db4684-6f0f-4eaa-9c26-2505d3e0d2b4",
       "name": "Format List Response",
@@ -250,7 +250,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].schedule_id}. New interval: ${rows[0].interval_days} days, new measure: ${rows[0].measure_type}.`,\n  session_id\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].schedule_id}. New interval: ${rows[0].interval_days} days, new measure: ${rows[0].measure_type}, new trigger percentage: ${rows[0].trigger_percentage}.`,\n  session_id\n}}];"
       },
       "id": "8ee1e254-8981-4513-81a1-b529de9c9949",
       "name": "Format Update Response",
@@ -450,7 +450,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ad37cb91-0f0e-46bc-ad45-82ff84b817b4",
+  "versionId": "3bc53a7f-3154-473b-a76c-0350bfa6e91c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
