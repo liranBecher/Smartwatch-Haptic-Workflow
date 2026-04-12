@@ -18,14 +18,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM user_schedules WHERE active = TRUE;",
+        "query": "SELECT * FROM user_schedules;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -720,
-        320
+        288
       ],
       "id": "0825e5eb-c751-4b33-b86e-37b4446a1998",
       "name": "List all schedules",
@@ -38,13 +38,13 @@
     },
     {
       "parameters": {
-        "numberInputs": 4
+        "numberInputs": 6
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -80,
-        -64
+        -16,
+        144
       ],
       "id": "45e36ae0-6ea3-49cf-a4d6-9f77342b212f",
       "name": "Merge"
@@ -131,7 +131,53 @@
                   {
                     "id": "1bce94f3-3f7f-48bb-a06e-f425a292fbe2",
                     "leftValue": "={{ $json.action }}",
-                    "rightValue": "list",
+                    "rightValue": "listAll",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "55b24d35-6c1a-4e12-9e7d-100e945450c0",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "listActive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "a196880f-597e-4677-b44e-24824d277dae",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "activate",
                     "operator": {
                       "type": "string",
                       "operation": "equals",
@@ -157,7 +203,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || 'list';\n\n// 2. Safely parse params (since it's a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === 'string') ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split('T')[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? Number(params.trigger_percentage) : null,\n    next_run_date: nextRunDate,\n    measure_type: params.measure_type || 'average',\n    \n    isValid: (action === 'list') || \n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id)\n  }\n}];"
+        "jsCode": "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || 'listAll';\n\n// 2. Safely parse params (since it's a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === 'string') ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split('T')[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? Number(params.trigger_percentage) : null,\n    next_run_date: nextRunDate,\n    measure_type: params.measure_type || 'average',\n    \n    isValid: (action === 'list') || (action == 'listAll') ||\n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id) ||\n      (action === 'activate' && params.schedule_id)\n  }\n}];"
       },
       "id": "49b90ce2-f35f-471d-92ee-8d067e212c9b",
       "name": "Parse Schedule Params",
@@ -171,9 +217,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3, trigger_percentage = $4 WHERE schedule_id = $1\nRETURNING schedule_id, interval_days, measure_type,trigger_percentage;",
+        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3, trigger_percentage = $4, user_id = $5 WHERE schedule_id = $1\nRETURNING schedule_id, interval_days, measure_type,trigger_percentage;",
         "options": {
-          "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }},{{ $json.trigger_percentage }}"
+          "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }},{{ $json.trigger_percentage }}, {{ $json.user_id }}"
         }
       },
       "id": "0547b1ed-1c0b-49d4-813f-88c1ec41598e",
@@ -204,7 +250,7 @@
       "typeVersion": 2.6,
       "position": [
         -720,
-        128
+        96
       ],
       "credentials": {
         "postgres": {
@@ -224,7 +270,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -704,
+        -720,
         -288
       ],
       "alwaysOutputData": false,
@@ -237,20 +283,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
-      },
-      "id": "60db4684-6f0f-4eaa-9c26-2505d3e0d2b4",
-      "name": "Format List Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -464,
-        320
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].schedule_id}. New interval: ${rows[0].interval_days} days, new measure: ${rows[0].measure_type}, new trigger percentage: ${rows[0].trigger_percentage}.`,\n  session_id\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].schedule_id}. User: ${rows[0].user_id} ,interval: ${rows[0].interval_days} days, measure: ${rows[0].measure_type}, trigger percentage: ${rows[0].trigger_percentage}.`,\n  session_id\n}}];"
       },
       "id": "8ee1e254-8981-4513-81a1-b529de9c9949",
       "name": "Format Update Response",
@@ -271,7 +304,7 @@
       "typeVersion": 2,
       "position": [
         -464,
-        128
+        96
       ]
     },
     {
@@ -285,6 +318,87 @@
       "position": [
         -464,
         -288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)\n   ✅ Active: ${r.active}`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *All ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
+      },
+      "id": "60db4684-6f0f-4eaa-9c26-2505d3e0d2b4",
+      "name": "Format ListAll Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_schedules where active = TRUE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -720,
+        480
+      ],
+      "id": "92ee3a02-2d05-4f0b-8842-b8c4077d78e6",
+      "name": "List active schedules",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
+      },
+      "id": "d06dc290-0829-4295-9665-917178792357",
+      "name": "Format ListActive Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_schedules\nSET active = TRUE \nWHERE schedule_id = {{ $json.schedule_id }}\nreturning schedule_id;",
+        "options": {}
+      },
+      "id": "f251bd3d-b61f-497b-a29d-8eaefcf76159",
+      "name": "DB: Set Active True",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -704,
+        688
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length > 0 ? `✅ Schedule ${rows[0].schedule_id} activated.` : \"Schedule not found.\",\n  session_id\n}}];"
+      },
+      "id": "381240e3-89f3-4c6e-98a8-9ed5e204aaf5",
+      "name": "Format Activate Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        688
       ]
     }
   ],
@@ -318,7 +432,7 @@
       "main": [
         [
           {
-            "node": "Format List Response",
+            "node": "Format ListAll Response",
             "type": "main",
             "index": 0
           }
@@ -351,6 +465,20 @@
         [
           {
             "node": "List all schedules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List active schedules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB: Set Active True",
             "type": "main",
             "index": 0
           }
@@ -401,17 +529,6 @@
         ]
       ]
     },
-    "Format List Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 3
-          }
-        ]
-      ]
-    },
     "Format Deactivate Response": {
       "main": [
         [
@@ -444,13 +561,68 @@
           }
         ]
       ]
+    },
+    "Format ListAll Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "List active schedules": {
+      "main": [
+        [
+          {
+            "node": "Format ListActive Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format ListActive Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "DB: Set Active True": {
+      "main": [
+        [
+          {
+            "node": "Format Activate Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Activate Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3bc53a7f-3154-473b-a76c-0350bfa6e91c",
+  "versionId": "01b48d4c-3a05-42d8-baed-32ae5df48942",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
