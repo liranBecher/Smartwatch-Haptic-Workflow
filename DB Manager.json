@@ -1,5 +1,4 @@
 {
-  "name": "DB Manager",
   "nodes": [
     {
       "parameters": {
@@ -291,7 +290,7 @@
     },
     {
       "parameters": {
-        "content": "curl \"http://localhost:5678/webhook-test/monitoring-config\""
+        "content": "\"http://localhost:5678/webhook-test/monitoring-config?userId=101\""
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
@@ -301,19 +300,6 @@
       "typeVersion": 1,
       "id": "e7096407-2e2a-416f-9d5f-aecf15e12089",
       "name": "Sticky Note9"
-    },
-    {
-      "parameters": {
-        "jsCode": "const globalData = $getWorkflowStaticData('global');\n\nconst monitoringType = globalData.monitoringType ?? \"Unknown\";\n\nreturn [{\n  json: {\n    monitoringType\n  }\n}];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -9056,
-        2336
-      ],
-      "id": "5d3be848-e1fd-4af1-b2f4-ac407220e10f",
-      "name": "Get config info from global data"
     },
     {
       "parameters": {
@@ -506,13 +492,15 @@
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -8816,
-        2336
+        -8192,
+        2384
       ],
       "id": "e788470c-4c3a-4f98-adf2-dc65f7a934c5",
       "name": "Respond to Webhook Get monitoring config"
@@ -1681,9 +1669,90 @@
       ],
       "id": "665163c9-4d2b-4bde-9227-d6e7aaed5744",
       "name": "parse response"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Accept userId from query, body, or root json\nconst query = input.query || {};\nconst body = input.body || {};\n\nconst userIdRaw =\n  query.userId ??\n  query.userid ??\n  body.userId ??\n  body.userid ??\n  input.userId ??\n  input.userid;\n\nif (userIdRaw === undefined || userIdRaw === null || String(userIdRaw).trim() === \"\") {\n  return [{\n    json: {\n      statusCode: 400,\n      payload: {\n        success: false,\n        error: \"Missing required userId parameter\"\n      }\n    }\n  }];\n}\n\nconst userId = Number(userIdRaw);\n\nif (!Number.isFinite(userId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      payload: {\n        success: false,\n        error: \"userId must be a number\"\n      }\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    userId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9056,
+        2336
+      ],
+      "id": "5d3be848-e1fd-4af1-b2f4-ac407220e10f",
+      "name": "Extract user id for monitoring config"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6da7a4eb-24ce-4377-be16-cff690bdac73",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -8896,
+        2352
+      ],
+      "id": "efc9761a-0304-47e4-bfa1-f703384bfcb9",
+      "name": "If monitoring config request valid"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    u.userid,\n    u.active_usecase_id,\n    uc.usecase_id,\n    uc.name AS usecase_name\nFROM \"User\" AS u\nLEFT JOIN \"UseCase\" AS uc \n    ON u.active_usecase_id = uc.usecase_id\nWHERE u.userid = $1;",
+        "options": {
+          "queryReplacement": "={{ [$json.userId] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -8608,
+        2256
+      ],
+      "id": "275c7a0d-5a6e-4ba8-814e-bb859261754c",
+      "name": "Fetch user assigned usecase",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $input.first().json;\n\nif (!row || Object.keys(row).length === 0 || !row.userid) {\n  return [{\n  json: {\n    statusCode: 400,\n    success: false,\n    monitoringType: \"Unknown\",\n    error: \"Missing required userId parameter\",\n    payload: {\n      success: false,\n      error: \"Missing required userId parameter\"\n    }\n  }\n}];\n}\n\nif (!row.active_usecase_id || !row.usecase_id) {\n  return [{\n    json: {\n      statusCode: 404,\n      payload: {\n        success: false,\n        userId: row.userid,\n        error: \"No use case assigned to this user\"\n      }\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n\n    // top-level for Android compatibility\n    success: true,\n    userId: row.userid,\n    monitoringType: row.usecase_name,\n    usecaseId: row.usecase_id,\n\n    // nested version for cleaner API / future clients\n    payload: {\n      success: true,\n      userId: row.userid,\n      monitoringType: row.usecase_name,\n      usecaseId: row.usecase_id,\n      usecase: {\n        id: row.usecase_id,\n        monitoringType: row.usecase_name\n      }\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -8400,
+        2256
+      ],
+      "id": "775bda3c-5a3c-471b-b0ea-5c3d3382cb53",
+      "name": "Format monitoring config response"
     }
   ],
-  "pinData": {},
   "connections": {
     "Get current configurations": {
       "main": [
@@ -1733,7 +1802,7 @@
       "main": [
         [
           {
-            "node": "Get config info from global data",
+            "node": "Extract user id for monitoring config",
             "type": "main",
             "index": 0
           }
@@ -1767,17 +1836,6 @@
         [
           {
             "node": "check if sensor data query empty",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get config info from global data": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook Get monitoring config",
             "type": "main",
             "index": 0
           }
@@ -1844,6 +1902,28 @@
         [
           {
             "node": "format response insert usecase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update user monitoring type": {
+      "main": [
+        [
+          {
+            "node": "format response set monitoring type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response set monitoring type": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Set monitoring type",
             "type": "main",
             "index": 0
           }
@@ -2138,28 +2218,6 @@
         ]
       ]
     },
-    "update user monitoring type": {
-      "main": [
-        [
-          {
-            "node": "format response set monitoring type",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "format response set monitoring type": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook Set monitoring type",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "format response assign usecase to user": {
       "main": [
         [
@@ -2382,25 +2440,62 @@
           }
         ]
       ]
+    },
+    "Extract user id for monitoring config": {
+      "main": [
+        [
+          {
+            "node": "If monitoring config request valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If monitoring config request valid": {
+      "main": [
+        [
+          {
+            "node": "Fetch user assigned usecase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook Get monitoring config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch user assigned usecase": {
+      "main": [
+        [
+          {
+            "node": "Format monitoring config response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format monitoring config response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Get monitoring config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate"
-  },
-  "versionId": "726294a3-6bce-42d6-9e57-f04dbea5b5b8",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
-  },
-  "id": "ipd0yUQiBVwSx3vh",
-  "tags": [
-    {
-      "updatedAt": "2026-01-21T19:59:18.648Z",
-      "createdAt": "2026-01-21T19:59:18.648Z",
-      "id": "xfcCGLbzmD7Ohw9h",
-      "name": "main"
-    }
-  ]
+  }
 }
