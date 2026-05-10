@@ -9,26 +9,29 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -1920,
-        -64
+        -2592,
+        176
       ],
-      "id": "68f53371-14d4-43c8-9323-2718a9bfc09c",
+      "id": "df729757-b30c-4584-bc71-f58938b3e301",
       "name": "Execute Workflow Trigger"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM user_schedules;",
-        "options": {}
+        "query": "SELECT s.*\nFROM user_schedules s INNER JOIN \"User\" u ON s.user_id = u.userid\nWHERE u.active_usecase_id = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.usecase_id}}"
+        }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -720,
-        288
+        -1392,
+        528
       ],
-      "id": "0825e5eb-c751-4b33-b86e-37b4446a1998",
+      "id": "38c2a695-a183-4580-a850-d6f9eb06161a",
       "name": "List all schedules",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "SxQ8vRANzWTnEuGI",
@@ -43,10 +46,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -16,
-        144
+        -688,
+        384
       ],
-      "id": "45e36ae0-6ea3-49cf-a4d6-9f77342b212f",
+      "id": "52179e34-fe2d-47e0-808e-a6776fe2708b",
       "name": "Merge"
     },
     {
@@ -192,26 +195,26 @@
         },
         "options": {}
       },
-      "id": "ef990fdd-72f6-4a55-8140-3092ba8d06d0",
+      "id": "c3a1889a-9c03-4b2b-8260-1f8891615b44",
       "name": "Action Router",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -1456,
-        -112
+        -2128,
+        128
       ]
     },
     {
       "parameters": {
         "jsCode": "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || 'listAll';\n\n// 2. Safely parse params (since it's a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === 'string') ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split('T')[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? Number(params.trigger_percentage) : null,\n    next_run_date: nextRunDate,\n    measure_type: params.measure_type || 'average',\n    \n    isValid: (action === 'list') || (action == 'listAll') ||\n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id) ||\n      (action === 'activate' && params.schedule_id)\n  }\n}];"
       },
-      "id": "49b90ce2-f35f-471d-92ee-8d067e212c9b",
+      "id": "3d3b3b28-124f-4a52-99ad-cc82b8f9d3e5",
       "name": "Parse Schedule Params",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1696,
-        -64
+        -2368,
+        176
       ]
     },
     {
@@ -222,13 +225,13 @@
           "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }},{{ $json.trigger_percentage }}, {{ $json.user_id }}"
         }
       },
-      "id": "0547b1ed-1c0b-49d4-813f-88c1ec41598e",
+      "id": "3e6399a5-8e18-485b-9c8c-52ba458157f0",
       "name": "DB: Set Schedule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -720,
-        -96
+        -1392,
+        144
       ],
       "alwaysOutputData": false,
       "credentials": {
@@ -241,16 +244,16 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE user_schedules\nSET active = false \nWHERE schedule_id = {{ $json.schedule_id }}\nreturning schedule_id;",
+        "query": "UPDATE user_schedules s\nSET active = false\nFROM \"User\" u\nWHERE s.schedule_id = {{ $json.schedule_id }} AND s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
         "options": {}
       },
-      "id": "db9a6303-330d-43fe-a08f-5ac735327023",
+      "id": "d6e127f9-0e86-43e5-ad9e-b1842cb37b24",
       "name": "DB: Set Active False",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -720,
-        96
+        -1392,
+        336
       ],
       "credentials": {
         "postgres": {
@@ -265,13 +268,13 @@
         "query": "INSERT INTO user_schedules\n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, TRUE)\n  RETURNING schedule_id, user_id;",
         "options": {}
       },
-      "id": "91843d1b-c87c-4dc4-9d43-8109978c8a1a",
+      "id": "540f7a2c-2be9-4cab-952a-674c8586adc3",
       "name": "DB: SQL Insert Schedule",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -720,
-        -288
+        -1392,
+        -64
       ],
       "alwaysOutputData": false,
       "credentials": {
@@ -285,68 +288,71 @@
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].schedule_id}. User: ${rows[0].user_id} ,interval: ${rows[0].interval_days} days, measure: ${rows[0].measure_type}, trigger percentage: ${rows[0].trigger_percentage}.`,\n  session_id\n}}];"
       },
-      "id": "8ee1e254-8981-4513-81a1-b529de9c9949",
+      "id": "c8023a15-c414-45e6-942e-d5e2c274a0bd",
       "name": "Format Update Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        -96
+        -1136,
+        144
       ]
     },
     {
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length > 0 ? `🚫 Schedule ${rows[0].schedule_id} deactivated.` : \"Schedule not found.\",\n  session_id\n}}];"
       },
-      "id": "7b806859-3c27-4f2b-b193-bc24436df18d",
+      "id": "0ece984a-0323-4447-8c22-da7585d8cf25",
       "name": "Format Deactivate Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        96
+        -1136,
+        336
       ]
     },
     {
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: `✨ New schedule created with ID ${rows[0].schedule_id} for user ${rows[0].user_id}.`,\n  session_id\n}}];"
       },
-      "id": "f890f7c1-96dd-4e8c-9add-6733960ffd1a",
+      "id": "18bb2166-af7c-4c6a-97e0-483183246b0a",
       "name": "Format Insert Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        -288
+        -1136,
+        -64
       ]
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)\n   ✅ Active: ${r.active}`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *All ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)\n   ✅ Active: ${r.active}`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *All ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
       },
-      "id": "60db4684-6f0f-4eaa-9c26-2505d3e0d2b4",
+      "id": "34ec8b95-7f7b-4e5b-9587-e62a9bf0afe9",
       "name": "Format ListAll Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        288
+        -1136,
+        528
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM user_schedules where active = TRUE;",
-        "options": {}
+        "query": "SELECT s.*\nFROM user_schedules s INNER JOIN \"User\" u ON s.user_id = u.userid\nWHERE u.active_usecase_id = $1 AND active = TRUE;",
+        "options": {
+          "queryReplacement": "={{ $json.usecase_id }}"
+        }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -720,
-        480
+        -1392,
+        720
       ],
-      "id": "92ee3a02-2d05-4f0b-8842-b8c4077d78e6",
+      "id": "9aeaf4be-15d9-4347-abfc-f888e3ff1c0e",
       "name": "List active schedules",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "SxQ8vRANzWTnEuGI",
@@ -356,30 +362,30 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
       },
-      "id": "d06dc290-0829-4295-9665-917178792357",
+      "id": "3fe10b04-1777-411b-941f-963176d21984",
       "name": "Format ListActive Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        480
+        -1136,
+        720
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE user_schedules\nSET active = TRUE \nWHERE schedule_id = {{ $json.schedule_id }}\nreturning schedule_id;",
+        "query": "UPDATE user_schedules s\nSET active = true\nFROM \"User\" u\nWHERE s.schedule_id = {{ $json.schedule_id }} AND s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
         "options": {}
       },
-      "id": "f251bd3d-b61f-497b-a29d-8eaefcf76159",
+      "id": "71aa5494-8a35-4b9c-ba1c-5679c9afa910",
       "name": "DB: Set Active True",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -704,
-        688
+        -1376,
+        944
       ],
       "credentials": {
         "postgres": {
@@ -392,13 +398,13 @@
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length > 0 ? `✅ Schedule ${rows[0].schedule_id} activated.` : \"Schedule not found.\",\n  session_id\n}}];"
       },
-      "id": "381240e3-89f3-4c6e-98a8-9ed5e204aaf5",
+      "id": "1209d2b0-e4d5-4aec-a6a0-03002838f1f2",
       "name": "Format Activate Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        688
+        -1136,
+        944
       ]
     }
   ],
@@ -622,7 +628,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "01b48d4c-3a05-42d8-baed-32ae5df48942",
+  "versionId": "58021e9d-8c46-4c4c-a6e8-c5a862e91647",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
