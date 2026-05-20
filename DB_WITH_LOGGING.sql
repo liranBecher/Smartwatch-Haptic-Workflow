@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 8qtDaueO0KtY9fyoqbfAUPgtzWCY3NUZSDn7r9JVathn0bv79gQbonnBmXKPPYe
+\restrict eR7bP0cRhVFRQNG6LXJskeuPkdtPu5XGxUKfwzZxJpUTk8jCvVUXCVYNQhf24iE
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2026-04-14 18:03:25
+-- Started on 2026-05-20 21:54:17
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -135322,6 +135322,7 @@ COPY public."SensorData" (id, watchid, phoneid, alertid, userid, value, "time", 
 67661	\N	\N	\N	101	80	2026-03-22 09:53:15.843938	\N
 67662	\N	\N	\N	101	68	2026-03-20 09:53:15.843938	\N
 67663	\N	\N	\N	101	70	2026-03-17 09:53:15.843938	\N
+67664	2000	2	1637	101	49	2026-05-09 19:00:00	7
 \.
 
 
@@ -135346,6 +135347,57 @@ COPY public."UseCase" (usecase_id, name, description) FROM stdin;
 --
 
 COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_name, parameter_format, is_required, description) FROM stdin;
+4	WorldTime API	url	string	t	API Endpoint URL: https://worldtimeapi.org/api/timezone/{timezone}
+5	WorldTime API	timezone	string	t	Timezone identifier string, e.g., Asia/Jerusalem
+7	Open-Meteo UV Index	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+8	Open-Meteo UV Index	current	string	t	Specifies the weather variable to return, set to uv_index
+9	Open-Meteo UV Index	latitude	float	t	Geographical latitude coordinate
+10	Open-Meteo UV Index	longitude	float	t	Geographical longitude coordinate
+11	Open-Meteo Air Pressure	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+12	Open-Meteo Air Pressure	current	string	t	Specifies the weather variable to return, set to surface_pressure
+13	Open-Meteo Air Pressure	latitude	float	t	Geographical latitude coordinate
+14	Open-Meteo Air Pressure	longitude	float	t	Geographical longitude coordinate
+15	Open-Meteo Cloud Cover	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+16	Open-Meteo Cloud Cover	current	string	t	Specifies the weather variable to return, set to cloudcover
+17	Open-Meteo Cloud Cover	latitude	float	t	Geographical latitude coordinate
+18	Open-Meteo Cloud Cover	longitude	float	t	Geographical longitude coordinate
+19	Sunrise-Sunset API	url	string	t	API Endpoint URL: https://api.sunrise-sunset.org/json
+22	Sunrise-Sunset API	date	string	f	Date in YYYY-MM-DD or today (optional)
+23	Sunrise-Sunset API	formatted	integer	t	Set to 0 for UTC time format
+24	Open-Elevation Altitude	url	string	t	API Endpoint URL: https://api.open-elevation.com/api/v1/lookup
+25	Open-Elevation Altitude	locations	json	t	List/array containing objects with latitude and longitude keys
+20	Sunrise-Sunset API	latitude	float	t	Latitude coordinate
+21	Sunrise-Sunset API	longitude	float	t	Longitude coordinate
+26	Open-Meteo Humidity	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+27	Open-Meteo Humidity	current	string	t	Specifies the weather variable to return, set to relative_humidity_2m
+28	Open-Meteo Humidity	latitude	float	t	Geographical latitude coordinate
+29	Open-Meteo Humidity	longitude	float	t	Geographical longitude coordinate
+30	Open-Meteo Temperature	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+31	Open-Meteo Temperature	current	string	t	Specifies the weather variable to return, set to temperature_2m
+32	Open-Meteo Temperature	latitude	float	t	Geographical latitude coordinate
+33	Open-Meteo Temperature	longitude	float	t	Geographical longitude coordinate
+34	Open-Meteo Precipitation	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+35	Open-Meteo Precipitation	current	string	t	Specifies the weather variable to return, set to precipitation
+36	Open-Meteo Precipitation	latitude	float	t	Geographical latitude coordinate
+37	Open-Meteo Precipitation	longitude	float	t	Geographical longitude coordinate
+38	Open-Meteo Wind Speed	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast
+39	Open-Meteo Wind Speed	current	string	t	Specifies the weather variable to return, set to wind_speed_10m
+40	Open-Meteo Wind Speed	latitude	float	t	Geographical latitude coordinate
+41	Open-Meteo Wind Speed	longitude	float	t	Geographical longitude coordinate
+42	IPGeolocation Sun Azimuth	url	string	t	API Endpoint URL: https://api.ipgeolocation.io/astronomy
+43	IPGeolocation Sun Azimuth	lat	float	t	Latitude of the location
+44	IPGeolocation Sun Azimuth	long	float	t	Longitude of the location
+45	IPGeolocation Sun Azimuth	date	date	f	Date in YYYY-MM-DD format (optional)
+46	IPGeolocation Sun Azimuth	apiKey	string	t	API authorization key stored in credentials
+47	IPGeolocation Moon Azimuth	url	string	t	API Endpoint URL: https://api.ipgeolocation.io/astronomy
+48	IPGeolocation Moon Azimuth	lat	float	t	Latitude of the location
+49	IPGeolocation Moon Azimuth	long	float	t	Longitude of the location
+50	IPGeolocation Moon Azimuth	date	date	f	Date in YYYY-MM-DD format (optional)
+51	IPGeolocation Moon Azimuth	apiKey	string	t	API authorization key stored in credentials
+52	WAQI Air Quality Index	url	string	t	API Endpoint URL: https://api.waqi.info/feed/geo:{lat};{lon}/
+53	WAQI Air Quality Index	lat	float	t	Latitude coordinate
+54	WAQI Air Quality Index	lon	float	t	Longitude coordinate
+55	WAQI Air Quality Index	token	string	t	Authentication token/key parameter for WAQI Air Quality Index
 \.
 
 
@@ -135440,6 +135492,10 @@ c8a73d08-941d-4159-831b-3b2601412cf3	\N	1	[]	\N	2026-04-13 19:22:45.682929+03	20
 b7154b3a-51c1-4146-90a9-3f4c5a7a0d40	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again adding that feeling use case into the dictionary"}, {"role": "assistant", "content": "✅ Successfully added parameter **...** to the **...** use case (ID: 1)."}]	\N	2026-04-13 19:43:25.981139+03	2026-04-13 19:49:33.975133+03
 78b9035f-4d4f-4092-a1d5-0c2b28a63dde	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **undefined**\\n   • undefined (undefined)"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 19:24:01.178796+03	2026-04-13 19:31:01.673425+03
 069da3b8-3ab7-4144-9486-b8b42da5a93a	\N	1	[{"role": "user", "content": "add a new item to the usecase dictionary: use case feeling, parameter name Neurolink, format URL, required"}, {"role": "assistant", "content": "✅ Successfully added parameter **Neurolink** to the **feeling** use case (ID: 2)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "add a new parameter to the feeling use case, name brain size, format integer, not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **brain size** to the **feeling** use case (ID: 3)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • brain size (integer)\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   3 brain size (integer)\\n   2 Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID3 brain size (integer)\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "delete the brain size use case parameter (ID 3)"}, {"role": "assistant", "content": "🗑️ Parameter ID **3** has been deleted from the dictionary."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "set the use case parameter with the ID 2, the format is an API key"}, {"role": "assistant", "content": "🔧 Updated **feeling**. The parameter is now defined as **Neurolink** (API key)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (API key) [Required]"}, {"role": "user", "content": "delete the Feeling use case from the dictionary"}, {"role": "assistant", "content": "🗑️ All parameters for the use case **feeling** have been removed."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 19:54:42.900628+03	2026-04-13 20:10:31.311819+03
+1b2a570a-e182-40b4-bd40-ac39b02af5e5	\N	7	[]	\N	2026-05-09 21:01:34.185001+03	2026-05-09 21:01:34.185001+03
+2befc798-4749-4476-a9a9-2b943843cf7b	\N	7	[{"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: true"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}]	\N	2026-05-09 21:10:05.366753+03	2026-05-09 21:10:38.768479+03
+fbef59fc-91bc-4c9e-ba45-3d3f141a31c2	\N	7	[{"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-05-09 21:04:18.157191+03	2026-05-09 21:05:46.938312+03
+f419497b-b204-4293-bd1b-d4a1e98940f5	\N	7	[{"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "deactivate schedule number 6"}, {"role": "assistant", "content": "🚫 Schedule 6 deactivated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "No active schedules found for HeartRate."}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}, {"role": "user", "content": "activate schedule id 3"}, {"role": "assistant", "content": "✅ Schedule 3 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (3):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}]	\N	2026-05-09 21:16:28.308814+03	2026-05-09 21:25:16.856823+03
 \.
 
 
@@ -135474,7 +135530,6 @@ COPY public.api_pool (id, name, category, description, endpoint_url, method, aut
 
 COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, user_id) FROM stdin;
 141	60	180	HeartRate	f	3	5	100	200	100	300	50	150	\N
-155	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 65	60	100	HeartRate	f	1	5	30	100	100	200	200	400	\N
 67	100	130	HeartRate	f	6	10	101	150	150	300	100	200	\N
 70	100	130	HeartRate	f	1	5	100	150	150	150	1	150	\N
@@ -135515,9 +135570,11 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 161	101	120	HeartRate	f	5	8	80	100	300	400	150	200	\N
 142	150	150	SunAzimuth	f	1	3	50	100	100	300	50	150	\N
 140	30	240	HeartRate	t	2	20	150	150	210	80	2000	250	\N
-144	50	500	Pollution	t	3	5	200	500	300	500	150	400	\N
 156	80	100	HeartRate	f	3	5	60	80	200	300	100	150	\N
 158	81	100	HeartRate	f	3	5	60	80	200	300	100	150	\N
+163	86	106	HeartRate	t	5	8	200	255	400	600	50	100	\N
+155	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
+144	50	500	Pollution	f	3	5	200	500	300	500	150	400	\N
 145	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 146	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 147	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
@@ -135528,7 +135585,7 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 152	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 153	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 154	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
-163	86	106	HeartRate	t	5	8	200	255	400	600	50	100	\N
+165	49	69	Pollution	f	5	8	200	255	400	600	50	100	\N
 \.
 
 
@@ -135539,9 +135596,10 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 --
 
 COPY public.user_schedules (schedule_id, user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) FROM stdin;
-1	101	5	2026-04-30	average	0.33	t
-3	101	7	2026-04-18	mode	50	f
-5	101	8	2026-04-20	median	0.25	t
+1	101	5	2026-05-09	average	33	t
+6	102	7	2026-05-14	average	20	f
+3	101	7	2026-05-14	mode	50	f
+5	101	8	2026-05-14	median	25	f
 \.
 
 
@@ -135578,7 +135636,7 @@ SELECT pg_catalog.setval('public."SensorData_id_seq"', 67663, true);
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."UseCaseDictionary_id_seq"', 3, true);
+SELECT pg_catalog.setval('public."UseCaseDictionary_id_seq"', 55, true);
 
 
 --
@@ -135623,7 +135681,7 @@ SELECT pg_catalog.setval('public.api_pool_id_seq', 13, true);
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 163, true);
+SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 165, true);
 
 
 --
@@ -135632,7 +135690,7 @@ SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 163, true);
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 5, true);
+SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 6, true);
 
 
 --
@@ -135936,11 +135994,11 @@ ALTER TABLE ONLY public.user_schedules
     ADD CONSTRAINT user_schedules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
 
 
--- Completed on 2026-04-14 18:03:26
+-- Completed on 2026-05-20 21:54:17
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 8qtDaueO0KtY9fyoqbfAUPgtzWCY3NUZSDn7r9JVathn0bv79gQbonnBmXKPPYe
+\unrestrict eR7bP0cRhVFRQNG6LXJskeuPkdtPu5XGxUKfwzZxJpUTk8jCvVUXCVYNQhf24iE
 
