@@ -1863,6 +1863,392 @@
       ],
       "id": "00351dc3-4e3e-47ab-816e-b4d562aa4a04",
       "name": "Fallback Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Extract').first().json;\nconst rules = $input.all().map(i => i.json);\n\nconst value = Number(normalized.value);\nconst type = normalized.type;\n\nlet chosen = null;\n\nfor (const r of rules) {\n  const minV = Number(r.minvalue);\n  const maxV = Number(r.maxvalue);\n\n  if (value >= minV && value <= maxV) {\n    chosen = r;\n    break;\n  }\n}\n\nlet pulses = 0;\nlet intensity = 0;\nlet duration = 0;\nlet interval = 0;\nlet fbRangeID = 0;\n\nif (chosen) {\n  pulses = Number(chosen.minpulses ?? 0);\n  intensity = Number(chosen.minintensity ?? 0);\n  duration = Number(chosen.minduration ?? 0);\n  interval = Number(chosen.mininterval ?? 0);\n  fbRangeID = Number(chosen.id ?? 0);\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    alertGiven: chosen ? 'yes' : 'no',\n    pulses,\n    intensity,\n    duration,\n    interval,\n    fbRangeID,\n    reason: 'time_interval'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4352,
+        512
+      ],
+      "id": "5b5f0f6b-b731-4f59-b944-9373829bf79e",
+      "name": "Evaluate Feedback Rules template"
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $('Normalize Generic UseCase Request').first().json;\n\nreturn [{\n  json: {\n    body: {\n      userId: req.userID,\n      smartWatchId: req.watchID,\n      androidId: req.phoneID,\n      lat: req.lat,\n      lon: req.lon,\n      value: req.value,\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        704
+      ],
+      "id": "bf08b419-84ff-497e-a814-16529aa56082",
+      "name": "Adapter use case2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $('Normalize Generic UseCase Request').first().json;\n\nreturn [{\n  json: {\n    body: {\n      userId: req.userID,\n      smartWatchId: req.watchID,\n      androidId: req.phoneID,\n      lat: req.lat,\n      lon: req.lon,\n      value: req.value,\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        512
+      ],
+      "id": "975560e1-3d1b-47cc-a6e1-c6d770a445ed",
+      "name": "Adapter use case1"
+    },
+    {
+      "parameters": {
+        "content": "## Multiple Use Cases from One API\n\nUse this structure when one external API can provide values for multiple use cases.\n\nEach use case gets:\n1. Its own Adapter node\n2. Its own Set type node\n\nThen all branches connect into the same shared flow:\nNormalize → Construct API Request → Fetch API Data → Extract Value\n\nExample:\nWeather API has: Temperature, Humidity, WindSpeed, Precipitation\n\nImportant:\n - The Set type node defines the final type used by the DB rules.\n - The type value must match feedback_config_rules.type.\n - If you only have one use case for this API, keep just one branch\n",
+        "height": 384,
+        "width": 480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2080,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "25e438ad-e8ea-4dc4-acbf-027d8e3b2e3f",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "type",
+              "value": "useCase2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        704
+      ],
+      "id": "d81afdfd-4e33-461f-bddb-d9058356e0b1",
+      "name": "Set type useCase2",
+      "notesInFlow": true,
+      "notes": "-CHANGE HERE-"
+    },
+    {
+      "parameters": {
+        "content": "## Add a New Use Case Guide:\n**This flow serves as the template for a new use case, copy and reuse it**\nYou'll need to go the *'Route by Sensor Type'* switch and add routing rule where *'{{ $json.type }}'* equals *'useCaseName'*. make sure it's the same name as written in the database.\nNow link the new route into the first node of the new flow your'e about to create.",
+        "height": 240,
+        "width": 352,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1136,
+        432
+      ],
+      "typeVersion": 1,
+      "id": "4069dd07-f408-489a-a0a9-889a5f10f37f",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  type: $json.type,\n  value: $json.value,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4576,
+        608
+      ],
+      "id": "e6b5aa70-8241-498d-becd-547ff3cf6d25",
+      "name": "Respond to Webhook success"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4800,
+        416
+      ],
+      "id": "e8fc3fe1-8675-4acd-87c7-864a346ad46c",
+      "name": "Execute insert_sensor_data for",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $json;\n\nif (!p.userID || !p.watchID || !p.phoneID) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: 'Missing identifiers',\n      payload: p\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    query: `SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);`,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.value),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      String(p.reason)\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4576,
+        416
+      ],
+      "id": "824a2a22-5ef5-4e30-a929-5a1403260b92",
+      "name": "Build insert_sensor_data Query for"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM feedback_config_rules\nWHERE active = TRUE\n  AND type = $1\nORDER BY minvalue, maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [ $json.type ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4128,
+        512
+      ],
+      "id": "dad7240a-1d06-4e4e-9817-ddf131e3c2ea",
+      "name": "Fetch Active",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "type",
+              "value": "useCase1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        512
+      ],
+      "id": "3c9c377a-3c1e-46df-8ee8-fbd7ef3d21b2",
+      "name": "Set type useCase1",
+      "notesInFlow": true,
+      "notes": "-CHANGE HERE-"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.claimUserid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3904,
+        608
+      ],
+      "id": "dd6503f1-9475-4430-b947-0530e46088a5",
+      "name": "Allowed (timer expired)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize').first().json;\n\nreturn [{\n  json: {\n    type: n.type,\n    userID: n.userID,\n    watchID: n.watchID,\n    phoneID: n.phoneID,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited',\n    value: $('Extract').first().json.value\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4128,
+        704
+      ],
+      "id": "94a7573a-232c-450e-aac4-337f5cc645c7",
+      "name": "Build Rate-Limited Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        4352,
+        704
+      ],
+      "id": "947954de-e933-47e3-b3b4-21d3b3ce8882",
+      "name": "Respond (rate-limited)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize').first().json;\nconst claim = $json; // Try Claim Slot output\n\nreturn [{\n  json: {\n    ...n,\n    body: n.body,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3680,
+        608
+      ],
+      "id": "1226cb22-ef5d-4a6e-9121-273972bbc6f3",
+      "name": "Merge Inputs"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= ($2::interval)\n  )\nRETURNING \"userid\", \"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [ $json.body.userId, '1 minutes' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3456,
+        608
+      ],
+      "id": "8cb1448c-278c-4768-9b5d-e05ce67764b4",
+      "name": "Rate Limit Guard",
+      "alwaysOutputData": true,
+      "notesInFlow": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "change time interval here"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Extract Value from API Response\n *\n * For ONE use case:\n * Keep only one entry in VALUE_CONFIG_BY_TYPE.\n *\n * For MULTIPLE use cases from the same API:\n * Add one entry per type.\n */\n\n\n// =======================\n// CONFIG — CHANGE THIS\n// =======================\n\nconst NORMALIZE_NODE_NAME = 'Normalize';\n\nconst VALUE_CONFIG_BY_TYPE = {\n  useCase1: {\n    valueName: 'first value',\n    paths: ['data.value1']\n  },\n\n  useCase2: {\n    valueName: 'second value',\n    paths: ['data.value2']\n  }\n\n  // Weather example:\n  // Temperature: {\n  //   valueName: 'temperature',\n  //   paths: ['current.temperature_2m']\n  // },\n  //\n  // Humidity: {\n  //   valueName: 'humidity',\n  //   paths: ['current.relative_humidity_2m']\n  // }\n};\n\n\n// =======================\n// DO NOT CHANGE BELOW\n// =======================\n\nconst normalized = $(NORMALIZE_NODE_NAME).first().json;\nconst api = $input.first().json;\nconst type = normalized.type;\n\nconst config = VALUE_CONFIG_BY_TYPE[type];\n\nif (!config) {\n  return [{\n    json: {\n      ...normalized,\n      statusCode: 400,\n      error: `No value extraction config found for type: ${type}`,\n      supportedTypes: Object.keys(VALUE_CONFIG_BY_TYPE),\n      rawApi: api\n    }\n  }];\n}\n\nfunction getByPath(obj, path) {\n  return path\n    .split('.')\n    .reduce((current, key) => current?.[key], obj);\n}\n\nlet value = null;\nlet usedPath = null;\n\nfor (const path of config.paths) {\n  const candidate = getByPath(api, path);\n\n  if (candidate != null && candidate !== '') {\n    value = candidate;\n    usedPath = path;\n    break;\n  }\n}\n\nif (value == null) {\n  return [{\n    json: {\n      ...normalized,\n      statusCode: 500,\n      error: `${config.valueName} value missing in API response`,\n      triedPaths: config.paths,\n      rawApi: api\n    }\n  }];\n}\n\nconst numericValue = Number(value);\n\nif (Number.isNaN(numericValue)) {\n  return [{\n    json: {\n      ...normalized,\n      statusCode: 500,\n      error: `${config.valueName} value is not numeric`,\n      got: value,\n      usedPath,\n      rawApi: api\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    value: numericValue,\n    valueName: config.valueName,\n    extractedFrom: usedPath\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3232,
+        608
+      ],
+      "id": "3e4329dd-4be4-4cf1-93a5-d0c9a19a8c52",
+      "name": "Extract",
+      "notesInFlow": true,
+      "notes": "-CHANGE HERE-"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3008,
+        608
+      ],
+      "id": "2b8dcac7-1f2b-4b48-95f8-774d5a6962b2",
+      "name": "Fetch API data"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Construct API Request\n *\n * Purpose:\n * Normalized request data → build external API URL → pass URL to HTTP Request node\n *\n * Usually you only change the CONFIG section.\n *\n * Output:\n * {\n *   ...previousData,\n *   url: \"https://external-api.com/...\",\n *   requestMeta: { ... }\n * }\n */\n\n\n// ======================================================\n// CONFIG — CHANGE THIS SECTION\n// ======================================================\n\nconst API_NAME = \"Example External API\";\n\n// Set to false for APIs that do not require an API key.\n// Example: Open-Meteo does not require an API key.\nconst API_REQUIRES_KEY = false;\n\nconst API_KEY = \"PUT_API_KEY_HERE\";\n\n// Base URL of the API.\n// Do not include query parameters here.\nconst BASE_URL = \"https://example-api.com/data\";\n\n// Fields this API needs from the request.\n// For location-based APIs, usually: [\"lat\", \"lon\"]\nconst REQUIRED_FIELDS = [\"lat\", \"lon\"];\n\n/**\n * Build the final API URL.\n *\n * Change this function based on the API documentation.\n *\n * Available values:\n * - type\n * - lat\n * - lon\n * - body\n * - apiKey\n *\n * Single use case:\n * Just build the URL normally.\n *\n * Multiple use cases from the same API:\n * You can use \"type\" inside this function if the API URL changes by type.\n * any other params should be added here\n */\nfunction buildUrl({ lat, lon, apiKey }) {\n  const params = [\n    `lat=${encodeURIComponent(lat)}`,\n    `lon=${encodeURIComponent(lon)}`\n  ];\n\n  if (API_REQUIRES_KEY) {\n    params.unshift(`apiKey=${encodeURIComponent(apiKey)}`);\n  }\n\n  return `${BASE_URL}?${params.join('&')}`;\n}\n\n\n// ======================================================\n// DO NOT CHANGE BELOW\n// ======================================================\n\nconst prev = $input.first().json;\nconst body = prev.body ?? {};\n\nconst type = prev.type ?? body.type ?? body.sensorType ?? \"UnknownType\";\n\n/**\n * Reads a value from:\n * 1. normalized top-level data, for example prev.lat\n * 2. original body, for example body.lat\n *\n * This makes the node flexible.\n */\nfunction getField(fieldName) {\n  return prev[fieldName] ?? body[fieldName] ?? null;\n}\n\n\n// ------------------------------------------------------\n// Validate required fields\n// ------------------------------------------------------\n\nconst missingFields = [];\n\nfor (const field of REQUIRED_FIELDS) {\n  const value = getField(field);\n\n  if (value == null || value === \"\") {\n    missingFields.push(field);\n  }\n}\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      ...prev,\n      statusCode: 400,\n      error: \"Missing required fields\",\n      missingFields,\n      got: Object.fromEntries(\n        REQUIRED_FIELDS.map(field => [field, getField(field)])\n      )\n    }\n  }];\n}\n\n\n// ------------------------------------------------------\n// Validate API key only if needed\n// ------------------------------------------------------\n\nif (\n  API_REQUIRES_KEY &&\n  (!API_KEY || API_KEY === \"PUT_API_KEY_HERE\")\n) {\n  return [{\n    json: {\n      ...prev,\n      statusCode: 500,\n      error: `${API_NAME} API key is not configured`,\n      hint: \"Set API_KEY in the CONFIG section, or set API_REQUIRES_KEY to false if this API does not need a key.\"\n    }\n  }];\n}\n\n\n// ------------------------------------------------------\n// Read common fields\n// ------------------------------------------------------\n\nconst latRaw = getField(\"lat\");\nconst lonRaw = getField(\"lon\") ?? getField(\"long\");\n\nconst lat = latRaw == null ? null : Number(latRaw);\nconst lon = lonRaw == null ? null : Number(lonRaw);\n\n\n// ------------------------------------------------------\n// Validate lat/lon only if this API requires them\n// ------------------------------------------------------\n\nif (REQUIRED_FIELDS.includes(\"lat\") && Number.isNaN(lat)) {\n  return [{\n    json: {\n      ...prev,\n      statusCode: 400,\n      error: \"Invalid lat value\",\n      got: latRaw\n    }\n  }];\n}\n\nif (REQUIRED_FIELDS.includes(\"lon\") && Number.isNaN(lon)) {\n  return [{\n    json: {\n      ...prev,\n      statusCode: 400,\n      error: \"Invalid lon value\",\n      got: lonRaw\n    }\n  }];\n}\n\n\n// ------------------------------------------------------\n// Build URL\n// ------------------------------------------------------\n\nlet url;\n\ntry {\n  url = buildUrl({\n    type,\n    lat,\n    lon,\n    body,\n    apiKey: API_KEY\n  });\n} catch (error) {\n  return [{\n    json: {\n      ...prev,\n      statusCode: 500,\n      error: \"Failed to build API URL\",\n      message: error.message\n    }\n  }];\n}\n\nif (!url) {\n  return [{\n    json: {\n      ...prev,\n      statusCode: 500,\n      error: \"buildUrl did not return a URL\"\n    }\n  }];\n}\n\n\n// ------------------------------------------------------\n// Return data for HTTP Request node\n// ------------------------------------------------------\n\nreturn [{\n  json: {\n    ...prev,\n\n    // The next HTTP Request node should use:\n    // URL: {{ $json.url }}\n    url,\n\n    // Keep useful normalized values for later nodes\n    type,\n    lat,\n    lon,\n\n    requestMeta: {\n      apiName: API_NAME,\n      type,\n      requiredFields: REQUIRED_FIELDS,\n      apiRequiresKey: API_REQUIRES_KEY\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2784,
+        608
+      ],
+      "id": "bc964144-e98f-42f5-b78a-4f1ec0094e98",
+      "name": "Construct API Request",
+      "notesInFlow": true,
+      "notes": "-CHANGE HERE-"
+    },
+    {
+      "parameters": {
+        "jsCode": "//normalize the inputs params\n\nconst body = $json.body ?? {};\n\nif (body.userId == null) throw new Error('Missing UserID');\nif (body.smartWatchId == null) throw new Error('Missing SmartWatchID');\nif (body.androidId == null) throw new Error('Missing AndroidID');\nif (!$json.type) throw new Error('Missing type (should come from Set node)');\n\nreturn [{\n  json: {\n    userID: Number(body.userId),\n    watchID: Number(body.smartWatchId),\n    phoneID: Number(body.androidId),\n    type: String($json.type),\n    lat: body.lat ?? null,\n    lon: body.lon ?? null,\n    body\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        608
+      ],
+      "id": "8c3b52ae-a461-4b89-863f-80c99bb9945d",
+      "name": "Normalize"
+    },
+    {
+      "parameters": {
+        "content": "## New Use Case Template\n**Nodes that require change are marked with \"-CHANGE HERE-\"**\n1. Adapter - CHANGE HERE\n   Converts generic request into this use case.\n\n2. Set type - CHANGE HERE\n   Sets the final use case type.\n\n3. Normalize\n   Standardizes IDs, type, lat/lon, and body.\n\n4. Construct API Request - CHANGE HERE\n   Builds the external API URL.\n\n5. Fetch API Data\n   Calls the external API.\n\n6. Extract Value - CHANGE HERE\n   Extracts one numeric value into $json.value.\n\n7. Rate Limit Guard\n   Checks whether vibration is allowed now.\n\n8. Fetch Active Rules\n   Loads feedback_config_rules by type.\n\n9. Evaluate Feedback Rules\n   Converts value into vibration params.\n\n10. Respond + Log\n   Sends vibration response and saves SensorData.",
+        "height": 512,
+        "width": 480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1552,
+        432
+      ],
+      "typeVersion": 1,
+      "id": "bbc8aef6-41ba-4f5f-b0f2-fb4d74904397",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Testing:\nFor testing use the 'Execute workflow' button and using your computer's terminal run:\ncurl -X POST \"http://localhost:5678/webhook-test/usecase-routing\" -H \"Content-Type: application/json\" -d \"{\\\"userId\\\":100,\\\"smartWatchId\\\":200,\\\"androidId\\\":2,\\\"lat\\\":32.794,\\\"lon\\\":34.989, \\\"type\\\":\\\"NEW_USECASE\\\"}\"",
+        "height": 224,
+        "width": 352,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1136,
+        720
+      ],
+      "typeVersion": 1,
+      "id": "46e6ee17-0620-4b8d-946f-478dffebb5fa",
+      "name": "Sticky Note7"
     }
   ],
   "pinData": {},
@@ -2726,6 +3112,183 @@
           }
         ]
       ]
+    },
+    "Adapter use case2": {
+      "main": [
+        [
+          {
+            "node": "Set type useCase2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Adapter use case1": {
+      "main": [
+        [
+          {
+            "node": "Set type useCase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type useCase2": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Feedback Rules template": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook success",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build insert_sensor_data Query for",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build insert_sensor_data Query for": {
+      "main": [
+        [
+          {
+            "node": "Execute insert_sensor_data for",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Feedback Rules template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set type useCase1": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowed (timer expired)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited Response": {
+      "main": [
+        [
+          {
+            "node": "Respond (rate-limited)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Inputs": {
+      "main": [
+        [
+          {
+            "node": "Allowed (timer expired)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Guard": {
+      "main": [
+        [
+          {
+            "node": "Merge Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch API data": {
+      "main": [
+        [
+          {
+            "node": "Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construct API Request": {
+      "main": [
+        [
+          {
+            "node": "Fetch API data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "Construct API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2736,7 +3299,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "9b568aa7-0a26-4527-8a4c-30f4885c211e",
+  "versionId": "db053066-45b7-4863-9123-df74420107ed",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
