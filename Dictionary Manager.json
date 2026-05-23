@@ -9,10 +9,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        400,
-        960
+        1744,
+        1328
       ],
-      "id": "35398a62-ac57-43b3-b7be-96e5523f1087",
+      "id": "530f6005-5434-4283-9ae7-eafae4e06e17",
       "name": "Execute Workflow Trigger"
     },
     {
@@ -130,6 +130,29 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a3a082da-50aa-4c60-b241-c455e65d695a",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "get",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -138,120 +161,121 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        656,
-        928
+        1920,
+        1312
       ],
-      "id": "5f0a94d0-06c9-45fe-87eb-a8cef8514885",
+      "id": "8b36bd3d-c554-40a3-901c-0b933ec7d9bc",
       "name": "Action Router"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM \"UseCaseDictionary\" ORDER BY usecase_name, usecase_parameter_name;",
+        "query": "SELECT * FROM \"UseCaseDictionary\" ORDER BY usecase_name,dict_entry;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        960,
-        736
+        2192,
+        1104
       ],
-      "id": "5b171d58-46d4-479a-96b6-f2e8f23c9f0b",
+      "id": "f05b2ce0-5ac6-4b54-8163-1c7212f86914",
       "name": "List Dictionary",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO \"UseCaseDictionary\" (usecase_name, usecase_parameter_name, parameter_format, is_required, description) \nVALUES ($1, $2, $3, $4, $5) RETURNING *;",
+        "query": "INSERT INTO \"UseCaseDictionary\" (usecase_name, usecase_parameter_name, parameter_format, is_required, description,api_pool_id,param_value) \nVALUES ($1, $2, $3, $4, $5,$6,$7) RETURNING *;",
         "options": {
-          "queryReplacement": "={{ $json.params.usecase_name }}, {{ $json.params.usecase_parameter_name }}, {{ $json.params.parameter_format }}, {{ $json.params.is_required }}, {{ $json.params.description||null }}"
+          "queryReplacement": "={{ $('Action Router').item.json.params.usecase_name }},{{ $('Action Router').item.json.params.usecase_parameter_name }},{{ $('Action Router').item.json.params.parameter_format }},{{ $('Action Router').item.json.params.is_required }},{{ $('Action Router').item.json.params.description||null }},\n{{ $json.api_pool_id }},\n{{$('Action Router').item.json.params.param_value||null }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        960,
-        896
+        2352,
+        1264
       ],
-      "id": "2367e07b-b577-4731-a66d-195b2d6c4071",
+      "id": "93f4361a-d5ee-4b54-890a-81b835228db0",
       "name": "Add Entry",
+      "executeOnce": true,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst isEmpty = items.length === 0 || Object.keys(items[0].json).length === 0;\n\nif (isEmpty) {\n  return [{\n    json: {\n      reply: \"The use case dictionary is currently empty.\",\n      session_id\n    }\n  }];\n}\n\nconst rows = items.map(i => i.json);\n\nconst grouped = rows.reduce((acc, row) => {\n  if (!acc[row.usecase_name]) acc[row.usecase_name] = [];\n\n  acc[row.usecase_name].push(\n    `   ${row.usecase_parameter_name} (${row.parameter_format})${row.is_required ? ' [Required]' : ''}`\n  );\n\n  return acc;\n}, {});\n\nconst lines = Object.keys(grouped)\n  .map(name => `📂 **${name}**\\n${grouped[name].join('\\n')}`)\n  .join('\\n\\n');\n\nreturn [{\n  json: {\n    reply: `Here are the available use cases and their parameters:\\n\\n${lines}`,\n    session_id\n  }\n}];"
+        "jsCode": "const items = $input.all();\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst isEmpty = items.length === 0 || Object.keys(items[0].json).length === 0;\n\nif (isEmpty) {\n  return [{\n    json: {\n      reply: \"The use case dictionary is currently empty.\",\n      session_id\n    }\n  }];\n}\n\nconst rows = items.map(i => i.json);\n\nconst grouped = rows.reduce((acc, row) => {\n  if (!acc[row.usecase_name]) acc[row.usecase_name] = [];\n\n  // Check if param_value exists and is not null/empty\n  const valueStr = row.param_value !== null && row.param_value !== undefined && row.param_value !== '' \n    ? ` = ${row.param_value} [Specific value!]` \n    : '';\n\n  acc[row.usecase_name].push(\n    `    ${row.usecase_parameter_name} (${row.parameter_format}${valueStr})${row.is_required ? ' [Required]' : ''}`\n  );\n\n  return acc;\n}, {});\n\nconst lines = Object.keys(grouped)\n  .map(name => `📂 **${name}**\\n${grouped[name].join('\\n')}`)\n  .join('\\n\\n');\n\nreturn [{\n  json: {\n    reply: `Here are the available use cases and their parameters:\\n\\n${lines}`,\n    session_id\n  }\n}];"
       },
-      "id": "9e4033bd-7088-423e-9c8b-c121ca19f3a1",
+      "id": "43049495-8538-4469-a268-e48489c3d27a",
       "name": "Format Dict List",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1232,
-        736
+        2576,
+        1104
       ]
     },
     {
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: `✅ Successfully added parameter **${rows[0].usecase_parameter_name}** to the **${rows[0].usecase_name}** use case (ID: ${rows[0].dict_entry}).`,\n  session_id\n}}];"
       },
-      "id": "310b4098-a6b0-4f4a-89ce-0b20efab4689",
+      "id": "b9314987-7ee0-40eb-b471-80bee277ef89",
       "name": "Format Dict Add",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1232,
-        896
+        2576,
+        1264
       ]
     },
     {
       "parameters": {
         "jsCode": "const params = $('Execute Workflow Trigger').first().json.params;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\nlet message = `🗑️ All parameters for the use case **${params.usecase_name}** have been removed.`;\nreturn [{ json: { reply: message, session_id }}];"
       },
-      "id": "db4d6f48-2023-47ee-9d20-34c3d1b235f4",
+      "id": "1e94a260-613d-4db3-a926-f0d5040c78b2",
       "name": "Format Dict Delete",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1232,
-        1056
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. The specified ID was not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `🔧 Updated **${rows[0].usecase_name}**. The parameter is now defined as **${rows[0].usecase_parameter_name}** (${rows[0].parameter_format}).`,\n  session_id\n}}];"
-      },
-      "id": "6afac68b-b738-4633-a2ce-05fced4edecd",
-      "name": "Format Dict Edit",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1232,
+        2576,
         1424
       ]
     },
     {
       "parameters": {
-        "numberInputs": 5
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. The specified ID was not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `🔧 Updated **${rows[0].usecase_name}**.\n}}];"
+      },
+      "id": "ffdb2a61-68ac-4fa1-a85c-04d84f73902e",
+      "name": "Format Dict Edit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1808
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1584,
-        944
+        2928,
+        1312
       ],
-      "id": "4603e6ab-4ddb-4c20-9edd-2f1768e4475b",
+      "id": "cb40940b-ab6f-4790-8b00-290cffa880db",
       "name": "Merge"
     },
     {
@@ -265,15 +289,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        976,
-        1056
+        2320,
+        1424
       ],
-      "id": "ef76b9bd-a9ac-4b4a-bf90-f370c585cc93",
+      "id": "c0ef42ed-7177-4ff7-ab20-7926c6f82bbb",
       "name": "Delete UseCase",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -288,15 +312,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        976,
-        1232
+        2320,
+        1600
       ],
-      "id": "ed64b276-f58c-4b66-be81-86b86af720c1",
+      "id": "6916e5e6-6b6b-43fb-8d7b-eaf4ebe33504",
       "name": "Delete Parameter",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -304,37 +328,121 @@
       "parameters": {
         "jsCode": "const params = $('Execute Workflow Trigger').first().json.params;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\nlet message = `🗑️ Parameter ID **${params.dict_entry}** has been deleted from the dictionary.`;\n\nreturn [{ json: { reply: message, session_id }}];"
       },
-      "id": "2e42fcbf-71d9-4401-95c7-2402eb3baf52",
+      "id": "4cb858bf-0e8a-4b85-b834-bca3a2d6cf41",
       "name": "Format Dict Delete Parameter",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1232,
-        1232
+        2576,
+        1600
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE \"UseCaseDictionary\"\nSET usecase_name = COALESCE($2, usecase_name), \n    usecase_parameter_name = COALESCE($3, usecase_parameter_name), \n    parameter_format = COALESCE($4, parameter_format),\n    is_required = COALESCE($5, is_required),\n    description = COALESCE($5, description)\nWHERE dict_entry = $1 RETURNING *;",
+        "query": "UPDATE \"UseCaseDictionary\"\nSET \n  usecase_name = CASE WHEN $2 = '' THEN usecase_name ELSE COALESCE($2, usecase_name) END,\n  usecase_parameter_name = CASE WHEN $3 = '' THEN usecase_parameter_name ELSE COALESCE($3, usecase_parameter_name) END,\n  parameter_format = CASE WHEN $4 = '' THEN parameter_format ELSE COALESCE($4, parameter_format) END,\n  is_required = COALESCE($5, is_required),\n  description = CASE WHEN $6 = '' THEN description ELSE COALESCE($6, description) END,\n  param_value = CASE WHEN $7 = '' THEN param_value ELSE COALESCE($7, param_value) END\nWHERE dict_entry = $1 \nRETURNING *;",
         "options": {
-          "queryReplacement": "={{ $json.params.dict_entry }}, {{ $json.params.usecase_name }}, {{ $json.params.usecase_parameter_name }}, {{ $json.params.parameter_format }},{{ $json.params.is_required }},{{ $json.params.description||null }}"
+          "queryReplacement": "={{[\n$json.dict_entry,\n$('Execute Workflow Trigger').item.json.params?.usecase_name ?? null,\n$('Execute Workflow Trigger').item.json.params?.usecase_parameter_name ?? null, $('Execute Workflow Trigger').item.json.params?.parameter_format ?? null,\n$('Execute Workflow Trigger').item.json.params?.is_required ?? null,\n$('Execute Workflow Trigger').item.json.params?.Description ?? null,\n$('Execute Workflow Trigger').item.json.params?.param_value ?? null ] }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        976,
-        1424
+        2400,
+        1808
       ],
-      "id": "cdef7a7b-fc68-492c-b575-faa50ac08509",
+      "id": "5f1b44b5-4909-4ef6-bb84-d01b60ea0152",
       "name": "Edit Entry",
+      "executeOnce": false,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \"UseCaseDictionary\".api_pool_id\nFROM \"UseCaseDictionary\"\nWHERE \"UseCaseDictionary\".usecase_name = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.params.usecase_name }}, {{ $json.params.usecase_parameter_name }}, {{ $json.params.parameter_format }}, {{ $json.params.is_required }}, {{ $json.params.description||null }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2192,
+        1264
+      ],
+      "id": "e434f1b9-48bd-4947-8d9c-0b0f2398dcd7",
+      "name": "Get API_POOL_ID",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \"UseCaseDictionary\".dict_entry\nFROM \"UseCaseDictionary\"\nWHERE \"UseCaseDictionary\".usecase_name = $1 and \"UseCaseDictionary\".usecase_parameter_name = $2;",
+        "options": {
+          "queryReplacement": "={{ $json.params.usecase_name }}, {{ $json.params.usecase_parameter_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2240,
+        1808
+      ],
+      "id": "e236ae18-5646-4576-af5d-09a35db377b5",
+      "name": "Get dict_entry",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM \"UseCaseDictionary\" WHERE usecase_name = $1 ORDER BY dict_entry;",
+        "options": {
+          "queryReplacement": "={{ $json.params.usecase_name}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2304,
+        2032
+      ],
+      "id": "329de864-36a6-4136-9997-8883b29ec766",
+      "name": "Get Parameters",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst isEmpty = items.length === 0 || Object.keys(items[0].json).length === 0;\n\nif (isEmpty) {\n  return [{\n    json: {\n      reply: \"I couldn't find any parameters for that specific use case.\",\n      session_id\n    }\n  }];\n}\n\n// Extract rows\nconst rows = items.map(i => i.json);\n\n// Since they all belong to the same use case, grab the name from the first row\nconst usecaseName = rows[0].usecase_name;\n\n// Format each parameter line\nconst parameterLines = rows.map(row => {\n  // Check if param_value exists and is not null/empty\n  const valueStr = row.param_value !== null && row.param_value !== undefined && row.param_value !== '' \n    ? ` = ${row.param_value} [Specific value!]` \n    : '';\n\n  return `    🔹 ${row.usecase_parameter_name} (${row.parameter_format}${valueStr})${row.is_required ? ' [Required]' : ''}`;\n});\n\n// Build the clean, single-usecase reply\nconst replyText = `Here are the parameters for the **${usecaseName}** use case:\\n\\n${parameterLines.join('\\n')}`;\n\nreturn [{\n  json: {\n    reply: replyText,\n    session_id\n  }\n}];"
+      },
+      "id": "5b6b2617-c7fd-4656-b073-2c25c9b2bd89",
+      "name": "Format Dict Get",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2528,
+        2032
+      ]
     }
   ],
   "pinData": {},
@@ -361,7 +469,7 @@
         ],
         [
           {
-            "node": "Add Entry",
+            "node": "Get API_POOL_ID",
             "type": "main",
             "index": 0
           }
@@ -382,7 +490,14 @@
         ],
         [
           {
-            "node": "Edit Entry",
+            "node": "Get dict_entry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Parameters",
             "type": "main",
             "index": 0
           }
@@ -498,6 +613,50 @@
           }
         ]
       ]
+    },
+    "Get API_POOL_ID": {
+      "main": [
+        [
+          {
+            "node": "Add Entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dict_entry": {
+      "main": [
+        [
+          {
+            "node": "Edit Entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Parameters": {
+      "main": [
+        [
+          {
+            "node": "Format Dict Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Dict Get": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -505,11 +664,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "e4272f25-aa71-4297-bb58-296b2df0583d",
+  "versionId": "09a7c826-9de4-4fa3-8034-f7ab97973a2a",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "uqv2x7unjvI0y4nt",
+  "id": "YDFXGzvKMDZJev5h",
   "tags": []
 }
