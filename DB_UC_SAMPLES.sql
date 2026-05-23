@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict rSk3lE8QIEscSi0VgcDciPzdAMjje5NwDcxuG37pDVDmKw2SqBwc8fSM6o79OPZ
+\restrict LnBUD2GYXN8ybJbsCmSsr80gHDuJCKjjANurejwiwJV78gbDsh14BGHIJ7gHezl
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2026-05-23 17:42:03
+-- Started on 2026-05-23 22:09:32
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 255 (class 1255 OID 17653)
+-- TOC entry 255 (class 1255 OID 26261)
 -- Name: insert_sensor_data(integer, integer, integer, character varying, character varying, double precision, integer, integer, integer, integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -97,7 +97,7 @@ $$;
 ALTER FUNCTION public.insert_sensor_data(_userid integer, _watchid integer, _phoneid integer, _sensorname character varying, _alertgiven character varying, _value double precision, _pulses integer, _intensity integer, _duration integer, _interval integer, _fbrangeid integer, _vibration_reason character varying) OWNER TO postgres;
 
 --
--- TOC entry 256 (class 1255 OID 17654)
+-- TOC entry 256 (class 1255 OID 26262)
 -- Name: resolve_fb_range(integer, character varying, double precision); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -138,7 +138,7 @@ $$;
 ALTER FUNCTION public.resolve_fb_range(_userid integer, _sensorname character varying, _value double precision) OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1255 OID 17655)
+-- TOC entry 257 (class 1255 OID 26263)
 -- Name: touch_updated_at(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -159,7 +159,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 219 (class 1259 OID 17656)
+-- TOC entry 219 (class 1259 OID 26264)
 -- Name: Alert; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -180,7 +180,7 @@ CREATE TABLE public."Alert" (
 ALTER TABLE public."Alert" OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 17663)
+-- TOC entry 220 (class 1259 OID 26271)
 -- Name: Alert_alertid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -205,7 +205,7 @@ ALTER SEQUENCE public."Alert_alertid_seq" OWNED BY public."Alert".alertid;
 
 
 --
--- TOC entry 221 (class 1259 OID 17664)
+-- TOC entry 221 (class 1259 OID 26272)
 -- Name: AndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -217,7 +217,7 @@ CREATE TABLE public."AndroidPhone" (
 ALTER TABLE public."AndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 17668)
+-- TOC entry 222 (class 1259 OID 26276)
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -242,7 +242,7 @@ ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNED BY public."AndroidPhone".
 
 
 --
--- TOC entry 223 (class 1259 OID 17669)
+-- TOC entry 223 (class 1259 OID 26277)
 -- Name: DeviceSensor; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -257,7 +257,7 @@ CREATE TABLE public."DeviceSensor" (
 ALTER TABLE public."DeviceSensor" OWNER TO postgres;
 
 --
--- TOC entry 224 (class 1259 OID 17675)
+-- TOC entry 224 (class 1259 OID 26283)
 -- Name: SensorData; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -276,7 +276,7 @@ CREATE TABLE public."SensorData" (
 ALTER TABLE public."SensorData" OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 17680)
+-- TOC entry 225 (class 1259 OID 26288)
 -- Name: SensorData_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -301,7 +301,7 @@ ALTER SEQUENCE public."SensorData_id_seq" OWNED BY public."SensorData".id;
 
 
 --
--- TOC entry 226 (class 1259 OID 17681)
+-- TOC entry 226 (class 1259 OID 26289)
 -- Name: UseCase; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -316,7 +316,7 @@ CREATE TABLE public."UseCase" (
 ALTER TABLE public."UseCase" OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1259 OID 17688)
+-- TOC entry 227 (class 1259 OID 26296)
 -- Name: UseCaseDictionary; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -344,7 +344,7 @@ COMMENT ON TABLE public."UseCaseDictionary" IS 'Dictionary for potential new use
 
 
 --
--- TOC entry 228 (class 1259 OID 17698)
+-- TOC entry 228 (class 1259 OID 26307)
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -369,7 +369,7 @@ ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNED BY public."UseCaseDiction
 
 
 --
--- TOC entry 229 (class 1259 OID 17699)
+-- TOC entry 229 (class 1259 OID 26308)
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -394,7 +394,7 @@ ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNED BY public."UseCase".usecase
 
 
 --
--- TOC entry 230 (class 1259 OID 17700)
+-- TOC entry 230 (class 1259 OID 26309)
 -- Name: User; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -410,7 +410,7 @@ CREATE TABLE public."User" (
 ALTER TABLE public."User" OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 17704)
+-- TOC entry 231 (class 1259 OID 26313)
 -- Name: UserWatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -424,7 +424,7 @@ CREATE TABLE public."UserWatchAndroidPhone" (
 ALTER TABLE public."UserWatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1259 OID 17710)
+-- TOC entry 232 (class 1259 OID 26319)
 -- Name: User_userid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -449,7 +449,7 @@ ALTER SEQUENCE public."User_userid_seq" OWNED BY public."User".userid;
 
 
 --
--- TOC entry 233 (class 1259 OID 17711)
+-- TOC entry 233 (class 1259 OID 26320)
 -- Name: Watch; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -461,7 +461,7 @@ CREATE TABLE public."Watch" (
 ALTER TABLE public."Watch" OWNER TO postgres;
 
 --
--- TOC entry 234 (class 1259 OID 17715)
+-- TOC entry 234 (class 1259 OID 26324)
 -- Name: WatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -474,7 +474,7 @@ CREATE TABLE public."WatchAndroidPhone" (
 ALTER TABLE public."WatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 17720)
+-- TOC entry 235 (class 1259 OID 26329)
 -- Name: Watch_watchid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -499,7 +499,7 @@ ALTER SEQUENCE public."Watch_watchid_seq" OWNED BY public."Watch".watchid;
 
 
 --
--- TOC entry 236 (class 1259 OID 17721)
+-- TOC entry 236 (class 1259 OID 26330)
 -- Name: agent_session; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -517,7 +517,7 @@ CREATE TABLE public.agent_session (
 ALTER TABLE public.agent_session OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 17734)
+-- TOC entry 237 (class 1259 OID 26343)
 -- Name: api_pool; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -540,7 +540,7 @@ CREATE TABLE public.api_pool (
 ALTER TABLE public.api_pool OWNER TO postgres;
 
 --
--- TOC entry 238 (class 1259 OID 17747)
+-- TOC entry 238 (class 1259 OID 26356)
 -- Name: api_pool_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -565,7 +565,7 @@ ALTER SEQUENCE public.api_pool_id_seq OWNED BY public.api_pool.id;
 
 
 --
--- TOC entry 239 (class 1259 OID 17748)
+-- TOC entry 239 (class 1259 OID 26357)
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -580,7 +580,7 @@ CREATE SEQUENCE public.feedback_config_rules_id_seq
 ALTER SEQUENCE public.feedback_config_rules_id_seq OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 17749)
+-- TOC entry 240 (class 1259 OID 26358)
 -- Name: feedback_config_rules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -605,7 +605,7 @@ CREATE TABLE public.feedback_config_rules (
 ALTER TABLE public.feedback_config_rules OWNER TO postgres;
 
 --
--- TOC entry 241 (class 1259 OID 17754)
+-- TOC entry 241 (class 1259 OID 26363)
 -- Name: user_schedules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -624,7 +624,7 @@ CREATE TABLE public.user_schedules (
 ALTER TABLE public.user_schedules OWNER TO postgres;
 
 --
--- TOC entry 242 (class 1259 OID 17766)
+-- TOC entry 242 (class 1259 OID 26375)
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -639,7 +639,7 @@ ALTER TABLE public.user_schedules ALTER COLUMN schedule_id ADD GENERATED ALWAYS 
 
 
 --
--- TOC entry 243 (class 1259 OID 17767)
+-- TOC entry 243 (class 1259 OID 26376)
 -- Name: v_agent_context; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -662,7 +662,7 @@ CREATE VIEW public.v_agent_context AS
 ALTER VIEW public.v_agent_context OWNER TO postgres;
 
 --
--- TOC entry 4924 (class 2604 OID 17772)
+-- TOC entry 4924 (class 2604 OID 26381)
 -- Name: Alert alertid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -670,7 +670,7 @@ ALTER TABLE ONLY public."Alert" ALTER COLUMN alertid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4925 (class 2604 OID 17773)
+-- TOC entry 4925 (class 2604 OID 26382)
 -- Name: AndroidPhone phoneid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -678,7 +678,7 @@ ALTER TABLE ONLY public."AndroidPhone" ALTER COLUMN phoneid SET DEFAULT nextval(
 
 
 --
--- TOC entry 4926 (class 2604 OID 17774)
+-- TOC entry 4926 (class 2604 OID 26383)
 -- Name: SensorData id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -686,7 +686,7 @@ ALTER TABLE ONLY public."SensorData" ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4928 (class 2604 OID 17775)
+-- TOC entry 4928 (class 2604 OID 26384)
 -- Name: UseCase usecase_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -694,7 +694,7 @@ ALTER TABLE ONLY public."UseCase" ALTER COLUMN usecase_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4929 (class 2604 OID 17776)
+-- TOC entry 4929 (class 2604 OID 26385)
 -- Name: UseCaseDictionary dict_entry; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -702,7 +702,7 @@ ALTER TABLE ONLY public."UseCaseDictionary" ALTER COLUMN dict_entry SET DEFAULT 
 
 
 --
--- TOC entry 4931 (class 2604 OID 17777)
+-- TOC entry 4931 (class 2604 OID 26386)
 -- Name: User userid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -710,7 +710,7 @@ ALTER TABLE ONLY public."User" ALTER COLUMN userid SET DEFAULT nextval('public."
 
 
 --
--- TOC entry 4932 (class 2604 OID 17778)
+-- TOC entry 4932 (class 2604 OID 26387)
 -- Name: Watch watchid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -718,7 +718,7 @@ ALTER TABLE ONLY public."Watch" ALTER COLUMN watchid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4937 (class 2604 OID 17779)
+-- TOC entry 4937 (class 2604 OID 26388)
 -- Name: api_pool id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -726,7 +726,7 @@ ALTER TABLE ONLY public.api_pool ALTER COLUMN id SET DEFAULT nextval('public.api
 
 
 --
--- TOC entry 5147 (class 0 OID 17656)
+-- TOC entry 5147 (class 0 OID 26264)
 -- Dependencies: 219
 -- Data for Name: Alert; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -68013,7 +68013,7 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 
 
 --
--- TOC entry 5149 (class 0 OID 17664)
+-- TOC entry 5149 (class 0 OID 26272)
 -- Dependencies: 221
 -- Data for Name: AndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -68025,7 +68025,7 @@ COPY public."AndroidPhone" (phoneid) FROM stdin;
 
 
 --
--- TOC entry 5151 (class 0 OID 17669)
+-- TOC entry 5151 (class 0 OID 26277)
 -- Dependencies: 223
 -- Data for Name: DeviceSensor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -68043,7 +68043,7 @@ COPY public."DeviceSensor" (watchid, phoneid, userid, usecase_id) FROM stdin;
 
 
 --
--- TOC entry 5152 (class 0 OID 17675)
+-- TOC entry 5152 (class 0 OID 26283)
 -- Dependencies: 224
 -- Data for Name: SensorData; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135335,7 +135335,7 @@ COPY public."SensorData" (id, watchid, phoneid, alertid, userid, value, "time", 
 
 
 --
--- TOC entry 5154 (class 0 OID 17681)
+-- TOC entry 5154 (class 0 OID 26289)
 -- Dependencies: 226
 -- Data for Name: UseCase; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135350,15 +135350,13 @@ COPY public."UseCase" (usecase_id, name, description, log_interval) FROM stdin;
 
 
 --
--- TOC entry 5155 (class 0 OID 17688)
+-- TOC entry 5155 (class 0 OID 26296)
 -- Dependencies: 227
 -- Data for Name: UseCaseDictionary; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_name, parameter_format, is_required, description, param_value, api_pool_id) FROM stdin;
 7	Open-Meteo UV Index	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast	https://api.open-meteo.com/v1/forecast	8
-5	WorldTime API	timezone	string	t	Timezone Identifier string, e.g. Asia/Jerusalem	\N	13
-4	WorldTime API	url	string	t	API Endpoint URL: https://worldtimeapi.org/api/timezone/{timezone}	https://worldtimeapi.org/api/timezone/{timezone}	13
 8	Open-Meteo UV Index	current	string	t	Specifies the weather variable to return, set to uv_index	uv_index	8
 9	Open-Meteo UV Index	latitude	float	t	Geographical latitude coordinate	\N	8
 10	Open-Meteo UV Index	longitude	float	t	Geographical longitude coordinate	\N	8
@@ -135390,8 +135388,6 @@ COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_nam
 37	Open-Meteo Precipitation	longitude	float	t	Geographical longitude coordinate	\N	3
 38	Open-Meteo Wind Speed	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast	https://api.open-meteo.com/v1/forecast	4
 39	Open-Meteo Wind Speed	current	string	t	Specifies the weather variable to return, set to wind_speed_10m	wind_speed_10m	4
-40	Open-Meteo Wind Speed	latitude	float	t	Geographical latitude coordinate	\N	4
-41	Open-Meteo Wind Speed	longitude	float	t	Geographical longitude coordinate	\N	4
 42	IPGeolocation Sun Azimuth	url	string	t	API Endpoint URL: https://api.ipgeolocation.io/astronomy	https://api.ipgeolocation.io/astronomy	6
 43	IPGeolocation Sun Azimuth	lat	float	t	Latitude of the location	\N	6
 44	IPGeolocation Sun Azimuth	long	float	t	Longitude of the location	\N	6
@@ -135407,11 +135403,13 @@ COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_nam
 54	WAQI Air Quality Index	lon	float	t	Longitude coordinate	\N	5
 55	WAQI Air Quality Index	token	string	t	Authentication token/key parameter for WAQI Air Quality Index	\N	5
 30	Open-Meteo Temperature	url	string	t	API Endpoint URL: https://api.open-meteo.com/v1/forecast	https://api.open-meteo.com/v1/forecast	2
+40	Open-Meteo Wind Speed	lat	float	t	Geographical latitude coordinate	\N	4
+41	Open-Meteo Wind Speed	lng	float	t	Geographical longitude coordinate	\N	4
 \.
 
 
 --
--- TOC entry 5158 (class 0 OID 17700)
+-- TOC entry 5158 (class 0 OID 26309)
 -- Dependencies: 230
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135425,7 +135423,7 @@ COPY public."User" (userid, fname, lname, lastrequest, active_usecase_id) FROM s
 
 
 --
--- TOC entry 5159 (class 0 OID 17704)
+-- TOC entry 5159 (class 0 OID 26313)
 -- Dependencies: 231
 -- Data for Name: UserWatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135440,7 +135438,7 @@ COPY public."UserWatchAndroidPhone" (userid, watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5161 (class 0 OID 17711)
+-- TOC entry 5161 (class 0 OID 26320)
 -- Dependencies: 233
 -- Data for Name: Watch; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135453,7 +135451,7 @@ COPY public."Watch" (watchid) FROM stdin;
 
 
 --
--- TOC entry 5162 (class 0 OID 17715)
+-- TOC entry 5162 (class 0 OID 26324)
 -- Dependencies: 234
 -- Data for Name: WatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135467,7 +135465,7 @@ COPY public."WatchAndroidPhone" (watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5164 (class 0 OID 17721)
+-- TOC entry 5164 (class 0 OID 26330)
 -- Dependencies: 236
 -- Data for Name: agent_session; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135511,30 +135509,29 @@ a7fc0956-d06a-4435-95b3-4d46a54ce3cb	\N	1	[{"role": "user", "content": "which AP
 
 
 --
--- TOC entry 5165 (class 0 OID 17734)
+-- TOC entry 5165 (class 0 OID 26343)
 -- Dependencies: 237
 -- Data for Name: api_pool; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.api_pool (id, name, category, description, endpoint_url, method, auth_type, auth_header, param_schema, sample_response, usecase_tags, active) FROM stdin;
-1	Open-Meteo Humidity	environmental	Relative humidity (%) at 2m above ground. Already used in humidity-data usecase. Returns current.relative_humidity_2m.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "relative_humidity_2m", "latitude": "float (required)", "longitude": "float (required)"}	\N	{humidity,environmental,weather}	t
-2	Open-Meteo Temperature	environmental	Air temperature in °C at 2m. Already used in temperature-data usecase. Returns current.temperature_2m.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "temperature_2m", "latitude": "float (required)", "longitude": "float (required)"}	\N	{temperature,environmental,weather,biometric}	t
-3	Open-Meteo Precipitation	environmental	Precipitation in mm. Already used in precipitation-data usecase. Returns current.precipitation.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "precipitation", "latitude": "float (required)", "longitude": "float (required)"}	\N	{precipitation,environmental,weather,outdoor}	t
-4	Open-Meteo Wind Speed	environmental	Wind speed in km/h at 10m. Already used in wind-data usecase. Returns current.wind_speed_10m.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "wind_speed_10m", "latitude": "float (required)", "longitude": "float (required)"}	\N	{wind,environmental,weather,outdoor}	t
 5	WAQI Air Quality Index	environmental	Real-time AQI by GPS. Already used in pollution-data usecase. Returns data.aqi (0-500 scale). Requires token.	https://api.waqi.info/feed/geo:{lat};{lon}/	GET	token	token	{"lat": "float (required)", "lon": "float (required)", "token": "stored in n8n credentials"}	\N	{aqi,pollution,environmental,outdoor}	t
 6	IPGeolocation Sun Azimuth	circadian	Sun position including azimuth angle in degrees. Already used in sun-data usecase. Requires API key.	https://api.ipgeolocation.io/astronomy	GET	apikey	apiKey	{"lat": "float (required)", "date": "YYYY-MM-DD (optional)", "long": "float (required)", "apiKey": "stored in n8n credentials"}	\N	{sun,azimuth,circadian,outdoor,spatial}	t
 7	IPGeolocation Moon Azimuth	circadian	Moon position including azimuth angle in degrees. Already used in moon-data usecase. Same API as sun, different field.	https://api.ipgeolocation.io/astronomy	GET	apikey	apiKey	{"lat": "float (required)", "date": "YYYY-MM-DD (optional)", "long": "float (required)", "apiKey": "stored in n8n credentials"}	\N	{moon,azimuth,circadian,outdoor,spatial}	t
-8	Open-Meteo UV Index	environmental	UV index at ground level. Same API as humidity/temperature, new field. No auth needed. Returns current.uv_index.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "uv_index", "latitude": "float (required)", "longitude": "float (required)"}	\N	{uv,environmental,outdoor,circadian}	t
-9	Open-Meteo Air Pressure	environmental	Surface atmospheric pressure in hPa. Same API pattern. Returns current.surface_pressure.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "surface_pressure", "latitude": "float (required)", "longitude": "float (required)"}	\N	{pressure,environmental,weather}	t
-10	Open-Meteo Cloud Cover	environmental	Cloud cover percentage (0-100%). Useful for light-based experiments. Returns current.cloudcover.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "cloudcover", "latitude": "float (required)", "longitude": "float (required)"}	\N	{cloud,light,environmental,circadian,outdoor}	t
-11	Sunrise-Sunset API	circadian	Precise sunrise, sunset, solar noon and day length for any location. Free, no auth. Returns UTC times.	https://api.sunrise-sunset.org/json	GET	none	\N	{"lat": "float (required)", "lng": "float (required)", "date": "YYYY-MM-DD or today (optional)", "formatted": "0 for UTC"}	\N	{circadian,sunrise,sunset,light,outdoor}	t
-12	Open-Elevation Altitude	spatial	Elevation in meters for any GPS coordinate. Free, no auth. Useful for altitude-based experiments.	https://api.open-elevation.com/api/v1/lookup	GET	none	\N	{"locations": [{"latitude": "float", "longitude": "float"}]}	\N	{altitude,spatial,outdoor,gps}	t
-13	WorldTime API	circadian	Current time and UTC offset for any timezone. Useful for time-of-day triggered haptic experiments.	https://worldtimeapi.org/api/timezone/{timezone}	GET	none	\N	{"timezone": "string e.g. Asia/Jerusalem (required)"}	\N	{time,circadian,timezone}	t
+3	Open-Meteo Precipitation	environmental	Precipitation in mm. Already used in precipitation-data usecase. Returns current.precipitation.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "precipitation", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "precipitation": 0}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "precipitation": "mm"}, "generationtime_ms": 0.02574920654296875, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{precipitation,environmental,weather,outdoor}	t
+1	Open-Meteo Humidity	environmental	Relative humidity (%) at 2m above ground. Already used in humidity-data usecase. Returns current.relative_humidity_2m.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "relative_humidity_2m", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "relative_humidity_2m": 78}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "relative_humidity_2m": "%"}, "generationtime_ms": 0.02562999725341797, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{humidity,environmental,weather}	t
+2	Open-Meteo Temperature	environmental	Air temperature in °C at 2m. Already used in temperature-data usecase. Returns current.temperature_2m.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "temperature_2m", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "temperature_2m": 20.8}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "temperature_2m": "°C"}, "generationtime_ms": 0.02574920654296875, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{temperature,environmental,weather,biometric}	t
+12	Open-Elevation Altitude	spatial	Elevation in meters for any GPS coordinate. Free, no auth. Useful for altitude-based experiments.	https://api.open-elevation.com/api/v1/lookup	GET	none	\N	{"locations": [{"latitude": "float", "longitude": "float"}]}	{"results": [{"latitude": 32.0853, "elevation": 18, "longitude": 34.7818}]}	{altitude,spatial,outdoor,gps}	t
+4	Open-Meteo Wind Speed	environmental	Wind speed in km/h at 10m. Already used in wind-data usecase. Returns current.wind_speed_10m.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "wind_speed_10m", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "wind_speed_10m": 6.2}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "wind_speed_10m": "km/h"}, "generationtime_ms": 0.04601478576660156, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{wind,environmental,weather,outdoor}	t
+8	Open-Meteo UV Index	environmental	UV index at ground level. Same API as humidity/temperature, new field. No auth needed. Returns current.uv_index.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "uv_index", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "uv_index": 0}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "uv_index": ""}, "generationtime_ms": 0.031948089599609375, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{uv,environmental,outdoor,circadian}	t
+9	Open-Meteo Air Pressure	environmental	Surface atmospheric pressure in hPa. Same API pattern. Returns current.surface_pressure.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "surface_pressure", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "surface_pressure": 1014.7}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "surface_pressure": "hPa"}, "generationtime_ms": 0.048279762268066406, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{pressure,environmental,weather}	t
+10	Open-Meteo Cloud Cover	environmental	Cloud cover percentage (0-100%). Useful for light-based experiments. Returns current.cloudcover.	https://api.open-meteo.com/v1/forecast	GET	none	\N	{"current": "cloudcover", "latitude": "float (required)", "longitude": "float (required)"}	{"current": {"time": "2026-05-23T18:45", "interval": 900, "cloudcover": 65}, "latitude": 32.0625, "timezone": "GMT", "elevation": 17, "longitude": 34.8125, "current_units": {"time": "iso8601", "interval": "seconds", "cloudcover": "%"}, "generationtime_ms": 0.03349781036376953, "utc_offset_seconds": 0, "timezone_abbreviation": "GMT"}	{cloud,light,environmental,circadian,outdoor}	t
+11	Sunrise-Sunset API	circadian	Precise sunrise, sunset, solar noon and day length for any location. Free, no auth. Returns UTC times.	https://api.sunrise-sunset.org/json	GET	none	\N	{"lat": "float (required)", "lng": "float (required)", "date": "YYYY-MM-DD or today (optional)", "formatted": "0 for UTC"}	{"tzid": "UTC", "status": "OK", "results": {"sunset": "2026-05-23T16:37:54+00:00", "sunrise": "2026-05-23T02:37:21+00:00", "day_length": 50433, "solar_noon": "2026-05-23T09:37:38+00:00", "civil_twilight_end": "2026-05-23T17:03:55+00:00", "civil_twilight_begin": "2026-05-23T02:11:20+00:00", "nautical_twilight_end": "2026-05-23T17:37:07+00:00", "nautical_twilight_begin": "2026-05-23T01:38:08+00:00", "astronomical_twilight_end": "2026-05-23T18:12:31+00:00", "astronomical_twilight_begin": "2026-05-23T01:02:44+00:00"}}	{circadian,sunrise,sunset,light,outdoor}	t
 \.
 
 
 --
--- TOC entry 5168 (class 0 OID 17749)
+-- TOC entry 5168 (class 0 OID 26358)
 -- Dependencies: 240
 -- Data for Name: feedback_config_rules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135602,7 +135599,7 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 
 
 --
--- TOC entry 5169 (class 0 OID 17754)
+-- TOC entry 5169 (class 0 OID 26363)
 -- Dependencies: 241
 -- Data for Name: user_schedules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135706,7 +135703,7 @@ SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 6, true);
 
 
 --
--- TOC entry 4949 (class 2606 OID 17782)
+-- TOC entry 4949 (class 2606 OID 26392)
 -- Name: Alert Alert_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135715,7 +135712,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4951 (class 2606 OID 17784)
+-- TOC entry 4951 (class 2606 OID 26394)
 -- Name: AndroidPhone AndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135724,7 +135721,7 @@ ALTER TABLE ONLY public."AndroidPhone"
 
 
 --
--- TOC entry 4953 (class 2606 OID 17786)
+-- TOC entry 4953 (class 2606 OID 26396)
 -- Name: SensorData SensorData_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135733,7 +135730,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4959 (class 2606 OID 17788)
+-- TOC entry 4959 (class 2606 OID 26398)
 -- Name: UseCaseDictionary UseCaseDictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135742,7 +135739,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4955 (class 2606 OID 17790)
+-- TOC entry 4955 (class 2606 OID 26400)
 -- Name: UseCase UseCase_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135751,7 +135748,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4957 (class 2606 OID 17792)
+-- TOC entry 4957 (class 2606 OID 26402)
 -- Name: UseCase UseCase_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135760,7 +135757,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4965 (class 2606 OID 17794)
+-- TOC entry 4965 (class 2606 OID 26404)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135769,7 +135766,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4963 (class 2606 OID 17796)
+-- TOC entry 4963 (class 2606 OID 26406)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135778,7 +135775,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4969 (class 2606 OID 17798)
+-- TOC entry 4969 (class 2606 OID 26408)
 -- Name: WatchAndroidPhone WatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135787,7 +135784,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4967 (class 2606 OID 17800)
+-- TOC entry 4967 (class 2606 OID 26410)
 -- Name: Watch Watch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135796,7 +135793,7 @@ ALTER TABLE ONLY public."Watch"
 
 
 --
--- TOC entry 4971 (class 2606 OID 17802)
+-- TOC entry 4971 (class 2606 OID 26412)
 -- Name: agent_session agent_session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135805,7 +135802,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4975 (class 2606 OID 17804)
+-- TOC entry 4975 (class 2606 OID 26414)
 -- Name: api_pool api_pool_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135814,7 +135811,7 @@ ALTER TABLE ONLY public.api_pool
 
 
 --
--- TOC entry 4977 (class 2606 OID 17806)
+-- TOC entry 4977 (class 2606 OID 26416)
 -- Name: feedback_config_rules feedback_config_mapped_minpulses_maxpulses_minintensity_max_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135823,7 +135820,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4979 (class 2606 OID 17808)
+-- TOC entry 4979 (class 2606 OID 26418)
 -- Name: feedback_config_rules feedback_config_mapped_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135832,7 +135829,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4961 (class 2606 OID 17810)
+-- TOC entry 4961 (class 2606 OID 26420)
 -- Name: UseCaseDictionary unique_usecase_param; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135841,7 +135838,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4983 (class 2606 OID 17812)
+-- TOC entry 4983 (class 2606 OID 26422)
 -- Name: user_schedules user_schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135850,7 +135847,7 @@ ALTER TABLE ONLY public.user_schedules
 
 
 --
--- TOC entry 4972 (class 1259 OID 17813)
+-- TOC entry 4972 (class 1259 OID 26423)
 -- Name: idx_agent_session_researcher; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135858,7 +135855,7 @@ CREATE INDEX idx_agent_session_researcher ON public.agent_session USING btree (r
 
 
 --
--- TOC entry 4973 (class 1259 OID 17814)
+-- TOC entry 4973 (class 1259 OID 26424)
 -- Name: idx_agent_session_usecase; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135866,7 +135863,7 @@ CREATE INDEX idx_agent_session_usecase ON public.agent_session USING btree (curr
 
 
 --
--- TOC entry 4980 (class 1259 OID 17815)
+-- TOC entry 4980 (class 1259 OID 26425)
 -- Name: idx_fcr_user_type; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135874,7 +135871,7 @@ CREATE INDEX idx_fcr_user_type ON public.feedback_config_rules USING btree (user
 
 
 --
--- TOC entry 4981 (class 1259 OID 17816)
+-- TOC entry 4981 (class 1259 OID 26426)
 -- Name: idx_next_run_date; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135882,7 +135879,7 @@ CREATE INDEX idx_next_run_date ON public.user_schedules USING btree (next_run_da
 
 
 --
--- TOC entry 4998 (class 2620 OID 17817)
+-- TOC entry 4998 (class 2620 OID 26427)
 -- Name: agent_session trg_agent_session_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -135890,7 +135887,7 @@ CREATE TRIGGER trg_agent_session_updated_at BEFORE UPDATE ON public.agent_sessio
 
 
 --
--- TOC entry 4985 (class 2606 OID 17818)
+-- TOC entry 4985 (class 2606 OID 26428)
 -- Name: DeviceSensor DeviceSensor_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135899,7 +135896,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4986 (class 2606 OID 17823)
+-- TOC entry 4986 (class 2606 OID 26433)
 -- Name: DeviceSensor DeviceSensor_userid_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135908,7 +135905,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4987 (class 2606 OID 17828)
+-- TOC entry 4987 (class 2606 OID 26438)
 -- Name: SensorData SensorData_alertid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135917,7 +135914,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4988 (class 2606 OID 17833)
+-- TOC entry 4988 (class 2606 OID 26443)
 -- Name: SensorData SensorData_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135926,7 +135923,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4991 (class 2606 OID 17838)
+-- TOC entry 4991 (class 2606 OID 26448)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135935,7 +135932,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4992 (class 2606 OID 17843)
+-- TOC entry 4992 (class 2606 OID 26453)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135944,7 +135941,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4993 (class 2606 OID 17848)
+-- TOC entry 4993 (class 2606 OID 26458)
 -- Name: WatchAndroidPhone WatchAndroidPhone_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135953,7 +135950,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4994 (class 2606 OID 17853)
+-- TOC entry 4994 (class 2606 OID 26463)
 -- Name: WatchAndroidPhone WatchAndroidPhone_watchid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135962,7 +135959,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4995 (class 2606 OID 17858)
+-- TOC entry 4995 (class 2606 OID 26468)
 -- Name: agent_session agent_session_current_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135971,7 +135968,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4989 (class 2606 OID 17884)
+-- TOC entry 4989 (class 2606 OID 26473)
 -- Name: UseCaseDictionary api_pool_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135980,7 +135977,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4996 (class 2606 OID 17863)
+-- TOC entry 4996 (class 2606 OID 26478)
 -- Name: feedback_config_rules feedback_config_rules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135989,7 +135986,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4984 (class 2606 OID 17868)
+-- TOC entry 4984 (class 2606 OID 26483)
 -- Name: Alert fk_fb_range; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135998,7 +135995,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4990 (class 2606 OID 17873)
+-- TOC entry 4990 (class 2606 OID 26488)
 -- Name: User fk_user_usecase; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136007,7 +136004,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4997 (class 2606 OID 17878)
+-- TOC entry 4997 (class 2606 OID 26493)
 -- Name: user_schedules user_schedules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136015,11 +136012,11 @@ ALTER TABLE ONLY public.user_schedules
     ADD CONSTRAINT user_schedules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
 
 
--- Completed on 2026-05-23 17:42:04
+-- Completed on 2026-05-23 22:09:33
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict rSk3lE8QIEscSi0VgcDciPzdAMjje5NwDcxuG37pDVDmKw2SqBwc8fSM6o79OPZ
+\unrestrict LnBUD2GYXN8ybJbsCmSsr80gHDuJCKjjANurejwiwJV78gbDsh14BGHIJ7gHezl
 
