@@ -2,12 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict eR7bP0cRhVFRQNG6LXJskeuPkdtPu5XGxUKfwzZxJpUTk8jCvVUXCVYNQhf24iE
+-- Dumped from database version 17.5
+-- Dumped by pg_dump version 17.5
 
--- Dumped from database version 18.0
--- Dumped by pg_dump version 18.0
-
--- Started on 2026-05-20 21:54:17
+-- Started on 2026-05-23 11:33:37
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +20,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 255 (class 1255 OID 17389)
+-- TOC entry 242 (class 1255 OID 17410)
 -- Name: insert_sensor_data(integer, integer, integer, character varying, character varying, double precision, integer, integer, integer, integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -97,7 +95,7 @@ $$;
 ALTER FUNCTION public.insert_sensor_data(_userid integer, _watchid integer, _phoneid integer, _sensorname character varying, _alertgiven character varying, _value double precision, _pulses integer, _intensity integer, _duration integer, _interval integer, _fbrangeid integer, _vibration_reason character varying) OWNER TO postgres;
 
 --
--- TOC entry 256 (class 1255 OID 17390)
+-- TOC entry 243 (class 1255 OID 17411)
 -- Name: resolve_fb_range(integer, character varying, double precision); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -138,7 +136,7 @@ $$;
 ALTER FUNCTION public.resolve_fb_range(_userid integer, _sensorname character varying, _value double precision) OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1255 OID 17391)
+-- TOC entry 244 (class 1255 OID 17412)
 -- Name: touch_updated_at(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -159,7 +157,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 219 (class 1259 OID 17392)
+-- TOC entry 217 (class 1259 OID 17413)
 -- Name: Alert; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -180,7 +178,7 @@ CREATE TABLE public."Alert" (
 ALTER TABLE public."Alert" OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 17399)
+-- TOC entry 218 (class 1259 OID 17419)
 -- Name: Alert_alertid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -196,8 +194,8 @@ CREATE SEQUENCE public."Alert_alertid_seq"
 ALTER SEQUENCE public."Alert_alertid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5175 (class 0 OID 0)
--- Dependencies: 220
+-- TOC entry 5012 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: Alert_alertid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -205,7 +203,7 @@ ALTER SEQUENCE public."Alert_alertid_seq" OWNED BY public."Alert".alertid;
 
 
 --
--- TOC entry 221 (class 1259 OID 17400)
+-- TOC entry 219 (class 1259 OID 17420)
 -- Name: AndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -217,7 +215,7 @@ CREATE TABLE public."AndroidPhone" (
 ALTER TABLE public."AndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 17404)
+-- TOC entry 220 (class 1259 OID 17423)
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -233,8 +231,8 @@ CREATE SEQUENCE public."AndroidPhone_phoneid_seq"
 ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5176 (class 0 OID 0)
--- Dependencies: 222
+-- TOC entry 5013 (class 0 OID 0)
+-- Dependencies: 220
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -242,7 +240,7 @@ ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNED BY public."AndroidPhone".
 
 
 --
--- TOC entry 223 (class 1259 OID 17405)
+-- TOC entry 221 (class 1259 OID 17424)
 -- Name: DeviceSensor; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -257,7 +255,7 @@ CREATE TABLE public."DeviceSensor" (
 ALTER TABLE public."DeviceSensor" OWNER TO postgres;
 
 --
--- TOC entry 224 (class 1259 OID 17411)
+-- TOC entry 222 (class 1259 OID 17427)
 -- Name: SensorData; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -276,7 +274,7 @@ CREATE TABLE public."SensorData" (
 ALTER TABLE public."SensorData" OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 17416)
+-- TOC entry 223 (class 1259 OID 17431)
 -- Name: SensorData_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -292,8 +290,8 @@ CREATE SEQUENCE public."SensorData_id_seq"
 ALTER SEQUENCE public."SensorData_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5177 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 5014 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: SensorData_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -301,7 +299,7 @@ ALTER SEQUENCE public."SensorData_id_seq" OWNED BY public."SensorData".id;
 
 
 --
--- TOC entry 226 (class 1259 OID 17417)
+-- TOC entry 224 (class 1259 OID 17432)
 -- Name: UseCase; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -315,14 +313,14 @@ CREATE TABLE public."UseCase" (
 ALTER TABLE public."UseCase" OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1259 OID 17424)
+-- TOC entry 225 (class 1259 OID 17437)
 -- Name: UseCaseDictionary; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public."UseCaseDictionary" (
-    dict_entry integer CONSTRAINT "UseCaseDictionary_id_not_null" NOT NULL,
+    dict_entry integer NOT NULL,
     usecase_name character varying(255) NOT NULL,
-    usecase_parameter_name character varying(255) CONSTRAINT "UseCaseDictionary_parameter_name_not_null" NOT NULL,
+    usecase_parameter_name character varying(255) NOT NULL,
     parameter_format character varying(50) NOT NULL,
     is_required boolean DEFAULT true,
     description text
@@ -332,8 +330,8 @@ CREATE TABLE public."UseCaseDictionary" (
 ALTER TABLE public."UseCaseDictionary" OWNER TO postgres;
 
 --
--- TOC entry 5178 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 5015 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: TABLE "UseCaseDictionary"; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -341,7 +339,7 @@ COMMENT ON TABLE public."UseCaseDictionary" IS 'Dictionary for potential new use
 
 
 --
--- TOC entry 228 (class 1259 OID 17435)
+-- TOC entry 226 (class 1259 OID 17443)
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -357,8 +355,8 @@ CREATE SEQUENCE public."UseCaseDictionary_id_seq"
 ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5179 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 5016 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -366,7 +364,7 @@ ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNED BY public."UseCaseDiction
 
 
 --
--- TOC entry 229 (class 1259 OID 17436)
+-- TOC entry 227 (class 1259 OID 17444)
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -382,8 +380,8 @@ CREATE SEQUENCE public."UseCase_usecase_id_seq"
 ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5180 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 5017 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -391,7 +389,7 @@ ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNED BY public."UseCase".usecase
 
 
 --
--- TOC entry 230 (class 1259 OID 17437)
+-- TOC entry 228 (class 1259 OID 17445)
 -- Name: User; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -407,7 +405,7 @@ CREATE TABLE public."User" (
 ALTER TABLE public."User" OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 17441)
+-- TOC entry 229 (class 1259 OID 17448)
 -- Name: UserWatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -421,7 +419,7 @@ CREATE TABLE public."UserWatchAndroidPhone" (
 ALTER TABLE public."UserWatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1259 OID 17447)
+-- TOC entry 230 (class 1259 OID 17451)
 -- Name: User_userid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -437,8 +435,8 @@ CREATE SEQUENCE public."User_userid_seq"
 ALTER SEQUENCE public."User_userid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5181 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 5018 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: User_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -446,7 +444,7 @@ ALTER SEQUENCE public."User_userid_seq" OWNED BY public."User".userid;
 
 
 --
--- TOC entry 233 (class 1259 OID 17448)
+-- TOC entry 231 (class 1259 OID 17452)
 -- Name: Watch; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -458,7 +456,7 @@ CREATE TABLE public."Watch" (
 ALTER TABLE public."Watch" OWNER TO postgres;
 
 --
--- TOC entry 234 (class 1259 OID 17452)
+-- TOC entry 232 (class 1259 OID 17455)
 -- Name: WatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -471,7 +469,7 @@ CREATE TABLE public."WatchAndroidPhone" (
 ALTER TABLE public."WatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 17457)
+-- TOC entry 233 (class 1259 OID 17458)
 -- Name: Watch_watchid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -487,8 +485,8 @@ CREATE SEQUENCE public."Watch_watchid_seq"
 ALTER SEQUENCE public."Watch_watchid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5182 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 5019 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: Watch_watchid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -496,7 +494,7 @@ ALTER SEQUENCE public."Watch_watchid_seq" OWNED BY public."Watch".watchid;
 
 
 --
--- TOC entry 236 (class 1259 OID 17458)
+-- TOC entry 234 (class 1259 OID 17459)
 -- Name: agent_session; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -514,7 +512,7 @@ CREATE TABLE public.agent_session (
 ALTER TABLE public.agent_session OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 17471)
+-- TOC entry 235 (class 1259 OID 17468)
 -- Name: api_pool; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -537,7 +535,7 @@ CREATE TABLE public.api_pool (
 ALTER TABLE public.api_pool OWNER TO postgres;
 
 --
--- TOC entry 238 (class 1259 OID 17484)
+-- TOC entry 236 (class 1259 OID 17475)
 -- Name: api_pool_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -553,8 +551,8 @@ CREATE SEQUENCE public.api_pool_id_seq
 ALTER SEQUENCE public.api_pool_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5183 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 5020 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: api_pool_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -562,7 +560,7 @@ ALTER SEQUENCE public.api_pool_id_seq OWNED BY public.api_pool.id;
 
 
 --
--- TOC entry 239 (class 1259 OID 17485)
+-- TOC entry 237 (class 1259 OID 17476)
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -577,7 +575,7 @@ CREATE SEQUENCE public.feedback_config_rules_id_seq
 ALTER SEQUENCE public.feedback_config_rules_id_seq OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 17486)
+-- TOC entry 238 (class 1259 OID 17477)
 -- Name: feedback_config_rules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -602,7 +600,7 @@ CREATE TABLE public.feedback_config_rules (
 ALTER TABLE public.feedback_config_rules OWNER TO postgres;
 
 --
--- TOC entry 243 (class 1259 OID 17629)
+-- TOC entry 239 (class 1259 OID 17481)
 -- Name: user_schedules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -614,14 +612,14 @@ CREATE TABLE public.user_schedules (
     measure_type character varying(20) DEFAULT 'average'::character varying,
     trigger_percentage double precision DEFAULT 20.0,
     active boolean DEFAULT true,
-    CONSTRAINT user_schedules_measure_type_check CHECK (((measure_type)::text = ANY ((ARRAY['average'::character varying, 'median'::character varying, 'mode'::character varying])::text[])))
+    CONSTRAINT user_schedules_measure_type_check CHECK (((measure_type)::text = ANY (ARRAY[('average'::character varying)::text, ('median'::character varying)::text, ('mode'::character varying)::text])))
 );
 
 
 ALTER TABLE public.user_schedules OWNER TO postgres;
 
 --
--- TOC entry 242 (class 1259 OID 17628)
+-- TOC entry 240 (class 1259 OID 17490)
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -659,7 +657,7 @@ CREATE VIEW public.v_agent_context AS
 ALTER VIEW public.v_agent_context OWNER TO postgres;
 
 --
--- TOC entry 4924 (class 2604 OID 17496)
+-- TOC entry 4763 (class 2604 OID 17496)
 -- Name: Alert alertid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -667,7 +665,7 @@ ALTER TABLE ONLY public."Alert" ALTER COLUMN alertid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4925 (class 2604 OID 17497)
+-- TOC entry 4764 (class 2604 OID 17497)
 -- Name: AndroidPhone phoneid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -675,7 +673,7 @@ ALTER TABLE ONLY public."AndroidPhone" ALTER COLUMN phoneid SET DEFAULT nextval(
 
 
 --
--- TOC entry 4926 (class 2604 OID 17498)
+-- TOC entry 4765 (class 2604 OID 17498)
 -- Name: SensorData id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -683,7 +681,7 @@ ALTER TABLE ONLY public."SensorData" ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4928 (class 2604 OID 17499)
+-- TOC entry 4767 (class 2604 OID 17499)
 -- Name: UseCase usecase_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -691,7 +689,7 @@ ALTER TABLE ONLY public."UseCase" ALTER COLUMN usecase_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4929 (class 2604 OID 17500)
+-- TOC entry 4768 (class 2604 OID 17500)
 -- Name: UseCaseDictionary dict_entry; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -699,7 +697,7 @@ ALTER TABLE ONLY public."UseCaseDictionary" ALTER COLUMN dict_entry SET DEFAULT 
 
 
 --
--- TOC entry 4931 (class 2604 OID 17501)
+-- TOC entry 4770 (class 2604 OID 17501)
 -- Name: User userid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -707,7 +705,7 @@ ALTER TABLE ONLY public."User" ALTER COLUMN userid SET DEFAULT nextval('public."
 
 
 --
--- TOC entry 4932 (class 2604 OID 17502)
+-- TOC entry 4771 (class 2604 OID 17502)
 -- Name: Watch watchid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -715,7 +713,7 @@ ALTER TABLE ONLY public."Watch" ALTER COLUMN watchid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4937 (class 2604 OID 17503)
+-- TOC entry 4776 (class 2604 OID 17503)
 -- Name: api_pool id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -723,8 +721,8 @@ ALTER TABLE ONLY public.api_pool ALTER COLUMN id SET DEFAULT nextval('public.api
 
 
 --
--- TOC entry 5146 (class 0 OID 17392)
--- Dependencies: 219
+-- TOC entry 4983 (class 0 OID 17413)
+-- Dependencies: 217
 -- Data for Name: Alert; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -68004,12 +68002,14 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 68393	yes	200	3	300	150	Pollution	145	time_interval
 68394	no	0	0	0	0	Pollution	9999	rate_limited
 68395	yes	200	3	300	150	Pollution	145	time_interval
+68397	yes	60	3	100	50	AirPressure	666	time_interval
+68398	yes	60	3	100	50	AirPressure	666	time_interval
 \.
 
 
 --
--- TOC entry 5148 (class 0 OID 17400)
--- Dependencies: 221
+-- TOC entry 4985 (class 0 OID 17420)
+-- Dependencies: 219
 -- Data for Name: AndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -68020,8 +68020,8 @@ COPY public."AndroidPhone" (phoneid) FROM stdin;
 
 
 --
--- TOC entry 5150 (class 0 OID 17405)
--- Dependencies: 223
+-- TOC entry 4987 (class 0 OID 17424)
+-- Dependencies: 221
 -- Data for Name: DeviceSensor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -68033,12 +68033,13 @@ COPY public."DeviceSensor" (watchid, phoneid, userid, usecase_id) FROM stdin;
 666	50	102	1
 200	2	100	3
 777	50	101	7
+777	50	101	4
 \.
 
 
 --
--- TOC entry 5151 (class 0 OID 17411)
--- Dependencies: 224
+-- TOC entry 4988 (class 0 OID 17427)
+-- Dependencies: 222
 -- Data for Name: SensorData; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135323,12 +135324,14 @@ COPY public."SensorData" (id, watchid, phoneid, alertid, userid, value, "time", 
 67662	\N	\N	\N	101	68	2026-03-20 09:53:15.843938	\N
 67663	\N	\N	\N	101	70	2026-03-17 09:53:15.843938	\N
 67664	2000	2	1637	101	49	2026-05-09 19:00:00	7
+67665	777	50	68397	101	998.6	2026-05-22 20:12:10.728118	4
+67666	777	50	68398	101	998.3	2026-05-22 20:13:13.227576	4
 \.
 
 
 --
--- TOC entry 5153 (class 0 OID 17417)
--- Dependencies: 226
+-- TOC entry 4990 (class 0 OID 17432)
+-- Dependencies: 224
 -- Data for Name: UseCase; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135337,12 +135340,13 @@ COPY public."UseCase" (usecase_id, name, description) FROM stdin;
 2	MoonAzimuth	Vibrations based on moon position
 3	SunAzimuth	Vibrations based on sun position
 7	Pollution	Air quality monitoring
+4	AirPressure	\N
 \.
 
 
 --
--- TOC entry 5154 (class 0 OID 17424)
--- Dependencies: 227
+-- TOC entry 4991 (class 0 OID 17437)
+-- Dependencies: 225
 -- Data for Name: UseCaseDictionary; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135402,22 +135406,22 @@ COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_nam
 
 
 --
--- TOC entry 5157 (class 0 OID 17437)
--- Dependencies: 230
+-- TOC entry 4994 (class 0 OID 17445)
+-- Dependencies: 228
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."User" (userid, fname, lname, lastrequest, active_usecase_id) FROM stdin;
-101	\N	\N	2026-03-14 14:29:04.869063	7
 666	\N	\N	2026-01-19 17:36:19.345682	1
 102	\N	\N	2026-02-12 00:10:32.276487	1
-100	\N	\N	2026-03-27 14:07:10.1762	3
+100	\N	\N	2026-05-22 19:42:09.873443	3
+101	\N	\N	2026-05-22 20:13:13.159448	4
 \.
 
 
 --
--- TOC entry 5158 (class 0 OID 17441)
--- Dependencies: 231
+-- TOC entry 4995 (class 0 OID 17448)
+-- Dependencies: 229
 -- Data for Name: UserWatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135431,8 +135435,8 @@ COPY public."UserWatchAndroidPhone" (userid, watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5160 (class 0 OID 17448)
--- Dependencies: 233
+-- TOC entry 4997 (class 0 OID 17452)
+-- Dependencies: 231
 -- Data for Name: Watch; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135444,8 +135448,8 @@ COPY public."Watch" (watchid) FROM stdin;
 
 
 --
--- TOC entry 5161 (class 0 OID 17452)
--- Dependencies: 234
+-- TOC entry 4998 (class 0 OID 17455)
+-- Dependencies: 232
 -- Data for Name: WatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135458,50 +135462,51 @@ COPY public."WatchAndroidPhone" (watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5163 (class 0 OID 17458)
--- Dependencies: 236
+-- TOC entry 5000 (class 0 OID 17459)
+-- Dependencies: 234
 -- Data for Name: agent_session; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.agent_session (session_id, researcher_id, current_usecase_id, conversation_history, active_workflow, created_at, updated_at) FROM stdin;
-00000000-0000-0000-0000-000000000001	\N	1	[{"role": "user", "content": "What mappings are currently active?"}, {"role": "assistant", "content": "Currently, there is one active feedback mapping for the HeartRate experiment."}, {"role": "user"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Based on the provided heart rate data, I suggest three new mapping ranges to improve granularity and cover existing gaps. The existing data shows a minimum heart rate of 52 bpm, a maximum of 120 bpm, and an average of 88.4 bpm, with a substantial number of readings taken. \\n\\n### Suggested Mapping Ranges:\\n\\n1. **Range: 52-70 bpm (Low Resting Phase)**\\n   - **Why It Improves the Current Set:** This range captures the lower end of the heart rate spectrum, focused on low-intensity activity or resting states. Although the minimum recorded is 52 bpm, ensuring haptic feedback exists for this range can help users identify when they are in a deeper rest phase, possibly indicative of recovery or relaxation periods. This can be crucial for stress management, where gentle vibrations can promote mindfulness or alert users to maintain their rest.\\n\\n2. **Range: 71-85 bpm (Moderate Activity Phase)**\\n   - **Why It Improves the Current Set:** This range covers a common threshold for moderate-intensity exercise, roughly aligning with activities like brisk walking or light jogging. The heart rate is typically elevated during this phase, and providing distinct haptic feedback can help users gauge their exertion levels without continuously monitoring their devices. This helps reinforce the awareness of performance and effort during workouts, encouraging users to stay within their desired heart rate zones.\\n\\n3. **Range: 86-100 bpm (High Activity Phase)**\\n   - **Why It Improves the Current Set:** This range aligns with high-intensity activities, which can include vigorous exercise like running or fast cycling. By providing specific haptic feedback for this range, users can receive immediate awareness about their cardiovascular effort. This can help them make real-time decisions about their pacing, reducing the risk of overexertion or underperformance. Since the average heart rate is 88.4 bpm, this range also effectively captures a significant portion of typical exercise categories.\\n\\n### Conclusion:\\nImplementing these three new mapping ranges will enhance user awareness of their heart rate during various states of activity. It provides a more nuanced feedback mechanism that accommodates the physiological range observed in typical workouts and daily activities, ultimately improving user engagement and health management."}, {"role": "user", "content": "Add a mapping for values between 80 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "I need a few more details to add this mapping. Please provide: minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 158."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 161."}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Certainly! Here are three suggested haptic feedback mapping ranges for the HeartRate use case, considering the existing data:\\n\\n1. **Low Range: 50-70 BPM**\\n   - **Reasoning**: This range captures bradycardic conditions (lower than normal heart rate). Providing specific haptic feedback for this range can alert users to pay closer attention to potential underperformance or recoveries during rest or sleep phases. It ensures users are notified when in a potentially concerning low state.\\n\\n2. **Normal Range: 71-90 BPM**\\n   - **Reasoning**: This range encompasses the typical resting heart rates for adults, centered around the average of 88.40 BPM from historical data. By isolating this range, users receive reinforcement/confirmation feedback that they are within a healthy, normal resting state. This boosts user confidence in maintaining or adjusting activity levels for optimal health.\\n\\n3. **High Range: 91-120 BPM**\\n   - **Reasoning**: This captures elevated heart rates, typically occurring during physical activities or stress. By providing distinct feedback for this range, users are informed when their heart rate is above the normal resting range, which can be either appropriate during exercise or concerning if at rest or without apparent cause. It helps in distinguishing between productive activity and potential strain.\\n\\nThese mappings improve granularity by creating specific feedback tailored to different health states, rather than having a single feedback response for all conditions. This enhances user awareness and encourages better health management."}, {"role": "user", "content": "Remove mapping ID 158"}, {"role": "assistant", "content": "Mapping ID 158 has been deactivated."}, {"role": "user", "content": "Remove mapping ID 99999"}, {"role": "assistant", "content": "No active mapping found with that ID for this usecase. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Sure, here are three suggestions for new mapping ranges to improve granularity or cover gaps:\\n\\n### Suggestion 1: Low Heart Rates\\n- **Sensor Value Range**: 30-50\\n- **Min Pulses**: 2\\n- **Max Pulses**: 4\\n- **Min Intensity**: 100\\n- **Max Intensity**: 120\\n- **Min Duration**: 250\\n- **Max Duration**: 200\\n- **Min Interval**: 2500\\n- **Max Interval**: 2000\\n\\n**Why**: This mapping targets very low heart rate values, which are below the minimum historical data. It offers more granular feedback for users who might experience lower than average heart rates, perhaps during rest or sleep. Lower intensity and longer intervals help distinguish these from higher heart rates.\\n\\n### Suggestion 2: Moderate Heart Rates\\n- **Sensor Value Range**: 80-100\\n- **Min Pulses**: 8\\n- **Max Pulses**: 12\\n- **Min Intensity**: 140\\n- **Max Intensity**: 160\\n- **Min Duration**: 120\\n- **Max Duration**: 100\\n- **Min Interval**: 1200\\n- **Max Interval**: 800\\n\\n**Why**: This mapping focuses on the average heart rate readings (around 88.4), providing more detailed feedback within common activity levels. By having varied pulses and a slightly higher intensity range, it helps users notice subtle changes in a typical active state.\\n\\n### Suggestion 3: High Heart Rates\\n- **Sensor Value Range**: 110-130\\n- **Min Pulses**: 14\\n- **Max Pulses**: 18\\n- **Min Intensity**: 160\\n- **Max Intensity**: 180\\n- **Min Duration**: 90\\n- **Max Duration**: 70\\n- **Min Interval**: 700\\n- **Max Interval**: 500\\n\\n**Why**: This range is designed for higher heart rates that might occur during exercise or stress. It adds granularity where higher readings are frequent but not extreme. Increased intensity and reduced intervals provide prompt feedback for rapidly changing conditions.\\n\\nThese new ranges aim to refine user experience by offering specific feedback tuned to different physiological states, enhancing both awareness and response precision."}, {"role": "user", "content": "What is sensory substitution and how does it relate to our HeartRate experiment?"}, {"role": "assistant", "content": "Sensory substitution involves using one sensory modality to supply information typically gathered by another sense. This technique is valuable in compensating for sensory impairments or augmenting sensory experiences.\\n\\nIn the context of your HeartRate experiment, sensory substitution could be utilized to convert heart rate data into tactile feedback, providing users a way to perceive their heart rate through touch rather than visually or audibly. This can be particularly beneficial for individuals with visual or auditory impairments or in situations where visual/auditory feedback is impractical.\\n\\nKey concepts from sensory substitution literature include:\\n\\n1. **Transfer of Information**: Sensory substitution devices (SSDs) like the vOICe or the BrainPort map information from one modality (e.g., sight) to another (e.g., touch or sound). For your experiment, this could involve mapping heart rate data to haptic feedback patterns.\\n\\n2. **Neuroplasticity**: The brain's ability to reorganize itself allows it to adapt to the new sensory information provided by SSDs. Over time, users may become proficient at interpreting haptic signals as representing heart rate without active cognitive effort.\\n\\n3. **User Training and Adaptation**: Effective use of sensory substitution requires training. Users learn to interpret the new signals over time, enhancing their ability to perceive and respond to the substituted sensory information.\\n\\n4. **Considerations for Feedback Mapping**: While your experiment currently lacks active feedback mappings, potential mapping strategies include varying vibration intensity, frequency, or pattern to convey different heart rate zones (e.g., resting, active, stressed).\\n\\nImplementing sensory substitution in your HeartRate experiment would involve creating a tactile display system capable of conveying richer, intuitive feedback about heart rate, opening up new avenues for health monitoring and personal awareness."}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, particularly in applications like heart rate monitoring, the intensity and pulse values can significantly impact the effectiveness of communication. Here are some key considerations:\\n\\n1. **Intensity**: Higher intensity vibrations are generally perceived as more urgent. According to research, increasing the amplitude of vibration can effectively communicate a higher level of urgency (van Erp, 2002). In a heart rate monitoring context, an urgent situation like tachycardia could be signaled by a more intense vibration.\\n\\n2. **Pulse Duration and Pattern**: Shorter pulse durations combined with rapid repetition rates can also convey urgency effectively. For instance, a pattern with a short pulse of 100-200 ms, repeated quickly (e.g., 2-4 pulses per second), can signal the need for immediate attention (Brown, Brewster, and Purchase, 2005).\\n\\n3. **Temporal Pattern**: The pattern of the vibration can influence urgency perception. Urgent alerts are often conveyed using continuous or fast-repeated pulses, as opposed to slower, intermittent vibrations that might indicate less critical information (Enriquez, A., et al., 2001).\\n\\n4. **Frequency**: While lower frequencies (e.g., around 200 Hz) are generally more discernible, higher frequencies may be perceived as more urgent, but they can vary depending on individual sensitivity (Lemmens et al., 2009).\\n\\nFor this experiment, where there are currently no active feedback mappings, implementing these parameters could help establish an effective system for conveying urgency via haptic feedback. In essence, high-intensity, short-duration, and rapidly repeated pulses can effectively signal urgency in a heart rate monitoring use case.\\n\\n**References**:\\n- van Erp, J.B.F. (2002). \\"Guidelines for the Use of Vibro-Tactile Displays in Human Computer Interaction.\\" Proceedings of Eurohaptics.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). \\"Multidimensional Tactons for Non-Visual Information Presentation in Mobile Devices.\\" \\n- Enriquez, M., et al. (2001). \\"The Effect of Auditory and Tactile Cues on Smooth Pursuit Eye Movements.\\"\\n- Lemmens, P. M. C., et al. (2009). \\"Tactile Experiences: Towards a Structured Approach for Creating Meaningful Tactile Icons.\\""}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, several factors are important: intensity, frequency (pulses), and cadence.\\n\\n**Intensity**: Typically, higher intensity is associated with increased urgency. However, the intensity in your experiment is fixed at 150, which means adjustments for urgency will have to be made using other parameters like pulse count or interval.\\n\\n**Pulse Frequency and Duration**: Higher pulse frequency and shorter intervals between pulses generally convey a greater sense of urgency. Your experiment has a range of 2 to 20 pulses, with a correspondingly varying duration. To convey urgency effectively, you would likely operate closer to the higher end of this pulse range.\\n\\n**Interval Timing**: Shorter intervals between pulses can enhance the perception of urgency. Your mapping allows intervals as short as 250 ms, which would be more indicative of an urgent signal than longer intervals like 2000 ms.\\n\\n**Literature Insights**:\\nResearch suggests that tactile urgency is often effectively conveyed through combinations of rapid and repetitive vibrations (Smith & Scott, 2003). For instance, studies show that users perceive faster, more frequent vibrations as more urgent (Brown et al., 2005).\\n\\n**Application to Current Experiment**:\\nGiven your parameters:\\n\\n1. To convey urgency, use a higher pulse count (close to 20).\\n2. Opt for the shortest feasible interval (250 ms) between vibrations.\\n3. Keep the intensity constant at 150, as prescribed, but rely on pulse frequency and interval to signify urgency.\\n   \\nThis approach aligns with the literature's findings on how tactile stimuli can be interpreted as urgent signals. Adjusting these parameters can help create a sensation that effectively communicates high importance or immediate attention needs within the constraints provided.\\n\\n**References**:\\n- Smith, A.D., & Scott, J.J. (2003). Tactile Feedback for the Control of Force in the Manipulation of an Elastic Object. Presence: Teleoperators and Virtual Environments.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). A first investigation into the effectiveness of tactons. In Proceedings of the First Joint Eurohaptics Conference and Symposium on Haptic Interfaces for Virtual Environment and Teleoperator Systems."}]	\N	2026-03-15 19:26:34.261881+02	2026-03-17 20:39:10.437256+02
-e33cdff7-90f3-4d18-ad75-aa13fec7e851	\N	1	[{"role": "user", "content": "what can you do?"}, {"role": "assistant", "content": "Could you provide more details about what you want to do? Are you interested in mapping, knowledge, API fetching, or personalization?"}, {"role": "user", "content": "personalization"}, {"role": "assistant", "content": "Let's create automation rules for a specific participant. Please provide the user ID or any specific details."}]	\N	2026-03-19 19:29:53.305903+02	2026-03-19 19:30:20.62988+02
-63b7e984-896e-49b7-bf25-feca0061dbc9	\N	1	[]	\N	2026-04-11 19:40:18.776253+03	2026-04-11 19:41:03.317714+03
-f53accc9-16b7-4bd3-9dde-4078f5360671	\N	1	[]	\N	2026-04-11 19:43:18.874314+03	2026-04-11 19:43:18.874314+03
-c5c7486a-4e16-458d-8d97-812abb3c444a	\N	1	[{"role": "user", "content": "Show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-12 15:49:26.589644+03	2026-04-12 15:51:08.569967+03
-7c773962-ac46-404e-b1dc-ba51842979a6	\N	1	[{"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 20:04:06.041716+03	2026-04-11 20:04:48.89278+03
-f846658a-a73d-4b54-b79e-4be8b97c7b7e	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}]	\N	2026-04-11 19:45:23.566522+03	2026-04-11 19:47:28.393608+03
-c959c049-6672-41da-ba92-6895be5db31e	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}, {"role": "user", "content": "deactivate the schedule with ID 3"}, {"role": "assistant", "content": "🚫 Schedule undefined deactivated."}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 20:12:07.185362+03	2026-04-11 20:13:00.732218+03
-231e68b4-ca69-46e0-8c0c-ac20cb4f2f27	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 3 days (Type: median) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "change the schedule with ID 1 to every 5 days"}, {"role": "assistant", "content": "✅ Updated schedule undefined. New interval: undefined days, new measure: undefined."}, {"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:49:58.644867+03	2026-04-11 19:53:21.475605+03
-4825c7c0-8a5a-463d-ba11-599a5cf4fed1	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "add a new schedule for user 101: 50% over the heartrate mode, the check should be every week"}, {"role": "assistant", "content": "✨ New schedule created with ID undefined for user undefined."}, {"role": "user", "content": "now show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}]	\N	2026-04-11 20:06:17.86085+03	2026-04-11 20:10:41.041924+03
-118b5b82-728e-4f5a-84f2-e5844427fa77	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:55:42.197068+03	2026-04-11 19:56:21.58838+03
-2dd204bc-29ff-4835-a4e2-900863d8ca02	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "create a new one for user 102: check every 8 days, 75% over the average"}, {"role": "assistant", "content": "✨ New schedule created with ID 5 for user 102."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to a median check instead"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: average."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}]	\N	2026-04-12 15:52:23.986523+03	2026-04-12 15:56:05.119974+03
-6a05d4fa-f0f6-47a8-b52b-478eacd2da76	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to be a median"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: median) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "deactivate schedule with ID 5"}, {"role": "assistant", "content": "🚫 Schedule 5 deactivated."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "set trigger percentage for schedule ID 1 to be 33%"}, {"role": "assistant", "content": "✅ Updated schedule 1. New interval: 5 days, new measure: average, new trigger percentage: 0.33."}]	\N	2026-04-12 16:01:25.721421+03	2026-04-12 16:02:55.289458+03
-5f1fc5ea-474f-4816-b7fb-a60d8298e8c7	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}]	\N	2026-04-12 16:09:12.860061+03	2026-04-12 16:09:14.223674+03
-a00d25fe-abb7-4e2a-9f7b-455088fc4a60	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: true\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 16:40:13.439015+03	2026-04-12 16:40:31.456021+03
-13059441-a609-42bb-b199-2ea43019cb15	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 16:42:37.49697+03	2026-04-12 16:42:46.472432+03
-30685d9c-7ea0-4d89-ba99-7cbee95fd65f	\N	1	[{"role": "user", "content": "list the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 16:46:49.422969+03	2026-04-12 16:46:59.804491+03
-8e91f17c-9377-4154-8351-cb739b9f7b91	\N	1	[]	\N	2026-04-12 16:48:36.085544+03	2026-04-12 16:48:36.085544+03
-6f1271ba-6472-421c-8248-f53b42774b92	\N	1	[{"role": "user", "content": "show schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)"}, {"role": "user", "content": "activate schedule with ID 5"}, {"role": "assistant", "content": "✅ Schedule 5 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 16:51:47.843896+03	2026-04-12 16:53:05.440774+03
-b626ae9b-4d85-4527-98fd-5bc92b7ac66c	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}, {"role": "user", "content": "show the active ones"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. User: undefined ,interval: 8 days, measure: median, trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 17:03:49.403697+03	2026-04-12 17:05:34.041344+03
-baddbef4-a5d5-4a2e-91ad-daafeb56a5dd	\N	1	[]	\N	2026-04-13 18:28:52.815406+03	2026-04-13 18:28:52.815406+03
-a3735a6d-c8b2-4876-8338-05d9c60bbcff	\N	1	[]	\N	2026-04-13 18:29:57.806807+03	2026-04-13 18:29:57.806807+03
-1efa15c9-f518-462d-9746-ece88ecd46f5	\N	1	[]	\N	2026-04-13 18:36:37.748813+03	2026-04-13 18:36:37.748813+03
-b6455ae0-c178-4250-a562-25e706209a3d	\N	1	[]	\N	2026-04-13 18:37:39.893296+03	2026-04-13 18:37:39.893296+03
-c8a73d08-941d-4159-831b-3b2601412cf3	\N	1	[]	\N	2026-04-13 19:22:45.682929+03	2026-04-13 19:22:45.682929+03
-b7154b3a-51c1-4146-90a9-3f4c5a7a0d40	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again adding that feeling use case into the dictionary"}, {"role": "assistant", "content": "✅ Successfully added parameter **...** to the **...** use case (ID: 1)."}]	\N	2026-04-13 19:43:25.981139+03	2026-04-13 19:49:33.975133+03
-78b9035f-4d4f-4092-a1d5-0c2b28a63dde	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **undefined**\\n   • undefined (undefined)"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 19:24:01.178796+03	2026-04-13 19:31:01.673425+03
-069da3b8-3ab7-4144-9486-b8b42da5a93a	\N	1	[{"role": "user", "content": "add a new item to the usecase dictionary: use case feeling, parameter name Neurolink, format URL, required"}, {"role": "assistant", "content": "✅ Successfully added parameter **Neurolink** to the **feeling** use case (ID: 2)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "add a new parameter to the feeling use case, name brain size, format integer, not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **brain size** to the **feeling** use case (ID: 3)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • brain size (integer)\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   3 brain size (integer)\\n   2 Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID3 brain size (integer)\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "delete the brain size use case parameter (ID 3)"}, {"role": "assistant", "content": "🗑️ Parameter ID **3** has been deleted from the dictionary."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "set the use case parameter with the ID 2, the format is an API key"}, {"role": "assistant", "content": "🔧 Updated **feeling**. The parameter is now defined as **Neurolink** (API key)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (API key) [Required]"}, {"role": "user", "content": "delete the Feeling use case from the dictionary"}, {"role": "assistant", "content": "🗑️ All parameters for the use case **feeling** have been removed."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 19:54:42.900628+03	2026-04-13 20:10:31.311819+03
-1b2a570a-e182-40b4-bd40-ac39b02af5e5	\N	7	[]	\N	2026-05-09 21:01:34.185001+03	2026-05-09 21:01:34.185001+03
-2befc798-4749-4476-a9a9-2b943843cf7b	\N	7	[{"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: true"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}]	\N	2026-05-09 21:10:05.366753+03	2026-05-09 21:10:38.768479+03
-fbef59fc-91bc-4c9e-ba45-3d3f141a31c2	\N	7	[{"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-05-09 21:04:18.157191+03	2026-05-09 21:05:46.938312+03
-f419497b-b204-4293-bd1b-d4a1e98940f5	\N	7	[{"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "deactivate schedule number 6"}, {"role": "assistant", "content": "🚫 Schedule 6 deactivated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "No active schedules found for HeartRate."}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}, {"role": "user", "content": "activate schedule id 3"}, {"role": "assistant", "content": "✅ Schedule 3 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (3):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}]	\N	2026-05-09 21:16:28.308814+03	2026-05-09 21:25:16.856823+03
+00000000-0000-0000-0000-000000000001	\N	1	[{"role": "user", "content": "What mappings are currently active?"}, {"role": "assistant", "content": "Currently, there is one active feedback mapping for the HeartRate experiment."}, {"role": "user"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Based on the provided heart rate data, I suggest three new mapping ranges to improve granularity and cover existing gaps. The existing data shows a minimum heart rate of 52 bpm, a maximum of 120 bpm, and an average of 88.4 bpm, with a substantial number of readings taken. \\n\\n### Suggested Mapping Ranges:\\n\\n1. **Range: 52-70 bpm (Low Resting Phase)**\\n   - **Why It Improves the Current Set:** This range captures the lower end of the heart rate spectrum, focused on low-intensity activity or resting states. Although the minimum recorded is 52 bpm, ensuring haptic feedback exists for this range can help users identify when they are in a deeper rest phase, possibly indicative of recovery or relaxation periods. This can be crucial for stress management, where gentle vibrations can promote mindfulness or alert users to maintain their rest.\\n\\n2. **Range: 71-85 bpm (Moderate Activity Phase)**\\n   - **Why It Improves the Current Set:** This range covers a common threshold for moderate-intensity exercise, roughly aligning with activities like brisk walking or light jogging. The heart rate is typically elevated during this phase, and providing distinct haptic feedback can help users gauge their exertion levels without continuously monitoring their devices. This helps reinforce the awareness of performance and effort during workouts, encouraging users to stay within their desired heart rate zones.\\n\\n3. **Range: 86-100 bpm (High Activity Phase)**\\n   - **Why It Improves the Current Set:** This range aligns with high-intensity activities, which can include vigorous exercise like running or fast cycling. By providing specific haptic feedback for this range, users can receive immediate awareness about their cardiovascular effort. This can help them make real-time decisions about their pacing, reducing the risk of overexertion or underperformance. Since the average heart rate is 88.4 bpm, this range also effectively captures a significant portion of typical exercise categories.\\n\\n### Conclusion:\\nImplementing these three new mapping ranges will enhance user awareness of their heart rate during various states of activity. It provides a more nuanced feedback mechanism that accommodates the physiological range observed in typical workouts and daily activities, ultimately improving user engagement and health management."}, {"role": "user", "content": "Add a mapping for values between 80 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "I need a few more details to add this mapping. Please provide: minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 158."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 161."}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Certainly! Here are three suggested haptic feedback mapping ranges for the HeartRate use case, considering the existing data:\\n\\n1. **Low Range: 50-70 BPM**\\n   - **Reasoning**: This range captures bradycardic conditions (lower than normal heart rate). Providing specific haptic feedback for this range can alert users to pay closer attention to potential underperformance or recoveries during rest or sleep phases. It ensures users are notified when in a potentially concerning low state.\\n\\n2. **Normal Range: 71-90 BPM**\\n   - **Reasoning**: This range encompasses the typical resting heart rates for adults, centered around the average of 88.40 BPM from historical data. By isolating this range, users receive reinforcement/confirmation feedback that they are within a healthy, normal resting state. This boosts user confidence in maintaining or adjusting activity levels for optimal health.\\n\\n3. **High Range: 91-120 BPM**\\n   - **Reasoning**: This captures elevated heart rates, typically occurring during physical activities or stress. By providing distinct feedback for this range, users are informed when their heart rate is above the normal resting range, which can be either appropriate during exercise or concerning if at rest or without apparent cause. It helps in distinguishing between productive activity and potential strain.\\n\\nThese mappings improve granularity by creating specific feedback tailored to different health states, rather than having a single feedback response for all conditions. This enhances user awareness and encourages better health management."}, {"role": "user", "content": "Remove mapping ID 158"}, {"role": "assistant", "content": "Mapping ID 158 has been deactivated."}, {"role": "user", "content": "Remove mapping ID 99999"}, {"role": "assistant", "content": "No active mapping found with that ID for this usecase. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Sure, here are three suggestions for new mapping ranges to improve granularity or cover gaps:\\n\\n### Suggestion 1: Low Heart Rates\\n- **Sensor Value Range**: 30-50\\n- **Min Pulses**: 2\\n- **Max Pulses**: 4\\n- **Min Intensity**: 100\\n- **Max Intensity**: 120\\n- **Min Duration**: 250\\n- **Max Duration**: 200\\n- **Min Interval**: 2500\\n- **Max Interval**: 2000\\n\\n**Why**: This mapping targets very low heart rate values, which are below the minimum historical data. It offers more granular feedback for users who might experience lower than average heart rates, perhaps during rest or sleep. Lower intensity and longer intervals help distinguish these from higher heart rates.\\n\\n### Suggestion 2: Moderate Heart Rates\\n- **Sensor Value Range**: 80-100\\n- **Min Pulses**: 8\\n- **Max Pulses**: 12\\n- **Min Intensity**: 140\\n- **Max Intensity**: 160\\n- **Min Duration**: 120\\n- **Max Duration**: 100\\n- **Min Interval**: 1200\\n- **Max Interval**: 800\\n\\n**Why**: This mapping focuses on the average heart rate readings (around 88.4), providing more detailed feedback within common activity levels. By having varied pulses and a slightly higher intensity range, it helps users notice subtle changes in a typical active state.\\n\\n### Suggestion 3: High Heart Rates\\n- **Sensor Value Range**: 110-130\\n- **Min Pulses**: 14\\n- **Max Pulses**: 18\\n- **Min Intensity**: 160\\n- **Max Intensity**: 180\\n- **Min Duration**: 90\\n- **Max Duration**: 70\\n- **Min Interval**: 700\\n- **Max Interval**: 500\\n\\n**Why**: This range is designed for higher heart rates that might occur during exercise or stress. It adds granularity where higher readings are frequent but not extreme. Increased intensity and reduced intervals provide prompt feedback for rapidly changing conditions.\\n\\nThese new ranges aim to refine user experience by offering specific feedback tuned to different physiological states, enhancing both awareness and response precision."}, {"role": "user", "content": "What is sensory substitution and how does it relate to our HeartRate experiment?"}, {"role": "assistant", "content": "Sensory substitution involves using one sensory modality to supply information typically gathered by another sense. This technique is valuable in compensating for sensory impairments or augmenting sensory experiences.\\n\\nIn the context of your HeartRate experiment, sensory substitution could be utilized to convert heart rate data into tactile feedback, providing users a way to perceive their heart rate through touch rather than visually or audibly. This can be particularly beneficial for individuals with visual or auditory impairments or in situations where visual/auditory feedback is impractical.\\n\\nKey concepts from sensory substitution literature include:\\n\\n1. **Transfer of Information**: Sensory substitution devices (SSDs) like the vOICe or the BrainPort map information from one modality (e.g., sight) to another (e.g., touch or sound). For your experiment, this could involve mapping heart rate data to haptic feedback patterns.\\n\\n2. **Neuroplasticity**: The brain's ability to reorganize itself allows it to adapt to the new sensory information provided by SSDs. Over time, users may become proficient at interpreting haptic signals as representing heart rate without active cognitive effort.\\n\\n3. **User Training and Adaptation**: Effective use of sensory substitution requires training. Users learn to interpret the new signals over time, enhancing their ability to perceive and respond to the substituted sensory information.\\n\\n4. **Considerations for Feedback Mapping**: While your experiment currently lacks active feedback mappings, potential mapping strategies include varying vibration intensity, frequency, or pattern to convey different heart rate zones (e.g., resting, active, stressed).\\n\\nImplementing sensory substitution in your HeartRate experiment would involve creating a tactile display system capable of conveying richer, intuitive feedback about heart rate, opening up new avenues for health monitoring and personal awareness."}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, particularly in applications like heart rate monitoring, the intensity and pulse values can significantly impact the effectiveness of communication. Here are some key considerations:\\n\\n1. **Intensity**: Higher intensity vibrations are generally perceived as more urgent. According to research, increasing the amplitude of vibration can effectively communicate a higher level of urgency (van Erp, 2002). In a heart rate monitoring context, an urgent situation like tachycardia could be signaled by a more intense vibration.\\n\\n2. **Pulse Duration and Pattern**: Shorter pulse durations combined with rapid repetition rates can also convey urgency effectively. For instance, a pattern with a short pulse of 100-200 ms, repeated quickly (e.g., 2-4 pulses per second), can signal the need for immediate attention (Brown, Brewster, and Purchase, 2005).\\n\\n3. **Temporal Pattern**: The pattern of the vibration can influence urgency perception. Urgent alerts are often conveyed using continuous or fast-repeated pulses, as opposed to slower, intermittent vibrations that might indicate less critical information (Enriquez, A., et al., 2001).\\n\\n4. **Frequency**: While lower frequencies (e.g., around 200 Hz) are generally more discernible, higher frequencies may be perceived as more urgent, but they can vary depending on individual sensitivity (Lemmens et al., 2009).\\n\\nFor this experiment, where there are currently no active feedback mappings, implementing these parameters could help establish an effective system for conveying urgency via haptic feedback. In essence, high-intensity, short-duration, and rapidly repeated pulses can effectively signal urgency in a heart rate monitoring use case.\\n\\n**References**:\\n- van Erp, J.B.F. (2002). \\"Guidelines for the Use of Vibro-Tactile Displays in Human Computer Interaction.\\" Proceedings of Eurohaptics.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). \\"Multidimensional Tactons for Non-Visual Information Presentation in Mobile Devices.\\" \\n- Enriquez, M., et al. (2001). \\"The Effect of Auditory and Tactile Cues on Smooth Pursuit Eye Movements.\\"\\n- Lemmens, P. M. C., et al. (2009). \\"Tactile Experiences: Towards a Structured Approach for Creating Meaningful Tactile Icons.\\""}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, several factors are important: intensity, frequency (pulses), and cadence.\\n\\n**Intensity**: Typically, higher intensity is associated with increased urgency. However, the intensity in your experiment is fixed at 150, which means adjustments for urgency will have to be made using other parameters like pulse count or interval.\\n\\n**Pulse Frequency and Duration**: Higher pulse frequency and shorter intervals between pulses generally convey a greater sense of urgency. Your experiment has a range of 2 to 20 pulses, with a correspondingly varying duration. To convey urgency effectively, you would likely operate closer to the higher end of this pulse range.\\n\\n**Interval Timing**: Shorter intervals between pulses can enhance the perception of urgency. Your mapping allows intervals as short as 250 ms, which would be more indicative of an urgent signal than longer intervals like 2000 ms.\\n\\n**Literature Insights**:\\nResearch suggests that tactile urgency is often effectively conveyed through combinations of rapid and repetitive vibrations (Smith & Scott, 2003). For instance, studies show that users perceive faster, more frequent vibrations as more urgent (Brown et al., 2005).\\n\\n**Application to Current Experiment**:\\nGiven your parameters:\\n\\n1. To convey urgency, use a higher pulse count (close to 20).\\n2. Opt for the shortest feasible interval (250 ms) between vibrations.\\n3. Keep the intensity constant at 150, as prescribed, but rely on pulse frequency and interval to signify urgency.\\n   \\nThis approach aligns with the literature's findings on how tactile stimuli can be interpreted as urgent signals. Adjusting these parameters can help create a sensation that effectively communicates high importance or immediate attention needs within the constraints provided.\\n\\n**References**:\\n- Smith, A.D., & Scott, J.J. (2003). Tactile Feedback for the Control of Force in the Manipulation of an Elastic Object. Presence: Teleoperators and Virtual Environments.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). A first investigation into the effectiveness of tactons. In Proceedings of the First Joint Eurohaptics Conference and Symposium on Haptic Interfaces for Virtual Environment and Teleoperator Systems."}]	\N	2026-03-15 18:26:34.261881+01	2026-03-17 19:39:10.437256+01
+e33cdff7-90f3-4d18-ad75-aa13fec7e851	\N	1	[{"role": "user", "content": "what can you do?"}, {"role": "assistant", "content": "Could you provide more details about what you want to do? Are you interested in mapping, knowledge, API fetching, or personalization?"}, {"role": "user", "content": "personalization"}, {"role": "assistant", "content": "Let's create automation rules for a specific participant. Please provide the user ID or any specific details."}]	\N	2026-03-19 18:29:53.305903+01	2026-03-19 18:30:20.62988+01
+63b7e984-896e-49b7-bf25-feca0061dbc9	\N	1	[]	\N	2026-04-11 18:40:18.776253+02	2026-04-11 18:41:03.317714+02
+f53accc9-16b7-4bd3-9dde-4078f5360671	\N	1	[]	\N	2026-04-11 18:43:18.874314+02	2026-04-11 18:43:18.874314+02
+c5c7486a-4e16-458d-8d97-812abb3c444a	\N	1	[{"role": "user", "content": "Show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-12 14:49:26.589644+02	2026-04-12 14:51:08.569967+02
+7c773962-ac46-404e-b1dc-ba51842979a6	\N	1	[{"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:04:06.041716+02	2026-04-11 19:04:48.89278+02
+f846658a-a73d-4b54-b79e-4be8b97c7b7e	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}]	\N	2026-04-11 18:45:23.566522+02	2026-04-11 18:47:28.393608+02
+c959c049-6672-41da-ba92-6895be5db31e	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}, {"role": "user", "content": "deactivate the schedule with ID 3"}, {"role": "assistant", "content": "🚫 Schedule undefined deactivated."}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:12:07.185362+02	2026-04-11 19:13:00.732218+02
+231e68b4-ca69-46e0-8c0c-ac20cb4f2f27	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 3 days (Type: median) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "change the schedule with ID 1 to every 5 days"}, {"role": "assistant", "content": "✅ Updated schedule undefined. New interval: undefined days, new measure: undefined."}, {"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 18:49:58.644867+02	2026-04-11 18:53:21.475605+02
+4825c7c0-8a5a-463d-ba11-599a5cf4fed1	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "add a new schedule for user 101: 50% over the heartrate mode, the check should be every week"}, {"role": "assistant", "content": "✨ New schedule created with ID undefined for user undefined."}, {"role": "user", "content": "now show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}]	\N	2026-04-11 19:06:17.86085+02	2026-04-11 19:10:41.041924+02
+118b5b82-728e-4f5a-84f2-e5844427fa77	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 18:55:42.197068+02	2026-04-11 18:56:21.58838+02
+2dd204bc-29ff-4835-a4e2-900863d8ca02	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "create a new one for user 102: check every 8 days, 75% over the average"}, {"role": "assistant", "content": "✨ New schedule created with ID 5 for user 102."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to a median check instead"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: average."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}]	\N	2026-04-12 14:52:23.986523+02	2026-04-12 14:56:05.119974+02
+6a05d4fa-f0f6-47a8-b52b-478eacd2da76	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to be a median"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: median) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "deactivate schedule with ID 5"}, {"role": "assistant", "content": "🚫 Schedule 5 deactivated."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "set trigger percentage for schedule ID 1 to be 33%"}, {"role": "assistant", "content": "✅ Updated schedule 1. New interval: 5 days, new measure: average, new trigger percentage: 0.33."}]	\N	2026-04-12 15:01:25.721421+02	2026-04-12 15:02:55.289458+02
+5f1fc5ea-474f-4816-b7fb-a60d8298e8c7	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}]	\N	2026-04-12 15:09:12.860061+02	2026-04-12 15:09:14.223674+02
+a00d25fe-abb7-4e2a-9f7b-455088fc4a60	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: true\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 15:40:13.439015+02	2026-04-12 15:40:31.456021+02
+13059441-a609-42bb-b199-2ea43019cb15	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 15:42:37.49697+02	2026-04-12 15:42:46.472432+02
+30685d9c-7ea0-4d89-ba99-7cbee95fd65f	\N	1	[{"role": "user", "content": "list the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 15:46:49.422969+02	2026-04-12 15:46:59.804491+02
+8e91f17c-9377-4154-8351-cb739b9f7b91	\N	1	[]	\N	2026-04-12 15:48:36.085544+02	2026-04-12 15:48:36.085544+02
+6f1271ba-6472-421c-8248-f53b42774b92	\N	1	[{"role": "user", "content": "show schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)"}, {"role": "user", "content": "activate schedule with ID 5"}, {"role": "assistant", "content": "✅ Schedule 5 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 15:51:47.843896+02	2026-04-12 15:53:05.440774+02
+b626ae9b-4d85-4527-98fd-5bc92b7ac66c	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}, {"role": "user", "content": "show the active ones"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. User: undefined ,interval: 8 days, measure: median, trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 16:03:49.403697+02	2026-04-12 16:05:34.041344+02
+baddbef4-a5d5-4a2e-91ad-daafeb56a5dd	\N	1	[]	\N	2026-04-13 17:28:52.815406+02	2026-04-13 17:28:52.815406+02
+a3735a6d-c8b2-4876-8338-05d9c60bbcff	\N	1	[]	\N	2026-04-13 17:29:57.806807+02	2026-04-13 17:29:57.806807+02
+1efa15c9-f518-462d-9746-ece88ecd46f5	\N	1	[]	\N	2026-04-13 17:36:37.748813+02	2026-04-13 17:36:37.748813+02
+b6455ae0-c178-4250-a562-25e706209a3d	\N	1	[]	\N	2026-04-13 17:37:39.893296+02	2026-04-13 17:37:39.893296+02
+c8a73d08-941d-4159-831b-3b2601412cf3	\N	1	[]	\N	2026-04-13 18:22:45.682929+02	2026-04-13 18:22:45.682929+02
+b7154b3a-51c1-4146-90a9-3f4c5a7a0d40	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again adding that feeling use case into the dictionary"}, {"role": "assistant", "content": "✅ Successfully added parameter **...** to the **...** use case (ID: 1)."}]	\N	2026-04-13 18:43:25.981139+02	2026-04-13 18:49:33.975133+02
+78b9035f-4d4f-4092-a1d5-0c2b28a63dde	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **undefined**\\n   • undefined (undefined)"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 18:24:01.178796+02	2026-04-13 18:31:01.673425+02
+069da3b8-3ab7-4144-9486-b8b42da5a93a	\N	1	[{"role": "user", "content": "add a new item to the usecase dictionary: use case feeling, parameter name Neurolink, format URL, required"}, {"role": "assistant", "content": "✅ Successfully added parameter **Neurolink** to the **feeling** use case (ID: 2)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "add a new parameter to the feeling use case, name brain size, format integer, not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **brain size** to the **feeling** use case (ID: 3)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • brain size (integer)\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   3 brain size (integer)\\n   2 Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID3 brain size (integer)\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "delete the brain size use case parameter (ID 3)"}, {"role": "assistant", "content": "🗑️ Parameter ID **3** has been deleted from the dictionary."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "set the use case parameter with the ID 2, the format is an API key"}, {"role": "assistant", "content": "🔧 Updated **feeling**. The parameter is now defined as **Neurolink** (API key)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (API key) [Required]"}, {"role": "user", "content": "delete the Feeling use case from the dictionary"}, {"role": "assistant", "content": "🗑️ All parameters for the use case **feeling** have been removed."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 18:54:42.900628+02	2026-04-13 19:10:31.311819+02
+1b2a570a-e182-40b4-bd40-ac39b02af5e5	\N	7	[]	\N	2026-05-09 20:01:34.185001+02	2026-05-09 20:01:34.185001+02
+2befc798-4749-4476-a9a9-2b943843cf7b	\N	7	[{"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: true"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}]	\N	2026-05-09 20:10:05.366753+02	2026-05-09 20:10:38.768479+02
+fbef59fc-91bc-4c9e-ba45-3d3f141a31c2	\N	7	[{"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-05-09 20:04:18.157191+02	2026-05-09 20:05:46.938312+02
+f419497b-b204-4293-bd1b-d4a1e98940f5	\N	7	[{"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "deactivate schedule number 6"}, {"role": "assistant", "content": "🚫 Schedule 6 deactivated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "No active schedules found for HeartRate."}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}, {"role": "user", "content": "activate schedule id 3"}, {"role": "assistant", "content": "✅ Schedule 3 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (3):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}]	\N	2026-05-09 20:16:28.308814+02	2026-05-09 20:25:16.856823+02
+a7fc0956-d06a-4435-95b3-4d46a54ce3cb	\N	1	[{"role": "user", "content": "which APIs are currently stored in the dictionary?"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   ID51 apiKey (string) [Required]\\n   ID50 date (date)\\n   ID48 lat (float) [Required]\\n   ID49 long (float) [Required]\\n   ID47 url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   ID46 apiKey (string) [Required]\\n   ID45 date (date)\\n   ID43 lat (float) [Required]\\n   ID44 long (float) [Required]\\n   ID42 url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   ID25 locations (json) [Required]\\n   ID24 url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   ID12 current (string) [Required]\\n   ID13 latitude (float) [Required]\\n   ID14 longitude (float) [Required]\\n   ID11 url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   ID16 current (string) [Required]\\n   ID17 latitude (float) [Required]\\n   ID18 longitude (float) [Required]\\n   ID15 url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   ID27 current (string) [Required]\\n   ID28 latitude (float) [Required]\\n   ID29 longitude (float) [Required]\\n   ID26 url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   ID35 current (string) [Required]\\n   ID36 latitude (float) [Required]\\n   ID37 longitude (float) [Required]\\n   ID34 url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   ID31 current (string) [Required]\\n   ID32 latitude (float) [Required]\\n   ID33 longitude (float) [Required]\\n   ID30 url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   ID8 current (string) [Required]\\n   ID9 latitude (float) [Required]\\n   ID10 longitude (float) [Required]\\n   ID7 url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   ID39 current (string) [Required]\\n   ID40 latitude (float) [Required]\\n   ID41 longitude (float) [Required]\\n   ID38 url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   ID22 date (string)\\n   ID23 formatted (integer) [Required]\\n   ID20 latitude (float) [Required]\\n   ID21 longitude (float) [Required]\\n   ID19 url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   ID53 lat (float) [Required]\\n   ID54 lon (float) [Required]\\n   ID55 token (string) [Required]\\n   ID52 url (string) [Required]\\n\\n📂 **WorldTime API**\\n   ID5 timezone (string) [Required]\\n   ID4 url (string) [Required]"}]	\N	2026-05-22 18:46:35.755704+02	2026-05-22 18:46:56.9939+02
 \.
 
 
 --
--- TOC entry 5164 (class 0 OID 17471)
--- Dependencies: 237
+-- TOC entry 5001 (class 0 OID 17468)
+-- Dependencies: 235
 -- Data for Name: api_pool; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135523,8 +135528,8 @@ COPY public.api_pool (id, name, category, description, endpoint_url, method, aut
 
 
 --
--- TOC entry 5167 (class 0 OID 17486)
--- Dependencies: 240
+-- TOC entry 5004 (class 0 OID 17477)
+-- Dependencies: 238
 -- Data for Name: feedback_config_rules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135586,12 +135591,13 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 153	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 154	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 165	49	69	Pollution	f	5	8	200	255	400	600	50	100	\N
+666	900	1200	AirPressure	t	3	5	60	250	100	200	50	150	\N
 \.
 
 
 --
--- TOC entry 5169 (class 0 OID 17629)
--- Dependencies: 243
+-- TOC entry 5005 (class 0 OID 17481)
+-- Dependencies: 239
 -- Data for Name: user_schedules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135604,17 +135610,17 @@ COPY public.user_schedules (schedule_id, user_id, interval_days, next_run_date, 
 
 
 --
--- TOC entry 5184 (class 0 OID 0)
--- Dependencies: 220
+-- TOC entry 5021 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: Alert_alertid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Alert_alertid_seq"', 68395, true);
+SELECT pg_catalog.setval('public."Alert_alertid_seq"', 68398, true);
 
 
 --
--- TOC entry 5185 (class 0 OID 0)
--- Dependencies: 222
+-- TOC entry 5022 (class 0 OID 0)
+-- Dependencies: 220
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135622,17 +135628,17 @@ SELECT pg_catalog.setval('public."AndroidPhone_phoneid_seq"', 1, false);
 
 
 --
--- TOC entry 5186 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 5023 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: SensorData_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."SensorData_id_seq"', 67663, true);
+SELECT pg_catalog.setval('public."SensorData_id_seq"', 67666, true);
 
 
 --
--- TOC entry 5187 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 5024 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135640,8 +135646,8 @@ SELECT pg_catalog.setval('public."UseCaseDictionary_id_seq"', 55, true);
 
 
 --
--- TOC entry 5188 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 5025 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135649,8 +135655,8 @@ SELECT pg_catalog.setval('public."UseCase_usecase_id_seq"', 11, true);
 
 
 --
--- TOC entry 5189 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 5026 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: User_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135658,8 +135664,8 @@ SELECT pg_catalog.setval('public."User_userid_seq"', 1, false);
 
 
 --
--- TOC entry 5190 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 5027 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: Watch_watchid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135667,8 +135673,8 @@ SELECT pg_catalog.setval('public."Watch_watchid_seq"', 1, false);
 
 
 --
--- TOC entry 5191 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 5028 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: api_pool_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135676,8 +135682,8 @@ SELECT pg_catalog.setval('public.api_pool_id_seq', 13, true);
 
 
 --
--- TOC entry 5192 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 5029 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135685,8 +135691,8 @@ SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 165, true);
 
 
 --
--- TOC entry 5193 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 5030 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135694,7 +135700,7 @@ SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 6, true);
 
 
 --
--- TOC entry 4949 (class 2606 OID 17506)
+-- TOC entry 4788 (class 2606 OID 17506)
 -- Name: Alert Alert_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135703,7 +135709,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4951 (class 2606 OID 17508)
+-- TOC entry 4790 (class 2606 OID 17508)
 -- Name: AndroidPhone AndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135712,7 +135718,7 @@ ALTER TABLE ONLY public."AndroidPhone"
 
 
 --
--- TOC entry 4953 (class 2606 OID 17510)
+-- TOC entry 4792 (class 2606 OID 17510)
 -- Name: SensorData SensorData_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135721,7 +135727,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4959 (class 2606 OID 17512)
+-- TOC entry 4798 (class 2606 OID 17512)
 -- Name: UseCaseDictionary UseCaseDictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135730,7 +135736,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4955 (class 2606 OID 17514)
+-- TOC entry 4794 (class 2606 OID 17514)
 -- Name: UseCase UseCase_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135739,7 +135745,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4957 (class 2606 OID 17516)
+-- TOC entry 4796 (class 2606 OID 17516)
 -- Name: UseCase UseCase_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135748,7 +135754,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4965 (class 2606 OID 17518)
+-- TOC entry 4804 (class 2606 OID 17518)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135757,7 +135763,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4963 (class 2606 OID 17520)
+-- TOC entry 4802 (class 2606 OID 17520)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135766,7 +135772,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4969 (class 2606 OID 17522)
+-- TOC entry 4808 (class 2606 OID 17522)
 -- Name: WatchAndroidPhone WatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135775,7 +135781,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4967 (class 2606 OID 17524)
+-- TOC entry 4806 (class 2606 OID 17524)
 -- Name: Watch Watch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135784,7 +135790,7 @@ ALTER TABLE ONLY public."Watch"
 
 
 --
--- TOC entry 4971 (class 2606 OID 17526)
+-- TOC entry 4810 (class 2606 OID 17526)
 -- Name: agent_session agent_session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135793,7 +135799,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4975 (class 2606 OID 17528)
+-- TOC entry 4814 (class 2606 OID 17528)
 -- Name: api_pool api_pool_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135802,7 +135808,7 @@ ALTER TABLE ONLY public.api_pool
 
 
 --
--- TOC entry 4977 (class 2606 OID 17530)
+-- TOC entry 4816 (class 2606 OID 17530)
 -- Name: feedback_config_rules feedback_config_mapped_minpulses_maxpulses_minintensity_max_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135811,7 +135817,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4979 (class 2606 OID 17532)
+-- TOC entry 4818 (class 2606 OID 17532)
 -- Name: feedback_config_rules feedback_config_mapped_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135820,7 +135826,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4961 (class 2606 OID 17534)
+-- TOC entry 4800 (class 2606 OID 17534)
 -- Name: UseCaseDictionary unique_usecase_param; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135829,7 +135835,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4983 (class 2606 OID 17642)
+-- TOC entry 4822 (class 2606 OID 17536)
 -- Name: user_schedules user_schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135838,7 +135844,7 @@ ALTER TABLE ONLY public.user_schedules
 
 
 --
--- TOC entry 4972 (class 1259 OID 17535)
+-- TOC entry 4811 (class 1259 OID 17537)
 -- Name: idx_agent_session_researcher; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135846,7 +135852,7 @@ CREATE INDEX idx_agent_session_researcher ON public.agent_session USING btree (r
 
 
 --
--- TOC entry 4973 (class 1259 OID 17536)
+-- TOC entry 4812 (class 1259 OID 17538)
 -- Name: idx_agent_session_usecase; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135854,7 +135860,7 @@ CREATE INDEX idx_agent_session_usecase ON public.agent_session USING btree (curr
 
 
 --
--- TOC entry 4980 (class 1259 OID 17537)
+-- TOC entry 4819 (class 1259 OID 17539)
 -- Name: idx_fcr_user_type; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135862,7 +135868,7 @@ CREATE INDEX idx_fcr_user_type ON public.feedback_config_rules USING btree (user
 
 
 --
--- TOC entry 4981 (class 1259 OID 17648)
+-- TOC entry 4820 (class 1259 OID 17540)
 -- Name: idx_next_run_date; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135870,7 +135876,7 @@ CREATE INDEX idx_next_run_date ON public.user_schedules USING btree (next_run_da
 
 
 --
--- TOC entry 4997 (class 2620 OID 17538)
+-- TOC entry 4836 (class 2620 OID 17541)
 -- Name: agent_session trg_agent_session_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -135878,7 +135884,7 @@ CREATE TRIGGER trg_agent_session_updated_at BEFORE UPDATE ON public.agent_sessio
 
 
 --
--- TOC entry 4985 (class 2606 OID 17539)
+-- TOC entry 4824 (class 2606 OID 17542)
 -- Name: DeviceSensor DeviceSensor_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135887,7 +135893,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4986 (class 2606 OID 17544)
+-- TOC entry 4825 (class 2606 OID 17547)
 -- Name: DeviceSensor DeviceSensor_userid_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135896,7 +135902,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4987 (class 2606 OID 17549)
+-- TOC entry 4826 (class 2606 OID 17552)
 -- Name: SensorData SensorData_alertid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135905,7 +135911,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4988 (class 2606 OID 17554)
+-- TOC entry 4827 (class 2606 OID 17557)
 -- Name: SensorData SensorData_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135914,7 +135920,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4990 (class 2606 OID 17559)
+-- TOC entry 4829 (class 2606 OID 17562)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135923,7 +135929,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4991 (class 2606 OID 17564)
+-- TOC entry 4830 (class 2606 OID 17567)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135932,7 +135938,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4992 (class 2606 OID 17569)
+-- TOC entry 4831 (class 2606 OID 17572)
 -- Name: WatchAndroidPhone WatchAndroidPhone_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135941,7 +135947,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4993 (class 2606 OID 17574)
+-- TOC entry 4832 (class 2606 OID 17577)
 -- Name: WatchAndroidPhone WatchAndroidPhone_watchid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135950,7 +135956,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4994 (class 2606 OID 17579)
+-- TOC entry 4833 (class 2606 OID 17582)
 -- Name: agent_session agent_session_current_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135959,7 +135965,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4995 (class 2606 OID 17584)
+-- TOC entry 4834 (class 2606 OID 17587)
 -- Name: feedback_config_rules feedback_config_rules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135968,7 +135974,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4984 (class 2606 OID 17589)
+-- TOC entry 4823 (class 2606 OID 17592)
 -- Name: Alert fk_fb_range; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135977,7 +135983,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4989 (class 2606 OID 17594)
+-- TOC entry 4828 (class 2606 OID 17597)
 -- Name: User fk_user_usecase; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135986,7 +135992,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4996 (class 2606 OID 17643)
+-- TOC entry 4835 (class 2606 OID 17602)
 -- Name: user_schedules user_schedules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135994,11 +136000,9 @@ ALTER TABLE ONLY public.user_schedules
     ADD CONSTRAINT user_schedules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
 
 
--- Completed on 2026-05-20 21:54:17
+-- Completed on 2026-05-23 11:33:37
 
 --
 -- PostgreSQL database dump complete
 --
-
-\unrestrict eR7bP0cRhVFRQNG6LXJskeuPkdtPu5XGxUKfwzZxJpUTk8jCvVUXCVYNQhf24iE
 
