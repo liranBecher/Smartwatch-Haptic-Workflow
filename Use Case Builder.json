@@ -1,0 +1,276 @@
+{
+  "name": "Use Case Builder",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"action\": \"generate_template_code\",\n  \"params\": {\n    \"usecase_name\": \"Temperature\",\n    \"api_name\": \"Open-Meteo Weather API\",\n    \"api_id\": null,\n    \"measurement_name\": \"temperature\",\n    \"response_value_path\": \"current.temperature_2m\",\n    \"context\": \"The researcher wants to monitor outdoor temperature and trigger smartwatch vibration based on temperature ranges.\"\n  },\n  \"session_id\": \"uuid\",\n  \"message\": \"Create template node code for a temperature use case\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "db756737-8308-44c0-a8e3-ec89829c46f3",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json ?? {};\n\nconst action = input.action ?? null;\nconst params = input.params ?? {};\nconst session_id = input.session_id ?? null;\nconst message = input.message ?? \"\";\n\nif (!action) {\n  throw new Error(\"Missing action\");\n}\n\nif (!session_id) {\n  throw new Error(\"Missing session_id\");\n}\n\nif (!params || typeof params !== \"object\") {\n  throw new Error(\"Missing params object\");\n}\n\nif (!params.usecase_name) {\n  throw new Error(\"Missing params.usecase_name\");\n}\n\nreturn [{\n  json: {\n    action,\n    params,\n    session_id,\n    message\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "381b3891-78ce-4f2d-95aa-ae5ede48c351",
+      "name": "Validate Builder Input"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  usecase_name,\n  usecase_parameter_name,\n  parameter_format,\n  is_required,\n  description\nFROM \"UseCaseDictionary\"\nWHERE lower(usecase_name) = lower($1)\nORDER BY usecase_parameter_name;",
+        "options": {
+          "queryReplacement": "=={{ $json.params.usecase_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        416,
+        0
+      ],
+      "id": "799b2f38-5adf-4eed-bc23-03ea50ee3bf0",
+      "name": "Load UseCase Dictionary Params",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Validate Builder Input').first().json;\n\n// Get all rows from the dictionary query.\nconst dictionaryRows = $input.all()\n  .map(item => item.json)\n  .filter(row => row && Object.keys(row).length > 0 && row.usecase_parameter_name);\n\nconst dictionary_parameters = dictionaryRows.map(row => ({\n  name: row.usecase_parameter_name,\n  format: row.parameter_format,\n  required: Boolean(row.is_required),\n  description: row.description ?? \"\"\n}));\n\nconst warnings = [];\n\nif (dictionary_parameters.length === 0) {\n  warnings.push(\n    `No parameters were found in UseCaseDictionary for use case \"${original.params.usecase_name}\". The AI can still generate generic snippets, but the researcher should verify the required input parameters.`\n  );\n}\n\nreturn [{\n  json: {\n    action: original.action,\n    params: original.params,\n    dictionary_parameters,\n    session_id: original.session_id,\n    message: original.message,\n    warnings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "d7bb112c-2591-48ed-9a6d-cc7e43b8c330",
+      "name": "Prepare Builder Context"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $input.first().json;\n\nconst params = ctx.params ?? {};\nconst dictionary = ctx.dictionary_parameters ?? [];\nconst warnings = ctx.warnings ?? [];\n\nconst apiMetadata = {\n  api_name: params.api_name ?? params.usecase_name ?? \"\",\n  usecase_name: params.usecase_name ?? \"\",\n  endpoint_url: null,\n  required_query_parameters: [],\n  response_value_path: params.response_value_path ?? \"\",\n  measurement_name: params.measurement_name ?? \"\",\n  context: params.context ?? \"\"\n};\n\n// Try to detect endpoint URL from dictionary parameter named \"url\"\nconst urlParam = dictionary.find(p =>\n  String(p.name).toLowerCase() === \"url\"\n);\n\nif (urlParam?.description) {\n  const match = String(urlParam.description).match(/https?:\\/\\/[^\\s]+/);\n  if (match) {\n    apiMetadata.endpoint_url = match[0];\n  }\n}\n\n// Treat all non-url dictionary parameters as API/request parameters\napiMetadata.required_query_parameters = dictionary\n  .filter(p => String(p.name).toLowerCase() !== \"url\")\n  .map(p => ({\n    name: p.name,\n    format: p.format,\n    required: p.required,\n    description: p.description\n  }));\n\nif (!apiMetadata.endpoint_url) {\n  warnings.push(\n    `No API endpoint URL was detected for \"${apiMetadata.usecase_name}\". The AI should ask the researcher to verify the endpoint if needed.`\n  );\n}\n\nif (!apiMetadata.response_value_path) {\n  warnings.push(\n    `No response_value_path was provided for \"${apiMetadata.usecase_name}\". The researcher must provide the JSON path of the numeric value inside the API response.`\n  );\n}\n\nreturn [{\n  json: {\n    ...ctx,\n    api_metadata: apiMetadata,\n    warnings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "a482ab77-d1b5-4b76-a3ac-3853e0e74b9d",
+      "name": "Prepare API Metadata"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $input.first().json;\n\nconst usecaseName = ctx.params?.usecase_name ?? \"\";\nconst apiMetadata = ctx.api_metadata ?? {};\nconst dictionaryParameters = ctx.dictionary_parameters ?? [];\nconst warnings = ctx.warnings ?? [];\n\nconst prompt = `\nYou are an implementation assistant for an n8n-based Smartwatch Haptic Feedback system.\n\nYour job is to generate exact, paste-ready code snippets and n8n expressions for researchers who want to add a new API-based use case to the Vibration Orchestrator template.\n\nReturn ONLY valid JSON.\nDo not use markdown.\nDo not include explanations outside the JSON.\n\nSystem context:\n- The Vibration Orchestrator receives POST webhook requests from the Android phone app.\n- The request body normally contains: userId, smartWatchId, androidId, lat, lon.\n- The workflow normalizes these identifiers into: userID, watchID, phoneID.\n- The use case name must be stored in a field called \"type\".\n- The numeric API measurement must be stored in a field called \"value\".\n- The workflow calls an external API.\n- It extracts one numeric measurement value from the API response.\n- It fetches haptic feedback rules from feedback_config_rules using type = use case name.\n- It evaluates minvalue/maxvalue ranges.\n- It returns vibration fields: pulses, intensity, duration, interval.\n- It logs the event using insert_sensor_data.\n- Existing Vibration Orchestrator examples include:\n  - Set type SunAzimuth / Set type MoonAzimuth\n  - Normalize sun/moon azimuth\n  - Construct API Request for sun/moon azimuth\n  - Fetch API data for sun/moon azimuth\n  - Extract Azimuth\n  - Fetch Active sun/moon azimuth Rules\n  - Evaluate sun/moon azimuth Feedback Rules\n  - Build insert_sensor_data Query for sun/moon azimuth\n  - Respond to Webhook success sun/moon azimuth\n- The weather template area includes disabled webhook nodes like:\n  - Webhook temperature\n  - Webhook humidity\n  - Webhook precipitation\n  - Webhook wind speed\n  and Set nodes like:\n  - Set type Temperature\n  - Set type Humidity\n  - Set type Precipitation\n  - Set type Wind Speed\n\nCurrent use case:\n${usecaseName}\n\nAPI metadata:\n${JSON.stringify(apiMetadata, null, 2)}\n\nDictionary parameters:\n${JSON.stringify(dictionaryParameters, null, 2)}\n\nExisting warnings:\n${JSON.stringify(warnings, null, 2)}\n\nGenerate exact content for these marked n8n template nodes.\n\nThe output must include one object for each of these node keys:\n\n1. WEBHOOK_NODE\n2. SET_TYPE_NODE\n3. NORMALIZE_INPUT_NODE\n4. CONSTRUCT_API_REQUEST_NODE\n5. HTTP_REQUEST_NODE\n6. EXTRACT_MEASUREMENT_NODE\n7. FETCH_RULES_SQL_NODE\n8. EVALUATE_HAPTICS_NODE\n9. RESPOND_SUCCESS_NODE\n10. BUILD_INSERT_SENSOR_DATA_NODE\n11. RATE_LIMITED_RESPONSE_NODE\n12. TEST_CURL_COMMAND\n\nSpecific requirements for each node:\n\nWEBHOOK_NODE:\n- generated_content should be the suggested webhook path only.\n- Use lowercase kebab-case.\n- Example: \"uv-index-data\".\n\nSET_TYPE_NODE:\n- generated_content should be the exact value to put in the Set node.\n- It must be the use case name.\n- The Set node should set field name \"type\", not \"weatherType\".\n- generated_content should be plain text only, without quotation marks.\n- Correct: Open-Meteo UV Index\n- Incorrect: \"Open-Meteo UV Index\"\n\nNORMALIZE_INPUT_NODE:\n- generated_content must be full JavaScript for an n8n Code node.\n- It must read from $json.body ?? {}.\n- It must validate body.userId, body.smartWatchId, body.androidId.\n- It must validate lat/lon only if the API parameters require latitude/longitude.\n- If identifiers are missing, throw errors:\n  if (body.userId == null) throw new Error('Missing userId');\n  if (body.smartWatchId == null) throw new Error('Missing smartWatchId');\n  if (body.androidId == null) throw new Error('Missing androidId');\n- If latitude/longitude are required, validate:\n  if (body.lat == null) throw new Error('Missing lat');\n  if (body.lon == null) throw new Error('Missing lon');\n- It must return userID, watchID, phoneID, type, lat, lon, body.\n- It must use String($json.type) for type.\n- Do not use weatherType.\n- It must return an array of n8n items:\n  return [{ json: { ... } }];\n\nCONSTRUCT_API_REQUEST_NODE:\n- generated_content must be full JavaScript for an n8n Code node.\n- It must build and return a \"url\" field.\n- It must insert the actual endpoint URL string from API metadata.\n- Never write api_metadata.endpoint_url inside generated JavaScript.\n- If endpoint URL exists in API metadata, use it directly as a string.\n- Example:\n  const endpointUrl = \"https://api.open-meteo.com/v1/forecast\";\n- It must use encodeURIComponent for query parameter values.\n- If parameters include latitude/longitude, map them from normalized lat/lon or body.lat/body.lon.\n- If a parameter has a fixed value in its description, such as \"set to uv_index\", use that fixed value.\n- It must preserve previous normalized fields using object spread.\n- It must start with:\n  const prev = $input.first().json;\n  const body = prev.body ?? {};\n- It must return:\n  return [{ json: { ...prev, url } }];\n\nHTTP_REQUEST_NODE:\n- generated_content should be the n8n URL expression for the HTTP Request node.\n- Use \"={{$json.url}}\".\n\nEXTRACT_MEASUREMENT_NODE:\n- generated_content must be full JavaScript for an n8n Code node.\n- The HTTP Request node input is the API response.\n- Do not use $input.first().json for both normalized data and API data.\n- Use this exact pattern:\n  const normalized = $(\"Construct API Request\").first().json;\n  const api = $input.first().json;\n- It must extract the numeric value from api using response_value_path from api_metadata.\n- It must not store the measured value under a use-case-specific field like uv_index, aqi, azimuth, or temperature.\n- It must store the measured value only as value.\n- It must include rawApi: api.\n- It must throw a clear error if the value is missing or not numeric.\n- It must return:\n  return [{\n    json: {\n      ...normalized,\n      value: Number(value),\n      rawApi: api\n    }\n  }];\n\nFETCH_RULES_SQL_NODE:\n- generated_content must be a JSON object with exactly two fields:\n  {\n    \"query\": \"...\",\n    \"queryReplacement\": \"...\"\n  }\n- query must be:\n  SELECT * FROM feedback_config_rules WHERE active = TRUE AND type = $1 ORDER BY minvalue, maxvalue;\n- queryReplacement must be:\n  ={{ $json.type }}\n- Do not hardcode the use case in SQL.\n- Do not combine query and queryReplacement into one plain text block.\n\nEVALUATE_HAPTICS_NODE:\n- generated_content must be full JavaScript for an n8n Code node.\n- It must define normalized explicitly.\n- Use:\n  const normalized = $(\"Extract Measurement\").first().json;\n  const rules = $input.all().map(i => i.json);\n- It must use Number(normalized.value).\n- It must compare value against rule.minvalue and rule.maxvalue.\n- alertGiven must always be a string.\n- Use \"yes\" when a matching feedback rule is found.\n- Use \"no\" when no matching feedback rule is found.\n- Do not use boolean true/false for alertGiven.\n- It must output alertGiven, pulses, intensity, duration, interval, fbRangeID, reason.\n- It must keep all normalized fields.\n- Do not destructure fields that do not exist on feedback_config_rules.\n- Use:\n  pulses = Number(chosen.minpulses ?? 0);\n  intensity = Number(chosen.minintensity ?? 0);\n  duration = Number(chosen.minduration ?? 0);\n  interval = Number(chosen.mininterval ?? 0);\n  fbRangeID = Number(chosen.id ?? 0);\n- It must return:\n  return [{ json: { ...normalized, alertGiven, pulses, intensity, duration, interval, fbRangeID, reason } }];\n\nRESPOND_SUCCESS_NODE:\n- generated_content should be the n8n expression object for Respond to Webhook.\n- It must include type, value, alertGiven, pulses, intensity, duration, interval, fbRangeID, reason.\n\nBUILD_INSERT_SENSOR_DATA_NODE:\n- generated_content must be full JavaScript for an n8n Code node.\n- It must build:\n  query: SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);\n- The params array must include:\n  userID, watchID, phoneID, type, alertGiven, value, pulses, intensity, duration, interval, fbRangeID, reason.\n- It must return:\n  return [{ json: { query, params } }];\n\nRATE_LIMITED_RESPONSE_NODE:\n- generated_content must be full JavaScript for an n8n Code node.\n- Preserve identifiers and type.\n- Do not return only value and vibration fields.\n- It must preserve previous fields using object spread.\n- It must return alertGiven: \"no\", pulses: 0, intensity: 0, duration: 0, interval: 0, fbRangeID: 9999, reason: \"rate_limited\", and the measured value if available.\n- Use this pattern:\n  const previous = $input.first().json;\n  return [{\n    json: {\n      ...previous,\n      alertGiven: \"no\",\n      pulses: 0,\n      intensity: 0,\n      duration: 0,\n      interval: 0,\n      fbRangeID: 9999,\n      reason: \"rate_limited\",\n      value: previous.value ?? null\n    }\n  }];\n\nTEST_CURL_COMMAND:\n- generated_content must be a JSON object with two fields:\n  {\n    \"test_webhook_curl\": \"...\",\n    \"production_webhook_curl\": \"...\"\n  }\n- Do not join the two commands with &&.\n- Each command must be standalone.\n- Both commands must be Windows CMD curl commands using ^ line continuations.\n- Use the suggested webhook path.\n- Include userId, smartWatchId, androidId, lat, lon in the JSON body.\n- The test command should use /webhook-test/.\n- The production command should use /webhook/.\n\nGeneral rules:\n- Do not invent database columns.\n- Use \"type\" for the use case name.\n- Use \"value\" for the numeric measurement.\n- Do not use use-case-specific measurement fields like \"uv_index\", \"aqi\", \"azimuth\", or \"temperature\" in the final normalized object. Use \"value\".\n- Use userID, watchID, phoneID exactly.\n- Use lat and lon exactly.\n- Make snippets compatible with n8n Code nodes and n8n expressions.\n- The final answer should be understandable to a researcher who has no coding background.\n- Do not reference variables that are not defined inside the generated snippet.\n- Generate readable multi-line JavaScript.\n- Do not generate compressed one-line IIFE code like:\n  return [{ json: (() => { ... })() }];\n- Do not use unnecessary IIFE wrappers.\n- Every generated JavaScript snippet for an n8n Code node MUST return an array of items.\n- Correct return format:\n  return [{ json: { ... } }];\n- Never return a plain object like:\n  return { ... };\n- Never return an unwrapped object.\n\nExact template node names:\n- The normalize node must be named: Normalize Input\n- The construct API request node must be named: Construct API Request\n- The HTTP request node must be named: Fetch API Data\n- The extract measurement node must be named: Extract Measurement\n- The evaluate haptics node must be named: Evaluate Haptics\n\nWhen referencing previous node data with $('...'), use these exact names only:\n- $(\"Normalize Input\")\n- $(\"Construct API Request\")\n- $(\"Fetch API Data\")\n- $(\"Extract Measurement\")\n- $(\"Evaluate Haptics\")\n\nReturn this exact JSON structure:\n{\n  \"usecase_name\": \"\",\n  \"summary\": \"\",\n  \"nodes\": [\n    {\n      \"node_key\": \"\",\n      \"node_name_hint\": \"\",\n      \"field_to_change\": \"\",\n      \"generated_content\": \"\",\n      \"explanation\": \"\"\n    }\n  ],\n  \"required_researcher_checks\": [],\n  \"warnings\": []\n}\n`;\n\nreturn [{\n  json: {\n    action: ctx.action,\n    params: ctx.params,\n    dictionary_parameters: dictionaryParameters,\n    api_metadata: apiMetadata,\n    warnings,\n    session_id: ctx.session_id,\n    message: ctx.message,\n    prompt\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "6d3caf87-6a1b-48ca-8807-00092184a2df",
+      "name": "Build Builder Prompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=={{ $json.prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "6574e8f5-8925-469f-a24d-5277c384ce57",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1248,
+        208
+      ],
+      "id": "2f0ce889-ba30-46bb-80d6-d13024ba5816",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nconst raw =\n  input.text ??\n  input.output ??\n  input.response ??\n  input.result ??\n  \"\";\n\nconst cleaned = String(raw)\n  .replace(/^```json\\s*/i, \"\")\n  .replace(/^```\\s*/i, \"\")\n  .replace(/\\s*```$/i, \"\")\n  .trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (error) {\n  throw new Error(\n    \"Use Case Builder AI did not return valid JSON. Raw output was: \" + cleaned\n  );\n}\n\nif (!parsed.usecase_name) {\n  throw new Error(\"AI output is missing usecase_name\");\n}\n\nif (!parsed.summary) {\n  parsed.summary = \"\";\n}\n\nif (!Array.isArray(parsed.nodes)) {\n  throw new Error(\"AI output is missing nodes array\");\n}\n\nconst requiredNodeKeys = [\n  \"WEBHOOK_NODE\",\n  \"SET_TYPE_NODE\",\n  \"NORMALIZE_INPUT_NODE\",\n  \"CONSTRUCT_API_REQUEST_NODE\",\n  \"HTTP_REQUEST_NODE\",\n  \"EXTRACT_MEASUREMENT_NODE\",\n  \"FETCH_RULES_SQL_NODE\",\n  \"EVALUATE_HAPTICS_NODE\",\n  \"RESPOND_SUCCESS_NODE\",\n  \"BUILD_INSERT_SENSOR_DATA_NODE\",\n  \"RATE_LIMITED_RESPONSE_NODE\",\n  \"TEST_CURL_COMMAND\"\n];\n\nconst foundNodeKeys = parsed.nodes.map(node => node.node_key);\n\nconst missingNodeKeys = requiredNodeKeys.filter(\n  key => !foundNodeKeys.includes(key)\n);\n\nif (!Array.isArray(parsed.required_researcher_checks)) {\n  parsed.required_researcher_checks = [];\n}\n\nif (!Array.isArray(parsed.warnings)) {\n  parsed.warnings = [];\n}\n\nif (missingNodeKeys.length > 0) {\n  parsed.warnings.push(\n    `Missing generated sections: ${missingNodeKeys.join(\", \")}`\n  );\n}\n\nreturn [{\n  json: {\n    ...parsed,\n    session_id: $(\"Build Builder Prompt\").first().json.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "3e46a071-5ace-47c3-9dea-6a417c35cc46",
+      "name": "Parse Builder AI Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nfunction formatGeneratedContent(content) {\n  if (typeof content === \"string\") {\n    return content;\n  }\n\n  return JSON.stringify(content, null, 2);\n}\n\nlet reply = `🧩 Use Case Builder output for **${data.usecase_name}**\\n\\n`;\n\nif (data.summary) {\n  reply += `${data.summary}\\n\\n`;\n}\n\nreply += `## Node changes to apply\\n\\n`;\n\nfor (const node of data.nodes ?? []) {\n  reply += `### ${node.node_key}\\n`;\n  reply += `**Node hint:** ${node.node_name_hint ?? \"\"}\\n`;\n  reply += `**Field to change:** ${node.field_to_change ?? \"\"}\\n\\n`;\n  reply += \"```text\\n\";\n  reply += formatGeneratedContent(node.generated_content);\n  reply += \"\\n```\\n\";\n\n  if (node.explanation) {\n    reply += `${node.explanation}\\n`;\n  }\n\n  reply += \"\\n\";\n}\n\nif (\n  Array.isArray(data.required_researcher_checks) &&\n  data.required_researcher_checks.length > 0\n) {\n  reply += `## Researcher checks before running\\n`;\n\n  for (const check of data.required_researcher_checks) {\n    reply += `- ${check}\\n`;\n  }\n\n  reply += \"\\n\";\n}\n\nif (Array.isArray(data.warnings) && data.warnings.length > 0) {\n  reply += `## Warnings\\n`;\n\n  for (const warning of data.warnings) {\n    reply += `- ${warning}\\n`;\n  }\n\n  reply += \"\\n\";\n}\n\nreturn [{\n  json: {\n    reply,\n    session_id: data.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        0
+      ],
+      "id": "056d625d-7d2c-4b2e-bdfb-892b61c67d67",
+      "name": "Format Builder Reply"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Builder Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Builder Input": {
+      "main": [
+        [
+          {
+            "node": "Load UseCase Dictionary Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load UseCase Dictionary Params": {
+      "main": [
+        [
+          {
+            "node": "Prepare Builder Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Builder Context": {
+      "main": [
+        [
+          {
+            "node": "Prepare API Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare API Metadata": {
+      "main": [
+        [
+          {
+            "node": "Build Builder Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Builder Prompt": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse Builder AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Builder AI Output": {
+      "main": [
+        [
+          {
+            "node": "Format Builder Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ec85cf98-5dd9-4877-984b-ce9ea2503858",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "Z41Dn3edCcUEwQCO",
+  "tags": []
+}

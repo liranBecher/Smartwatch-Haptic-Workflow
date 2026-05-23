@@ -9,10 +9,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        752,
-        784
+        400,
+        960
       ],
-      "id": "19fa0627-08fd-4892-857e-d6f9035cab47",
+      "id": "35398a62-ac57-43b3-b7be-96e5523f1087",
       "name": "Execute Workflow Trigger"
     },
     {
@@ -138,10 +138,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1008,
-        752
+        656,
+        928
       ],
-      "id": "052b54af-4c83-4912-aa4c-bf261fcb38fc",
+      "id": "5f0a94d0-06c9-45fe-87eb-a8cef8514885",
       "name": "Action Router"
     },
     {
@@ -153,16 +153,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1312,
-        560
+        960,
+        736
       ],
-      "id": "3a4ec891-317c-4362-b189-0adc05739574",
+      "id": "5b171d58-46d4-479a-96b6-f2e8f23c9f0b",
       "name": "List Dictionary",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -177,68 +177,68 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1312,
-        720
+        960,
+        896
       ],
-      "id": "e998608e-82d4-4136-a663-d05892cc5456",
+      "id": "2367e07b-b577-4731-a66d-195b2d6c4071",
       "name": "Add Entry",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Get all incoming items\nconst items = $input.all();\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\n// Check if the first item is empty (no keys) or if there are no items\nconst isEmpty = items.length === 0 || Object.keys(items[0].json).length === 0;\n\nif (isEmpty) {\n  return [{ json: {\n    reply: \"The use case dictionary is currently empty.\",\n    session_id\n  }}];\n}\n\nconst rows = items.map(i => i.json);\n\n// Group parameters by use case name\nconst grouped = rows.reduce((acc, row) => {\n  if (!acc[row.usecase_name]) acc[row.usecase_name] = [];\n  acc[row.usecase_name].push(`   ID${row.dict_entry} ${row.usecase_parameter_name} (${row.parameter_format})${row.is_required ? ' [Required]' : ''}`);\n  return acc;\n}, {});\n\nconst lines = Object.keys(grouped).map(name => \n  `📂 **${name}**\\n${grouped[name].join('\\n')}`\n).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `Here are the available use cases and their parameters:\\n\\n${lines}`,\n  session_id\n}}];"
+        "jsCode": "const items = $input.all();\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst isEmpty = items.length === 0 || Object.keys(items[0].json).length === 0;\n\nif (isEmpty) {\n  return [{\n    json: {\n      reply: \"The use case dictionary is currently empty.\",\n      session_id\n    }\n  }];\n}\n\nconst rows = items.map(i => i.json);\n\nconst grouped = rows.reduce((acc, row) => {\n  if (!acc[row.usecase_name]) acc[row.usecase_name] = [];\n\n  acc[row.usecase_name].push(\n    `   ${row.usecase_parameter_name} (${row.parameter_format})${row.is_required ? ' [Required]' : ''}`\n  );\n\n  return acc;\n}, {});\n\nconst lines = Object.keys(grouped)\n  .map(name => `📂 **${name}**\\n${grouped[name].join('\\n')}`)\n  .join('\\n\\n');\n\nreturn [{\n  json: {\n    reply: `Here are the available use cases and their parameters:\\n\\n${lines}`,\n    session_id\n  }\n}];"
       },
-      "id": "7df01906-dd26-4b82-ace8-ef1a50ba1fa0",
+      "id": "9e4033bd-7088-423e-9c8b-c121ca19f3a1",
       "name": "Format Dict List",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1584,
-        560
+        1232,
+        736
       ]
     },
     {
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: `✅ Successfully added parameter **${rows[0].usecase_parameter_name}** to the **${rows[0].usecase_name}** use case (ID: ${rows[0].dict_entry}).`,\n  session_id\n}}];"
       },
-      "id": "496463c5-af31-46de-a84d-475a9ead6865",
+      "id": "310b4098-a6b0-4f4a-89ce-0b20efab4689",
       "name": "Format Dict Add",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1584,
-        720
+        1232,
+        896
       ]
     },
     {
       "parameters": {
         "jsCode": "const params = $('Execute Workflow Trigger').first().json.params;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\nlet message = `🗑️ All parameters for the use case **${params.usecase_name}** have been removed.`;\nreturn [{ json: { reply: message, session_id }}];"
       },
-      "id": "e1c5e449-627c-478b-84bc-ee17653c89d4",
+      "id": "db4d6f48-2023-47ee-9d20-34c3d1b235f4",
       "name": "Format Dict Delete",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1584,
-        880
+        1232,
+        1056
       ]
     },
     {
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. The specified ID was not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `🔧 Updated **${rows[0].usecase_name}**. The parameter is now defined as **${rows[0].usecase_parameter_name}** (${rows[0].parameter_format}).`,\n  session_id\n}}];"
       },
-      "id": "0d3e963a-57fb-4c99-92cf-a8c37bf266b3",
+      "id": "6afac68b-b738-4633-a2ce-05fced4edecd",
       "name": "Format Dict Edit",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1584,
-        1248
+        1232,
+        1424
       ]
     },
     {
@@ -248,10 +248,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1936,
-        768
+        1584,
+        944
       ],
-      "id": "0a3de8a0-c02a-45f5-b646-3570260ffdf2",
+      "id": "4603e6ab-4ddb-4c20-9edd-2f1768e4475b",
       "name": "Merge"
     },
     {
@@ -265,15 +265,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1328,
-        880
+        976,
+        1056
       ],
-      "id": "0c159ad7-b381-4905-8cce-e3b4edf8c41b",
+      "id": "ef76b9bd-a9ac-4b4a-bf90-f370c585cc93",
       "name": "Delete UseCase",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -288,15 +288,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1328,
-        1056
+        976,
+        1232
       ],
-      "id": "d83c2ceb-2878-4023-ad4b-fb277edccc52",
+      "id": "ed64b276-f58c-4b66-be81-86b86af720c1",
       "name": "Delete Parameter",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -304,13 +304,13 @@
       "parameters": {
         "jsCode": "const params = $('Execute Workflow Trigger').first().json.params;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\nlet message = `🗑️ Parameter ID **${params.dict_entry}** has been deleted from the dictionary.`;\n\nreturn [{ json: { reply: message, session_id }}];"
       },
-      "id": "89acbe06-d0eb-4393-876d-dc6a8ae745b8",
+      "id": "2e42fcbf-71d9-4401-95c7-2402eb3baf52",
       "name": "Format Dict Delete Parameter",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1584,
-        1056
+        1232,
+        1232
       ]
     },
     {
@@ -324,15 +324,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1328,
-        1248
+        976,
+        1424
       ],
-      "id": "f203639f-179a-4815-b860-737dd9c7f6c3",
+      "id": "cdef7a7b-fc68-492c-b575-faa50ac08509",
       "name": "Edit Entry",
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     }
@@ -381,11 +381,6 @@
           }
         ],
         [
-          {
-            "node": "Edit Entry",
-            "type": "main",
-            "index": 0
-          },
           {
             "node": "Edit Entry",
             "type": "main",
@@ -505,15 +500,16 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate"
   },
-  "versionId": "39f96a51-833a-4016-a25d-4f70bc003b37",
+  "versionId": "e4272f25-aa71-4297-bb58-296b2df0583d",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
   },
-  "id": "YDFXGzvKMDZJev5h",
+  "id": "uqv2x7unjvI0y4nt",
   "tags": []
 }
