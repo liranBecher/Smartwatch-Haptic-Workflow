@@ -338,30 +338,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT s.*\nFROM user_schedules s INNER JOIN \"User\" u ON s.user_id = u.userid\nWHERE u.active_usecase_id = $1 AND active = TRUE;",
-        "options": {
-          "queryReplacement": "={{ $json.usecase_id }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1392,
-        720
-      ],
-      "id": "9aeaf4be-15d9-4347-abfc-f888e3ff1c0e",
-      "name": "List active schedules",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
       },
       "id": "3fe10b04-1777-411b-941f-963176d21984",
@@ -406,22 +382,75 @@
         -1136,
         944
       ]
-    }
-  ],
-  "pinData": {
-    "Execute Workflow Trigger": [
-      {
-        "json": {
-          "action": "change",
-          "params": "{\"schedule_id\":1,\"interval_days\":4}",
-          "session_id": "9b67bdd6-6c22-4aa5-a6f4-fecf6dc68ff9",
-          "usecase_id": "1",
-          "usecase_name": "HeartRate",
-          "message": "change the frequency of user 101's schedule to every 4 days"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_schedules s\nSET active = false\nFROM \"User\" u\nWHERE s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }};",
+        "options": {}
+      },
+      "id": "2b4a37d2-971b-4ed4-accd-5b47b25cde35",
+      "name": "DB: Deactivate all schedules of the type - ADD",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1616,
+        -64
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    ]
-  },
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_schedules s\nSET active = false\nFROM \"User\" u\nWHERE s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }};",
+        "options": {}
+      },
+      "id": "606fe19e-bd8a-4092-af22-ab4fd6bc2cb2",
+      "name": "DB: Deactivate all schedules of the type - ACTIVATE",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1584,
+        944
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT s.*\nFROM user_schedules s INNER JOIN \"User\" u ON s.user_id = u.userid\nWHERE u.active_usecase_id = $1 AND active = TRUE;",
+        "options": {
+          "queryReplacement": "={{ $json.usecase_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1392,
+        720
+      ],
+      "id": "9aeaf4be-15d9-4347-abfc-f888e3ff1c0e",
+      "name": "List Active schedule",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
   "connections": {
     "Execute Workflow Trigger": {
       "main": [
@@ -449,7 +478,7 @@
       "main": [
         [
           {
-            "node": "DB: SQL Insert Schedule",
+            "node": "DB: Deactivate all schedules of the type - ADD",
             "type": "main",
             "index": 0
           }
@@ -477,14 +506,14 @@
         ],
         [
           {
-            "node": "List active schedules",
+            "node": "List Active schedule",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "DB: Set Active True",
+            "node": "DB: Deactivate all schedules of the type - ACTIVATE",
             "type": "main",
             "index": 0
           }
@@ -579,17 +608,6 @@
         ]
       ]
     },
-    "List active schedules": {
-      "main": [
-        [
-          {
-            "node": "Format ListActive Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Format ListActive Response": {
       "main": [
         [
@@ -622,13 +640,47 @@
           }
         ]
       ]
+    },
+    "DB: Deactivate all schedules of the type - ADD": {
+      "main": [
+        [
+          {
+            "node": "DB: SQL Insert Schedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Deactivate all schedules of the type - ACTIVATE": {
+      "main": [
+        [
+          {
+            "node": "DB: Set Active True",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Active schedule": {
+      "main": [
+        [
+          {
+            "node": "Format ListActive Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate"
   },
-  "versionId": "58021e9d-8c46-4c4c-a6e8-c5a862e91647",
+  "versionId": "f6fe9043-4524-4c60-983b-6f0e35af3496",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
