@@ -1202,9 +1202,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id, active FROM feedback_config_rules WHERE type = $1 AND minvalue = $2 AND maxvalue = $3 LIMIT 1;",
+        "query": "SELECT id, active\nFROM feedback_config_rules\nWHERE type = $1\n  AND minvalue = $2\n  AND maxvalue = $3\n  AND user_id = $4\nLIMIT 1;",
         "options": {
-          "queryReplacement": "={{ [$json.type, $json.minValue, $json.maxValue] }}"
+          "queryReplacement": "={{ [$json.type, $json.minValue, $json.maxValue,$json.user_id] }}"
         }
       },
       "id": "cb7945e6-d60a-4c1c-9753-dd592739f21e",
@@ -1226,9 +1226,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO feedback_config_rules (type, active, minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval) \nVALUES ($3, true, $1, $2, 5, 8, 200, 255, 400, 600, 50, 100);",
+        "query": "INSERT INTO feedback_config_rules (type, active, minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, user_id) \nVALUES ($3, true, $1, $2, 5, 8, 200, 255, 400, 600, 50, 100,$4);",
         "options": {
-          "queryReplacement": "={{ [$('Calculate new rule Parameters1').item.json.minValue,$('Calculate new rule Parameters1').item.json.maxValue , $('Calculate new rule Parameters1').item.json.type]}}"
+          "queryReplacement": "={{ [$('Calculate new rule Parameters1').item.json.minValue,$('Calculate new rule Parameters1').item.json.maxValue , $('Calculate new rule Parameters1').item.json.type]}},{{ $('Calculate new rule Parameters1').item.json.user_id }}"
         }
       },
       "id": "854bb184-d6e8-4297-aba8-2e0bc18e3ff6",
@@ -1236,8 +1236,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        752,
-        -608
+        1056,
+        -624
       ],
       "credentials": {
         "postgres": {
@@ -1259,8 +1259,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        864,
-        -368
+        1040,
+        -416
       ],
       "credentials": {
         "postgres": {
@@ -1282,8 +1282,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        1328,
-        -352
+        1344,
+        -176
       ],
       "credentials": {
         "postgres": {
@@ -1824,18 +1824,55 @@
           "name": "Postgres account"
         }
       }
-    }
-  ],
-  "pinData": {
-    "Call 'Schedule Manager'1": [
-      {
-        "json": {
-          "reply": "📋 *Active HeartRate Schedules (1):*\n\n🆔 *ID 1*\n   👤 User: 101\n   📊 Type: average (33%)\n   ⏳ Next Check: today (Interval: 5 days)",
-          "session_id": "researcher-ui"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE feedback_config_rules \nSET active = false \nWHERE user_id = $1\nRETURNING id, active, type;",
+        "options": {
+          "queryReplacement": "={{ $('Calculate new rule Parameters1').item.json.user_id }}"
+        }
+      },
+      "id": "2fb993b9-c496-4d1c-ac34-c81af3327c14",
+      "name": "Postgres: Deactivate Rule for user id add",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        800,
+        -624
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
-    ]
-  },
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE feedback_config_rules \nSET active = false \nWHERE user_id = $1\nRETURNING id, active, type;",
+        "options": {
+          "queryReplacement": "={{ $('Calculate new rule Parameters1').item.json.user_id }}"
+        }
+      },
+      "id": "f2460dcc-3283-42b6-a9e2-a1ad8397dffe",
+      "name": "Postgres: Deactivate Rule for user id change",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        864,
+        -416
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
   "connections": {
     "Get current configurations1": {
       "main": [
@@ -2332,7 +2369,7 @@
       "main": [
         [
           {
-            "node": "Create New Rule1",
+            "node": "Postgres: Deactivate Rule for user id add",
             "type": "main",
             "index": 0
           }
@@ -2386,7 +2423,7 @@
       "main": [
         [
           {
-            "node": "Activate Existing Rule1",
+            "node": "Postgres: Deactivate Rule for user id change",
             "type": "main",
             "index": 0
           }
@@ -2603,14 +2640,37 @@
           }
         ]
       ]
+    },
+    "Postgres: Deactivate Rule for user id add": {
+      "main": [
+        [
+          {
+            "node": "Create New Rule1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres: Deactivate Rule for user id change": {
+      "main": [
+        [
+          {
+            "node": "Activate Existing Rule1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": true
   },
-  "versionId": "8bf7b6cc-0bb6-42ec-adb2-f0af6812db71",
+  "versionId": "f13c992e-3dfc-4caa-acd9-8605489e7924",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
