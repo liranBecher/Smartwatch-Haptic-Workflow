@@ -206,7 +206,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || 'listAll';\n\n// 2. Safely parse params (since it's a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === 'string') ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split('T')[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? Number(params.trigger_percentage) : null,\n    next_run_date: nextRunDate,\n    measure_type: params.measure_type || 'average',\n    \n    isValid: (action === 'list') || (action == 'listAll') ||\n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id) ||\n      (action === 'activate' && params.schedule_id)\n  }\n}];"
+        "jsCode": "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || 'listAll';\n\n// 2. Safely parse params (since it's a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === 'string') ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split('T')[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? (Number(params.trigger_percentage) <= 1 ? Number(params.trigger_percentage) * 100 : Number(params.trigger_percentage)) : null,\n    measure_type: params.measure_type || 'average',\n    \n    isValid: (action === 'list') || (action == 'listAll') ||\n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id) ||\n      (action === 'activate' && params.schedule_id)\n  }\n}];"
       },
       "id": "3d3b3b28-124f-4a52-99ad-cc82b8f9d3e5",
       "name": "Parse Schedule Params",
@@ -678,9 +678,10 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": true
   },
-  "versionId": "f6fe9043-4524-4c60-983b-6f0e35af3496",
+  "versionId": "af9f2614-da24-4bea-9a4b-3da956f154a4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
