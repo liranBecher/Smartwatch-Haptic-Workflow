@@ -254,7 +254,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. The specified ID was not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `🔧 Updated **${rows[0].usecase_name}**.\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. The specified ID was not found.\", session_id }}];\n}\n\nreturn [{\n  json: {\n    reply: `Updated ${rows[0].usecase_name}.`,\n    session_id\n  }\n}];"
       },
       "id": "ffdb2a61-68ac-4fa1-a85c-04d84f73902e",
       "name": "Format Dict Edit",
@@ -662,9 +662,10 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": true
   },
-  "versionId": "09a7c826-9de4-4fa3-8034-f7ab97973a2a",
+  "versionId": "d0b0dd1f-7a52-4d27-add5-08def703e123",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"

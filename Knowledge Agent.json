@@ -6,7 +6,7 @@
         "inputSource": "jsonExample",
         "jsonExample": "{\n  \"usecase_name\": \"HeartRate\",\n  \"session_id\": \"00000000-0000-0000-0000-000000000001\",\n  \"message\": \"How does vibrotactile feedback work?\"\n}"
       },
-      "id": "2f2287c6-5d3a-4612-829a-fcb0635e0fd2",
+      "id": "5b94ea02-9397-4551-84bc-7e4ec48701e8",
       "typeVersion": 1.1,
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
@@ -27,7 +27,7 @@
         528,
         112
       ],
-      "id": "9d150c38-84de-46cd-8288-b923ad077cc3",
+      "id": "feb61a05-4850-4890-b2c8-4733b25ddcff",
       "name": "GPT - Knowledge"
     },
     {
@@ -42,7 +42,7 @@
         0,
         0
       ],
-      "id": "486a271e-b004-45b1-b992-6ada8dbf9c3c",
+      "id": "b5757520-91b4-42d7-8655-8c02e9a6e77d",
       "name": "Sticky Note"
     },
     {
@@ -55,7 +55,7 @@
         848,
         112
       ],
-      "id": "ec6ee564-1b1a-468e-a47f-a31752df574a",
+      "id": "e822197d-7ca8-4aed-bad1-db52cd4f48bf",
       "name": "Format - response"
     },
     {
@@ -75,11 +75,11 @@
         528,
         304
       ],
-      "id": "93aedf5f-9158-4778-9c87-4a26a640c30e",
+      "id": "60201ce0-5ac1-435c-824c-2e23bc238874",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "PZrrVTzGmheg0FUW",
+          "id": "C6PPGVshBukmGMJ7",
           "name": "OpenAi account"
         }
       }
@@ -98,12 +98,13 @@
         32,
         112
       ],
-      "id": "07f1879d-a302-4d01-9c54-85f569c9ce67",
+      "id": "c9007d52-92b9-4c0d-be4d-302f81b56c81",
       "name": "DB - fetch mappings",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -117,7 +118,7 @@
         272,
         112
       ],
-      "id": "6f6cde92-1831-45e1-832f-539d6c1d0ec8",
+      "id": "f2b96203-bf7b-4541-a56e-51ae18fbce45",
       "name": "Package mappings"
     }
   ],
@@ -179,14 +180,17 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
   },
-  "versionId": "c3e4c1ea-20c1-4580-af70-3571f19243d6",
+  "versionId": "5b629c63-0c13-4ba2-9e4c-6e8db9e5ceae",
   "meta": {
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "NBGENe1uYYpTnN5l",
+  "id": "VPk5BFlcigtZlDON",
   "tags": []
 }
