@@ -1,5 +1,4 @@
 {
-  "name": "Mapping Manager",
   "nodes": [
     {
       "parameters": {
@@ -9,45 +8,46 @@
           "queryReplacement": "=={{ $json.usecase_name }}"
         }
       },
-      "id": "e2391a85-91cb-4fe7-875f-fce96bec3020",
+      "id": "1a2ef5d3-6d01-481c-abef-b2157f3100c5",
       "name": "DB - list mappings",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1632,
-        -544
+        976,
+        624
       ],
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
+          "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: {\n    reply: `No active mappings found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r =>\n  `• ID ${r.id}: value ${r.minvalue ?? '—'}–${r.maxvalue ?? '—'} → ` +\n  `pulses ${r.minpulses}–${r.maxpulses}, ` +\n  `intensity ${r.minintensity}–${r.maxintensity}, ` +\n  `duration ${r.minduration}–${r.maxduration}ms, ` +\n  `interval ${r.mininterval}–${r.maxinterval}ms`\n).join('\\n');\n\nreturn [{ json: {\n  reply: `Active mappings for ${name} (${rows.length} total):\\n\\n${lines}`,\n  session_id\n}}];"
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r.id != null);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length < 1 || name==null) {\n  return [{ json: {\n    reply: `No active mappings found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r =>\n  `• ID ${r.id}: value ${r.minvalue ?? '—'}–${r.maxvalue ?? '—'} → ` +\n  `pulses ${r.minpulses}–${r.maxpulses}, ` +\n  `intensity ${r.minintensity}–${r.maxintensity}, ` +\n  `duration ${r.minduration}–${r.maxduration}ms, ` +\n  `interval ${r.mininterval}–${r.maxinterval}ms`\n).join('\\n');\n\nreturn [{ json: {\n  reply: `Active mappings for ${name} (${rows.length} total):\\n\\n${lines}`,\n  session_id\n}}];"
       },
-      "id": "a065893c-b5b7-46f8-a339-3eaef87f1d7c",
+      "id": "f27c44bb-708b-480b-a08a-6e4c52db8de2",
       "name": "Format - list",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        -544
+        1936,
+        624
       ]
     },
     {
       "parameters": {
         "jsCode": "const input = $input.first().json;\nconst p = typeof input.params === 'string' \n  ? JSON.parse(input.params) \n  : (input.params ?? {});\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\n\nconst required = ['minvalue','maxvalue','minpulses','maxpulses',\n                  'minintensity','maxintensity','minduration',\n                  'maxduration','mininterval','maxinterval'];\n\nconst missing = required.filter(k => p[k] === undefined || p[k] === null);\n\nif (missing.length > 0) {\n  return [{ json: {\n    valid: false,\n    reply: `I need a few more details to add this mapping. Please provide: ${missing.join(', ')}.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  valid: true,\n  session_id,\n  usecase_name,\n  minvalue:     p.minvalue,\n  maxvalue:     p.maxvalue,\n  minpulses:    p.minpulses,\n  maxpulses:    p.maxpulses,\n  minintensity: p.minintensity,\n  maxintensity: p.maxintensity,\n  minduration:  p.minduration,\n  maxduration:  p.maxduration,\n  mininterval:  p.mininterval,\n  maxinterval:  p.maxinterval,\n}}];"
       },
-      "id": "1407182d-4c80-4147-b483-3a57dd6873d9",
+      "id": "1fc41baa-06fa-4b2c-b7b3-b6a8088d45de",
       "name": "Validate - add params",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
-        -352
+        944,
+        880
       ]
     },
     {
@@ -58,17 +58,17 @@
           "queryReplacement": "=={{ $json.usecase_name }},={{ $json.minvalue }},={{ $json.maxvalue }},={{ $json.minpulses }},={{ $json.maxpulses }},={{ $json.minintensity }},={{ $json.maxintensity }},={{ $json.minduration }},={{ $json.maxduration }},={{ $json.mininterval }},={{ $json.maxinterval }}"
         }
       },
-      "id": "d88ce426-0fd0-46f2-845f-0ea07add9fd3",
+      "id": "3a79aec5-9cad-4859-881d-d808364dda1a",
       "name": "DB - insert mapping",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1632,
-        -352
+        1616,
+        864
       ],
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
+          "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
       }
@@ -77,13 +77,13 @@
       "parameters": {
         "jsCode": "const rows = $input.all();\nconst session_id = $('Validate - add params').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].json.id) {\n  return [{ json: {\n    reply: `A mapping with those exact values already exists and is active. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  reply: `Done. New mapping added with ID ${rows[0].json.id}.`,\n  session_id\n}}];"
       },
-      "id": "f442120c-68c3-456c-8c63-d1789e9d71ae",
+      "id": "2e3c5316-581b-4ff2-8a62-26ea72a4d539",
       "name": "Format - add success",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        -352
+        1856,
+        864
       ]
     },
     {
@@ -94,17 +94,18 @@
           "queryReplacement": "=={{ $json.usecase_name }}"
         }
       },
-      "id": "fc682456-870a-4040-a1b9-bd1c601f94d3",
+      "id": "26a5d352-834b-4817-b3b1-dfba6ead6397",
       "name": "DB - historical range",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1120,
-        336
+        1104,
+        1648
       ],
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
+          "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
       }
@@ -115,13 +116,13 @@
         "text": "=={{ \n\"You are an expert in haptic feedback parameter design.\\n\\n\" +\n\"Usecase: \" + $input.first().json.usecase_name + \"\\n\\n\" +\n\"Existing active mappings:\\n\" + JSON.stringify($input.first().json.current_mappings ?? [], null, 2) + \"\\n\\n\" +\n\"Historical sensor data (last 30 days):\\n\" +\n\"Min: \" + $input.first().json.min_seen + \", Max: \" + $input.first().json.max_seen + \", Avg: \" + $input.first().json.avg_seen + \", Readings: \" + $input.first().json.total_readings + \"\\n\\n\" +\n\"Suggest 3 new mapping ranges that improve granularity or cover gaps in the existing mappings. For each suggestion, explain WHY it improves the current set and what sensor value range it targets.\\n\" +\n\"Format your response as plain readable text, not JSON.\"\n}}",
         "batching": {}
       },
-      "id": "f07cf7cf-7ba3-4e2a-b3e6-39af8cded7b6",
+      "id": "d9782816-61ea-4d24-b7cd-397e6d6b2ddd",
       "name": "GPT - Brainstorm",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        1568,
-        352
+        1552,
+        1648
       ]
     },
     {
@@ -135,17 +136,17 @@
         "builtInTools": {},
         "options": {}
       },
-      "id": "d52fc8ca-610e-42dc-8742-f759d6b9b68e",
+      "id": "aa764162-e5e8-42f9-a3de-852c76224536",
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        1648,
-        576
+        1632,
+        1872
       ],
       "credentials": {
         "openAiApi": {
-          "id": "C6PPGVshBukmGMJ7",
+          "id": "4lXIgD9YPBChpCvV",
           "name": "OpenAi account"
         }
       }
@@ -155,26 +156,26 @@
         "inputSource": "jsonExample",
         "jsonExample": "{\n  \"action\":       \"={{ $json.payload.action }}\",\n  \"params\":       \"={{ $json.payload.params }}\",\n  \"session_id\":   \"={{ $json.session_id }}\",\n  \"usecase_id\":   \"={{ $json.usecase_id }}\",\n  \"usecase_name\": \"={{ $json.usecase_name }}\",\n  \"message\":      \"={{ $json.message }}\"\n}"
       },
-      "id": "0fb23e33-d6b9-4b96-81aa-2a2a8e46595c",
+      "id": "08ce8f42-e707-4a28-b6b1-067b78e27e02",
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        0,
-        -160
+        -16,
+        1280
       ]
     },
     {
       "parameters": {
         "jsCode": "const reply = $input.first().json.text ?? '';\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\nreturn [{ json: { reply, session_id } }];"
       },
-      "id": "da0d5361-6ef7-4123-9f88-dfc4a100307b",
+      "id": "2b7035bf-da3a-400c-aef1-2af11ce7446b",
       "name": "Format - brainstorm",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        352
+        1904,
+        1648
       ]
     },
     {
@@ -185,17 +186,18 @@
           "queryReplacement": "=={{ $json.usecase_name }}"
         }
       },
-      "id": "a0a5922f-5925-42ad-9a24-50220c07ac59",
+      "id": "536976b7-f121-40a6-85a6-11936c469f38",
       "name": "DB - current mappings for brainstorm",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        672,
-        336
+        656,
+        1648
       ],
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
+          "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
       }
@@ -204,26 +206,26 @@
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json);\nconst trigger = $('Execute Workflow Trigger').first().json;\nreturn [{ json: {\n  usecase_name:     trigger.usecase_name,\n  session_id:       trigger.session_id,\n  current_mappings: rows\n}}];"
       },
-      "id": "28ce2135-939c-4971-819c-7b47c7bf9805",
+      "id": "8e081218-4efc-4112-965c-488bd44d908c",
       "name": "Package mappings",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        896,
-        336
+        880,
+        1648
       ]
     },
     {
       "parameters": {
         "jsCode": "const historical = $input.first().json;\nconst mappings = $('Package mappings').first().json.current_mappings;\nconst trigger = $('Execute Workflow Trigger').first().json;\n\nreturn [{ json: {\n  min_seen:         historical.min_seen,\n  max_seen:         historical.max_seen,\n  avg_seen:         historical.avg_seen,\n  total_readings:   historical.total_readings,\n  current_mappings: mappings,\n  usecase_name:     trigger.usecase_name,\n  session_id:       trigger.session_id\n}}];"
       },
-      "id": "b032b7b6-9a9a-4134-8a5e-c25aee3a5bbf",
+      "id": "1caccf09-df7e-4b08-b53d-79d2fb078012",
       "name": "Combine brainstorm data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1344,
-        336
+        1328,
+        1648
       ]
     },
     {
@@ -251,26 +253,26 @@
         },
         "options": {}
       },
-      "id": "23c2ce9d-96df-4228-b600-3e9e8fce9623",
+      "id": "ed958efa-82f1-481a-894d-383169580a19",
       "name": "If added parameters are valid",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1344,
-        -352
+        1184,
+        880
       ]
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\n\nlet action = (input.action ?? '').toString().trim();\nconst msg = (input.message ?? '').toLowerCase();\n\nif (!action) {\n  if (msg.includes('suggest') || msg.includes('brainstorm') || msg.includes('idea') || msg.includes('recommend')) {\n    action = 'brainstorm';\n  } else if (msg.includes('change') || msg.includes('edit') || msg.includes('update') || msg.includes('modify')) {\n    action = 'change';\n  } else if (msg.includes('remove') || msg.includes('delete') || msg.includes('deactivate')) {\n    action = 'remove';\n  } else if (msg.includes('add') || msg.includes('create') || msg.includes('insert') || msg.includes('new mapping')) {\n    action = 'add';\n  } else {\n    action = 'list';\n  }\n}\n\nlet params = {};\ntry {\n  params = typeof input.params === 'string' ? JSON.parse(input.params) : (input.params ?? {});\n} catch(e) {\n  params = {};\n}\n\nif (action === 'add' && Object.keys(params).length === 0) {\n  const nums = (input.message ?? '').match(/-?\\d+(\\.\\d+)?/g)?.map(Number) ?? [];\n  if (nums.length >= 10) {\n    params = {\n      minvalue:     nums[0], maxvalue:     nums[1],\n      minpulses:    nums[2], maxpulses:    nums[3],\n      minintensity: nums[4], maxintensity: nums[5],\n      minduration:  nums[6], maxduration:  nums[7],\n      mininterval:  nums[8], maxinterval:  nums[9]\n    };\n  }\n}\n\nreturn [{ json: {\n  action,\n  params,\n  session_id:   input.session_id,\n  usecase_id:   input.usecase_id,\n  usecase_name: input.usecase_name,\n  message:      input.message\n}}];"
+        "jsCode": "const raw = $input.first().json;\nconst input = raw.payload ?? raw;\n\nlet action = (input.action ?? '').toString().trim();\nconst msg = (input.message ?? '').toLowerCase();\n\nif (!action) {\n  if (msg.includes('suggest') || msg.includes('brainstorm') || msg.includes('idea') || msg.includes('recommend')) {\n    action = 'brainstorm';\n  } else if (msg.includes('change') || msg.includes('edit') || msg.includes('update') || msg.includes('modify')) {\n    action = 'change';\n  } else if (msg.includes('remove') || msg.includes('delete') || msg.includes('deactivate')) {\n    action = 'remove';\n  } else if (msg.includes('add') || msg.includes('create') || msg.includes('insert') || msg.includes('new mapping')) {\n    action = 'add';\n  } else {\n    action = 'list';\n  }\n}\n\nlet params = {};\ntry {\n  params = typeof input.params === 'string' ? JSON.parse(input.params) : (input.params ?? {});\n} catch(e) {\n  params = {};\n}\n\nif (action === 'add' && Object.keys(params).length === 0) {\n  const nums = (input.message ?? '').match(/-?\\d+(\\.\\d+)?/g)?.map(Number) ?? [];\n  if (nums.length >= 10) {\n    params = {\n      minvalue:     nums[0], maxvalue:     nums[1],\n      minpulses:    nums[2], maxpulses:    nums[3],\n      minintensity: nums[4], maxintensity: nums[5],\n      minduration:  nums[6], maxduration:  nums[7],\n      mininterval:  nums[8], maxinterval:  nums[9]\n    };\n  }\n}\n\nreturn [{ json: {\n  action,\n  params,\n  session_id:   input.session_id,\n  usecase_id:   input.usecase_id,\n  usecase_name: input.usecase_name,\n  message:      input.message\n}}];"
       },
-      "id": "23296779-b7da-4d22-94ac-f19e48bdda78",
+      "id": "ea2c25e6-3f9f-4712-ad7b-4ddab362aa5d",
       "name": "Parse incoming",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        -160
+        208,
+        1280
       ]
     },
     {
@@ -397,26 +399,26 @@
           "fallbackOutput": "none"
         }
       },
-      "id": "17f6995e-47f1-4d40-a4a3-f818835e4125",
+      "id": "afe97192-30f7-47a6-8d2f-2fba6ba7568a",
       "name": "Switch on action",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        448,
-        -208
+        432,
+        1232
       ]
     },
     {
       "parameters": {
         "jsCode": "const input = $input.first().json;\nconst params = typeof input.params === 'string'\n  ? JSON.parse(input.params)\n  : (input.params ?? {});\n\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\n\nif (!params.id) {\n  return [{ json: {\n    skip: true,\n    reply: `Please specify which mapping ID to remove. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  skip: false,\n  action: 'remove',\n  query: `UPDATE feedback_config_rules\\nSET active = false\\nWHERE id = $1 AND type = $2 AND active = true\\nRETURNING id, 'remove' AS action;`,\n  queryParams: [parseInt(params.id), usecase_name],\n  session_id\n}}];"
       },
-      "id": "c5621b2a-fde2-4c64-bcfc-b8576da8fa16",
+      "id": "01089dff-0e2a-49c5-9e8e-a9e6b1d9b10c",
       "name": "Validate - remove params",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
-        -112
+        880,
+        1120
       ]
     },
     {
@@ -444,13 +446,13 @@
         },
         "options": {}
       },
-      "id": "8151075e-326c-426b-8628-010f99d34d43",
+      "id": "891eca1c-547c-422d-a77c-2c80829c16c7",
       "name": "If removed parameters are not valid",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1344,
-        -112
+        1216,
+        1120
       ]
     },
     {
@@ -461,18 +463,18 @@
           "queryReplacement": "={{ $json.queryParams }}"
         }
       },
-      "id": "ec61d02d-f6f4-4a6e-a407-dfed7a56f26c",
+      "id": "49d7ec31-b1b7-464e-987c-72b8cf93a619",
       "name": "DB - write mapping",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1632,
-        64
+        1472,
+        1264
       ],
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
+          "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
       }
@@ -481,26 +483,26 @@
       "parameters": {
         "jsCode": "const row = $input.first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (!row.id) {\n  return [{ json: {\n    reply: `No active mapping found with that ID for this usecase. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nconst action = row.action ?? 'remove';\nconst reply = action === 'change'\n  ? `Mapping ID ${row.id} has been updated.`\n  : `Mapping ID ${row.id} has been deactivated.`;\n\nreturn [{ json: { reply, session_id } }];"
       },
-      "id": "fa5a87fe-58b8-4f21-aebe-129b74b529d9",
+      "id": "6f286f40-4387-471f-9cf7-cadef6036cef",
       "name": "Format - write mapping",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        64
+        1664,
+        1264
       ]
     },
     {
       "parameters": {
         "numberInputs": 6
       },
-      "id": "e876e1b8-0f6a-4dc2-9116-bdfeb242aa54",
+      "id": "d2348922-f165-41a8-9006-36e9708a83a9",
       "name": "Merge all branches",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2144,
-        -160
+        2128,
+        1136
       ]
     },
     {
@@ -528,30 +530,29 @@
         },
         "options": {}
       },
-      "id": "4357395d-6ee0-40ea-9540-059fca1ed053",
+      "id": "0e7910df-a60c-4872-a137-8f6ef17e3ad8",
       "name": "If change parameters are valid",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1344,
-        576
+        1248,
+        1472
       ]
     },
     {
       "parameters": {
         "jsCode": "const input = $input.first().json;\nlet params = {};\ntry {\n  params = typeof input.params === 'string' ? JSON.parse(input.params) : (input.params ?? {});\n} catch(e) {\n  params = {};\n}\n\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\nconst id = parseInt(params.id ?? params.mapping_id ?? params.mappingId);\n\nif (!id || Number.isNaN(id)) {\n  return [{ json: {\n    valid: false,\n    reply: `Please specify which mapping ID to change. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nconst editable = ['minvalue','maxvalue','minpulses','maxpulses','minintensity','maxintensity','minduration','maxduration','mininterval','maxinterval'];\nconst updates = editable.filter(k => params[k] !== undefined && params[k] !== null && params[k] !== '');\n\nif (updates.length === 0) {\n  return [{ json: {\n    valid: false,\n    reply: `Please specify at least one mapping value to change for ID ${id}.`,\n    session_id\n  }}];\n}\n\nconst assignments = updates.map((field, index) => `${field} = $${index + 1}`).join(', ');\nconst queryParams = updates.map(field => params[field]);\nqueryParams.push(id, usecase_name);\n\nreturn [{ json: {\n  valid: true,\n  action: 'change',\n  query: `UPDATE feedback_config_rules\\nSET ${assignments}\\nWHERE id = $${updates.length + 1} AND type = $${updates.length + 2} AND active = true\\nRETURNING id, 'change' AS action;`,\n  queryParams,\n  session_id\n}}];"
       },
-      "id": "32d90f2e-aaff-46c7-afc2-414040b6dc51",
+      "id": "600b6fa7-54d6-4112-9aa0-1dd2f0605328",
       "name": "Validate - change params",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1120,
-        576
+        832,
+        1472
       ]
     }
   ],
-  "pinData": {},
   "connections": {
     "DB - list mappings": {
       "main": [
@@ -845,18 +846,9 @@
       ]
     }
   },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": true
-  },
-  "versionId": "eaeb558c-dfb5-4797-8e99-0047c6b7f640",
+  "pinData": {},
   "meta": {
-    "aiBuilderAssisted": true,
-    "builderVariant": "mcp",
-    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
-  },
-  "id": "pBa7G9TGnaWdUxoj",
-  "tags": []
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
+  }
 }
