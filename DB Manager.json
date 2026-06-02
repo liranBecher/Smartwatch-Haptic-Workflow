@@ -1,199 +1,1221 @@
 {
-  "name": "Mapping Manager",
+  "name": "DB Manager",
   "nodes": [
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT\n    f.id,\n    f.id AS mapping_id,\n    f.usecase_id,\n    uc.name AS type,\n    uc.name AS usecase_name,\n    f.minvalue,\n    f.maxvalue,\n    f.minpulses,\n    f.maxpulses,\n    f.minintensity,\n    f.maxintensity,\n    f.minduration,\n    f.maxduration,\n    f.mininterval,\n    f.maxinterval,\n    f.active\nFROM feedback_config_rules f\nJOIN \"UseCase\" uc\n    ON uc.usecase_id = f.usecase_id\nWHERE uc.name = $1\n  AND f.active = TRUE\nORDER BY f.minvalue ASC NULLS FIRST;",
-        "options": {
-          "queryReplacement": "=={{ $json.usecase_name }}"
-        }
+        "content": "\"http://localhost:5678/webhook-test/monitoring-config?userId=101\""
       },
-      "id": "43799234-bebf-4993-b6c1-77bca2a58eac",
-      "name": "DB - list mappings",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
+      "type": "n8n-nodes-base.stickyNote",
       "position": [
-        448,
-        -1056
+        -10512,
+        3440
       ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
+      "typeVersion": 1,
+      "id": "dc4a66a8-0ce0-49d8-984c-a8f5f5ebde9c",
+      "name": "Sticky Note9"
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r.id != null);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length < 1 || name==null) {\n  return [{ json: {\n    reply: `No active mappings found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r =>\n  `• ID ${r.id}: value ${r.minvalue ?? '—'}–${r.maxvalue ?? '—'} → ` +\n  `pulses ${r.minpulses}–${r.maxpulses}, ` +\n  `intensity ${r.minintensity}–${r.maxintensity}, ` +\n  `duration ${r.minduration}–${r.maxduration}ms, ` +\n  `interval ${r.mininterval}–${r.maxinterval}ms`\n).join('\\n');\n\nreturn [{ json: {\n  reply: `Active mappings for ${name} (${rows.length} total):\\n\\n${lines}`,\n  session_id\n}}];"
-      },
-      "id": "cd1b1961-ca73-401d-842a-a70682f60310",
-      "name": "Format - list",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1408,
-        -1056
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst p = typeof input.params === 'string' \n  ? JSON.parse(input.params) \n  : (input.params ?? {});\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\n\nconst required = ['minvalue','maxvalue','minpulses','maxpulses',\n                  'minintensity','maxintensity','minduration',\n                  'maxduration','mininterval','maxinterval'];\n\nconst missing = required.filter(k => p[k] === undefined || p[k] === null);\n\nif (missing.length > 0) {\n  return [{ json: {\n    valid: false,\n    reply: `I need a few more details to add this mapping. Please provide: ${missing.join(', ')}.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  valid: true,\n  session_id,\n  usecase_name,\n  minvalue:     p.minvalue,\n  maxvalue:     p.maxvalue,\n  minpulses:    p.minpulses,\n  maxpulses:    p.maxpulses,\n  minintensity: p.minintensity,\n  maxintensity: p.maxintensity,\n  minduration:  p.minduration,\n  maxduration:  p.maxduration,\n  mininterval:  p.mininterval,\n  maxinterval:  p.maxinterval,\n}}];"
-      },
-      "id": "f68cc6f9-e83c-43c5-a16e-ea1eadbfb1d7",
-      "name": "Validate - add params",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        416,
-        -800
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO feedback_config_rules\n  (\n    usecase_id,\n    active,\n    minvalue,\n    maxvalue,\n    minpulses,\n    maxpulses,\n    minintensity,\n    maxintensity,\n    minduration,\n    maxduration,\n    mininterval,\n    maxinterval\n  )\nSELECT\n    uc.usecase_id,\n    TRUE,\n    $2,\n    $3,\n    $4,\n    $5,\n    $6,\n    $7,\n    $8,\n    $9,\n    $10,\n    $11\nFROM \"UseCase\" uc\nWHERE uc.name = $1\nRETURNING id;",
-        "options": {
-          "queryReplacement": "=={{ $json.usecase_name }},={{ $json.minvalue }},={{ $json.maxvalue }},={{ $json.minpulses }},={{ $json.maxpulses }},={{ $json.minintensity }},={{ $json.maxintensity }},={{ $json.minduration }},={{ $json.maxduration }},={{ $json.mininterval }},={{ $json.maxinterval }}"
-        }
-      },
-      "id": "904b5f2d-e6df-4677-947b-d531de476133",
-      "name": "DB - insert mapping",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        1088,
-        -816
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all();\nconst session_id = $('Validate - add params').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].json.id) {\n  return [{ json: {\n    reply: `A mapping with those exact values already exists and is active. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  reply: `Done. New mapping added with ID ${rows[0].json.id}.`,\n  session_id\n}}];"
-      },
-      "id": "ad7f2268-3725-45a3-8dc1-c83d5b51d89d",
-      "name": "Format - add success",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1328,
-        -816
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT\n  ROUND(MIN(sd.value)::numeric, 2) AS min_seen,\n  ROUND(MAX(sd.value)::numeric, 2) AS max_seen,\n  ROUND(AVG(sd.value)::numeric, 2) AS avg_seen,\n  COUNT(*) AS total_readings\nFROM \"SensorData\" sd\nJOIN \"SensorType\" st ON sd.sensorid = st.sensorid\nWHERE st.name = $1\n  AND sd.time > NOW() - INTERVAL '30 days';",
-        "options": {
-          "queryReplacement": "=={{ $json.usecase_name }}"
-        }
-      },
-      "id": "2100fda8-f141-44ac-a78d-c918c915536e",
-      "name": "DB - historical range",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        576,
-        -32
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=={{ \n\"You are an expert in haptic feedback parameter design.\\n\\n\" +\n\"Usecase: \" + $input.first().json.usecase_name + \"\\n\\n\" +\n\"Existing active mappings:\\n\" + JSON.stringify($input.first().json.current_mappings ?? [], null, 2) + \"\\n\\n\" +\n\"Historical sensor data (last 30 days):\\n\" +\n\"Min: \" + $input.first().json.min_seen + \", Max: \" + $input.first().json.max_seen + \", Avg: \" + $input.first().json.avg_seen + \", Readings: \" + $input.first().json.total_readings + \"\\n\\n\" +\n\"Suggest 3 new mapping ranges that improve granularity or cover gaps in the existing mappings. For each suggestion, explain WHY it improves the current set and what sensor value range it targets.\\n\" +\n\"Format your response as plain readable text, not JSON.\"\n}}",
-        "batching": {}
-      },
-      "id": "67a1ad0e-6d1b-4469-8e9b-06d20420e643",
-      "name": "GPT - Brainstorm",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.7,
-      "position": [
-        1024,
-        -32
-      ]
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4o",
-          "mode": "list",
-          "cachedResultName": "gpt-4o"
-        },
-        "builtInTools": {},
+        "path": "current-configurations",
+        "responseMode": "responseNode",
         "options": {}
       },
-      "id": "ea992faf-d033-4426-add5-18ecbff9631b",
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
       "position": [
-        1104,
-        208
+        -10224,
+        2320
       ],
+      "id": "7b9d3193-0a72-45c6-8a83-9fa274d34187",
+      "name": "Get current configurations1",
+      "webhookId": "1b044278-5d6b-4f82-ad44-d93bb6524635"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    f.id,\n    f.id AS mapping_id,\n    f.usecase_id,\n    uc.name AS type,\n    uc.name AS usecase_name,\n    uc.description AS usecase_description,\n    f.active,\n    f.minvalue,\n    f.maxvalue,\n    f.minpulses,\n    f.maxpulses,\n    f.minintensity,\n    f.maxintensity,\n    f.minduration,\n    f.maxduration,\n    f.mininterval,\n    f.maxinterval\nFROM feedback_config_rules f\nLEFT JOIN \"UseCase\" uc\n    ON uc.usecase_id = f.usecase_id\nWHERE f.active = TRUE\nORDER BY uc.name NULLS FIRST, f.minvalue ASC NULLS FIRST, f.id;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -10000,
+        2320
+      ],
+      "id": "b7e5128d-c5b1-456a-9e0b-19a55bccd8a9",
+      "name": "FetchCurrentRulesFromDB1",
       "credentials": {
-        "openAiApi": {
-          "id": "PZrrVTzGmheg0FUW",
-          "name": "OpenAi account"
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
         }
       }
     },
     {
       "parameters": {
-        "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"action\":       \"={{ $json.payload.action }}\",\n  \"params\":       \"={{ $json.payload.params }}\",\n  \"session_id\":   \"={{ $json.session_id }}\",\n  \"usecase_id\":   \"={{ $json.usecase_id }}\",\n  \"usecase_name\": \"={{ $json.usecase_name }}\",\n  \"message\":      \"={{ $json.message }}\"\n}"
+        "path": "get-users",
+        "responseMode": "responseNode",
+        "options": {}
       },
-      "id": "0c231ef2-8d94-41c7-86dd-d3063e831cba",
-      "name": "Execute Workflow Trigger",
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1.1,
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
       "position": [
-        -544,
-        -400
+        -10224,
+        2544
+      ],
+      "id": "074a064f-7f66-44c5-82fa-9e3782a8e376",
+      "name": "Get users1",
+      "webhookId": "36b477ed-3989-424e-8961-91732079009a"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9760,
+        2544
+      ],
+      "id": "c839c325-9e4b-4231-bb8e-a77c7c807375",
+      "name": "Respond to Webhook Get-users1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9536,
+        2320
+      ],
+      "id": "f388642c-390f-4f76-be56-509b2f95d54a",
+      "name": "Respond to Webhook current-configuraion1"
+    },
+    {
+      "parameters": {
+        "path": "sensor-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        2864
+      ],
+      "id": "3ac7df15-cbf8-487f-b6a9-bd087ecc2f7d",
+      "name": "Get sensor data1",
+      "webhookId": "de1c4e46-405a-4089-8974-3935dfcc72eb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9088,
+        2768
+      ],
+      "id": "e0a544e0-2c43-4039-a6af-4571f8e06cb5",
+      "name": "Respond to Webhook sensor data1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 400,
+          "responseKey": "={{ $('parse sensor data request1').item.json.payload.error }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9536,
+        2960
+      ],
+      "id": "79f51bcd-9927-408e-b366-ac9848d3483b",
+      "name": "Respond to Webhook sensor data error1"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9760,
+        3184
+      ],
+      "id": "57813297-0ef5-43aa-9260-c44cce8a60db",
+      "name": "Respond to Webhook get sensor type1"
+    },
+    {
+      "parameters": {
+        "content": "## SET MONITORING TYPE\nAssigns a monitoring type (usecase) to a specific user.\nEach user can now have a different monitoring type.",
+        "height": 208,
+        "width": 224,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8896,
+        3808
+      ],
+      "typeVersion": 1,
+      "id": "4ed17a50-75c4-44e1-a3ba-6ac22ca768d3",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "curl -X GET \"http://localhost:5678/webhook-test/sensor-data?userid=100&alert_type=HeartRate\""
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        2848
+      ],
+      "typeVersion": 1,
+      "id": "5bb98b69-8f28-41b2-ada3-21b3867a7def",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "curl -X GET http://localhost:5678/webhook-test/current-configurations "
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        2272
+      ],
+      "typeVersion": 1,
+      "id": "3af91f38-ef74-4db4-8cf5-653201e8e34e",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "curl -X GET http://localhost:5678/webhook-test/get-users"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        2496
+      ],
+      "typeVersion": 1,
+      "id": "d25b8dfc-844b-47a5-b088-bd010156e8f0",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    u.userid,\n    u.fname,\n    u.lname,\n    u.lastrequest,\n    COALESCE(\n        json_agg(\n            json_build_object(\n                'mapping_id', f.id,\n                'usecase_id', uc.usecase_id,\n                'usecase_name', uc.name,\n                'usecase_description', uc.description,\n                'minvalue', f.minvalue,\n                'maxvalue', f.maxvalue,\n                'minpulses', f.minpulses,\n                'maxpulses', f.maxpulses,\n                'minintensity', f.minintensity,\n                'maxintensity', f.maxintensity,\n                'minduration', f.minduration,\n                'maxduration', f.maxduration,\n                'mininterval', f.mininterval,\n                'maxinterval', f.maxinterval\n            )\n            ORDER BY uc.name, f.id\n        ) FILTER (WHERE f.id IS NOT NULL),\n        '[]'::json\n    ) AS usecase_mappings\nFROM \"User\" u\nLEFT JOIN \"User_UC_Mappings\" uum\n    ON uum.user_id = u.userid\nLEFT JOIN feedback_config_rules f\n    ON f.id = uum.feedback_config_rule_id\nLEFT JOIN \"UseCase\" uc\n    ON uc.usecase_id = f.usecase_id\nGROUP BY\n    u.userid,\n    u.fname,\n    u.lname,\n    u.lastrequest\nORDER BY u.userid;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -10000,
+        2544
+      ],
+      "id": "9079365e-d296-4de6-a82e-124db7967753",
+      "name": "get users query1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.query}}\n",
+        "options": {
+          "queryReplacement": "={{$json.params}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -9536,
+        2768
+      ],
+      "id": "db43399c-de70-4d04-b2f4-81ae88806a68",
+      "name": "Execute get sensor data query1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST \"http://localhost:5678/webhook/set-monitoring-type\" -H \"Content-Type: application/json\" -d \"{\\\"userId\\\": 100, \\\"monitoringType\\\": \\\"HeartRate\\\"}\""
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        3792
+      ],
+      "typeVersion": 1,
+      "id": "2d78206c-64a5-474c-8978-1766aade218c",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "curl -X GET http://localhost:5678/webhook-test/get-sensor-types"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        3152
+      ],
+      "typeVersion": 1,
+      "id": "9c8ed1d3-b898-4d9f-b75b-326bb04c6015",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST http://localhost:5678/webhook/assign-usecase -H \"Content-Type: application/json\" -d \"{\\\"userId\\\": 100, \\\"usecaseId\\\": 3}\""
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        4064
+      ],
+      "typeVersion": 1,
+      "id": "6c1ab6c9-4273-42c4-b0e3-499752486d9b",
+      "name": "Sticky Note27"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "assign-usecase",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        4112
+      ],
+      "id": "db579f5f-5513-4bb2-8242-537f0c49f19e",
+      "name": "assign usecase to user1",
+      "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\n\nconst userId = parseInt(body.userId);\nconst usecaseId = parseInt(body.usecaseId);\n\n// Validate inputs\nif (!userId || isNaN(userId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid userId\"\n    }\n  }];\n}\n\nif (!usecaseId || isNaN(usecaseId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid usecaseId\"\n    }\n  }];\n}\n\n// Return clean parameters for the database query\nreturn [{\n  json: {\n    userId: userId,\n    usecaseId: usecaseId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10000,
+        4112
+      ],
+      "id": "88e339fc-e869-4d77-ab22-9cef80e6d37e",
+      "name": "extract parameters for users and usecase1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH selected_rule AS (\n    SELECT\n        f.id,\n        f.usecase_id\n    FROM feedback_config_rules f\n    WHERE f.usecase_id = $2\n      AND f.active = TRUE\n    ORDER BY\n        CASE WHEN f.id = 140 THEN 0 ELSE 1 END,\n        f.id ASC\n    LIMIT 1\n),\ndelete_existing_for_same_usecase AS (\n    DELETE FROM \"User_UC_Mappings\" uum\n    USING feedback_config_rules existing_rule\n    WHERE uum.feedback_config_rule_id = existing_rule.id\n      AND uum.user_id = $1\n      AND existing_rule.usecase_id = $2\n)\nINSERT INTO \"User_UC_Mappings\" (user_id, feedback_config_rule_id)\nSELECT\n    $1,\n    selected_rule.id\nFROM selected_rule\nRETURNING\n    user_id,\n    feedback_config_rule_id;",
+        "options": {
+          "queryReplacement": "={{ [$json.userId, $json.usecaseId] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -9776,
+        4112
+      ],
+      "id": "5343f161-8c3b-4797-87b2-c4caae00ec20",
+      "name": "update user usecase1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9376,
+        4112
+      ],
+      "id": "76bf931f-e92e-45ab-8fef-23bf15508b3a",
+      "name": "Respond to Webhook assign usecase1"
+    },
+    {
+      "parameters": {
+        "content": "curl -X POST http://localhost:5678/webhook/create-usecase -H \"Content-Type: application/json\" -d \"{\\\"name\\\": \\\"HeartRate\\\", \\\"description\\\": \\\"Duplicate test\\\"}\""
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        4560
+      ],
+      "typeVersion": 1,
+      "id": "bf4db354-3f42-4dc5-9098-6827ee2b3df3",
+      "name": "Sticky Note28"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-usecase",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        4608
+      ],
+      "id": "e16271f3-5860-4e6d-9704-1a79796f79ba",
+      "name": "create use case1",
+      "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\n\nconst name = body.name?.trim();\nconst description = body.description?.trim() || null;\n\n// Validate name is required\nif (!name) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Name is required\"\n    }\n  }];\n}\n\n// Validate name length (max 50 chars per your DB schema)\nif (name.length > 50) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Name must be 50 characters or less\"\n    }\n  }];\n}\n\n// Return clean parameters\nreturn [{\n  json: {\n    name: name,\n    description: description\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10000,
+        4608
+      ],
+      "id": "28d98116-0cae-400f-b28f-f1c176961629",
+      "name": "extract and validate1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"UseCase\" (name, description)\nVALUES ($1, $2)\nRETURNING usecase_id, name, description;",
+        "options": {
+          "queryReplacement": "=={{ $json.name }},={{ $json.description }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -9776,
+        4608
+      ],
+      "id": "c08b54d9-340b-48d9-adee-f6b25151d1e3",
+      "name": "insert use case1",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9376,
+        4608
+      ],
+      "id": "6c8d806d-0084-4036-b44b-b49d3fe5eccc",
+      "name": "Respond to Webhook create usecase1"
+    },
+    {
+      "parameters": {
+        "content": "## Check connection\ncurl -X POST http://localhost:5678/webhook-test/check-connection",
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10496,
+        4800
+      ],
+      "typeVersion": 1,
+      "id": "bed3160d-4cb0-4cf5-afc2-8524ee79f857",
+      "name": "Sticky Note35"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "check-connection",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "6b760b4a-6c4d-4619-b3f4-2c3f0796a43e",
+      "name": "Check Connection1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        4832
+      ],
+      "webhookId": "a9d1958f-39d3-46b3-b200-f5979feacf97"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "2feeb207-cf85-4ea6-9925-b6ec09c5b09d",
+      "name": "Respond to Webhook Check Connection1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -10000,
+        4832
       ]
     },
     {
       "parameters": {
-        "jsCode": "const reply = $input.first().json.text ?? '';\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\nreturn [{ json: { reply, session_id } }];"
+        "httpMethod": "POST",
+        "path": "set-rules",
+        "responseMode": "lastNode",
+        "options": {}
       },
-      "id": "8fa06d37-0903-4e54-88f1-925c506c0d65",
-      "name": "Format - brainstorm",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -8320,
+        2288
+      ],
+      "id": "f710ece8-e839-41c9-90bb-4d7a101949b6",
+      "name": "add Mapping1",
+      "webhookId": "9d253cce-73cb-4598-a738-2f8e053a8309"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (\n    type, \n    minvalue, maxvalue, \n    minpulses, maxpulses, \n    minintensity, maxintensity, \n    minduration, maxduration, \n    mininterval, maxinterval, \n    active\n) VALUES (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12\n);",
+        "options": {
+          "queryReplacement": "={{ $json[\"0\"].type }}, {{ $json[\"0\"].minvalue }}, {{ $json[\"0\"].maxvalue }},{{ $json[\"0\"].minpulses }}, {{ $json[\"0\"].maxpulses }}, {{ $json[\"0\"].minintensity }}, {{ $json[\"0\"].maxintensity }},{{ $json[\"0\"].minduration }},{{ $json[\"0\"].maxduration }},{{ $json[\"0\"].mininterval }},{{ $json[\"0\"].maxinterval }},{{ $json[\"0\"].active }}"
+        }
+      },
+      "name": "DB: Upsert Rule1",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        -7872,
+        2288
+      ],
+      "id": "2299c2a3-59d6-4f3b-9369-2ca825c7ba12",
+      "typeVersion": 2.6,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      },
+      "notes": "Check what we should do when having duplicate data"
+    },
+    {
+      "parameters": {
+        "content": "## generic add mapping flow"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8624,
+        2256
+      ],
+      "typeVersion": 1,
+      "id": "b9350e5f-a711-484d-b872-c6d7a099eed6",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst mappingId = parseInt(body.mappingId);\n\nif (!mappingId || isNaN(mappingId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    mappingId: mappingId\n  }\n}];"
+      },
+      "id": "1b55b96a-d632-4eaf-a122-fd94d0ed4303",
+      "name": "Extract Mapping ID1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1376,
-        -32
+        -8096,
+        2624
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id, minvalue, maxvalue, minpulses, maxpulses,\n       minintensity, maxintensity, minduration, maxduration,\n       mininterval, maxinterval\nFROM feedback_config_rules\nWHERE type = $1 AND active = true\nORDER BY minvalue ASC NULLS FIRST;",
+        "query": "UPDATE feedback_config_rules \nSET active = false \nWHERE id = $1\nRETURNING id, active, type;",
         "options": {
-          "queryReplacement": "=={{ $json.usecase_name }}"
+          "queryReplacement": "={{ [$json.mappingId] }}"
         }
       },
-      "id": "efc60b22-038a-495b-8809-4d9a0bbc07df",
-      "name": "DB - current mappings for brainstorm",
+      "id": "6c87615a-dbd2-47fb-96fb-da83ffa13447",
+      "name": "Postgres: Deactivate Rule1",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        128,
-        -32
+        -7872,
+        2624
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deactivate-mapping",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "77ce3440-3fff-4734-bdd2-2a78efae14f5",
+      "name": "Deactivate Mapping1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -8320,
+        2624
+      ],
+      "webhookId": "9c75af57-eec3-458e-8ee5-d541d853e577"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "id": "eb4d2f88-ab89-4901-bc52-e6e812bad76d",
+      "name": "Respond to Webhook deactivated mapping1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -7424,
+        2624
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## generic deactivate mapping flow"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8624,
+        2592
+      ],
+      "typeVersion": 1,
+      "id": "9859dc8d-97e7-46fa-a5ec-18c7031a4417",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "path": "get-sensor-types",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        3184
+      ],
+      "id": "6aee5dd5-145e-4ab3-b609-c2138f0b9e03",
+      "name": "Get usecases1",
+      "webhookId": "10535e70-e76c-457c-ac76-c5ad131f790a"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM \"UseCase\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -10000,
+        3184
+      ],
+      "id": "56fae2cb-85b4-406f-9100-16bbcce9525d",
+      "name": "get usecase query1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nreturn [\n  {\n    json: {\n      rows\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9760,
+        2320
+      ],
+      "id": "013e8daa-96b5-465f-b294-3f566c1bbe22",
+      "name": "Setting up configutations response1",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = $input.first().json.query || {};\nconst range = q.range || \"All Time\";\nconst alertTypeRaw = q.alert_type;\nconst userIdRaw = q.userid;\nconst startDateRaw = q.start_date;\nconst endDateRaw = q.end_date;\n\nif (!userIdRaw) {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing required userid parameter\" } } }];\n}\nif (alertTypeRaw === undefined || alertTypeRaw === null || String(alertTypeRaw).trim() === \"\") {\n  return [{ json: { statusCode: 400, payload: { error: \"Missing required alert_type parameter\" } } }];\n}\n\nconst userId = Number(userIdRaw);\nif (!Number.isFinite(userId)) {\n  return [{ json: { statusCode: 400, payload: { error: \"userid must be a number\" } } }];\n}\n\nconst alertTypeStr = String(alertTypeRaw).trim();\nconst isNumericAlertType = /^[0-9]+$/.test(alertTypeStr);\n\nconst now = new Date();\nlet dateFrom = null;\nlet dateTo = null;\n\nswitch (range) {\n  case \"Last 24 Hours\":\n  case \"Last+24+Hours\":\n    dateFrom = new Date(now.getTime() - 24 * 60 * 60 * 1000);\n    break;\n  case \"Last 7 Days\":\n  case \"Last+7+Days\":\n    dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);\n    break;\n  case \"Last 30 Days\":\n  case \"Last+30+Days\":\n    dateFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);\n    break;\n  case \"custom\":\n  case \"Custom Date Range\":\n  case \"Custom+Date+Range\":\n    // Parse custom date range\n    if (startDateRaw) {\n      dateFrom = new Date(startDateRaw + \"T00:00:00\");\n    }\n    if (endDateRaw) {\n      // Set to end of day (23:59:59)\n      dateTo = new Date(endDateRaw + \"T23:59:59\");\n    }\n    break;\n  default:\n    dateFrom = null;\n    dateTo = null;\n}\n\nlet query = `\n  SELECT sd.id, sd.time, sd.value,\n         COALESCE(a.type, 'No Alert') AS alert_type,\n         COALESCE(a.pulses, 0) AS pulses,\n         COALESCE(a.intensity, 0) AS intensity,\n         COALESCE(a.duration, 0) AS duration,\n         COALESCE(a.interval, 0) AS interval,\n         sd.userid,\n         sd.usecase_id,\n         a.vibration_reason AS reason\n  FROM public.\"SensorData\" sd\n  LEFT JOIN public.\"Alert\" a ON sd.alertid = a.alertid\n`;\n\nlet where = [];\nlet params = [];\nlet p = 1;\n\n// time filter - start date\nif (dateFrom) {\n  where.push(`sd.time >= $${p++}`);\n  params.push(dateFrom.toISOString());\n}\n\n// time filter - end date (for custom range)\nif (dateTo) {\n  where.push(`sd.time <= $${p++}`);\n  params.push(dateTo.toISOString());\n}\n\n// user filter\nwhere.push(`sd.userid = $${p++}`);\nparams.push(userId);\n\n// alert filter: by type OR by sensorid\nif (isNumericAlertType) {\n  where.push(`sd.usecase_id = $${p++}`);\n  params.push(Number(alertTypeStr));\n} else {\n  where.push(`a.type = $${p++}`);\n  params.push(alertTypeStr);\n}\n\nquery += ` WHERE ${where.join(\" AND \")} ORDER BY sd.time;`;\n\nreturn [{\n  json: {\n    statusCode: 200,\n    query,\n    params,\n    meta: { range, alertTypeRaw: alertTypeStr, interpretedAs: isNumericAlertType ? \"sensorid\" : \"type\", dateFrom, dateTo }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10000,
+        2864
+      ],
+      "id": "81dfc407-7a53-497b-9093-2e5c6fded874",
+      "name": "parse sensor data request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a154f1c1-4b58-4f22-b69e-412922720005",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -9760,
+        2864
+      ],
+      "id": "1d9be112-b221-4e1a-94ca-6dd3b26d56f9",
+      "name": "If sensor database not empty1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\n\nif (!rows || rows.length === 0) {\n  return [{ json: { statusCode: 404, payload: [] } }];\n}\n\nreturn [{ json: { statusCode: 200, payload: rows } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9312,
+        2768
+      ],
+      "id": "a4d74f94-5a5f-44f4-9917-c046c74535bf",
+      "name": "check if sensor data query empty1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || !result.user_id) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User or active mapping for use case not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Use case mapping assigned successfully\",\n    data: {\n      userId: result.user_id,\n      feedbackConfigRuleId: result.feedback_config_rule_id\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9584,
+        4112
+      ],
+      "id": "1d19dcd2-a3fc-42cd-b4ba-2c681b9ce1a9",
+      "name": "format response assign usecase to user1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Check if this is an error from the database\nif (input.code || input.message) {\n  if (input.code === '23505' || (input.message && input.message.includes('duplicate key'))) {\n    return [{\n      json: {\n        statusCode: 409,\n        error: \"A use case with this name already exists\"\n      }\n    }];\n  }\n\n  return [{\n    json: {\n      statusCode: 500,\n      error: \"Failed to create use case: \" + (input.message || \"Unknown error\")\n    }\n  }];\n}\n\n// Success case\nif (!input.usecase_id) {\n  return [{\n    json: {\n      statusCode: 500,\n      error: \"Use case was inserted but no usecase_id was returned\",\n      raw: input\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    usecase_id: input.usecase_id,\n    name: input.name,\n    description: input.description ?? \"\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9568,
+        4608
+      ],
+      "id": "0d4393a5-2ec7-4831-bc16-31bb64c307c0",
+      "name": "format response insert usecase1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body",
+        "options": {}
+      },
+      "name": "Split Array of mapping (If List)1",
+      "type": "n8n-nodes-base.itemLists",
+      "position": [
+        -8080,
+        2288
+      ],
+      "notesInFlow": true,
+      "id": "60ab6b38-d1f3-47d8-b67c-aa65d8430321",
+      "typeVersion": 3.1,
+      "notes": "Ensures n8n loops through each rule if Java sends a List<SensorRuleConfig>"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"Mapping ID not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Mapping deactivated successfully\",\n    data: {\n      mappingId: result.id,\n      sensor: result.sensorname,\n      active: result.isactive\n    }\n  }\n}];"
+      },
+      "id": "1a9855e2-aa2e-49a8-8c3c-ab57dd981640",
+      "name": "Format Final Response deactivate mapping1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7648,
+        2624
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst usecaseId = parseInt(body.usecase_id, 10);\nconst interval = body.interval;\n\nif (!usecaseId || isNaN(usecaseId) || !interval) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid input\"\n    }\n  }];\n}\n\nif (!/^\\d+(\\.\\d+)?\\s+(second|seconds|minute|minutes|hour|hours|day|days)$/i.test(interval)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Invalid interval format. Use values like '30 seconds', '1 minute', '2 hours'\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    usecaseId,\n    interval\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -8112,
+        2976
+      ],
+      "id": "31c6346b-5428-492a-92ee-2af2ca42829e",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"UseCase\"\nSET log_interval = $2::interval\nWHERE usecase_id = $1\nRETURNING usecase_id, log_interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.usecaseId, $json.interval] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -7888,
+        2976
+      ],
+      "id": "00d602e3-0b2c-47f7-b0d0-3851e33b37bc",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "set-logging-interval",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -8336,
+        2976
+      ],
+      "id": "0e5a23c3-11fc-4d8a-9f24-f216d423e7ae",
+      "name": "set Logging Interval1",
+      "webhookId": "568708b2-aae2-4fc5-bd57-a815f86c9dfd"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"UseCase not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Logging interval updated successfully\",\n    data: {\n      usecaseId: result.usecase_id,\n      logInterval: result.log_interval\n    }\n  }\n}];"
+      },
+      "id": "c7d3ba90-c09e-4224-8fac-1640e34eb6c3",
+      "name": "Format Final Response2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7664,
+        2976
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "id": "b74e0b5b-15d4-430c-8d58-8b1f5b2e4abe",
+      "name": "Respond to Webhook4",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -7440,
+        2976
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## edit logging interval for use cases\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8640,
+        2960
+      ],
+      "typeVersion": 1,
+      "id": "cf4f9bef-7cc0-4ed8-ac5a-1d58aaa377e4",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "content": "## edit users info"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -8640,
+        3312
+      ],
+      "typeVersion": 1,
+      "id": "7bc08d02-55f2-429b-a863-28740def480a",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "edit-users",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -8336,
+        3344
+      ],
+      "id": "d8267d58-f0af-40da-b003-c3cea597fb22",
+      "name": "edit users1",
+      "webhookId": "ac4ac46a-8d37-4510-bd78-070d23d78298"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst fName = body.fName;\nconst lName = body.lName;\nconst id = Number(body.userId);\n\nif (!fName || !lName || !id || isNaN(id)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    fName: fName,\n    lName: lName, \n    id: id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -8112,
+        3344
+      ],
+      "id": "dfb2439a-c388-4fe6-a5c1-41e26dfe2c74",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET fname = $1, lname = $2\nWHERE userid = $3\nRETURNING userid;",
+        "options": {
+          "queryReplacement": "={{ [$json.fName, $json.lName, $json.id] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -7888,
+        3344
+      ],
+      "id": "47c69f0e-6daf-46fa-aba9-07a52f4019ea",
+      "name": "edit names query1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"User name updated successfully\",\n    data: {\n      userId: result.userid\n    }\n  }\n}];"
+      },
+      "id": "3f441193-6868-479e-b3e8-851f3d55cab3",
+      "name": "Format Final Response3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7664,
+        3344
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -7440,
+        3344
+      ],
+      "id": "569813fc-316a-4179-bf37-6b2363017539",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "schedule",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -6624,
+        2848
+      ],
+      "id": "2230581e-46b3-4ac5-a1a9-4565aed000c5",
+      "name": "schedule1",
+      "webhookId": "7ac2553a-3400-4024-ad6d-5590b153953c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? {};\n\nconst action = body.action || \"listAll\";\nconst params = body.params || {};\n\nconst allowed = [\"add\", \"change\", \"deactivate\", \"activate\", \"listAll\", \"listActive\"];\n\nif (!allowed.includes(action)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: `Invalid action: ${action}`\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    action,\n    params,\n    session_id: body.session_id || \"researcher-ui\",\n    usecase_id: body.usecase_id || null,\n    usecase_name: body.usecase_name || body.type || \"Schedule\",\n    message: body.message || `Researcher UI schedule action: ${action}`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6400,
+        2848
+      ],
+      "id": "a28e550e-65d3-4273-b84a-3dabd71ed302",
+      "name": "Parse request to JSON1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "pgTUdS8Nux8YQO13",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pgTUdS8Nux8YQO13",
+          "cachedResultName": "Schedule Manager"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "action": "={{ $json.action }}",
+            "params": "={{ JSON.stringify($json.params) }}",
+            "session_id": "={{ $json.session_id }}",
+            "usecase_id": "={{ $json.usecase_id }}",
+            "usecase_name": "={{ $json.usecase_name }}",
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -6176,
+        2848
+      ],
+      "id": "5aaba981-f6a5-4e79-8151-6b601f274dcf",
+      "name": "Call 'Schedule Manager'1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -5728,
+        2848
+      ],
+      "id": "6c48f58c-416c-4579-b1e6-de7e9dad19cc",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "content": "## Scheduling port\n**Java app -> schedulie manager**"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -6976,
+        2832
+      ],
+      "typeVersion": 1,
+      "id": "3838908c-500d-4a8c-8f61-e09cfebcc115",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nconst reply = input.reply ?? \"\";\nconst session_id = input.session_id ?? \"researcher-ui\";\n\n// If Schedule Manager returned a non-list action response,\n// return it as a normal status response.\nif (!reply.includes(\"🆔\")) {\n  return [{\n    json: {\n      success: true,\n      data: [],\n      reply,\n      session_id\n    }\n  }];\n}\n\nconst schedules = [];\n\n// Split each schedule block by the schedule ID marker\nconst blocks = reply\n  .split(\"🆔\")\n  .slice(1); // first part is title/header\n\nfor (const block of blocks) {\n  const idMatch = block.match(/\\*ID\\s+(\\d+)\\*/);\n  const userMatch = block.match(/User:\\s*(\\d+)/);\n  const typeMatch = block.match(/Type:\\s*([a-zA-Z_]+)\\s*\\(([-+]?\\d*\\.?\\d+)%\\)/);\n  const nextMatch = block.match(/Next Check:\\s*(.*?)\\s*\\(Interval:\\s*(\\d+)\\s*days?\\)/);\n  const activeMatch = block.match(/Active:\\s*(true|false)/i);\n\n  schedules.push({\n    schedule_id: idMatch ? Number(idMatch[1]) : null,\n    user_id: userMatch ? Number(userMatch[1]) : null,\n    measure_type: typeMatch ? typeMatch[1] : null,\n    trigger_percentage: typeMatch ? Number(typeMatch[2]) : null,\n    next_check: nextMatch ? nextMatch[1].trim() : null,\n    interval_days: nextMatch ? Number(nextMatch[2]) : null,\n    active: activeMatch ? activeMatch[1].toLowerCase() === \"true\" : null\n  });\n}\n\nreturn [{\n  json: {\n    success: true,\n    data: schedules,\n    reply,\n    session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5952,
+        2848
+      ],
+      "id": "d4afe684-b570-485c-87bf-de23948aeb14",
+      "name": "parse response1"
+    },
+    {
+      "parameters": {
+        "content": "## Heart Rate Personalization"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -7008,
+        2256
+      ],
+      "typeVersion": 1,
+      "id": "7283c0c8-5072-420b-a438-85706d1eab44",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "1 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "b5b4e6f4-3e74-4ecd-88f0-956c13d5ce21",
+      "name": "Daily Trigger (00:01)1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -6624,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    s.*, \n    uc.name as usecase_name \nFROM user_schedules s\nJOIN \"User\" u ON s.user_id = u.userid\nJOIN \"UseCase\" uc ON u.active_usecase_id = uc.usecase_id\nWHERE s.next_run_date <= CURRENT_DATE \n  AND s.active = TRUE;",
+        "options": {}
+      },
+      "id": "88705710-fd5e-4555-bdc3-051b861e8cd0",
+      "name": "Get Due Schedules1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -6448,
+        2208
+      ],
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, active FROM feedback_config_rules WHERE type = $1 AND minvalue = $2 AND maxvalue = $3 LIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ [$json.type, $json.minValue, $json.maxValue] }}"
+        }
+      },
+      "id": "04c03667-a5d8-44f0-8b5c-17cafd3beee9",
+      "name": "Search for Existing Rule1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -5168,
+        2240
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -205,28 +1227,91 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst trigger = $('Execute Workflow Trigger').first().json;\nreturn [{ json: {\n  usecase_name:     trigger.usecase_name,\n  session_id:       trigger.session_id,\n  current_mappings: rows\n}}];"
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules (type, active, minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval) \nVALUES ($3, true, $1, $2, 5, 8, 200, 255, 400, 600, 50, 100);",
+        "options": {
+          "queryReplacement": "={{ [$('Calculate new rule Parameters1').item.json.minValue,$('Calculate new rule Parameters1').item.json.maxValue , $('Calculate new rule Parameters1').item.json.type]}}"
+        }
       },
-      "id": "3d6f781b-ab57-4e55-a31d-1ffa816882b8",
-      "name": "Package mappings",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "2f1d1fbf-2148-4dc3-8f9d-60e7ec6a677e",
+      "name": "Create New Rule1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
       "position": [
-        352,
-        -32
-      ]
+        -4800,
+        1984
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "const historical = $input.first().json;\nconst mappings = $('Package mappings').first().json.current_mappings;\nconst trigger = $('Execute Workflow Trigger').first().json;\n\nreturn [{ json: {\n  min_seen:         historical.min_seen,\n  max_seen:         historical.max_seen,\n  avg_seen:         historical.avg_seen,\n  total_readings:   historical.total_readings,\n  current_mappings: mappings,\n  usecase_name:     trigger.usecase_name,\n  session_id:       trigger.session_id\n}}];"
+        "operation": "executeQuery",
+        "query": "UPDATE feedback_config_rules SET active = true WHERE id = $1;",
+        "options": {
+          "queryReplacement": "={{ [$json.id] }}"
+        }
       },
-      "id": "f2034d29-6f40-40a1-9fa6-ba3f85c275c2",
-      "name": "Combine brainstorm data",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "c9cf400b-a052-4376-929f-d04e8140eb89",
+      "name": "Activate Existing Rule1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
       "position": [
-        800,
-        -32
+        -4688,
+        2224
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_schedules \nSET next_run_date = CURRENT_DATE + ($2 || ' days')::interval \nWHERE user_id = $1;",
+        "options": {
+          "queryReplacement": "={{ [$node[\"Calculate new rule Parameters1\"].json.user_id, $node[\"Calculate new rule Parameters1\"].json.interval_days] }}"
+        }
+      },
+      "id": "417a1264-78f8-427f-9ff7-81844a6c7241",
+      "name": "Update Next Run Date1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -4224,
+        2240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "da6551ca-134d-4705-8730-1c8c14f69c60",
+      "name": "Rule Doesn't Exist?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -4976,
+        2240
       ]
     },
     {
@@ -240,12 +1325,12 @@
           },
           "conditions": [
             {
-              "id": "fbbcefc6-4bac-4ed1-aa16-6b22715d1554",
-              "leftValue": "={{ $json.valid }}",
+              "id": "ecbd92ee-0e17-4467-93ac-759fcfce8971",
+              "leftValue": "={{ $json.schedule_id }}",
               "rightValue": "",
               "operator": {
-                "type": "boolean",
-                "operation": "true",
+                "type": "number",
+                "operation": "empty",
                 "singleValue": true
               }
             }
@@ -254,26 +1339,140 @@
         },
         "options": {}
       },
-      "id": "fbc9dd0f-9ff0-4d62-9c38-49d5f097c4fe",
-      "name": "If added parameters are valid",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        656,
-        -800
-      ]
+        -6288,
+        2208
+      ],
+      "id": "75087a7b-74bd-4c8e-89ae-5bfdc6e5dac5",
+      "name": "If schedule is due1"
     },
     {
       "parameters": {
-        "jsCode": "const raw = $input.first().json;\nconst input = raw.payload ?? raw;\n\nlet action = (input.action ?? '').toString().trim();\nconst msg = (input.message ?? '').toLowerCase();\n\nif (!action) {\n  if (msg.includes('suggest') || msg.includes('brainstorm') || msg.includes('idea') || msg.includes('recommend')) {\n    action = 'brainstorm';\n  } else if (msg.includes('change') || msg.includes('edit') || msg.includes('update') || msg.includes('modify')) {\n    action = 'change';\n  } else if (msg.includes('remove') || msg.includes('delete') || msg.includes('deactivate')) {\n    action = 'remove';\n  } else if (msg.includes('add') || msg.includes('create') || msg.includes('insert') || msg.includes('new mapping')) {\n    action = 'add';\n  } else {\n    action = 'list';\n  }\n}\n\nlet params = {};\ntry {\n  params = typeof input.params === 'string' ? JSON.parse(input.params) : (input.params ?? {});\n} catch(e) {\n  params = {};\n}\n\nif (action === 'add' && Object.keys(params).length === 0) {\n  const nums = (input.message ?? '').match(/-?\\d+(\\.\\d+)?/g)?.map(Number) ?? [];\n  if (nums.length >= 10) {\n    params = {\n      minvalue:     nums[0], maxvalue:     nums[1],\n      minpulses:    nums[2], maxpulses:    nums[3],\n      minintensity: nums[4], maxintensity: nums[5],\n      minduration:  nums[6], maxduration:  nums[7],\n      mininterval:  nums[8], maxinterval:  nums[9]\n    };\n  }\n}\n\nreturn [{ json: {\n  action,\n  params,\n  session_id:   input.session_id,\n  usecase_id:   input.usecase_id,\n  usecase_name: input.usecase_name,\n  message:      input.message\n}}];"
+        "options": {}
       },
-      "id": "013315be-28fa-4e8c-85c8-815fc95f2f4c",
-      "name": "Parse incoming",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -6112,
+        2224
+      ],
+      "id": "9d0397b4-97c4-43ed-885b-e1d4b3178a5f",
+      "name": "Loop Over Schedules1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.active }}",
+              "operation": "notEqual",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "08b4bac4-c32e-4739-afed-b291f4ffbc06",
+      "name": "Is the rule found Inactive?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -4848,
+        2400
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -5904,
+        2048
+      ],
+      "id": "3fa48ca7-1b47-4953-ab49-5f4d58064783",
+      "name": "No schedules to examine1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT ROUND(AVG(value)) as measure FROM \"SensorData\" WHERE userID = $1 AND time > NOW() - ($2 || ' days')::interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
+        }
+      },
+      "id": "b183737e-1c84-46c4-b931-a683fc28bbc3",
+      "name": "Get User Baselines avg1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -5632,
+        2032
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    ROUND(\n        percentile_cont(0.5) WITHIN GROUP (ORDER BY value)::numeric\n    ) as measure\nFROM \"SensorData\"\nWHERE userID = $1 \n  AND time > NOW() - ($2 || ' days')::interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
+        }
+      },
+      "id": "cb91a828-14af-4d65-8d84-99123c5cdee4",
+      "name": "Get User Baselines median1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -5632,
+        2240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    mode() WITHIN GROUP (ORDER BY value) as measure\nFROM \"SensorData\"\nWHERE userID = $1 \n  AND time > NOW() - ($2 || ' days')::interval;",
+        "options": {
+          "queryReplacement": "={{ [$json.user_id, $json.interval_days] }}"
+        }
+      },
+      "id": "a40889ef-349b-4ed8-b1ff-ec64e0fd031f",
+      "name": "Get User Baselines mode1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        -5632,
+        2480
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const baseline = $input.first().json.measure;\nconst schedule = $('Get Due Schedules1').first().json;\n\n// Tracking object for performance monitoring\nconst tracking = {\n  user_id: schedule.user_id,\n  interval_days: schedule.interval_days || 7,\n  processed_at: new Date().toISOString(),\n  status: 'calculated'\n};\n\nif (!baseline) {\n  return [{ json: { ...tracking, status: 'skipped', reason: 'No sensor data' } }];\n}\n\nconst minVal = Math.round(baseline * (1+0.01*$('Get Due Schedules1').first().json.trigger_percentage));\nconst maxVal = minVal + 20;\n\nreturn [{\n  json: {\n    ...tracking,\n    minValue: minVal,\n    maxValue: maxVal,\n    type: $('Get Due Schedules1').first().json.usecase_name,\n    user_id: $('Get Due Schedules1').first().json.user_id,\n    active: true\n  }\n}];"
+      },
+      "id": "e249b681-835b-48de-bbaf-17bd71f489bd",
+      "name": "Calculate new rule Parameters1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -320,
-        -400
+        -5360,
+        2240
       ]
     },
     {
@@ -290,13 +1489,13 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "list",
+                    "leftValue": "={{ $json.measure_type }}",
+                    "rightValue": "=average",
                     "operator": {
                       "type": "string",
                       "operation": "equals"
                     },
-                    "id": "835ac3f8-4018-4cc6-bc70-ae6c2568c409"
+                    "id": "1e3e5652-6ee2-443c-ab64-62a264a7bd67"
                   }
                 ],
                 "combinator": "and"
@@ -312,9 +1511,9 @@
                 },
                 "conditions": [
                   {
-                    "id": "f50aef44-2d69-4332-b369-0cf90e48a670",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "add",
+                    "id": "bd2f1132-5731-4f01-92d4-fe27c2acdd86",
+                    "leftValue": "={{ $json.measure_type }}",
+                    "rightValue": "median",
                     "operator": {
                       "type": "string",
                       "operation": "equals",
@@ -335,55 +1534,9 @@
                 },
                 "conditions": [
                   {
-                    "id": "498cda09-85f6-4013-951c-03776bb23271",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "remove",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "609e5416-413d-4c76-a513-67c3d8f6a300",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "brainstorm",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "a269f992-9871-46e0-af82-fdc6a1b209f5",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "change",
+                    "id": "08df6d97-9ae0-4878-9a79-c0da9c2f7c05",
+                    "leftValue": "={{ $json.measure_type }}",
+                    "rightValue": "mode",
                     "operator": {
                       "type": "string",
                       "operation": "equals",
@@ -396,31 +1549,141 @@
             }
           ]
         },
-        "options": {
-          "fallbackOutput": "none"
-        }
+        "options": {}
       },
-      "id": "f11fcf08-5c6c-4254-a5c6-2dea27339c6e",
-      "name": "Switch on action",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -96,
-        -448
-      ]
+        -5920,
+        2224
+      ],
+      "id": "07e6c708-068a-45a4-a4be-1262c8a75afa",
+      "name": "Switch between measures1"
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst params = typeof input.params === 'string'\n  ? JSON.parse(input.params)\n  : (input.params ?? {});\n\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\n\nif (!params.id) {\n  return [{ json: {\n    skip: true,\n    reply: `Please specify which mapping ID to remove. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  skip: false,\n  action: 'remove',\n  query: `UPDATE feedback_config_rules\\nSET active = false\\nWHERE id = $1 AND type = $2 AND active = true\\nRETURNING id, 'remove' AS action;`,\n  queryParams: [parseInt(params.id), usecase_name],\n  session_id\n}}];"
+        "httpMethod": "POST",
+        "path": "set-monitoring-type",
+        "responseMode": "responseNode",
+        "options": {}
       },
-      "id": "0b282dbf-939e-466d-99a9-d3197f75925d",
-      "name": "Validate - remove params",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        3824
+      ],
+      "id": "eb2ba1e8-0f2a-4a34-a823-04ee360bf19c",
+      "name": "Set monitoring type1",
+      "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"User\" u\nSET active_usecase_id = uc.usecase_id,\n    lastrequest = now()\nFROM public.\"UseCase\" uc\nWHERE u.userid = $1\n  AND uc.name = $2\nRETURNING\n  u.userid,\n  u.active_usecase_id AS \"usecaseId\",\n  uc.name AS \"monitoringType\";",
+        "options": {
+          "queryReplacement": "={{ [$json.userId, $json.monitoringType] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -9536,
+        3728
+      ],
+      "id": "83c711d2-004c-4afd-98e6-60551309f768",
+      "name": "update user monitoring type1",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nif (items.length === 0 || !items[0].json.userid) {\n  return [{\n    json: {\n      statusCode: 404,\n      success: false,\n      error: \"User or monitoring type not found\"\n    }\n  }];\n}\n\nconst result = items[0].json;\n\nreturn [{\n  json: {\n    statusCode: 200,\n    success: true,\n    userId: result.userid,\n    monitoringType: result.monitoringType,\n    usecaseId: result.usecaseId\n  }\n}];"
+      },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        352,
-        -560
-      ]
+        -9360,
+        3728
+      ],
+      "id": "b3a8eec6-6736-4ab4-ab22-b3c6e9cbc2a2",
+      "name": "format response set monitoring type1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9104,
+        3840
+      ],
+      "id": "0da0b4d8-f20d-4ce1-9826-bcf1cff7f298",
+      "name": "Respond to Webhook Set monitoring type1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json;\n\n// Webhook v2.1 sometimes nests under .body, sometimes puts it at root\nconst body = (raw.body && typeof raw.body === 'object') ? raw.body : raw;\n\nconst userId = parseInt(body.userId);\nconst monitoringType = body.monitoringType?.trim();\n\nif (!userId || isNaN(userId)) {\n  return [{\n    json: {\n      valid: false,\n      statusCode: 400,\n      success: false,\n      error: \"Missing or invalid userId\"\n    }\n  }];\n}\n\nif (!monitoringType) {\n  return [{\n    json: {\n      valid: false,\n      statusCode: 400,\n      success: false,\n      error: \"Missing monitoringType\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    userId,\n    monitoringType\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10000,
+        3824
+      ],
+      "id": "17de2899-fe93-49d1-bfd0-549f9b76831c",
+      "name": "extract and validate parameters1"
+    },
+    {
+      "parameters": {
+        "path": "monitoring-config",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        3472
+      ],
+      "id": "60531270-0f58-4262-a2f1-7b831f32da80",
+      "name": "Get monitoring config1",
+      "webhookId": "10afb919-71f3-4f73-8a2b-7d6d697dbd97"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -8912,
+        3392
+      ],
+      "id": "32bbc9e6-c69a-45ed-b530-445c95560873",
+      "name": "Respond to Webhook Get monitoring config1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $input.first().json;\n\nconst userIdRaw =\n  req.query?.userId ??\n  req.query?.userid ??\n  req.body?.userId ??\n  req.body?.userid;\n\nconst userId = Number(userIdRaw);\n\nif (!Number.isInteger(userId) || userId <= 0) {\n  return [{\n    json: {\n      valid: false,\n      statusCode: 400,\n      error: \"Missing or invalid userId. Use /monitoring-config?userId=100\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    userId,\n    params: [userId]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10000,
+        3472
+      ],
+      "id": "c06ff8e6-874a-44f6-b556-dc98dc6d2cab",
+      "name": "Extract user id for monitoring config1"
     },
     {
       "parameters": {
@@ -429,13 +1692,13 @@
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict",
-            "version": 2
+            "version": 3
           },
           "conditions": [
             {
-              "id": "fbbcefc6-4bac-4ed1-aa16-6b22715d1554",
-              "leftValue": "={{ $json.skip }}",
-              "rightValue": "",
+              "id": "6da7a4eb-24ce-4377-be16-cff690bdac73",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": 400,
               "operator": {
                 "type": "boolean",
                 "operation": "true",
@@ -447,64 +1710,42 @@
         },
         "options": {}
       },
-      "id": "3163a0c5-c38c-4a53-9eb5-3f269e6ac43f",
-      "name": "If removed parameters are not valid",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
+      "typeVersion": 2.3,
       "position": [
-        688,
-        -560
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "{{ $json.query }}",
-        "options": {
-          "queryReplacement": "={{ $json.queryParams }}"
-        }
-      },
-      "id": "fcc4521c-b038-4605-963f-1dbfb75b6c4a",
-      "name": "DB - write mapping",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        944,
-        -416
+        -9808,
+        3472
       ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
+      "id": "dfb9dca7-310f-4b37-ac2c-623bf0d531e0",
+      "name": "If monitoring config request valid1"
     },
     {
       "parameters": {
-        "jsCode": "const row = $input.first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (!row.id) {\n  return [{ json: {\n    reply: `No active mapping found with that ID for this usecase. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nconst action = row.action ?? 'remove';\nconst reply = action === 'change'\n  ? `Mapping ID ${row.id} has been updated.`\n  : `Mapping ID ${row.id} has been deactivated.`;\n\nreturn [{ json: { reply, session_id } }];"
+        "jsCode": "const rows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && r.id);\n\nconst userId = $('Fetch user monitoring mappings').first().json.userId;\n\nconst mappings = rows.map(m => ({\n  id: m.id,\n  mapping_id: m.mapping_id ?? m.id,\n  feedback_config_rule_id: m.feedback_config_rule_id ?? m.id,\n  usecase_id: m.usecase_id,\n  type: m.type,\n  usecase_name: m.usecase_name,\n  usecase_description: m.usecase_description,\n  active: m.active,\n\n  minvalue: m.minvalue,\n  maxvalue: m.maxvalue,\n  minpulses: m.minpulses,\n  maxpulses: m.maxpulses,\n  minintensity: m.minintensity,\n  maxintensity: m.maxintensity,\n  minduration: m.minduration,\n  maxduration: m.maxduration,\n  mininterval: m.mininterval,\n  maxinterval: m.maxinterval\n}));\n\nif (mappings.length === 0) {\n  return [{\n    json: {\n      statusCode: 200,\n      ok: true,\n      source: \"no_user_mappings\",\n      userId,\n      mappings: [],\n      usecase_mappings: [],\n      fallbackRequired: true\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    ok: true,\n    source: \"user_mappings\",\n    userId,\n    mappings,\n    usecase_mappings: mappings,\n    fallbackRequired: false\n  }\n}];"
       },
-      "id": "ce66e2b8-bc83-4d4d-8aa1-035d9df63c54",
-      "name": "Format - write mapping",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1136,
-        -416
-      ]
+        -9344,
+        3392
+      ],
+      "id": "37a4ed16-7caf-462c-9159-c904734e774b",
+      "name": "Format monitoring config response1"
     },
     {
       "parameters": {
-        "numberInputs": 6
+        "options": {
+          "responseCode": "={\n  \"statusCode\": 400,\n  \"success\": false,\n  \"error\": \"Missing or invalid userId. Use /monitoring-config?userId=100\",\n  \"monitoringType\": \"Unknown\"\n}"
+        }
       },
-      "id": "b5f8b18d-fd94-4fd8-963d-b0d2e46f3674",
-      "name": "Merge all branches",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
       "position": [
-        1600,
-        -544
-      ]
+        -9536,
+        3584
+      ],
+      "id": "2bc1438b-ea92-4898-a428-0e141d9dba77",
+      "name": "Respond to Webhook7"
     },
     {
       "parameters": {
@@ -513,11 +1754,11 @@
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict",
-            "version": 2
+            "version": 3
           },
           "conditions": [
             {
-              "id": "d678ed7f-c4d5-4d27-91d1-12f36eb4fa19",
+              "id": "2cd25333-48df-448d-9626-89ac40c252eb",
               "leftValue": "={{ $json.valid }}",
               "rightValue": "",
               "operator": {
@@ -531,316 +1772,1040 @@
         },
         "options": {}
       },
-      "id": "e93f10a5-76bb-430e-8f7a-39896b1f3da1",
-      "name": "If change parameters are valid",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
+      "typeVersion": 2.3,
       "position": [
-        720,
-        -208
-      ]
+        -9792,
+        3824
+      ],
+      "id": "99446463-a76d-4ef9-83bc-06ab07af0874",
+      "name": "If1"
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nlet params = {};\ntry {\n  params = typeof input.params === 'string' ? JSON.parse(input.params) : (input.params ?? {});\n} catch(e) {\n  params = {};\n}\n\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\nconst id = parseInt(params.id ?? params.mapping_id ?? params.mappingId);\n\nif (!id || Number.isNaN(id)) {\n  return [{ json: {\n    valid: false,\n    reply: `Please specify which mapping ID to change. Use \"list mappings\" to see current IDs.`,\n    session_id\n  }}];\n}\n\nconst editable = ['minvalue','maxvalue','minpulses','maxpulses','minintensity','maxintensity','minduration','maxduration','mininterval','maxinterval'];\nconst updates = editable.filter(k => params[k] !== undefined && params[k] !== null && params[k] !== '');\n\nif (updates.length === 0) {\n  return [{ json: {\n    valid: false,\n    reply: `Please specify at least one mapping value to change for ID ${id}.`,\n    session_id\n  }}];\n}\n\nconst assignments = updates.map((field, index) => `${field} = $${index + 1}`).join(', ');\nconst queryParams = updates.map(field => params[field]);\nqueryParams.push(id, usecase_name);\n\nreturn [{ json: {\n  valid: true,\n  action: 'change',\n  query: `UPDATE feedback_config_rules\\nSET ${assignments}\\nWHERE id = $${updates.length + 1} AND type = $${updates.length + 2} AND active = true\\nRETURNING id, 'change' AS action;`,\n  queryParams,\n  session_id\n}}];"
+        "content": "curl -X POST http://localhost:5678/webhook/assign-mapping \\\n  -H \"Content-Type: application/json\" \\\n  -d \"{\\\"userId\\\":100,\\\"mappingId\\\":140}\""
       },
-      "id": "1d5c5d65-d081-479c-99c3-513fdf0cbc0a",
-      "name": "Validate - change params",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -10512,
+        4336
+      ],
+      "typeVersion": 1,
+      "id": "55d9f3da-5a99-4a11-8117-cc2a8ae8cf45",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9376,
+        4384
+      ],
+      "id": "40e41bc0-8a68-4f41-9374-bdf53fe01eb7",
+      "name": "Respond to Webhook assign usecase"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\n\nconst userId = parseInt(body.userId);\nconst mappingId = parseInt(body.mappingId);\n\nif (!userId || isNaN(userId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid userId\"\n    }\n  }];\n}\n\nif (!mappingId || isNaN(mappingId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    userId,\n    mappingId\n  }\n}];"
+      },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        304,
-        -208
-      ]
+        -10000,
+        4384
+      ],
+      "id": "65775ba4-a6fc-411b-ab72-e1acc1d9f540",
+      "name": "extract parameters for users and mapping"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH selected_rule AS (\n    SELECT id, usecase_id\n    FROM feedback_config_rules\n    WHERE id = $2\n),\ndelete_old_user_mapping_for_same_usecase AS (\n    DELETE FROM \"User_UC_Mappings\" uum\n    USING feedback_config_rules old_rule, selected_rule new_rule\n    WHERE uum.feedback_config_rule_id = old_rule.id\n      AND uum.user_id = $1\n      AND old_rule.usecase_id = new_rule.usecase_id\n)\nINSERT INTO \"User_UC_Mappings\" (user_id, feedback_config_rule_id)\nSELECT $1, id\nFROM selected_rule\nRETURNING user_id, feedback_config_rule_id;",
+        "options": {
+          "queryReplacement": "={{ [$json.userId, $json.mappingId] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -9776,
+        4384
+      ],
+      "id": "6efc6f12-0630-4da8-991b-930e64edbd8f",
+      "name": "update user mapping",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (!result || !result.user_id) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User or mapping not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Mapping assigned successfully\",\n    data: {\n      userId: result.user_id,\n      feedbackConfigRuleId: result.feedback_config_rule_id\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9584,
+        4384
+      ],
+      "id": "c031d7d7-e08e-4968-9ac7-af5246d3c68e",
+      "name": "format response assign mapping to user"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    f.id,\n    f.id AS mapping_id,\n    f.id AS feedback_config_rule_id,\n    f.usecase_id,\n    uc.name AS type,\n    uc.name AS usecase_name,\n    uc.description AS usecase_description,\n    f.active,\n    f.minvalue,\n    f.maxvalue,\n    f.minpulses,\n    f.maxpulses,\n    f.minintensity,\n    f.maxintensity,\n    f.minduration,\n    f.maxduration,\n    f.mininterval,\n    f.maxinterval\nFROM \"User_UC_Mappings\" uum\nJOIN feedback_config_rules f\n    ON f.id = uum.feedback_config_rule_id\nLEFT JOIN \"UseCase\" uc\n    ON uc.usecase_id = f.usecase_id\nWHERE uum.user_id = $1\n  AND f.active = TRUE\nORDER BY\n    uc.name NULLS FIRST,\n    f.minvalue ASC NULLS FIRST,\n    f.id;",
+        "options": {
+          "queryReplacement": "=={{ $json.userId }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -9552,
+        3392
+      ],
+      "id": "ee03b956-ecc2-4c2c-9829-2d2212ee50b8",
+      "name": "Fetch user monitoring mappings",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "87774452-2f78-4020-a4c6-98425c91cecd",
+              "leftValue": "={{ $json.fallbackRequired }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -9136,
+        3584
+      ],
+      "id": "a921256b-ccdb-47bf-9dba-0898892d5dde",
+      "name": "if fallback required",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    f.id,\n    f.id AS mapping_id,\n    f.id AS feedback_config_rule_id,\n    f.usecase_id,\n    NULL AS type,\n    NULL AS usecase_name,\n    NULL AS usecase_description,\n    f.active,\n    f.minvalue,\n    f.maxvalue,\n    f.minpulses,\n    f.maxpulses,\n    f.minintensity,\n    f.maxintensity,\n    f.minduration,\n    f.maxduration,\n    f.mininterval,\n    f.maxinterval\nFROM feedback_config_rules f\nWHERE f.id = 9999\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "=={{ [$json.userId] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -8912,
+        3568
+      ],
+      "id": "1d5b0ebd-d0b4-4e97-8ab2-bc81b0e8165b",
+      "name": "Fetch fallback mapping 9999 monitoring config",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && r.id);\n\nconst userId = $('Fetch user monitoring mappings').first().json.userId;\n\nif (!rows || rows.length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      ok: false,\n      source: \"fallback_missing\",\n      userId,\n      error: \"No user mappings found and fallback mapping 9999 is missing\"\n    }\n  }];\n}\n\nconst m = rows[0];\n\nconst fallbackMapping = {\n  id: m.id,\n  mapping_id: m.mapping_id ?? m.id,\n  feedback_config_rule_id: m.feedback_config_rule_id ?? m.id,\n  usecase_id: m.usecase_id,\n  type: m.type,\n  usecase_name: m.usecase_name,\n  usecase_description: m.usecase_description,\n  active: m.active,\n\n  minvalue: m.minvalue,\n  maxvalue: m.maxvalue,\n  minpulses: m.minpulses,\n  maxpulses: m.maxpulses,\n  minintensity: m.minintensity,\n  maxintensity: m.maxintensity,\n  minduration: m.minduration,\n  maxduration: m.maxduration,\n  mininterval: m.mininterval,\n  maxinterval: m.maxinterval\n};\n\nreturn [{\n  json: {\n    statusCode: 200,\n    ok: true,\n    source: \"fallback_9999\",\n    userId,\n    mappings: [fallbackMapping],\n    usecase_mappings: [fallbackMapping],\n    fallbackRequired: false\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -8704,
+        3568
+      ],
+      "id": "1a047c53-de6e-4c4e-b6f6-c2634b35e90b",
+      "name": "Format fallback monitoring config response"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "assign-mapping",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -10224,
+        4384
+      ],
+      "id": "8db1a4fd-ba5f-4a06-88fc-9ab96e577515",
+      "name": "assign mapping to user",
+      "webhookId": "d10ea443-e71d-49b3-953b-59cc00d27ede"
     }
   ],
   "pinData": {},
   "connections": {
-    "DB - list mappings": {
+    "Get current configurations1": {
       "main": [
         [
           {
-            "node": "Format - list",
+            "node": "FetchCurrentRulesFromDB1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Format - list": {
+    "FetchCurrentRulesFromDB1": {
       "main": [
         [
           {
-            "node": "Merge all branches",
+            "node": "Setting up configutations response1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate - add params": {
+    "Get users1": {
       "main": [
         [
           {
-            "node": "If added parameters are valid",
+            "node": "get users query1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "DB - insert mapping": {
+    "Get sensor data1": {
       "main": [
         [
           {
-            "node": "Format - add success",
+            "node": "parse sensor data request1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Format - add success": {
+    "get users query1": {
       "main": [
         [
           {
-            "node": "Merge all branches",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "DB - historical range": {
-      "main": [
-        [
-          {
-            "node": "Combine brainstorm data",
+            "node": "Respond to Webhook Get-users1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "GPT - Brainstorm": {
+    "Execute get sensor data query1": {
       "main": [
         [
           {
-            "node": "Format - brainstorm",
+            "node": "check if sensor data query empty1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "GPT - Brainstorm",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Execute Workflow Trigger": {
+    "assign usecase to user1": {
       "main": [
         [
           {
-            "node": "Parse incoming",
+            "node": "extract parameters for users and usecase1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Format - brainstorm": {
+    "extract parameters for users and usecase1": {
       "main": [
         [
           {
-            "node": "Merge all branches",
-            "type": "main",
-            "index": 3
-          }
-        ]
-      ]
-    },
-    "DB - current mappings for brainstorm": {
-      "main": [
-        [
-          {
-            "node": "Package mappings",
+            "node": "update user usecase1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Package mappings": {
+    "update user usecase1": {
       "main": [
         [
           {
-            "node": "DB - historical range",
+            "node": "format response assign usecase to user1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Combine brainstorm data": {
+    "create use case1": {
       "main": [
         [
           {
-            "node": "GPT - Brainstorm",
+            "node": "extract and validate1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If added parameters are valid": {
+    "extract and validate1": {
       "main": [
         [
           {
-            "node": "DB - insert mapping",
+            "node": "insert use case1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert use case1": {
+      "main": [
+        [
+          {
+            "node": "format response insert usecase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Connection1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Check Connection1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add Mapping1": {
+      "main": [
+        [
+          {
+            "node": "Split Array of mapping (If List)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Mapping ID1": {
+      "main": [
+        [
+          {
+            "node": "Postgres: Deactivate Rule1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres: Deactivate Rule1": {
+      "main": [
+        [
+          {
+            "node": "Format Final Response deactivate mapping1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deactivate Mapping1": {
+      "main": [
+        [
+          {
+            "node": "Extract Mapping ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get usecases1": {
+      "main": [
+        [
+          {
+            "node": "get usecase query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get usecase query1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook get sensor type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setting up configutations response1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook current-configuraion1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse sensor data request1": {
+      "main": [
+        [
+          {
+            "node": "If sensor database not empty1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If sensor database not empty1": {
+      "main": [
+        [
+          {
+            "node": "Execute get sensor data query1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Merge all branches",
-            "type": "main",
-            "index": 4
-          }
-        ]
-      ]
-    },
-    "Parse incoming": {
-      "main": [
-        [
-          {
-            "node": "Switch on action",
+            "node": "Respond to Webhook sensor data error1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Switch on action": {
+    "check if sensor data query empty1": {
       "main": [
         [
           {
-            "node": "DB - list mappings",
+            "node": "Respond to Webhook sensor data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response assign usecase to user1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook assign usecase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response insert usecase1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook create usecase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Array of mapping (If List)1": {
+      "main": [
+        [
+          {
+            "node": "DB: Upsert Rule1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Response deactivate mapping1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook deactivated mapping1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Format Final Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set Logging Interval1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Response2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "edit users1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "edit names query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "edit names query1": {
+      "main": [
+        [
+          {
+            "node": "Format Final Response3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Response3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "schedule1": {
+      "main": [
+        [
+          {
+            "node": "Parse request to JSON1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse request to JSON1": {
+      "main": [
+        [
+          {
+            "node": "Call 'Schedule Manager'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Schedule Manager'1": {
+      "main": [
+        [
+          {
+            "node": "parse response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse response1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger (00:01)1": {
+      "main": [
+        [
+          {
+            "node": "Get Due Schedules1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Due Schedules1": {
+      "main": [
+        [
+          {
+            "node": "If schedule is due1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for Existing Rule1": {
+      "main": [
+        [
+          {
+            "node": "Rule Doesn't Exist?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Rule1": {
+      "main": [
+        [
+          {
+            "node": "Update Next Run Date1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Activate Existing Rule1": {
+      "main": [
+        [
+          {
+            "node": "Update Next Run Date1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rule Doesn't Exist?1": {
+      "main": [
+        [
+          {
+            "node": "Create New Rule1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Validate - add params",
+            "node": "Is the rule found Inactive?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If schedule is due1": {
+      "main": [
+        [
+          {
+            "node": "No schedules to examine1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Validate - remove params",
+            "node": "Loop Over Schedules1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Schedules1": {
+      "main": [
+        [
+          {
+            "node": "No schedules to examine1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "DB - current mappings for brainstorm",
+            "node": "Switch between measures1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is the rule found Inactive?1": {
+      "main": [
+        [
+          {
+            "node": "Activate Existing Rule1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Validate - change params",
+            "node": "Update Next Run Date1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate - remove params": {
+    "Get User Baselines avg1": {
       "main": [
         [
           {
-            "node": "If removed parameters are not valid",
+            "node": "Calculate new rule Parameters1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If removed parameters are not valid": {
+    "Get User Baselines median1": {
       "main": [
         [
           {
-            "node": "Merge all branches",
-            "type": "main",
-            "index": 1
-          }
-        ],
-        [
-          {
-            "node": "DB - write mapping",
+            "node": "Calculate new rule Parameters1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "DB - write mapping": {
+    "Get User Baselines mode1": {
       "main": [
         [
           {
-            "node": "Format - write mapping",
+            "node": "Calculate new rule Parameters1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Format - write mapping": {
+    "Calculate new rule Parameters1": {
       "main": [
         [
           {
-            "node": "Merge all branches",
+            "node": "Search for Existing Rule1",
             "type": "main",
-            "index": 2
+            "index": 0
           }
         ]
       ]
     },
-    "If change parameters are valid": {
+    "Switch between measures1": {
       "main": [
         [
           {
-            "node": "DB - write mapping",
+            "node": "Get User Baselines avg1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Merge all branches",
+            "node": "Get User Baselines median1",
             "type": "main",
-            "index": 5
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get User Baselines mode1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
     },
-    "Validate - change params": {
+    "Set monitoring type1": {
       "main": [
         [
           {
-            "node": "If change parameters are valid",
+            "node": "extract and validate parameters1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update user monitoring type1": {
+      "main": [
+        [
+          {
+            "node": "format response set monitoring type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response set monitoring type1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Set monitoring type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract and validate parameters1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get monitoring config1": {
+      "main": [
+        [
+          {
+            "node": "Extract user id for monitoring config1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract user id for monitoring config1": {
+      "main": [
+        [
+          {
+            "node": "If monitoring config request valid1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If monitoring config request valid1": {
+      "main": [
+        [
+          {
+            "node": "Fetch user monitoring mappings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format monitoring config response1": {
+      "main": [
+        [
+          {
+            "node": "if fallback required",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "update user monitoring type1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook Set monitoring type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract parameters for users and mapping": {
+      "main": [
+        [
+          {
+            "node": "update user mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update user mapping": {
+      "main": [
+        [
+          {
+            "node": "format response assign mapping to user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "format response assign mapping to user": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook assign usecase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch user monitoring mappings": {
+      "main": [
+        [
+          {
+            "node": "Format monitoring config response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if fallback required": {
+      "main": [
+        [
+          {
+            "node": "Fetch fallback mapping 9999 monitoring config",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook Get monitoring config1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch fallback mapping 9999 monitoring config": {
+      "main": [
+        [
+          {
+            "node": "Format fallback monitoring config response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format fallback monitoring config response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook Get monitoring config1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "assign mapping to user": {
+      "main": [
+        [
+          {
+            "node": "extract parameters for users and mapping",
             "type": "main",
             "index": 0
           }
@@ -853,11 +2818,18 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "0f4bf1e4-ae22-4261-b9ce-125d380663e4",
+  "versionId": "a7d12c06-bc41-4b9c-bc29-87fa0adf1711",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
   },
-  "id": "6mbZSpha6phxwD1v",
-  "tags": []
+  "id": "nFeUS2F9bOFH6AUd",
+  "tags": [
+    {
+      "updatedAt": "2026-03-12T19:23:21.502Z",
+      "createdAt": "2026-03-12T19:23:21.502Z",
+      "id": "uAeTbJge557CUxYQ",
+      "name": "main"
+    }
+  ]
 }
