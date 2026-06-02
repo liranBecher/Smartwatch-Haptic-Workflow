@@ -9,10 +9,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        0,
-        0
+        144,
+        336
       ],
-      "id": "db756737-8308-44c0-a8e3-ec89829c46f3",
+      "id": "7dbade2c-8b58-458f-a777-7db2419a518a",
       "name": "Execute Workflow Trigger"
     },
     {
@@ -22,10 +22,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        0
+        352,
+        336
       ],
-      "id": "381b3891-78ce-4f2d-95aa-ae5ede48c351",
+      "id": "7f3c130e-05fc-4828-a110-58a13ade4241",
       "name": "Validate Builder Input"
     },
     {
@@ -39,16 +39,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        416,
-        0
+        560,
+        336
       ],
-      "id": "799b2f38-5adf-4eed-bc23-03ea50ee3bf0",
+      "id": "790999ed-7414-41fa-8cc9-ee0cc14373a8",
       "name": "Load UseCase Dictionary Params",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -59,10 +59,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        624,
-        0
+        768,
+        336
       ],
-      "id": "d7bb112c-2591-48ed-9a6d-cc7e43b8c330",
+      "id": "86e8d2db-8c73-45cd-9eda-743fcbf43d32",
       "name": "Prepare Builder Context"
     },
     {
@@ -72,23 +72,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1040,
-        0
+        1184,
+        336
       ],
-      "id": "a482ab77-d1b5-4b76-a3ac-3853e0e74b9d",
+      "id": "244c66a2-0b15-4574-ba33-79d483da0708",
       "name": "Prepare API Metadata"
     },
     {
       "parameters": {
-        "jsCode": "const ctx = $input.first().json;\n\nconst usecaseName = ctx.params?.usecase_name ?? \"\";\nconst apiMetadata = ctx.api_metadata ?? {};\nconst dictionaryParameters = ctx.dictionary_parameters ?? [];\nconst apiPoolSample = ctx.api_pool_sample ?? null;\n\nconst prompt = `\nYou are an implementation assistant for an n8n-based Smartwatch Haptic Feedback system.\n\nYour job is to generate short, researcher-friendly, copy-paste-ready changes for adding a new API-based use case to the Vibration Orchestrator template.\n\nReturn ONLY valid JSON.\nDo not use markdown outside the JSON.\nDo not include warnings.\nDo not include researcher checks.\nDo not include TEST_CURL.\nDo not generate full Code node replacements.\nDo not generate instructions for generic nodes that already work.\n\nVery important template rule:\nThe template Code nodes already contain this structure:\n\n// CONFIG — CHANGE THIS SECTION\n\n...use-case-specific config...\n\n// DO NOT CHANGE BELOW\n\nThe researcher should ONLY replace the code between these two comments.\nThe structure above and below those comments must stay exactly the same.\n\nTherefore:\n- For Construct API Request, generate ONLY the CONFIG section replacement.\n- For Extract, generate ONLY the CONFIG section replacement.\n- Do NOT include the comment // CONFIG — CHANGE THIS SECTION in generated_content.\n- Do NOT include the comment // DO NOT CHANGE BELOW in generated_content.\n- Do NOT regenerate the whole Code node.\n- Do NOT change generic logic below the config section.\n- Only use-case-specific parts should change.\n\nSystem context:\n- The Vibration Orchestrator receives POST webhook requests from the Android phone app.\n- The request body normally contains: userId, smartWatchId, androidId, lat, lon.\n- The workflow normalizes these identifiers into: userID, watchID, phoneID.\n- The use case name is stored in a field called \"type\".\n- The numeric API measurement is stored in a field called \"value\".\n- The workflow calls an external API.\n- It extracts one numeric measurement value from the API response.\n- It fetches haptic feedback rules from feedback_config_rules using type = use case name.\n- It evaluates minvalue/maxvalue ranges.\n- It returns vibration fields: pulses, intensity, duration, interval.\n- It logs the event using insert_sensor_data.\n\nThe researcher should only change the marked template nodes.\n\nThe current Vibration Orchestrator template includes these change points:\n1. Set type useCase1 / Set type useCase2\n2. Construct API Request\n3. Extract\n4. Optional: Rate Limit Guard interval\n\nThe following nodes are generic and should NOT be included in the output unless absolutely necessary:\n- Adapter use case1\n- Adapter use case2\n- Normalize\n- Fetch API data\n- Rate Limit Guard\n- Merge Inputs\n- Allowed (timer expired)\n- Fetch Active\n- Evaluate Feedback Rules template\n- Build insert_sensor_data Query for\n- Execute insert_sensor_data for\n- Respond to Webhook success\n- Build Rate-Limited Response\n- Respond (rate-limited)\n\nCurrent use case:\n${usecaseName}\n\nAPI metadata:\n${JSON.stringify(apiMetadata, null, 2)}\n\nDictionary parameters:\n${JSON.stringify(dictionaryParameters, null, 2)}\n\nAPI pool sample, if available:\n${JSON.stringify(apiPoolSample, null, 2)}\n\nThe generated content must be directly copy-paste ready.\n\nIf a required value is missing, especially the API endpoint URL for Construct API Request, do NOT generate placeholder code.\nInstead, return can_generate: false and explain exactly which database value is missing.\n\nThe API endpoint URL should come from one of these fields:\n1. api_metadata.endpoint_url\n2. api_pool_sample.endpoint_url\n3. a dictionary parameter whose name is url, endpoint, endpoint_url, or base_url and whose param_value contains the URL\n\nIf none of those exists, Construct API Request cannot be copy-paste ready.\n\nFor Extract config:\n- First use api_metadata.response_value_path if it exists.\n- If missing, look for a dictionary parameter named response_value_path, value_path, or json_path.\n- If still missing, infer only when the API has exactly one obvious numeric field in sample_response or param_schema.\n- If multiple possible fields exist, return can_generate: false and list the missing requirement as: \"response_value_path\".\n- Do not guess between timestamp fields and numeric fields.\n\nOutput requirements:\nReturn this exact JSON structure:\n\n{\n  \"usecase_name\": \"\",\n  \"can_generate\": true,\n  \"summary\": \"\",\n  \"steps\": [\n    {\n      \"step_number\": 1,\n      \"title\": \"\",\n      \"node_to_open\": \"\",\n      \"field_to_change\": \"\",\n      \"paste_location\": \"\",\n      \"generated_content\": \"\",\n      \"explanation\": \"\"\n    }\n  ],\n  \"missing_requirements\": []\n}\n\nIf can_generate is false:\n- steps must be []\n- missing_requirements must list the missing values\n- summary must explain that copy-paste-ready code cannot be generated yet because required API metadata is missing\n\nStep requirements:\n\n1. SET TYPE STEP\n- node_to_open should be \"Set type useCase1\" or \"Set type useCase2\".\n- field_to_change should be \"Values to Set → type\".\n- paste_location should be \"Set node value field\".\n- generated_content should be the exact use case name only.\n- Do not put quotation marks around generated_content.\n- The value must match the use case name used in the database.\n\n2. CONSTRUCT API REQUEST CONFIG STEP\n- node_to_open should be \"Construct API Request\".\n- field_to_change should be \"CONFIG section only\".\n- paste_location should be \"Paste between // CONFIG — CHANGE THIS SECTION and // DO NOT CHANGE BELOW\".\n- generated_content must contain ONLY the CONFIG section replacement.\n- Do not include the comment // CONFIG — CHANGE THIS SECTION.\n- Do not include the comment // DO NOT CHANGE BELOW.\n- Do not include generic code from below the config section.\n- Do not generate a full Code node.\n\nThe generated_content for Construct API Request MUST preserve this exact config structure and include ALL of these parts, in this order:\n\n1. const API_NAME = \"...\";\n2. const API_REQUIRES_KEY = true or false;\n3. const API_KEY = \"...\";\n4. const BASE_URL = \"...\";\n5. const REQUIRED_FIELDS = [...];\n6. function buildUrl({ lat, lon, body, type, apiKey }) { ... }\n\nDo not omit API_NAME.\nDo not omit API_REQUIRES_KEY.\nDo not omit API_KEY.\nDo not omit BASE_URL.\nDo not omit REQUIRED_FIELDS.\nDo not omit buildUrl.\n\nUse this exact skeleton style:\n\nconst API_NAME = \"USE_CASE_NAME\";\n\nconst API_REQUIRES_KEY = false;\n\nconst API_KEY = \"\";\n\nconst BASE_URL = \"ACTUAL_ENDPOINT_URL\";\n\nconst REQUIRED_FIELDS = [\"lat\", \"lon\"];\n\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\n  const params = [\n    \\`param1=\\${encodeURIComponent(value1)}\\`,\n    \\`param2=\\${encodeURIComponent(value2)}\\`\n  ];\n\n  if (API_REQUIRES_KEY) {\n    params.unshift(\\`apiKey=\\${encodeURIComponent(apiKey)}\\`);\n  }\n\n  return \\`\\${BASE_URL}?\\${params.join(\"&\")}\\`;\n}\n\nRules for filling the skeleton:\n- API_NAME must be the current use case name.\n- API_REQUIRES_KEY must be false when api_metadata.auth_type is \"none\".\n- API_REQUIRES_KEY must be true only when the API requires a key.\n- API_KEY should be \"PUT_API_KEY_HERE\" only when API_REQUIRES_KEY is true.\n- API_KEY should be \"\" when API_REQUIRES_KEY is false.\n- BASE_URL must be the actual endpoint URL from api_metadata.endpoint_url or api_pool_sample.endpoint_url.\n- BASE_URL must not include query parameters.\n- REQUIRED_FIELDS should include \"lat\" and \"lon\" for location-based APIs.\n- buildUrl must include the API-specific query parameters from dictionary parameters, param_schema, or sample API metadata.\n- Use encodeURIComponent for every dynamic query parameter value.\n- If dictionary param_value gives a fixed API parameter value, hardcode that value in buildUrl.\n- If a parameter comes from the request, use lat, lon, body, type, or apiKey.\n- Do not create separate variables like queryParams or requestOptions unless the existing template config already uses them.\n- Do not return anything from this config section except through the buildUrl function.\n\n3. EXTRACT CONFIG STEP\n- node_to_open should be \"Extract\".\n- field_to_change should be \"CONFIG section only\".\n- paste_location should be \"Paste between // CONFIG — CHANGE THIS and // DO NOT CHANGE BELOW\".\n- generated_content must contain ONLY the CONFIG section replacement.\n- Do not include the comment // CONFIG — CHANGE THIS.\n- Do not include the comment // DO NOT CHANGE BELOW.\n- Do not include generic code from below the config section.\n- Do not generate a full Code node.\n\nThe generated_content for Extract MUST preserve this exact config structure and include ALL of these parts, in this order:\n\n1. const NORMALIZE_NODE_NAME = 'Normalize';\n2. const VALUE_CONFIG_BY_TYPE = { ... };\n\nDo not rename NORMALIZE_NODE_NAME.\nDo not rename VALUE_CONFIG_BY_TYPE.\nDo not create a new object called extractConfig.\nDo not use const extractConfig.\nDo not use a different wrapper object.\nDo not omit NORMALIZE_NODE_NAME.\nDo not omit VALUE_CONFIG_BY_TYPE.\n\nUse this exact skeleton style:\n\nconst NORMALIZE_NODE_NAME = 'Normalize';\n\nconst VALUE_CONFIG_BY_TYPE = {\n  USE_CASE_NAME: {\n    valueName: 'MEASUREMENT_NAME',\n    paths: ['RESPONSE_VALUE_PATH']\n  }\n};\n\nRules for filling the skeleton:\n- USE_CASE_NAME must be the current use case name/type.\n- valueName should be the measurement name from api_metadata.measurement_name.\n- If measurement_name is missing, use the final part of the response path.\n- paths must use api_metadata.response_value_path if available.\n- If api_metadata.response_value_path is missing, use a dictionary parameter named response_value_path, value_path, or json_path.\n- If still missing, infer only when the API has exactly one obvious numeric field in sample_response or param_schema.\n- Do not guess between multiple possible values.\n- Do not use use-case-specific final output fields like temperature, azimuth, aqi, humidity, uv_index, or pollution.\n- The generic code below the config section already stores the measured value as \"value\".\n\nGeneral generation rules:\n- Use \"type\" for the use case name.\n- Use \"value\" for the numeric measurement.\n- Do not produce full Code node replacements.\n- Do not change generic logic below the config section.\n- Do not generate TEST_CURL.\n- Do not generate webhook instructions.\n- Do not generate SQL for Fetch Active.\n- Do not generate Evaluate Feedback Rules code.\n- Do not generate Build insert_sensor_data code.\n- Do not include warnings.\n- Do not include required_researcher_checks.\n- The final answer should be understandable to a researcher who has no coding background.\n- The generated content must be copy-paste ready.\n- If copy-paste-ready output is impossible, explain why using missing_requirements.\n\nImportant:\nThe researcher is editing the existing Vibration Orchestrator template, not building a workflow from zero.\nTherefore, only output the small set of template edits they actually need.\n`;\n\nreturn [{\n  json: {\n    action: ctx.action,\n    params: ctx.params,\n    dictionary_parameters: dictionaryParameters,\n    api_metadata: apiMetadata,\n    api_pool_sample: apiPoolSample,\n    session_id: ctx.session_id,\n    message: ctx.message,\n    prompt\n  }\n}];"
+        "jsCode": "const ctx = $input.first().json;\n\nconst usecaseName = ctx.params?.usecase_name ?? \"\";\nconst apiMetadata = ctx.api_metadata ?? {};\nconst dictionaryParameters = ctx.dictionary_parameters ?? [];\nconst apiPoolSample = ctx.api_pool_sample ?? null;\n\nconst prompt = `\nYou are an implementation assistant for an n8n-based Smartwatch Haptic Feedback system.\n\nYour job is to generate short, researcher-friendly, copy-paste-ready changes for adding a new API-based use case to the Vibration Orchestrator template.\n\nReturn ONLY valid JSON.\nDo not use markdown outside the JSON.\nDo not include warnings.\nDo not include researcher checks.\nDo not include TEST_CURL.\nDo not generate full Code node replacements.\nDo not generate instructions for generic nodes that already work.\nDO include explicit step instructions for updating the \"Route By Sensor Type\" switch node so that incoming requests are correctly routed to the new usecase branch.\n\n\nVery important template rule:\nThe template Code nodes already contain this structure:\n\n// CONFIG — CHANGE THIS SECTION\n\n...use-case-specific config...\n\n// DO NOT CHANGE BELOW\n\nThe researcher should ONLY replace the code between these two comments.\nThe structure above and below those comments must stay exactly the same.\n\nTherefore:\n- For Construct API Request, generate ONLY the CONFIG section replacement.\n- For Extract, generate ONLY the CONFIG section replacement.\n- Do NOT include the comment // CONFIG — CHANGE THIS SECTION in generated_content.\n- Do NOT include the comment // DO NOT CHANGE BELOW in generated_content.\n- Do NOT regenerate the whole Code node.\n- Do NOT change generic logic below the config section.\n- Only use-case-specific parts should change.\n\nSystem context:\n- The Vibration Orchestrator receives POST webhook requests from the Android phone app.\n- The request body normally contains: userId, smartWatchId, androidId, lat, lon.\n- The workflow normalizes these identifiers into: userID, watchID, phoneID.\n- The use case name is stored in a field called \"type\".\n- The numeric API measurement is stored in a field called \"value\".\n- The workflow calls an external API.\n- It extracts one numeric measurement value from the API response.\n- It fetches haptic feedback rules from feedback_config_rules using type = use case name.\n- It evaluates minvalue/maxvalue ranges.\n- It returns vibration fields: pulses, intensity, duration, interval.\n- It logs the event using insert_sensor_data.\n\nThe researcher should only change the marked template nodes.\n\nThe current Vibration Orchestrator template includes these change points:\n1. Set type useCase1 / Set type useCase2\n2. Construct API Request\n3. Extract\n4. Route By Sensor Type\n5. Optional: Rate Limit Guard interval\n\nThe following nodes are generic and should NOT be included in the output unless absolutely necessary:\n- Adapter use case1\n- Adapter use case2\n- Normalize\n- Fetch API data\n- Rate Limit Guard\n- Merge Inputs\n- Allowed (timer expired)\n- Fetch Active\n- Evaluate Feedback Rules template\n- Build insert_sensor_data Query for\n- Execute insert_sensor_data for\n- Respond to Webhook success\n- Build Rate-Limited Response\n- Respond (rate-limited)\n\nCurrent use case:\n${usecaseName}\n\nAPI metadata:\n${JSON.stringify(apiMetadata, null, 2)}\n\nDictionary parameters:\n${JSON.stringify(dictionaryParameters, null, 2)}\n\nAPI pool sample, if available:\n${JSON.stringify(apiPoolSample, null, 2)}\n\nThe generated content must be directly copy-paste ready.\n\nIf a required value is missing, especially the API endpoint URL for Construct API Request, do NOT generate placeholder code.\nInstead, return can_generate: false and explain exactly which database value is missing.\n\nThe API endpoint URL should come from one of these fields:\n1. api_metadata.endpoint_url\n2. api_pool_sample.endpoint_url\n3. a dictionary parameter whose name is url, endpoint, endpoint_url, or base_url and whose param_value contains the URL\n\nIf none of those exists, Construct API Request cannot be copy-paste ready.\n\nFor Extract config:\n- First use api_metadata.response_value_path if it exists.\n- If missing, look for a dictionary parameter named response_value_path, value_path, or json_path.\n- If still missing, infer only when the API has exactly one obvious numeric field in sample_response or param_schema.\n- If multiple possible fields exist, return can_generate: false and list the missing requirement as: \"response_value_path\".\n- Do not guess between timestamp fields and numeric fields.\n\nOutput requirements:\nReturn this exact JSON structure:\n\n{\n  \"usecase_name\": \"\",\n  \"can_generate\": true,\n  \"summary\": \"\",\n  \"steps\": [\n    {\n      \"step_number\": 1,\n      \"title\": \"\",\n      \"node_to_open\": \"\",\n      \"field_to_change\": \"\",\n      \"paste_location\": \"\",\n      \"generated_content\": \"\",\n      \"explanation\": \"\"\n    }\n  ],\n  \"missing_requirements\": []\n}\n\nIf can_generate is false:\n- steps must be []\n- missing_requirements must list the missing values\n- summary must explain that copy-paste-ready code cannot be generated yet because required API metadata is missing\n\nStep requirements:\n\n1a. SET TYPE STEP\n- node_to_open should be \"Set type useCase1\" or \"Set type useCase2\".\n- field_to_change should be \"Values to Set → type\".\n- paste_location should be \"Set node value field\".\n- generated_content should be the exact use case name only.\n- Do not put quotation marks around generated_content.\n- The value must match the use case name used in the database.\n\n1b. ROUTE BY SENSOR TYPE SWITCH STEP\n- node_to_open should be \"Route By Sensor Type\".\n- field_to_change should be \"Routing Rules\".\n- paste_location should be \"Add a new routing rule mapping where string equals the use case name\".\n- generated_content should describe the configuration mapping required: \"Value: 'USE_CASE_NAME' -> Connect output to the first node of your new use case sub-flow (e.g., Adapter node).\"\n- explanation should guide the researcher on how to add a rule inside the n8n Switch node interface and connect the corresponding layout dot to their new adapter branch.\n\n2. CONSTRUCT API REQUEST CONFIG STEP\n- node_to_open should be \"Construct API Request\".\n- field_to_change should be \"CONFIG section only\".\n- paste_location should be \"Paste between // CONFIG — CHANGE THIS SECTION and // DO NOT CHANGE BELOW\".\n- generated_content must contain ONLY the CONFIG section replacement.\n- Do not include the comment // CONFIG — CHANGE THIS SECTION.\n- Do not include the comment // DO NOT CHANGE BELOW.\n- Do not include generic code from below the config section.\n- Do not generate a full Code node.\n\nThe generated_content for Construct API Request MUST preserve this exact config structure and include ALL of these parts, in this order:\n\n1. const API_NAME = \"...\";\n2. const API_REQUIRES_KEY = true or false;\n3. const API_KEY = \"...\";\n4. const BASE_URL = \"...\";\n5. const REQUIRED_FIELDS = [...];\n6. function buildUrl({ lat, lon, body, type, apiKey }) { ... }\n\nDo not omit API_NAME.\nDo not omit API_REQUIRES_KEY.\nDo not omit API_KEY.\nDo not omit BASE_URL.\nDo not omit REQUIRED_FIELDS.\nDo not omit buildUrl.\n\nUse this exact skeleton style:\n\nconst API_NAME = \"USE_CASE_NAME\";\n\nconst API_REQUIRES_KEY = false;\n\nconst API_KEY = \"\";\n\nconst BASE_URL = \"ACTUAL_ENDPOINT_URL\";\n\nconst REQUIRED_FIELDS = [\"lat\", \"lon\"];\n\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\n  const params = [\n    \\`param1=\\${encodeURIComponent(value1)}\\`,\n    \\`param2=\\${encodeURIComponent(value2)}\\`\n  ];\n\n  if (API_REQUIRES_KEY) {\n    params.unshift(\\`apiKey=\\${encodeURIComponent(apiKey)}\\`);\n  }\n\n  return \\`\\${BASE_URL}?\\${params.join(\"&\")}\\`;\n}\n\nRules for filling the skeleton:\n- API_NAME must be the current use case name.\n- API_REQUIRES_KEY must be false when api_metadata.auth_type is \"none\".\n- API_REQUIRES_KEY must be true only when the API requires a key.\n- API_KEY should be \"PUT_API_KEY_HERE\" only when API_REQUIRES_KEY is true.\n- API_KEY should be \"\" when API_REQUIRES_KEY is false.\n- BASE_URL must be the actual endpoint URL from api_metadata.endpoint_url or api_pool_sample.endpoint_url.\n- BASE_URL must not include query parameters.\n- REQUIRED_FIELDS should include \"lat\" and \"lon\" for location-based APIs.\n- buildUrl must include the API-specific query parameters from dictionary parameters, param_schema, or sample API metadata.\n- Use encodeURIComponent for every dynamic query parameter value.\n- If dictionary param_value gives a fixed API parameter value, hardcode that value in buildUrl.\n- If a parameter comes from the request, use lat, lon, body, type, or apiKey.\n- Do not create separate variables like queryParams or requestOptions unless the existing template config already uses them.\n- Do not return anything from this config section except through the buildUrl function.\n\n3. EXTRACT CONFIG STEP\n- node_to_open should be \"Extract\".\n- field_to_change should be \"CONFIG section only\".\n- paste_location should be \"Paste between // CONFIG — CHANGE THIS and // DO NOT CHANGE BELOW\".\n- generated_content must contain ONLY the CONFIG section replacement.\n- Do not include the comment // CONFIG — CHANGE THIS.\n- Do not include the comment // DO NOT CHANGE BELOW.\n- Do not include generic code from below the config section.\n- Do not generate a full Code node.\n\nThe generated_content for Extract MUST preserve this exact config structure and include ALL of these parts, in this order:\n\n1. const NORMALIZE_NODE_NAME = 'Normalize';\n2. const VALUE_CONFIG_BY_TYPE = { ... };\n\nDo not rename NORMALIZE_NODE_NAME.\nDo not rename VALUE_CONFIG_BY_TYPE.\nDo not create a new object called extractConfig.\nDo not use const extractConfig.\nDo not use a different wrapper object.\nDo not omit NORMALIZE_NODE_NAME.\nDo not omit VALUE_CONFIG_BY_TYPE.\n\nUse this exact skeleton style:\n\nconst NORMALIZE_NODE_NAME = 'Normalize';\n\nconst VALUE_CONFIG_BY_TYPE = {\n  USE_CASE_NAME: {\n    valueName: 'MEASUREMENT_NAME',\n    paths: ['RESPONSE_VALUE_PATH']\n  }\n};\n\nRules for filling the skeleton:\n- USE_CASE_NAME must be the current use case name/type.\n- valueName should be the measurement name from api_metadata.measurement_name.\n- If measurement_name is missing, use the final part of the response path.\n- paths must use api_metadata.response_value_path if available.\n- If api_metadata.response_value_path is missing, use a dictionary parameter named response_value_path, value_path, or json_path.\n- If still missing, infer only when the API has exactly one obvious numeric field in sample_response or param_schema.\n- Do not guess between multiple possible values.\n- Do not use use-case-specific final output fields like temperature, azimuth, aqi, humidity, uv_index, or pollution.\n- The generic code below the config section already stores the measured value as \"value\".\n\nGeneral generation rules:\n- Use \"type\" for the use case name.\n- Use \"value\" for the numeric measurement.\n- Do not produce full Code node replacements.\n- Do not change generic logic below the config section.\n- Do not generate TEST_CURL.\n- Do not generate webhook instructions.\n- Do not generate SQL for Fetch Active.\n- Do not generate Evaluate Feedback Rules code.\n- Do not generate Build insert_sensor_data code.\n- Do not include warnings.\n- Do not include required_researcher_checks.\n- The final answer should be understandable to a researcher who has no coding background.\n- The generated content must be copy-paste ready.\n- If copy-paste-ready output is impossible, explain why using missing_requirements.\n\nImportant:\nThe researcher is editing the existing Vibration Orchestrator template, not building a workflow from zero.\nTherefore, only output the small set of template edits they actually need.\n`;\n\nreturn [{\n  json: {\n    action: ctx.action,\n    params: ctx.params,\n    dictionary_parameters: dictionaryParameters,\n    api_metadata: apiMetadata,\n    api_pool_sample: apiPoolSample,\n    session_id: ctx.session_id,\n    message: ctx.message,\n    prompt\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1248,
-        0
+        1392,
+        336
       ],
-      "id": "6d3caf87-6a1b-48ca-8807-00092184a2df",
+      "id": "96f74455-cba3-4337-a9fe-135bbf423715",
       "name": "Build Builder Prompt"
     },
     {
@@ -100,10 +100,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        1456,
-        0
+        1600,
+        336
       ],
-      "id": "6574e8f5-8925-469f-a24d-5277c384ce57",
+      "id": "8e627ad0-7efb-4cd2-b785-fb5431078862",
       "name": "Basic LLM Chain"
     },
     {
@@ -120,14 +120,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        1456,
-        208
+        1600,
+        544
       ],
-      "id": "2f0ce889-ba30-46bb-80d6-d13024ba5816",
+      "id": "af99187b-cba4-4ce0-8cd5-add051219e63",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "PZrrVTzGmheg0FUW",
+          "id": "C6PPGVshBukmGMJ7",
           "name": "OpenAi account"
         }
       }
@@ -139,10 +139,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1808,
-        0
+        1952,
+        336
       ],
-      "id": "3e46a071-5ace-47c3-9dea-6a417c35cc46",
+      "id": "f468b2bb-78ff-4e9d-bdc2-cb7b1ccbd234",
       "name": "Parse Builder AI Output"
     },
     {
@@ -152,10 +152,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2016,
-        0
+        2160,
+        336
       ],
-      "id": "056d625d-7d2c-4b2e-bdfb-892b61c67d67",
+      "id": "d5311b0a-1bfc-4eba-ac69-924a59dc08cb",
       "name": "Format Builder Reply"
     },
     {
@@ -169,15 +169,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        832,
-        0
+        976,
+        336
       ],
-      "id": "62df764b-b058-45ce-ab41-81bae2f54618",
+      "id": "03dd6db3-960d-4631-8e59-590db2299fa6",
       "name": "Load API Pool Sample",
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     }
@@ -298,13 +298,14 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
-  "versionId": "30b16197-20c4-4e35-b34f-dce1ed7add92",
+  "versionId": "03b4db52-2a18-450a-9695-750dce4980ed",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "Z41Dn3edCcUEwQCO",
+  "id": "etHuVAcop6I3erbd",
   "tags": []
 }
