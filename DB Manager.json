@@ -328,9 +328,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH selected_rule AS (\n    SELECT\n        f.id,\n        f.usecase_id\n    FROM feedback_config_rules f\n    WHERE f.usecase_id = $2\n      AND f.active = TRUE\n    ORDER BY\n        CASE WHEN f.id = 140 THEN 0 ELSE 1 END,\n        f.id ASC\n    LIMIT 1\n),\ndelete_existing_for_same_usecase AS (\n    DELETE FROM \"User_UC_Mappings\" uum\n    USING feedback_config_rules existing_rule\n    WHERE uum.feedback_config_rule_id = existing_rule.id\n      AND uum.user_id = $1\n      AND existing_rule.usecase_id = $2\n)\nINSERT INTO \"User_UC_Mappings\" (user_id, feedback_config_rule_id)\nSELECT\n    $1,\n    selected_rule.id\nFROM selected_rule\nRETURNING\n    user_id,\n    feedback_config_rule_id;",
+        "query": "WITH selected_rule AS (\n    SELECT\n        f.id,\n        f.usecase_id\n    FROM feedback_config_rules f\n    JOIN \"UseCase\" uc\n        ON uc.usecase_id = f.usecase_id\n    WHERE f.usecase_id = $2\n      AND f.active = TRUE\n    ORDER BY\n        CASE\n            WHEN LOWER(uc.name) = LOWER('HeartRate') AND f.id = 140 THEN 0\n            ELSE 1\n        END,\n        f.id ASC\n    LIMIT 1\n),\ndelete_old_user_mapping_for_same_usecase AS (\n    DELETE FROM \"User_UC_Mappings\" uum\n    USING feedback_config_rules old_rule, selected_rule new_rule\n    WHERE uum.feedback_config_rule_id = old_rule.id\n      AND uum.user_id = $1\n      AND old_rule.usecase_id = new_rule.usecase_id\n)\nINSERT INTO \"User_UC_Mappings\" (user_id, feedback_config_rule_id)\nSELECT\n    $1,\n    selected_rule.id\nFROM selected_rule\nON CONFLICT DO NOTHING\nRETURNING\n    user_id,\n    feedback_config_rule_id;",
         "options": {
-          "queryReplacement": "={{ [$json.userId, $json.usecaseId] }}"
+          "queryReplacement": "=={{ $json.userId }},={{ $json.usecaseId }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -739,7 +739,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const result = $input.first().json;\n\nif (!result || !result.user_id) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"User or active mapping for use case not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Use case mapping assigned successfully\",\n    data: {\n      userId: result.user_id,\n      feedbackConfigRuleId: result.feedback_config_rule_id\n    }\n  }\n}];"
+        "jsCode": "const result = $input.first().json;\n\nif (!result || !result.user_id) {\n  return [{\n    json: {\n      statusCode: 404,\n      ok: false,\n      message: \"User or active mapping for use case not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    ok: true,\n    message: \"Use case assigned successfully\",\n    data: {\n      userId: result.user_id,\n      mappingId: result.feedback_config_rule_id,\n      feedbackConfigRuleId: result.feedback_config_rule_id\n    }\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1580,9 +1580,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE public.\"User\" u\nSET active_usecase_id = uc.usecase_id,\n    lastrequest = now()\nFROM public.\"UseCase\" uc\nWHERE u.userid = $1\n  AND uc.name = $2\nRETURNING\n  u.userid,\n  u.active_usecase_id AS \"usecaseId\",\n  uc.name AS \"monitoringType\";",
+        "query": "WITH target_usecase AS (\n    SELECT\n        usecase_id,\n        name\n    FROM \"UseCase\"\n    WHERE LOWER(name) = LOWER($2)\n    LIMIT 1\n),\nselected_rule AS (\n    SELECT\n        f.id,\n        f.usecase_id\n    FROM feedback_config_rules f\n    JOIN target_usecase uc\n        ON uc.usecase_id = f.usecase_id\n    WHERE f.active = TRUE\n    ORDER BY\n        CASE\n            WHEN LOWER(uc.name) = LOWER('HeartRate') AND f.id = 140 THEN 0\n            ELSE 1\n        END,\n        f.id ASC\n    LIMIT 1\n),\ndelete_old_user_mapping_for_same_usecase AS (\n    DELETE FROM \"User_UC_Mappings\" uum\n    USING feedback_config_rules old_rule, selected_rule new_rule\n    WHERE uum.feedback_config_rule_id = old_rule.id\n      AND uum.user_id = $1\n      AND old_rule.usecase_id = new_rule.usecase_id\n)\nINSERT INTO \"User_UC_Mappings\" (user_id, feedback_config_rule_id)\nSELECT\n    $1,\n    selected_rule.id\nFROM selected_rule\nON CONFLICT DO NOTHING\nRETURNING\n    user_id,\n    feedback_config_rule_id;",
         "options": {
-          "queryReplacement": "={{ [$json.userId, $json.monitoringType] }}"
+          "queryReplacement": "=={{ $json.userId }},={{ $json.monitoringType }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -1602,7 +1602,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\n\nif (items.length === 0 || !items[0].json.userid) {\n  return [{\n    json: {\n      statusCode: 404,\n      success: false,\n      error: \"User or monitoring type not found\"\n    }\n  }];\n}\n\nconst result = items[0].json;\n\nreturn [{\n  json: {\n    statusCode: 200,\n    success: true,\n    userId: result.userid,\n    monitoringType: result.monitoringType,\n    usecaseId: result.usecaseId\n  }\n}];"
+        "jsCode": "const result = $input.first().json;\nconst parsed = $('extract and validate parameters1').first().json;\n\nif (!result || !result.user_id) {\n  return [{\n    json: {\n      statusCode: 404,\n      ok: false,\n      error: \"Could not assign monitoring type. User, use case, or active mapping was not found.\",\n      userId: parsed.userId,\n      monitoringType: parsed.monitoringType\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    ok: true,\n    message: \"Monitoring type assigned successfully\",\n    userId: result.user_id,\n    monitoringType: parsed.monitoringType,\n    mappingId: result.feedback_config_rule_id,\n    feedbackConfigRuleId: result.feedback_config_rule_id\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1630,7 +1630,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const raw = $input.first().json;\n\n// Webhook v2.1 sometimes nests under .body, sometimes puts it at root\nconst body = (raw.body && typeof raw.body === 'object') ? raw.body : raw;\n\nconst userId = parseInt(body.userId);\nconst monitoringType = body.monitoringType?.trim();\n\nif (!userId || isNaN(userId)) {\n  return [{\n    json: {\n      valid: false,\n      statusCode: 400,\n      success: false,\n      error: \"Missing or invalid userId\"\n    }\n  }];\n}\n\nif (!monitoringType) {\n  return [{\n    json: {\n      valid: false,\n      statusCode: 400,\n      success: false,\n      error: \"Missing monitoringType\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    userId,\n    monitoringType\n  }\n}];"
+        "jsCode": "const body = $input.first().json.body || {};\n\nconst userId = Number(body.userId ?? body.userid ?? body.UserID);\nconst monitoringType = String(\n  body.monitoringType ?? body.monitoringtype ?? body.usecaseName ?? body.type ?? \"\"\n).trim();\n\nif (!Number.isFinite(userId) || userId <= 0) {\n  return [{\n    json: {\n      statusCode: 400,\n      ok: false,\n      error: \"Missing or invalid userId\"\n    }\n  }];\n}\n\nif (!monitoringType) {\n  return [{\n    json: {\n      statusCode: 400,\n      ok: false,\n      error: \"Missing or invalid monitoringType\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    ok: true,\n    userId,\n    monitoringType\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1753,13 +1753,13 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict",
+            "typeValidation": "loose",
             "version": 3
           },
           "conditions": [
             {
               "id": "2cd25333-48df-448d-9626-89ac40c252eb",
-              "leftValue": "={{ $json.valid }}",
+              "leftValue": "={{ $json.ok }}",
               "rightValue": "",
               "operator": {
                 "type": "boolean",
@@ -1770,6 +1770,7 @@
           ],
           "combinator": "and"
         },
+        "looseTypeValidation": true,
         "options": {}
       },
       "type": "n8n-nodes-base.if",
@@ -2818,7 +2819,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "a7d12c06-bc41-4b9c-bc29-87fa0adf1711",
+  "versionId": "51b82b4a-da75-47ec-93cf-9d2bb1751a7e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
