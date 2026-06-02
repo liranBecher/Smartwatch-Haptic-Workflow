@@ -2,10 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5
--- Dumped by pg_dump version 17.5
+\restrict nKldpPikoxamgUN0GMHFFHMbwyNSAuIFoPKF1AdryjhF91618bnp1KDGHJLefNR
 
--- Started on 2026-05-26 13:35:58
+-- Dumped from database version 18.0
+-- Dumped by pg_dump version 18.0
+
+-- Started on 2026-06-02 11:27:09
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -20,7 +22,49 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 242 (class 1255 OID 17609)
+-- TOC entry 249 (class 1255 OID 26512)
+-- Name: enforce_one_mapping_per_user_per_usecase(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.enforce_one_mapping_per_user_per_usecase() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    new_usecase_id INTEGER;
+BEGIN
+    SELECT usecase_id
+    INTO new_usecase_id
+    FROM feedback_config_rules
+    WHERE id = NEW.feedback_config_rule_id;
+
+    IF new_usecase_id IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM "User_UC_Mappings" uum
+        JOIN feedback_config_rules f
+            ON f.id = uum.feedback_config_rule_id
+        WHERE uum.user_id = NEW.user_id
+          AND f.usecase_id = new_usecase_id
+          AND uum.feedback_config_rule_id <> NEW.feedback_config_rule_id
+    ) THEN
+        RAISE EXCEPTION
+            'User % already has a mapping for usecase %',
+            NEW.user_id,
+            new_usecase_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.enforce_one_mapping_per_user_per_usecase() OWNER TO postgres;
+
+--
+-- TOC entry 261 (class 1255 OID 26217)
 -- Name: insert_sensor_data(integer, integer, integer, character varying, character varying, double precision, integer, integer, integer, integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -95,7 +139,7 @@ $$;
 ALTER FUNCTION public.insert_sensor_data(_userid integer, _watchid integer, _phoneid integer, _sensorname character varying, _alertgiven character varying, _value double precision, _pulses integer, _intensity integer, _duration integer, _interval integer, _fbrangeid integer, _vibration_reason character varying) OWNER TO postgres;
 
 --
--- TOC entry 243 (class 1255 OID 17610)
+-- TOC entry 262 (class 1255 OID 26218)
 -- Name: resolve_fb_range(integer, character varying, double precision); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -136,7 +180,7 @@ $$;
 ALTER FUNCTION public.resolve_fb_range(_userid integer, _sensorname character varying, _value double precision) OWNER TO postgres;
 
 --
--- TOC entry 244 (class 1255 OID 17611)
+-- TOC entry 263 (class 1255 OID 26219)
 -- Name: touch_updated_at(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -157,7 +201,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 217 (class 1259 OID 17612)
+-- TOC entry 221 (class 1259 OID 26220)
 -- Name: Alert; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -178,7 +222,7 @@ CREATE TABLE public."Alert" (
 ALTER TABLE public."Alert" OWNER TO postgres;
 
 --
--- TOC entry 218 (class 1259 OID 17618)
+-- TOC entry 222 (class 1259 OID 26227)
 -- Name: Alert_alertid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -194,8 +238,8 @@ CREATE SEQUENCE public."Alert_alertid_seq"
 ALTER SEQUENCE public."Alert_alertid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5013 (class 0 OID 0)
--- Dependencies: 218
+-- TOC entry 5197 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: Alert_alertid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -203,7 +247,7 @@ ALTER SEQUENCE public."Alert_alertid_seq" OWNED BY public."Alert".alertid;
 
 
 --
--- TOC entry 219 (class 1259 OID 17619)
+-- TOC entry 223 (class 1259 OID 26228)
 -- Name: AndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -215,7 +259,7 @@ CREATE TABLE public."AndroidPhone" (
 ALTER TABLE public."AndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 17622)
+-- TOC entry 224 (class 1259 OID 26232)
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -231,8 +275,8 @@ CREATE SEQUENCE public."AndroidPhone_phoneid_seq"
 ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5014 (class 0 OID 0)
--- Dependencies: 220
+-- TOC entry 5198 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -240,7 +284,7 @@ ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNED BY public."AndroidPhone".
 
 
 --
--- TOC entry 221 (class 1259 OID 17623)
+-- TOC entry 225 (class 1259 OID 26233)
 -- Name: DeviceSensor; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -255,7 +299,7 @@ CREATE TABLE public."DeviceSensor" (
 ALTER TABLE public."DeviceSensor" OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 17626)
+-- TOC entry 226 (class 1259 OID 26239)
 -- Name: SensorData; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -274,7 +318,7 @@ CREATE TABLE public."SensorData" (
 ALTER TABLE public."SensorData" OWNER TO postgres;
 
 --
--- TOC entry 223 (class 1259 OID 17630)
+-- TOC entry 227 (class 1259 OID 26244)
 -- Name: SensorData_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -290,8 +334,8 @@ CREATE SEQUENCE public."SensorData_id_seq"
 ALTER SEQUENCE public."SensorData_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5015 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 5199 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: SensorData_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -299,7 +343,7 @@ ALTER SEQUENCE public."SensorData_id_seq" OWNED BY public."SensorData".id;
 
 
 --
--- TOC entry 224 (class 1259 OID 17631)
+-- TOC entry 228 (class 1259 OID 26245)
 -- Name: UseCase; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -314,7 +358,7 @@ CREATE TABLE public."UseCase" (
 ALTER TABLE public."UseCase" OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 17636)
+-- TOC entry 229 (class 1259 OID 26252)
 -- Name: UseCaseDictionary; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -333,8 +377,8 @@ CREATE TABLE public."UseCaseDictionary" (
 ALTER TABLE public."UseCaseDictionary" OWNER TO postgres;
 
 --
--- TOC entry 5016 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 5200 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: TABLE "UseCaseDictionary"; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -342,7 +386,7 @@ COMMENT ON TABLE public."UseCaseDictionary" IS 'Dictionary for potential new use
 
 
 --
--- TOC entry 226 (class 1259 OID 17642)
+-- TOC entry 230 (class 1259 OID 26263)
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -358,8 +402,8 @@ CREATE SEQUENCE public."UseCaseDictionary_id_seq"
 ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5017 (class 0 OID 0)
--- Dependencies: 226
+-- TOC entry 5201 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -367,7 +411,7 @@ ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNED BY public."UseCaseDiction
 
 
 --
--- TOC entry 227 (class 1259 OID 17643)
+-- TOC entry 231 (class 1259 OID 26264)
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -383,8 +427,8 @@ CREATE SEQUENCE public."UseCase_usecase_id_seq"
 ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5018 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 5202 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -392,7 +436,7 @@ ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNED BY public."UseCase".usecase
 
 
 --
--- TOC entry 228 (class 1259 OID 17644)
+-- TOC entry 232 (class 1259 OID 26265)
 -- Name: User; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -400,15 +444,14 @@ CREATE TABLE public."User" (
     userid integer NOT NULL,
     fname character varying(50),
     lname character varying(50),
-    lastrequest timestamp without time zone,
-    active_usecase_id integer
+    lastrequest timestamp without time zone
 );
 
 
 ALTER TABLE public."User" OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1259 OID 17647)
+-- TOC entry 233 (class 1259 OID 26269)
 -- Name: UserWatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -422,7 +465,36 @@ CREATE TABLE public."UserWatchAndroidPhone" (
 ALTER TABLE public."UserWatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 230 (class 1259 OID 17650)
+-- TOC entry 248 (class 1259 OID 26491)
+-- Name: User_UC_Mappings; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."User_UC_Mappings" (
+    user_id integer NOT NULL,
+    feedback_config_rule_id integer NOT NULL
+);
+
+
+ALTER TABLE public."User_UC_Mappings" OWNER TO postgres;
+
+--
+-- TOC entry 247 (class 1259 OID 26473)
+-- Name: User_backup_before_uc_migration; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."User_backup_before_uc_migration" (
+    userid integer,
+    fname character varying(50),
+    lname character varying(50),
+    lastrequest timestamp without time zone,
+    active_usecase_id integer
+);
+
+
+ALTER TABLE public."User_backup_before_uc_migration" OWNER TO postgres;
+
+--
+-- TOC entry 234 (class 1259 OID 26275)
 -- Name: User_userid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -438,8 +510,8 @@ CREATE SEQUENCE public."User_userid_seq"
 ALTER SEQUENCE public."User_userid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5019 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 5203 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: User_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -447,7 +519,7 @@ ALTER SEQUENCE public."User_userid_seq" OWNED BY public."User".userid;
 
 
 --
--- TOC entry 231 (class 1259 OID 17651)
+-- TOC entry 235 (class 1259 OID 26276)
 -- Name: Watch; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -459,7 +531,7 @@ CREATE TABLE public."Watch" (
 ALTER TABLE public."Watch" OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1259 OID 17654)
+-- TOC entry 236 (class 1259 OID 26280)
 -- Name: WatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -472,7 +544,7 @@ CREATE TABLE public."WatchAndroidPhone" (
 ALTER TABLE public."WatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 17657)
+-- TOC entry 237 (class 1259 OID 26285)
 -- Name: Watch_watchid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -488,8 +560,8 @@ CREATE SEQUENCE public."Watch_watchid_seq"
 ALTER SEQUENCE public."Watch_watchid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5020 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 5204 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: Watch_watchid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -497,7 +569,7 @@ ALTER SEQUENCE public."Watch_watchid_seq" OWNED BY public."Watch".watchid;
 
 
 --
--- TOC entry 234 (class 1259 OID 17658)
+-- TOC entry 238 (class 1259 OID 26286)
 -- Name: agent_session; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -515,7 +587,7 @@ CREATE TABLE public.agent_session (
 ALTER TABLE public.agent_session OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 17667)
+-- TOC entry 239 (class 1259 OID 26299)
 -- Name: api_pool; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -538,7 +610,7 @@ CREATE TABLE public.api_pool (
 ALTER TABLE public.api_pool OWNER TO postgres;
 
 --
--- TOC entry 236 (class 1259 OID 17674)
+-- TOC entry 240 (class 1259 OID 26312)
 -- Name: api_pool_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -554,8 +626,8 @@ CREATE SEQUENCE public.api_pool_id_seq
 ALTER SEQUENCE public.api_pool_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5021 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5205 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: api_pool_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -563,7 +635,7 @@ ALTER SEQUENCE public.api_pool_id_seq OWNED BY public.api_pool.id;
 
 
 --
--- TOC entry 237 (class 1259 OID 17675)
+-- TOC entry 241 (class 1259 OID 26313)
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -578,12 +650,36 @@ CREATE SEQUENCE public.feedback_config_rules_id_seq
 ALTER SEQUENCE public.feedback_config_rules_id_seq OWNER TO postgres;
 
 --
--- TOC entry 238 (class 1259 OID 17676)
+-- TOC entry 242 (class 1259 OID 26314)
 -- Name: feedback_config_rules; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.feedback_config_rules (
     id bigint DEFAULT nextval('public.feedback_config_rules_id_seq'::regclass) NOT NULL,
+    minvalue double precision,
+    maxvalue double precision,
+    active boolean,
+    minpulses double precision,
+    maxpulses double precision,
+    minintensity double precision,
+    maxintensity double precision,
+    minduration double precision,
+    maxduration double precision,
+    mininterval double precision,
+    maxinterval double precision,
+    usecase_id integer
+);
+
+
+ALTER TABLE public.feedback_config_rules OWNER TO postgres;
+
+--
+-- TOC entry 246 (class 1259 OID 26470)
+-- Name: feedback_config_rules_backup_before_uc_migration; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.feedback_config_rules_backup_before_uc_migration (
+    id bigint,
     minvalue double precision,
     maxvalue double precision,
     type character varying(255),
@@ -600,10 +696,10 @@ CREATE TABLE public.feedback_config_rules (
 );
 
 
-ALTER TABLE public.feedback_config_rules OWNER TO postgres;
+ALTER TABLE public.feedback_config_rules_backup_before_uc_migration OWNER TO postgres;
 
 --
--- TOC entry 239 (class 1259 OID 17680)
+-- TOC entry 243 (class 1259 OID 26319)
 -- Name: user_schedules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -622,7 +718,7 @@ CREATE TABLE public.user_schedules (
 ALTER TABLE public.user_schedules OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 17689)
+-- TOC entry 244 (class 1259 OID 26331)
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -637,7 +733,7 @@ ALTER TABLE public.user_schedules ALTER COLUMN schedule_id ADD GENERATED ALWAYS 
 
 
 --
--- TOC entry 241 (class 1259 OID 17690)
+-- TOC entry 245 (class 1259 OID 26332)
 -- Name: v_agent_context; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -650,17 +746,17 @@ CREATE VIEW public.v_agent_context AS
     uc.usecase_id,
     uc.name AS usecase_name,
     uc.description AS usecase_description,
-    COALESCE(json_agg(json_build_object('id', fcr.id, 'minvalue', fcr.minvalue, 'maxvalue', fcr.maxvalue, 'minpulses', fcr.minpulses, 'maxpulses', fcr.maxpulses, 'minintensity', fcr.minintensity, 'maxintensity', fcr.maxintensity, 'minduration', fcr.minduration, 'maxduration', fcr.maxduration, 'mininterval', fcr.mininterval, 'maxinterval', fcr.maxinterval) ORDER BY fcr.minvalue NULLS FIRST) FILTER (WHERE (fcr.id IS NOT NULL)), '[]'::json) AS global_mappings
+    COALESCE(json_agg(json_build_object('id', fcr.id, 'mapping_id', fcr.id, 'usecase_id', fcr.usecase_id, 'type', uc.name, 'usecase_name', uc.name, 'minvalue', fcr.minvalue, 'maxvalue', fcr.maxvalue, 'minpulses', fcr.minpulses, 'maxpulses', fcr.maxpulses, 'minintensity', fcr.minintensity, 'maxintensity', fcr.maxintensity, 'minduration', fcr.minduration, 'maxduration', fcr.maxduration, 'mininterval', fcr.mininterval, 'maxinterval', fcr.maxinterval) ORDER BY fcr.minvalue NULLS FIRST, fcr.id) FILTER (WHERE (fcr.id IS NOT NULL)), '[]'::json) AS global_mappings
    FROM ((public.agent_session s
      LEFT JOIN public."UseCase" uc ON ((s.current_usecase_id = uc.usecase_id)))
-     LEFT JOIN public.feedback_config_rules fcr ON ((((fcr.type)::text = (uc.name)::text) AND (fcr.active = true) AND (fcr.user_id IS NULL))))
+     LEFT JOIN public.feedback_config_rules fcr ON (((fcr.usecase_id = uc.usecase_id) AND (fcr.active = true))))
   GROUP BY s.session_id, s.researcher_id, s.conversation_history, s.active_workflow, s.updated_at, uc.usecase_id, uc.name, uc.description;
 
 
 ALTER VIEW public.v_agent_context OWNER TO postgres;
 
 --
--- TOC entry 4763 (class 2604 OID 17695)
+-- TOC entry 4939 (class 2604 OID 26337)
 -- Name: Alert alertid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -668,7 +764,7 @@ ALTER TABLE ONLY public."Alert" ALTER COLUMN alertid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4764 (class 2604 OID 17696)
+-- TOC entry 4940 (class 2604 OID 26338)
 -- Name: AndroidPhone phoneid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -676,7 +772,7 @@ ALTER TABLE ONLY public."AndroidPhone" ALTER COLUMN phoneid SET DEFAULT nextval(
 
 
 --
--- TOC entry 4765 (class 2604 OID 17697)
+-- TOC entry 4941 (class 2604 OID 26339)
 -- Name: SensorData id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -684,7 +780,7 @@ ALTER TABLE ONLY public."SensorData" ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4767 (class 2604 OID 17698)
+-- TOC entry 4943 (class 2604 OID 26340)
 -- Name: UseCase usecase_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -692,7 +788,7 @@ ALTER TABLE ONLY public."UseCase" ALTER COLUMN usecase_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4768 (class 2604 OID 17699)
+-- TOC entry 4944 (class 2604 OID 26341)
 -- Name: UseCaseDictionary dict_entry; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -700,7 +796,7 @@ ALTER TABLE ONLY public."UseCaseDictionary" ALTER COLUMN dict_entry SET DEFAULT 
 
 
 --
--- TOC entry 4770 (class 2604 OID 17700)
+-- TOC entry 4946 (class 2604 OID 26342)
 -- Name: User userid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -708,7 +804,7 @@ ALTER TABLE ONLY public."User" ALTER COLUMN userid SET DEFAULT nextval('public."
 
 
 --
--- TOC entry 4771 (class 2604 OID 17701)
+-- TOC entry 4947 (class 2604 OID 26343)
 -- Name: Watch watchid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -716,7 +812,7 @@ ALTER TABLE ONLY public."Watch" ALTER COLUMN watchid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4776 (class 2604 OID 17702)
+-- TOC entry 4952 (class 2604 OID 26344)
 -- Name: api_pool id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -724,2477 +820,14 @@ ALTER TABLE ONLY public.api_pool ALTER COLUMN id SET DEFAULT nextval('public.api
 
 
 --
--- TOC entry 4984 (class 0 OID 17612)
--- Dependencies: 217
+-- TOC entry 5165 (class 0 OID 26220)
+-- Dependencies: 221
 -- Data for Name: Alert; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval", type, fbrangeid, vibration_reason) FROM stdin;
-565	yes	62	3	145	290	HeartRate	65	\N
-566	yes	62	3	145	290	HeartRate	65	\N
-567	yes	60	3	143	285	HeartRate	65	\N
-568	yes	62	3	145	290	HeartRate	65	\N
-569	yes	60	3	143	285	HeartRate	65	\N
-570	yes	60	3	143	285	HeartRate	65	\N
-571	yes	62	3	145	290	HeartRate	65	\N
-572	yes	62	3	145	290	HeartRate	65	\N
-573	yes	62	3	145	290	HeartRate	65	\N
-574	yes	62	3	145	290	HeartRate	65	\N
-575	yes	62	3	145	290	HeartRate	65	\N
-576	yes	62	3	145	290	HeartRate	65	\N
-577	yes	62	3	145	290	HeartRate	65	\N
-578	yes	62	3	145	290	HeartRate	65	\N
-579	yes	62	3	145	290	HeartRate	65	\N
-580	yes	62	3	145	290	HeartRate	65	\N
-581	yes	62	3	145	290	HeartRate	65	\N
-582	yes	62	3	145	290	HeartRate	65	\N
-583	yes	62	3	145	290	HeartRate	65	\N
-584	yes	62	3	145	290	HeartRate	65	\N
-585	yes	62	3	145	290	HeartRate	65	\N
-586	yes	62	3	145	290	HeartRate	65	\N
-587	yes	62	3	145	290	HeartRate	65	\N
-588	yes	62	3	145	290	HeartRate	65	\N
-589	yes	63	3	148	295	HeartRate	65	\N
-590	yes	63	3	148	295	HeartRate	65	\N
-591	yes	63	3	148	295	HeartRate	65	\N
-592	yes	63	3	148	295	HeartRate	65	\N
-593	yes	63	3	148	295	HeartRate	65	\N
-594	yes	63	3	148	295	HeartRate	65	\N
-595	yes	63	3	148	295	HeartRate	65	\N
-596	yes	63	3	148	295	HeartRate	65	\N
-597	yes	63	3	148	295	HeartRate	65	\N
-598	yes	63	3	148	295	HeartRate	65	\N
-599	yes	63	3	148	295	HeartRate	65	\N
-600	yes	63	3	148	295	HeartRate	65	\N
-601	yes	63	3	148	295	HeartRate	65	\N
-602	yes	63	3	148	295	HeartRate	65	\N
-603	yes	63	3	148	295	HeartRate	65	\N
-604	yes	63	3	148	295	HeartRate	65	\N
-605	yes	63	3	148	295	HeartRate	65	\N
-606	yes	63	3	148	295	HeartRate	65	\N
-607	yes	63	3	148	295	HeartRate	65	\N
-608	yes	63	3	148	295	HeartRate	65	\N
-609	yes	62	3	145	290	HeartRate	65	\N
-610	yes	62	3	145	290	HeartRate	65	\N
-611	yes	62	3	145	290	HeartRate	65	\N
-612	yes	62	3	145	290	HeartRate	65	\N
-613	yes	62	3	145	290	HeartRate	65	\N
-614	yes	62	3	145	290	HeartRate	65	\N
-615	yes	60	3	143	285	HeartRate	65	\N
-616	yes	60	3	143	285	HeartRate	65	\N
-617	yes	60	3	143	285	HeartRate	65	\N
-618	yes	60	3	143	285	HeartRate	65	\N
-619	yes	58	3	140	280	HeartRate	65	\N
-620	yes	58	3	140	280	HeartRate	65	\N
-621	yes	58	3	140	280	HeartRate	65	\N
-622	yes	58	3	140	280	HeartRate	65	\N
-623	yes	58	3	140	280	HeartRate	65	\N
-624	yes	56	3	138	275	HeartRate	65	\N
-625	yes	56	3	138	275	HeartRate	65	\N
-626	yes	56	3	138	275	HeartRate	65	\N
-627	yes	56	3	138	275	HeartRate	65	\N
-628	yes	56	3	138	275	HeartRate	65	\N
-629	yes	56	3	138	275	HeartRate	65	\N
-630	yes	56	3	138	275	HeartRate	65	\N
-631	yes	56	3	138	275	HeartRate	65	\N
-632	yes	55	2	135	270	HeartRate	65	\N
-633	yes	55	2	135	270	HeartRate	65	\N
-634	yes	55	2	135	270	HeartRate	65	\N
-635	yes	55	2	135	270	HeartRate	65	\N
-636	yes	55	2	135	270	HeartRate	65	\N
-637	yes	55	2	135	270	HeartRate	65	\N
-638	yes	55	2	135	270	HeartRate	65	\N
-639	yes	55	2	135	270	HeartRate	65	\N
-640	yes	55	2	135	270	HeartRate	65	\N
-641	yes	53	2	133	265	HeartRate	65	\N
-642	yes	53	2	133	265	HeartRate	65	\N
-643	yes	53	2	133	265	HeartRate	65	\N
-644	yes	53	2	133	265	HeartRate	65	\N
-645	yes	53	2	133	265	HeartRate	65	\N
-646	yes	53	2	133	265	HeartRate	65	\N
-647	yes	53	2	133	265	HeartRate	65	\N
-648	yes	53	2	133	265	HeartRate	65	\N
-649	yes	53	2	133	265	HeartRate	65	\N
-650	yes	53	2	133	265	HeartRate	65	\N
-651	yes	53	2	133	265	HeartRate	65	\N
-652	yes	53	2	133	265	HeartRate	65	\N
-653	yes	53	2	133	265	HeartRate	65	\N
-654	yes	53	2	133	265	HeartRate	65	\N
-655	yes	53	2	133	265	HeartRate	65	\N
-656	yes	51	2	130	260	HeartRate	65	\N
-657	yes	51	2	130	260	HeartRate	65	\N
-658	yes	51	2	130	260	HeartRate	65	\N
-659	yes	51	2	130	260	HeartRate	65	\N
-660	yes	51	2	130	260	HeartRate	65	\N
-661	yes	51	2	130	260	HeartRate	65	\N
-662	yes	51	2	130	260	HeartRate	65	\N
-663	yes	51	2	130	260	HeartRate	65	\N
-664	yes	51	2	130	260	HeartRate	65	\N
-665	yes	51	2	130	260	HeartRate	65	\N
-666	yes	51	2	130	260	HeartRate	65	\N
-667	yes	51	2	130	260	HeartRate	65	\N
-668	yes	51	2	130	260	HeartRate	65	\N
-669	yes	51	2	130	260	HeartRate	65	\N
-670	yes	51	2	130	260	HeartRate	65	\N
-671	yes	51	2	130	260	HeartRate	65	\N
-672	yes	51	2	130	260	HeartRate	65	\N
-673	yes	51	2	130	260	HeartRate	65	\N
-674	yes	53	2	133	265	HeartRate	65	\N
-675	yes	53	2	133	265	HeartRate	65	\N
-676	yes	53	2	133	265	HeartRate	65	\N
-677	yes	53	2	133	265	HeartRate	65	\N
-678	yes	53	2	133	265	HeartRate	65	\N
-679	yes	53	2	133	265	HeartRate	65	\N
-680	yes	53	2	133	265	HeartRate	65	\N
-681	yes	53	2	133	265	HeartRate	65	\N
-682	yes	53	2	133	265	HeartRate	65	\N
-683	yes	53	2	133	265	HeartRate	65	\N
-684	yes	53	2	133	265	HeartRate	65	\N
-685	yes	53	2	133	265	HeartRate	65	\N
-686	yes	53	2	133	265	HeartRate	65	\N
-687	yes	53	2	133	265	HeartRate	65	\N
-688	yes	53	2	133	265	HeartRate	65	\N
-689	yes	53	2	133	265	HeartRate	65	\N
-690	yes	53	2	133	265	HeartRate	65	\N
-691	yes	53	2	133	265	HeartRate	65	\N
-692	yes	53	2	133	265	HeartRate	65	\N
-693	yes	53	2	133	265	HeartRate	65	\N
-694	yes	53	2	133	265	HeartRate	65	\N
-695	yes	53	2	133	265	HeartRate	65	\N
-696	yes	53	2	133	265	HeartRate	65	\N
-697	yes	53	2	133	265	HeartRate	65	\N
-698	yes	53	2	133	265	HeartRate	65	\N
-699	yes	53	2	133	265	HeartRate	65	\N
-700	yes	53	2	133	265	HeartRate	65	\N
-701	yes	53	2	133	265	HeartRate	65	\N
-702	yes	53	2	133	265	HeartRate	65	\N
-703	yes	53	2	133	265	HeartRate	65	\N
-704	yes	53	2	133	265	HeartRate	65	\N
-705	yes	53	2	133	265	HeartRate	65	\N
-706	yes	53	2	133	265	HeartRate	65	\N
-707	yes	53	2	133	265	HeartRate	65	\N
-708	yes	53	2	133	265	HeartRate	65	\N
-709	yes	53	2	133	265	HeartRate	65	\N
-710	yes	53	2	133	265	HeartRate	65	\N
-711	yes	53	2	133	265	HeartRate	65	\N
-712	yes	53	2	133	265	HeartRate	65	\N
-713	yes	53	2	133	265	HeartRate	65	\N
-714	yes	53	2	133	265	HeartRate	65	\N
-715	yes	53	2	133	265	HeartRate	65	\N
-716	yes	53	2	133	265	HeartRate	65	\N
-717	yes	53	2	133	265	HeartRate	65	\N
-718	yes	53	2	133	265	HeartRate	65	\N
-719	yes	53	2	133	265	HeartRate	65	\N
-720	yes	53	2	133	265	HeartRate	65	\N
-721	yes	53	2	133	265	HeartRate	65	\N
-722	yes	53	2	133	265	HeartRate	65	\N
-723	yes	53	2	133	265	HeartRate	65	\N
-724	yes	53	2	133	265	HeartRate	65	\N
-725	yes	53	2	133	265	HeartRate	65	\N
-726	yes	53	2	133	265	HeartRate	65	\N
-727	yes	53	2	133	265	HeartRate	65	\N
-728	yes	53	2	133	265	HeartRate	65	\N
-729	yes	53	2	133	265	HeartRate	65	\N
-730	yes	53	2	133	265	HeartRate	65	\N
-731	yes	53	2	133	265	HeartRate	65	\N
-732	yes	53	2	133	265	HeartRate	65	\N
-733	yes	53	2	133	265	HeartRate	65	\N
-734	yes	53	2	133	265	HeartRate	65	\N
-735	yes	53	2	133	265	HeartRate	65	\N
-736	yes	53	2	133	265	HeartRate	65	\N
-737	yes	53	2	133	265	HeartRate	65	\N
-738	yes	53	2	133	265	HeartRate	65	\N
-739	yes	53	2	133	265	HeartRate	65	\N
-740	yes	53	2	133	265	HeartRate	65	\N
-741	yes	53	2	133	265	HeartRate	65	\N
-742	yes	53	2	133	265	HeartRate	65	\N
-743	yes	53	2	133	265	HeartRate	65	\N
-744	yes	53	2	133	265	HeartRate	65	\N
-745	yes	53	2	133	265	HeartRate	65	\N
-746	yes	53	2	133	265	HeartRate	65	\N
-747	yes	53	2	133	265	HeartRate	65	\N
-748	yes	53	2	133	265	HeartRate	65	\N
-749	yes	53	2	133	265	HeartRate	65	\N
-750	yes	53	2	133	265	HeartRate	65	\N
-751	yes	53	2	133	265	HeartRate	65	\N
-752	yes	53	2	133	265	HeartRate	65	\N
-753	yes	53	2	133	265	HeartRate	65	\N
-754	yes	53	2	133	265	HeartRate	65	\N
-755	yes	53	2	133	265	HeartRate	65	\N
-756	yes	51	2	130	260	HeartRate	65	\N
-757	yes	51	2	130	260	HeartRate	65	\N
-758	yes	51	2	130	260	HeartRate	65	\N
-759	yes	51	2	130	260	HeartRate	65	\N
-760	yes	51	2	130	260	HeartRate	65	\N
-761	yes	51	2	130	260	HeartRate	65	\N
-762	yes	51	2	130	260	HeartRate	65	\N
-763	yes	51	2	130	260	HeartRate	65	\N
-764	yes	51	2	130	260	HeartRate	65	\N
-765	yes	51	2	130	260	HeartRate	65	\N
-766	yes	51	2	130	260	HeartRate	65	\N
-767	yes	51	2	130	260	HeartRate	65	\N
-768	yes	51	2	130	260	HeartRate	65	\N
-769	yes	51	2	130	260	HeartRate	65	\N
-770	yes	51	2	130	260	HeartRate	65	\N
-771	yes	51	2	130	260	HeartRate	65	\N
-772	yes	51	2	130	260	HeartRate	65	\N
-773	yes	51	2	130	260	HeartRate	65	\N
-774	yes	51	2	130	260	HeartRate	65	\N
-775	yes	51	2	130	260	HeartRate	65	\N
-776	yes	51	2	130	260	HeartRate	65	\N
-777	yes	51	2	130	260	HeartRate	65	\N
-778	yes	51	2	130	260	HeartRate	65	\N
-779	yes	51	2	130	260	HeartRate	65	\N
-780	yes	51	2	130	260	HeartRate	65	\N
-781	yes	51	2	130	260	HeartRate	65	\N
-782	yes	51	2	130	260	HeartRate	65	\N
-783	yes	51	2	130	260	HeartRate	65	\N
-784	yes	53	2	133	265	HeartRate	65	\N
-785	yes	53	2	133	265	HeartRate	65	\N
-786	yes	53	2	133	265	HeartRate	65	\N
-787	yes	53	2	133	265	HeartRate	65	\N
-788	yes	53	2	133	265	HeartRate	65	\N
-789	yes	53	2	133	265	HeartRate	65	\N
-790	yes	53	2	133	265	HeartRate	65	\N
-791	yes	53	2	133	265	HeartRate	65	\N
-792	yes	53	2	133	265	HeartRate	65	\N
-793	yes	53	2	133	265	HeartRate	65	\N
-794	yes	53	2	133	265	HeartRate	65	\N
-795	yes	53	2	133	265	HeartRate	65	\N
-796	yes	53	2	133	265	HeartRate	65	\N
-797	yes	53	2	133	265	HeartRate	65	\N
-798	yes	53	2	133	265	HeartRate	65	\N
-799	yes	53	2	133	265	HeartRate	65	\N
-800	yes	53	2	133	265	HeartRate	65	\N
-801	yes	53	2	133	265	HeartRate	65	\N
-802	yes	53	2	133	265	HeartRate	65	\N
-803	yes	53	2	133	265	HeartRate	65	\N
-804	yes	53	2	133	265	HeartRate	65	\N
-805	yes	55	2	135	270	HeartRate	65	\N
-806	yes	55	2	135	270	HeartRate	65	\N
-807	yes	55	2	135	270	HeartRate	65	\N
-808	yes	55	2	135	270	HeartRate	65	\N
-809	yes	55	2	135	270	HeartRate	65	\N
-810	yes	55	2	135	270	HeartRate	65	\N
-811	yes	55	2	135	270	HeartRate	65	\N
-812	yes	56	3	138	275	HeartRate	65	\N
-813	yes	56	3	138	275	HeartRate	65	\N
-814	yes	56	3	138	275	HeartRate	65	\N
-815	yes	56	3	138	275	HeartRate	65	\N
-816	yes	56	3	138	275	HeartRate	65	\N
-817	yes	56	3	138	275	HeartRate	65	\N
-818	yes	56	3	138	275	HeartRate	65	\N
-819	yes	56	3	138	275	HeartRate	65	\N
-820	yes	56	3	138	275	HeartRate	65	\N
-821	yes	56	3	138	275	HeartRate	65	\N
-822	yes	56	3	138	275	HeartRate	65	\N
-823	yes	56	3	138	275	HeartRate	65	\N
-824	yes	56	3	138	275	HeartRate	65	\N
-825	yes	56	3	138	275	HeartRate	65	\N
-826	yes	56	3	138	275	HeartRate	65	\N
-827	yes	56	3	138	275	HeartRate	65	\N
-828	yes	56	3	138	275	HeartRate	65	\N
-829	yes	56	3	138	275	HeartRate	65	\N
-830	yes	56	3	138	275	HeartRate	65	\N
-831	yes	58	3	140	280	HeartRate	65	\N
-832	yes	58	3	140	280	HeartRate	65	\N
-833	yes	58	3	140	280	HeartRate	65	\N
-834	yes	58	3	140	280	HeartRate	65	\N
-835	yes	58	3	140	280	HeartRate	65	\N
-836	yes	58	3	140	280	HeartRate	65	\N
-837	yes	58	3	140	280	HeartRate	65	\N
-838	yes	58	3	140	280	HeartRate	65	\N
-839	yes	58	3	140	280	HeartRate	65	\N
-840	yes	58	3	140	280	HeartRate	65	\N
-841	yes	58	3	140	280	HeartRate	65	\N
-842	yes	58	3	140	280	HeartRate	65	\N
-843	yes	58	3	140	280	HeartRate	65	\N
-844	yes	58	3	140	280	HeartRate	65	\N
-845	yes	58	3	140	280	HeartRate	65	\N
-846	yes	58	3	140	280	HeartRate	65	\N
-847	yes	58	3	140	280	HeartRate	65	\N
-848	yes	58	3	140	280	HeartRate	65	\N
-849	yes	58	3	140	280	HeartRate	65	\N
-850	yes	58	3	140	280	HeartRate	65	\N
-851	yes	58	3	140	280	HeartRate	65	\N
-852	yes	56	3	138	275	HeartRate	65	\N
-853	yes	56	3	138	275	HeartRate	65	\N
-854	yes	58	3	140	280	HeartRate	65	\N
-855	yes	58	3	140	280	HeartRate	65	\N
-856	yes	58	3	140	280	HeartRate	65	\N
-857	yes	58	3	140	280	HeartRate	65	\N
-858	yes	58	3	140	280	HeartRate	65	\N
-859	yes	58	3	140	280	HeartRate	65	\N
-860	yes	58	3	140	280	HeartRate	65	\N
-861	yes	58	3	140	280	HeartRate	65	\N
-862	yes	58	3	140	280	HeartRate	65	\N
-863	yes	58	3	140	280	HeartRate	65	\N
-864	yes	58	3	140	280	HeartRate	65	\N
-865	yes	58	3	140	280	HeartRate	65	\N
-866	yes	58	3	140	280	HeartRate	65	\N
-867	yes	58	3	140	280	HeartRate	65	\N
-868	yes	58	3	140	280	HeartRate	65	\N
-869	yes	58	3	140	280	HeartRate	65	\N
-870	yes	58	3	140	280	HeartRate	65	\N
-871	yes	58	3	140	280	HeartRate	65	\N
-872	yes	58	3	140	280	HeartRate	65	\N
-873	yes	58	3	140	280	HeartRate	65	\N
-874	yes	58	3	140	280	HeartRate	65	\N
-875	yes	58	3	140	280	HeartRate	65	\N
-876	yes	58	3	140	280	HeartRate	65	\N
-877	yes	58	3	140	280	HeartRate	65	\N
-878	yes	58	3	140	280	HeartRate	65	\N
-879	yes	58	3	140	280	HeartRate	65	\N
-880	yes	58	3	140	280	HeartRate	65	\N
-881	yes	58	3	140	280	HeartRate	65	\N
-882	yes	58	3	140	280	HeartRate	65	\N
-883	yes	58	3	140	280	HeartRate	65	\N
-884	yes	58	3	140	280	HeartRate	65	\N
-885	yes	58	3	140	280	HeartRate	65	\N
-886	yes	58	3	140	280	HeartRate	65	\N
-887	yes	58	3	140	280	HeartRate	65	\N
-888	yes	58	3	140	280	HeartRate	65	\N
-889	yes	58	3	140	280	HeartRate	65	\N
-890	yes	58	3	140	280	HeartRate	65	\N
-891	yes	58	3	140	280	HeartRate	65	\N
-892	yes	58	3	140	280	HeartRate	65	\N
-893	yes	58	3	140	280	HeartRate	65	\N
-894	yes	58	3	140	280	HeartRate	65	\N
-895	yes	58	3	140	280	HeartRate	65	\N
-896	yes	58	3	140	280	HeartRate	65	\N
-897	yes	58	3	140	280	HeartRate	65	\N
-898	yes	56	3	138	275	HeartRate	65	\N
-899	yes	56	3	138	275	HeartRate	65	\N
-900	yes	56	3	138	275	HeartRate	65	\N
-901	yes	56	3	138	275	HeartRate	65	\N
-902	yes	56	3	138	275	HeartRate	65	\N
-903	yes	56	3	138	275	HeartRate	65	\N
-904	yes	56	3	138	275	HeartRate	65	\N
-905	yes	55	2	135	270	HeartRate	65	\N
-906	yes	55	2	135	270	HeartRate	65	\N
-907	yes	55	2	135	270	HeartRate	65	\N
-908	yes	55	2	135	270	HeartRate	65	\N
-909	yes	55	2	135	270	HeartRate	65	\N
-910	yes	55	2	135	270	HeartRate	65	\N
-911	yes	53	2	133	265	HeartRate	65	\N
-912	yes	53	2	133	265	HeartRate	65	\N
-913	yes	53	2	133	265	HeartRate	65	\N
-914	yes	53	2	133	265	HeartRate	65	\N
-915	yes	53	2	133	265	HeartRate	65	\N
-916	yes	53	2	133	265	HeartRate	65	\N
-917	yes	53	2	133	265	HeartRate	65	\N
-918	yes	51	2	130	260	HeartRate	65	\N
-919	yes	51	2	130	260	HeartRate	65	\N
-920	yes	51	2	130	260	HeartRate	65	\N
-921	yes	51	2	130	260	HeartRate	65	\N
-922	yes	51	2	130	260	HeartRate	65	\N
-923	yes	51	2	130	260	HeartRate	65	\N
-924	yes	51	2	130	260	HeartRate	65	\N
-925	yes	51	2	130	260	HeartRate	65	\N
-926	yes	51	2	130	260	HeartRate	65	\N
-927	yes	51	2	130	260	HeartRate	65	\N
-928	yes	51	2	130	260	HeartRate	65	\N
-929	yes	51	2	130	260	HeartRate	65	\N
-930	yes	51	2	130	260	HeartRate	65	\N
-931	yes	51	2	130	260	HeartRate	65	\N
-932	yes	51	2	130	260	HeartRate	65	\N
-933	yes	51	2	130	260	HeartRate	65	\N
-934	yes	49	2	128	255	HeartRate	65	\N
-935	yes	49	2	128	255	HeartRate	65	\N
-936	yes	49	2	128	255	HeartRate	65	\N
-937	yes	49	2	128	255	HeartRate	65	\N
-938	yes	49	2	128	255	HeartRate	65	\N
-939	yes	49	2	128	255	HeartRate	65	\N
-940	yes	49	2	128	255	HeartRate	65	\N
-941	yes	49	2	128	255	HeartRate	65	\N
-942	yes	49	2	128	255	HeartRate	65	\N
-943	yes	49	2	128	255	HeartRate	65	\N
-944	yes	49	2	128	255	HeartRate	65	\N
-945	yes	49	2	128	255	HeartRate	65	\N
-946	yes	49	2	128	255	HeartRate	65	\N
-947	yes	49	2	128	255	HeartRate	65	\N
-948	yes	49	2	128	255	HeartRate	65	\N
-949	yes	49	2	128	255	HeartRate	65	\N
-950	yes	49	2	128	255	HeartRate	65	\N
-951	yes	49	2	128	255	HeartRate	65	\N
-952	yes	49	2	128	255	HeartRate	65	\N
-953	yes	49	2	128	255	HeartRate	65	\N
-954	yes	51	2	130	260	HeartRate	65	\N
-955	yes	51	2	130	260	HeartRate	65	\N
-956	yes	51	2	130	260	HeartRate	65	\N
-957	yes	51	2	130	260	HeartRate	65	\N
-958	yes	51	2	130	260	HeartRate	65	\N
-959	yes	51	2	130	260	HeartRate	65	\N
-960	yes	51	2	130	260	HeartRate	65	\N
-961	yes	51	2	130	260	HeartRate	65	\N
-962	yes	51	2	130	260	HeartRate	65	\N
-963	yes	51	2	130	260	HeartRate	65	\N
-964	yes	51	2	130	260	HeartRate	65	\N
-965	yes	51	2	130	260	HeartRate	65	\N
-966	yes	51	2	130	260	HeartRate	65	\N
-967	yes	51	2	130	260	HeartRate	65	\N
-968	yes	51	2	130	260	HeartRate	65	\N
-969	yes	51	2	130	260	HeartRate	65	\N
-970	yes	51	2	130	260	HeartRate	65	\N
-971	yes	51	2	130	260	HeartRate	65	\N
-972	yes	51	2	130	260	HeartRate	65	\N
-973	yes	51	2	130	260	HeartRate	65	\N
-974	yes	51	2	130	260	HeartRate	65	\N
-975	yes	51	2	130	260	HeartRate	65	\N
-976	yes	51	2	130	260	HeartRate	65	\N
-977	yes	51	2	130	260	HeartRate	65	\N
-978	yes	51	2	130	260	HeartRate	65	\N
-979	yes	51	2	130	260	HeartRate	65	\N
-980	yes	51	2	130	260	HeartRate	65	\N
-981	yes	51	2	130	260	HeartRate	65	\N
-982	yes	51	2	130	260	HeartRate	65	\N
-983	yes	51	2	130	260	HeartRate	65	\N
-984	yes	51	2	130	260	HeartRate	65	\N
-985	yes	51	2	130	260	HeartRate	65	\N
-986	yes	51	2	130	260	HeartRate	65	\N
-987	yes	51	2	130	260	HeartRate	65	\N
-988	yes	51	2	130	260	HeartRate	65	\N
-989	yes	51	2	130	260	HeartRate	65	\N
-990	yes	51	2	130	260	HeartRate	65	\N
-991	yes	53	2	133	265	HeartRate	65	\N
-992	yes	53	2	133	265	HeartRate	65	\N
-993	yes	53	2	133	265	HeartRate	65	\N
-994	yes	53	2	133	265	HeartRate	65	\N
-995	yes	55	2	135	270	HeartRate	65	\N
-996	yes	55	2	135	270	HeartRate	65	\N
-997	yes	55	2	135	270	HeartRate	65	\N
-998	yes	55	2	135	270	HeartRate	65	\N
-999	yes	53	2	133	265	HeartRate	65	\N
-1000	yes	55	2	135	270	HeartRate	65	\N
-1001	yes	56	3	138	275	HeartRate	65	\N
-1002	yes	56	3	138	275	HeartRate	65	\N
-1003	yes	56	3	138	275	HeartRate	65	\N
-1004	yes	58	3	140	280	HeartRate	65	\N
-1005	yes	58	3	140	280	HeartRate	65	\N
-1006	yes	58	3	140	280	HeartRate	65	\N
-1007	yes	60	3	143	285	HeartRate	65	\N
-1008	yes	60	3	143	285	HeartRate	65	\N
-1009	yes	60	3	143	285	HeartRate	65	\N
-1010	yes	62	3	145	290	HeartRate	65	\N
-1011	yes	62	3	145	290	HeartRate	65	\N
-1012	yes	62	3	145	290	HeartRate	65	\N
-1013	yes	62	3	145	290	HeartRate	65	\N
-1014	yes	62	3	145	290	HeartRate	65	\N
-1015	yes	63	3	148	295	HeartRate	65	\N
-1016	yes	63	3	148	295	HeartRate	65	\N
-1017	yes	63	3	148	295	HeartRate	65	\N
-1018	yes	65	3	150	300	HeartRate	65	\N
-1019	yes	65	3	150	300	HeartRate	65	\N
-1020	yes	65	3	150	300	HeartRate	65	\N
-1021	yes	65	3	150	300	HeartRate	65	\N
-1022	yes	65	3	150	300	HeartRate	65	\N
-1023	yes	65	3	150	300	HeartRate	65	\N
-1024	yes	65	3	150	300	HeartRate	65	\N
-1025	yes	65	3	150	300	HeartRate	65	\N
-1026	yes	67	3	153	305	HeartRate	65	\N
-1027	yes	67	3	153	305	HeartRate	65	\N
-1028	yes	67	3	153	305	HeartRate	65	\N
-1029	yes	67	3	153	305	HeartRate	65	\N
-1030	yes	67	3	153	305	HeartRate	65	\N
-1031	yes	67	3	153	305	HeartRate	65	\N
-1032	yes	67	3	153	305	HeartRate	65	\N
-1033	yes	67	3	153	305	HeartRate	65	\N
-1034	yes	67	3	153	305	HeartRate	65	\N
-1035	yes	67	3	153	305	HeartRate	65	\N
-1036	yes	67	3	153	305	HeartRate	65	\N
-1037	yes	69	3	155	310	HeartRate	65	\N
-1038	yes	67	3	153	305	HeartRate	65	\N
-1039	yes	67	3	153	305	HeartRate	65	\N
-1040	yes	67	3	153	305	HeartRate	65	\N
-1041	yes	67	3	153	305	HeartRate	65	\N
-1042	yes	67	3	153	305	HeartRate	65	\N
-1043	yes	67	3	153	305	HeartRate	65	\N
-1044	yes	67	3	153	305	HeartRate	65	\N
-1045	yes	67	3	153	305	HeartRate	65	\N
-1046	yes	67	3	153	305	HeartRate	65	\N
-1047	yes	67	3	153	305	HeartRate	65	\N
-1048	yes	67	3	153	305	HeartRate	65	\N
-1049	yes	67	3	153	305	HeartRate	65	\N
-1050	yes	65	3	150	300	HeartRate	65	\N
-1051	yes	65	3	150	300	HeartRate	65	\N
-1052	yes	65	3	150	300	HeartRate	65	\N
-1053	yes	65	3	150	300	HeartRate	65	\N
-1054	yes	65	3	150	300	HeartRate	65	\N
-1055	yes	65	3	150	300	HeartRate	65	\N
-1056	yes	65	3	150	300	HeartRate	65	\N
-1057	yes	65	3	150	300	HeartRate	65	\N
-1058	yes	65	3	150	300	HeartRate	65	\N
-1059	yes	65	3	150	300	HeartRate	65	\N
-1060	yes	65	3	150	300	HeartRate	65	\N
-1061	yes	65	3	150	300	HeartRate	65	\N
-1062	yes	63	3	148	295	HeartRate	65	\N
-1063	yes	63	3	148	295	HeartRate	65	\N
-1064	yes	63	3	148	295	HeartRate	65	\N
-1065	yes	63	3	148	295	HeartRate	65	\N
-1066	yes	63	3	148	295	HeartRate	65	\N
-1067	yes	63	3	148	295	HeartRate	65	\N
-1068	yes	63	3	148	295	HeartRate	65	\N
-1069	yes	63	3	148	295	HeartRate	65	\N
-1070	yes	63	3	148	295	HeartRate	65	\N
-1071	yes	63	3	148	295	HeartRate	65	\N
-1072	yes	63	3	148	295	HeartRate	65	\N
-1073	yes	63	3	148	295	HeartRate	65	\N
-1074	yes	63	3	148	295	HeartRate	65	\N
-1075	yes	63	3	148	295	HeartRate	65	\N
-1076	yes	63	3	148	295	HeartRate	65	\N
-1077	yes	63	3	148	295	HeartRate	65	\N
-1078	yes	65	3	150	300	HeartRate	65	\N
-1079	yes	65	3	150	300	HeartRate	65	\N
-1080	yes	65	3	150	300	HeartRate	65	\N
-1081	yes	65	3	150	300	HeartRate	65	\N
-1082	yes	65	3	150	300	HeartRate	65	\N
-1083	yes	65	3	150	300	HeartRate	65	\N
-1084	yes	65	3	150	300	HeartRate	65	\N
-1085	yes	65	3	150	300	HeartRate	65	\N
-1086	yes	65	3	150	300	HeartRate	65	\N
-1087	yes	65	3	150	300	HeartRate	65	\N
-1088	yes	65	3	150	300	HeartRate	65	\N
-1089	yes	65	3	150	300	HeartRate	65	\N
-1090	yes	67	3	153	305	HeartRate	65	\N
-1091	yes	65	3	150	300	HeartRate	65	\N
-1092	yes	67	3	153	305	HeartRate	65	\N
-1093	yes	67	3	153	305	HeartRate	65	\N
-1094	yes	67	3	153	305	HeartRate	65	\N
-1095	yes	67	3	153	305	HeartRate	65	\N
-1096	yes	67	3	153	305	HeartRate	65	\N
-1097	yes	67	3	153	305	HeartRate	65	\N
-1098	yes	67	3	153	305	HeartRate	65	\N
-1099	yes	67	3	153	305	HeartRate	65	\N
-1100	yes	67	3	153	305	HeartRate	65	\N
-1101	yes	67	3	153	305	HeartRate	65	\N
-1102	yes	67	3	153	305	HeartRate	65	\N
-1103	yes	67	3	153	305	HeartRate	65	\N
-1104	yes	67	3	153	305	HeartRate	65	\N
-1105	yes	67	3	153	305	HeartRate	65	\N
-1106	yes	65	3	150	300	HeartRate	65	\N
-1107	yes	65	3	150	300	HeartRate	65	\N
-1108	yes	65	3	150	300	HeartRate	65	\N
-1109	yes	65	3	150	300	HeartRate	65	\N
-1110	yes	65	3	150	300	HeartRate	65	\N
-1111	yes	65	3	150	300	HeartRate	65	\N
-1112	yes	65	3	150	300	HeartRate	65	\N
-1113	yes	63	3	148	295	HeartRate	65	\N
-1114	yes	63	3	148	295	HeartRate	65	\N
-1115	yes	63	3	148	295	HeartRate	65	\N
-1116	yes	62	3	145	290	HeartRate	65	\N
-1117	yes	62	3	145	290	HeartRate	65	\N
-1118	yes	62	3	145	290	HeartRate	65	\N
-1119	yes	62	3	145	290	HeartRate	65	\N
-1120	yes	60	3	143	285	HeartRate	65	\N
-1121	yes	60	3	143	285	HeartRate	65	\N
-1122	yes	60	3	143	285	HeartRate	65	\N
-1123	yes	58	3	140	280	HeartRate	65	\N
-1124	yes	58	3	140	280	HeartRate	65	\N
-1125	yes	58	3	140	280	HeartRate	65	\N
-1126	yes	58	3	140	280	HeartRate	65	\N
-1127	yes	56	3	138	275	HeartRate	65	\N
-1128	yes	56	3	138	275	HeartRate	65	\N
-1129	yes	56	3	138	275	HeartRate	65	\N
-1130	yes	56	3	138	275	HeartRate	65	\N
-1131	yes	55	2	135	270	HeartRate	65	\N
-1132	yes	55	2	135	270	HeartRate	65	\N
-1133	yes	55	2	135	270	HeartRate	65	\N
-1134	yes	55	2	135	270	HeartRate	65	\N
-1135	yes	55	2	135	270	HeartRate	65	\N
-1136	yes	55	2	135	270	HeartRate	65	\N
-1137	yes	53	2	133	265	HeartRate	65	\N
-1138	yes	53	2	133	265	HeartRate	65	\N
-1139	yes	53	2	133	265	HeartRate	65	\N
-1140	yes	53	2	133	265	HeartRate	65	\N
-1141	yes	51	2	130	260	HeartRate	65	\N
-1142	yes	51	2	130	260	HeartRate	65	\N
-1143	yes	51	2	130	260	HeartRate	65	\N
-1144	yes	51	2	130	260	HeartRate	65	\N
-1145	yes	49	2	128	255	HeartRate	65	\N
-1146	yes	49	2	128	255	HeartRate	65	\N
-1147	yes	49	2	128	255	HeartRate	65	\N
-1148	yes	49	2	128	255	HeartRate	65	\N
-1149	yes	49	2	128	255	HeartRate	65	\N
-1150	yes	49	2	128	255	HeartRate	65	\N
-1151	yes	48	2	125	250	HeartRate	65	\N
-1152	yes	48	2	125	250	HeartRate	65	\N
-1153	yes	48	2	125	250	HeartRate	65	\N
-1154	yes	48	2	125	250	HeartRate	65	\N
-1155	yes	48	2	125	250	HeartRate	65	\N
-1156	yes	48	2	125	250	HeartRate	65	\N
-1157	yes	46	2	123	245	HeartRate	65	\N
-1158	yes	46	2	123	245	HeartRate	65	\N
-1159	yes	46	2	123	245	HeartRate	65	\N
-1160	yes	46	2	123	245	HeartRate	65	\N
-1161	yes	46	2	123	245	HeartRate	65	\N
-1162	yes	46	2	123	245	HeartRate	65	\N
-1163	yes	46	2	123	245	HeartRate	65	\N
-1164	yes	46	2	123	245	HeartRate	65	\N
-1165	yes	46	2	123	245	HeartRate	65	\N
-1166	yes	46	2	123	245	HeartRate	65	\N
-1167	yes	46	2	123	245	HeartRate	65	\N
-1168	yes	46	2	123	245	HeartRate	65	\N
-1169	yes	46	2	123	245	HeartRate	65	\N
-1170	yes	46	2	123	245	HeartRate	65	\N
-1171	yes	46	2	123	245	HeartRate	65	\N
-1172	yes	46	2	123	245	HeartRate	65	\N
-1173	yes	46	2	123	245	HeartRate	65	\N
-1174	yes	46	2	123	245	HeartRate	65	\N
-1175	yes	46	2	123	245	HeartRate	65	\N
-1176	yes	46	2	123	245	HeartRate	65	\N
-1177	yes	46	2	123	245	HeartRate	65	\N
-1178	yes	46	2	123	245	HeartRate	65	\N
-1179	yes	46	2	123	245	HeartRate	65	\N
-1180	yes	46	2	123	245	HeartRate	65	\N
-1181	yes	46	2	123	245	HeartRate	65	\N
-1182	yes	46	2	123	245	HeartRate	65	\N
-1183	yes	46	2	123	245	HeartRate	65	\N
-1184	yes	46	2	123	245	HeartRate	65	\N
-1185	yes	46	2	123	245	HeartRate	65	\N
-1186	yes	46	2	123	245	HeartRate	65	\N
-1187	yes	46	2	123	245	HeartRate	65	\N
-1188	yes	46	2	123	245	HeartRate	65	\N
-1189	yes	46	2	123	245	HeartRate	65	\N
-1190	yes	46	2	123	245	HeartRate	65	\N
-1191	yes	46	2	123	245	HeartRate	65	\N
-1192	yes	46	2	123	245	HeartRate	65	\N
-1193	yes	46	2	123	245	HeartRate	65	\N
-1194	yes	46	2	123	245	HeartRate	65	\N
-1195	yes	46	2	123	245	HeartRate	65	\N
-1196	yes	46	2	123	245	HeartRate	65	\N
-1197	yes	46	2	123	245	HeartRate	65	\N
-1198	yes	46	2	123	245	HeartRate	65	\N
-1199	yes	46	2	123	245	HeartRate	65	\N
-1200	yes	46	2	123	245	HeartRate	65	\N
-1201	yes	46	2	123	245	HeartRate	65	\N
-1202	yes	46	2	123	245	HeartRate	65	\N
-1203	yes	46	2	123	245	HeartRate	65	\N
-1204	yes	46	2	123	245	HeartRate	65	\N
-1205	yes	46	2	123	245	HeartRate	65	\N
-1206	yes	46	2	123	245	HeartRate	65	\N
-1207	yes	46	2	123	245	HeartRate	65	\N
-1208	yes	46	2	123	245	HeartRate	65	\N
-1209	yes	46	2	123	245	HeartRate	65	\N
-1210	yes	46	2	123	245	HeartRate	65	\N
-1211	yes	46	2	123	245	HeartRate	65	\N
-1212	yes	46	2	123	245	HeartRate	65	\N
-1213	yes	46	2	123	245	HeartRate	65	\N
-1214	yes	48	2	125	250	HeartRate	65	\N
-1215	yes	48	2	125	250	HeartRate	65	\N
-1216	yes	48	2	125	250	HeartRate	65	\N
-1217	yes	48	2	125	250	HeartRate	65	\N
-1218	yes	48	2	125	250	HeartRate	65	\N
-1219	yes	48	2	125	250	HeartRate	65	\N
-1220	yes	48	2	125	250	HeartRate	65	\N
-1221	yes	48	2	125	250	HeartRate	65	\N
-1222	yes	48	2	125	250	HeartRate	65	\N
-1223	yes	48	2	125	250	HeartRate	65	\N
-1224	yes	48	2	125	250	HeartRate	65	\N
-1225	yes	48	2	125	250	HeartRate	65	\N
-1226	yes	48	2	125	250	HeartRate	65	\N
-1227	yes	48	2	125	250	HeartRate	65	\N
-1228	yes	48	2	125	250	HeartRate	65	\N
-1229	yes	48	2	125	250	HeartRate	65	\N
-1230	yes	48	2	125	250	HeartRate	65	\N
-1231	yes	48	2	125	250	HeartRate	65	\N
-1232	yes	48	2	125	250	HeartRate	65	\N
-1233	yes	48	2	125	250	HeartRate	65	\N
-1234	yes	48	2	125	250	HeartRate	65	\N
-1235	yes	48	2	125	250	HeartRate	65	\N
-1236	yes	48	2	125	250	HeartRate	65	\N
-1237	yes	48	2	125	250	HeartRate	65	\N
-1238	yes	48	2	125	250	HeartRate	65	\N
-1239	yes	48	2	125	250	HeartRate	65	\N
-1240	yes	48	2	125	250	HeartRate	65	\N
-1241	yes	48	2	125	250	HeartRate	65	\N
-1242	yes	48	2	125	250	HeartRate	65	\N
-1243	yes	48	2	125	250	HeartRate	65	\N
-1244	yes	48	2	125	250	HeartRate	65	\N
-1245	yes	48	2	125	250	HeartRate	65	\N
-1246	yes	48	2	125	250	HeartRate	65	\N
-1247	yes	48	2	125	250	HeartRate	65	\N
-1248	yes	48	2	125	250	HeartRate	65	\N
-1249	yes	48	2	125	250	HeartRate	65	\N
-1250	yes	48	2	125	250	HeartRate	65	\N
-1251	yes	48	2	125	250	HeartRate	65	\N
-1252	yes	48	2	125	250	HeartRate	65	\N
-1253	yes	48	2	125	250	HeartRate	65	\N
-1254	yes	48	2	125	250	HeartRate	65	\N
-1255	yes	48	2	125	250	HeartRate	65	\N
-1256	yes	48	2	125	250	HeartRate	65	\N
-1257	yes	48	2	125	250	HeartRate	65	\N
-1258	yes	48	2	125	250	HeartRate	65	\N
-1259	yes	48	2	125	250	HeartRate	65	\N
-1260	yes	48	2	125	250	HeartRate	65	\N
-1261	yes	48	2	125	250	HeartRate	65	\N
-1262	yes	48	2	125	250	HeartRate	65	\N
-1263	yes	48	2	125	250	HeartRate	65	\N
-1264	yes	48	2	125	250	HeartRate	65	\N
-1265	yes	48	2	125	250	HeartRate	65	\N
-1266	yes	48	2	125	250	HeartRate	65	\N
-1267	yes	48	2	125	250	HeartRate	65	\N
-1268	yes	48	2	125	250	HeartRate	65	\N
-1269	yes	48	2	125	250	HeartRate	65	\N
-1270	yes	48	2	125	250	HeartRate	65	\N
-1271	yes	48	2	125	250	HeartRate	65	\N
-1272	yes	48	2	125	250	HeartRate	65	\N
-1273	yes	48	2	125	250	HeartRate	65	\N
-1274	yes	48	2	125	250	HeartRate	65	\N
-1275	yes	48	2	125	250	HeartRate	65	\N
-1276	yes	48	2	125	250	HeartRate	65	\N
-1277	yes	48	2	125	250	HeartRate	65	\N
-1278	yes	48	2	125	250	HeartRate	65	\N
-1279	yes	48	2	125	250	HeartRate	65	\N
-1280	yes	48	2	125	250	HeartRate	65	\N
-1281	yes	48	2	125	250	HeartRate	65	\N
-1282	yes	48	2	125	250	HeartRate	65	\N
-1283	yes	48	2	125	250	HeartRate	65	\N
-1284	yes	48	2	125	250	HeartRate	65	\N
-1285	yes	48	2	125	250	HeartRate	65	\N
-1286	yes	48	2	125	250	HeartRate	65	\N
-1287	yes	46	2	123	245	HeartRate	65	\N
-1288	yes	46	2	123	245	HeartRate	65	\N
-1289	yes	46	2	123	245	HeartRate	65	\N
-1290	yes	46	2	123	245	HeartRate	65	\N
-1291	yes	46	2	123	245	HeartRate	65	\N
-1292	yes	46	2	123	245	HeartRate	65	\N
-1293	yes	46	2	123	245	HeartRate	65	\N
-1294	yes	46	2	123	245	HeartRate	65	\N
-1295	yes	46	2	123	245	HeartRate	65	\N
-1296	yes	46	2	123	245	HeartRate	65	\N
-1297	yes	46	2	123	245	HeartRate	65	\N
-1298	yes	46	2	123	245	HeartRate	65	\N
-1299	yes	46	2	123	245	HeartRate	65	\N
-1300	yes	44	2	120	240	HeartRate	65	\N
-1301	yes	44	2	120	240	HeartRate	65	\N
-1302	yes	44	2	120	240	HeartRate	65	\N
-1303	yes	44	2	120	240	HeartRate	65	\N
-1304	yes	44	2	120	240	HeartRate	65	\N
-1305	yes	44	2	120	240	HeartRate	65	\N
-1306	yes	44	2	120	240	HeartRate	65	\N
-1307	yes	46	2	123	245	HeartRate	65	\N
-1308	yes	44	2	120	240	HeartRate	65	\N
-1309	yes	44	2	120	240	HeartRate	65	\N
-1310	yes	44	2	120	240	HeartRate	65	\N
-1311	yes	44	2	120	240	HeartRate	65	\N
-1312	yes	44	2	120	240	HeartRate	65	\N
-1313	yes	44	2	120	240	HeartRate	65	\N
-1314	yes	44	2	120	240	HeartRate	65	\N
-1315	yes	44	2	120	240	HeartRate	65	\N
-1316	yes	44	2	120	240	HeartRate	65	\N
-1317	yes	44	2	120	240	HeartRate	65	\N
-1318	yes	42	2	118	235	HeartRate	65	\N
-1319	yes	42	2	118	235	HeartRate	65	\N
-1320	yes	42	2	118	235	HeartRate	65	\N
-1321	yes	42	2	118	235	HeartRate	65	\N
-1322	yes	42	2	118	235	HeartRate	65	\N
-1323	yes	42	2	118	235	HeartRate	65	\N
-1324	yes	42	2	118	235	HeartRate	65	\N
-1325	yes	42	2	118	235	HeartRate	65	\N
-1326	yes	42	2	118	235	HeartRate	65	\N
-1327	yes	42	2	118	235	HeartRate	65	\N
-1328	yes	42	2	118	235	HeartRate	65	\N
-1329	yes	42	2	118	235	HeartRate	65	\N
-1330	yes	42	2	118	235	HeartRate	65	\N
-1331	yes	42	2	118	235	HeartRate	65	\N
-1332	yes	42	2	118	235	HeartRate	65	\N
-1333	yes	41	2	115	230	HeartRate	65	\N
-1334	yes	41	2	115	230	HeartRate	65	\N
-1335	yes	41	2	115	230	HeartRate	65	\N
-1336	yes	41	2	115	230	HeartRate	65	\N
-1337	yes	41	2	115	230	HeartRate	65	\N
-1338	yes	41	2	115	230	HeartRate	65	\N
-1339	yes	41	2	115	230	HeartRate	65	\N
-1340	yes	39	2	113	225	HeartRate	65	\N
-1341	yes	39	2	113	225	HeartRate	65	\N
-1342	yes	39	2	113	225	HeartRate	65	\N
-1343	yes	39	2	113	225	HeartRate	65	\N
-1344	yes	39	2	113	225	HeartRate	65	\N
-1345	yes	39	2	113	225	HeartRate	65	\N
-1346	yes	39	2	113	225	HeartRate	65	\N
-1347	yes	39	2	113	225	HeartRate	65	\N
-1348	yes	39	2	113	225	HeartRate	65	\N
-1349	yes	39	2	113	225	HeartRate	65	\N
-1350	yes	39	2	113	225	HeartRate	65	\N
-1351	yes	39	2	113	225	HeartRate	65	\N
-1352	yes	39	2	113	225	HeartRate	65	\N
-1353	yes	39	2	113	225	HeartRate	65	\N
-1354	yes	39	2	113	225	HeartRate	65	\N
-1355	yes	39	2	113	225	HeartRate	65	\N
-1356	yes	39	2	113	225	HeartRate	65	\N
-1357	yes	39	2	113	225	HeartRate	65	\N
-1358	yes	39	2	113	225	HeartRate	65	\N
-1359	yes	39	2	113	225	HeartRate	65	\N
-1360	yes	39	2	113	225	HeartRate	65	\N
-1361	yes	39	2	113	225	HeartRate	65	\N
-1362	yes	39	2	113	225	HeartRate	65	\N
-1363	yes	39	2	113	225	HeartRate	65	\N
-1364	yes	39	2	113	225	HeartRate	65	\N
-1365	yes	39	2	113	225	HeartRate	65	\N
-1366	yes	39	2	113	225	HeartRate	65	\N
-1367	yes	39	2	113	225	HeartRate	65	\N
-1368	yes	39	2	113	225	HeartRate	65	\N
-1369	yes	39	2	113	225	HeartRate	65	\N
-1370	yes	39	2	113	225	HeartRate	65	\N
-1371	yes	41	2	115	230	HeartRate	65	\N
-1372	yes	41	2	115	230	HeartRate	65	\N
-1373	yes	41	2	115	230	HeartRate	65	\N
-1374	yes	41	2	115	230	HeartRate	65	\N
-1375	yes	41	2	115	230	HeartRate	65	\N
-1376	yes	41	2	115	230	HeartRate	65	\N
-1377	yes	41	2	115	230	HeartRate	65	\N
-1378	yes	41	2	115	230	HeartRate	65	\N
-1379	yes	41	2	115	230	HeartRate	65	\N
-1380	yes	41	2	115	230	HeartRate	65	\N
-1381	yes	41	2	115	230	HeartRate	65	\N
-1382	yes	41	2	115	230	HeartRate	65	\N
-1383	yes	41	2	115	230	HeartRate	65	\N
-1384	yes	41	2	115	230	HeartRate	65	\N
-1385	yes	42	2	118	235	HeartRate	65	\N
-1386	yes	42	2	118	235	HeartRate	65	\N
-1387	yes	42	2	118	235	HeartRate	65	\N
-1388	yes	42	2	118	235	HeartRate	65	\N
-1389	yes	42	2	118	235	HeartRate	65	\N
-1390	yes	42	2	118	235	HeartRate	65	\N
-1391	yes	42	2	118	235	HeartRate	65	\N
-1392	yes	44	2	120	240	HeartRate	65	\N
-1393	yes	44	2	120	240	HeartRate	65	\N
-1394	yes	44	2	120	240	HeartRate	65	\N
-1395	yes	44	2	120	240	HeartRate	65	\N
-1396	yes	44	2	120	240	HeartRate	65	\N
-1397	yes	44	2	120	240	HeartRate	65	\N
-1398	yes	44	2	120	240	HeartRate	65	\N
-1399	yes	46	2	123	245	HeartRate	65	\N
-1400	yes	46	2	123	245	HeartRate	65	\N
-1401	yes	46	2	123	245	HeartRate	65	\N
-1402	yes	48	2	125	250	HeartRate	65	\N
-1403	yes	48	2	125	250	HeartRate	65	\N
-1404	yes	48	2	125	250	HeartRate	65	\N
-1405	yes	48	2	125	250	HeartRate	65	\N
-1406	yes	48	2	125	250	HeartRate	65	\N
-1407	yes	48	2	125	250	HeartRate	65	\N
-1408	yes	49	2	128	255	HeartRate	65	\N
-1409	yes	49	2	128	255	HeartRate	65	\N
-1410	yes	49	2	128	255	HeartRate	65	\N
-1411	yes	49	2	128	255	HeartRate	65	\N
-1412	yes	49	2	128	255	HeartRate	65	\N
-1413	yes	49	2	128	255	HeartRate	65	\N
-1414	yes	49	2	128	255	HeartRate	65	\N
-1415	yes	49	2	128	255	HeartRate	65	\N
-1416	yes	49	2	128	255	HeartRate	65	\N
-1417	yes	49	2	128	255	HeartRate	65	\N
-1418	yes	49	2	128	255	HeartRate	65	\N
-1419	yes	49	2	128	255	HeartRate	65	\N
-1420	yes	49	2	128	255	HeartRate	65	\N
-1421	yes	51	2	130	260	HeartRate	65	\N
-1422	yes	51	2	130	260	HeartRate	65	\N
-1423	yes	51	2	130	260	HeartRate	65	\N
-1424	yes	51	2	130	260	HeartRate	65	\N
-1425	yes	51	2	130	260	HeartRate	65	\N
-1426	yes	51	2	130	260	HeartRate	65	\N
-1427	yes	51	2	130	260	HeartRate	65	\N
-1428	yes	53	2	133	265	HeartRate	65	\N
-1429	yes	51	2	130	260	HeartRate	65	\N
-1430	yes	53	2	133	265	HeartRate	65	\N
-1431	yes	53	2	133	265	HeartRate	65	\N
-1432	yes	53	2	133	265	HeartRate	65	\N
-1433	yes	53	2	133	265	HeartRate	65	\N
-1434	yes	53	2	133	265	HeartRate	65	\N
-1435	yes	53	2	133	265	HeartRate	65	\N
-1436	yes	53	2	133	265	HeartRate	65	\N
-1437	yes	53	2	133	265	HeartRate	65	\N
-1438	yes	53	2	133	265	HeartRate	65	\N
-1439	yes	53	2	133	265	HeartRate	65	\N
-1440	yes	53	2	133	265	HeartRate	65	\N
-1441	yes	55	2	135	270	HeartRate	65	\N
-1442	yes	55	2	135	270	HeartRate	65	\N
-1443	yes	55	2	135	270	HeartRate	65	\N
-1444	yes	55	2	135	270	HeartRate	65	\N
-1445	yes	55	2	135	270	HeartRate	65	\N
-1446	yes	55	2	135	270	HeartRate	65	\N
-1447	yes	55	2	135	270	HeartRate	65	\N
-1448	yes	55	2	135	270	HeartRate	65	\N
-1449	yes	55	2	135	270	HeartRate	65	\N
-1450	yes	56	3	138	275	HeartRate	65	\N
-1451	yes	56	3	138	275	HeartRate	65	\N
-1452	yes	56	3	138	275	HeartRate	65	\N
-1453	yes	56	3	138	275	HeartRate	65	\N
-1454	yes	56	3	138	275	HeartRate	65	\N
-1455	yes	56	3	138	275	HeartRate	65	\N
-1456	yes	56	3	138	275	HeartRate	65	\N
-1457	yes	56	3	138	275	HeartRate	65	\N
-1458	yes	56	3	138	275	HeartRate	65	\N
-1459	yes	58	3	140	280	HeartRate	65	\N
-1460	yes	58	3	140	280	HeartRate	65	\N
-1461	yes	58	3	140	280	HeartRate	65	\N
-1462	yes	58	3	140	280	HeartRate	65	\N
-1463	yes	58	3	140	280	HeartRate	65	\N
-1464	yes	58	3	140	280	HeartRate	65	\N
-1465	yes	58	3	140	280	HeartRate	65	\N
-1466	yes	58	3	140	280	HeartRate	65	\N
-1467	yes	58	3	140	280	HeartRate	65	\N
-1468	yes	60	3	143	285	HeartRate	65	\N
-1469	yes	60	3	143	285	HeartRate	65	\N
-1470	yes	60	3	143	285	HeartRate	65	\N
-1471	yes	60	3	143	285	HeartRate	65	\N
-1472	yes	60	3	143	285	HeartRate	65	\N
-1473	yes	60	3	143	285	HeartRate	65	\N
-1474	yes	60	3	143	285	HeartRate	65	\N
-1475	yes	60	3	143	285	HeartRate	65	\N
-1476	yes	60	3	143	285	HeartRate	65	\N
-1477	yes	62	3	145	290	HeartRate	65	\N
-1478	yes	62	3	145	290	HeartRate	65	\N
-1479	yes	62	3	145	290	HeartRate	65	\N
-1480	yes	62	3	145	290	HeartRate	65	\N
-1481	yes	62	3	145	290	HeartRate	65	\N
-1482	yes	62	3	145	290	HeartRate	65	\N
-1483	yes	62	3	145	290	HeartRate	65	\N
-1484	yes	62	3	145	290	HeartRate	65	\N
-1485	yes	62	3	145	290	HeartRate	65	\N
-1486	yes	63	3	148	295	HeartRate	65	\N
-1487	yes	63	3	148	295	HeartRate	65	\N
-1488	yes	63	3	148	295	HeartRate	65	\N
-1489	yes	63	3	148	295	HeartRate	65	\N
-1490	yes	63	3	148	295	HeartRate	65	\N
-1491	yes	63	3	148	295	HeartRate	65	\N
-1492	yes	63	3	148	295	HeartRate	65	\N
-1493	yes	63	3	148	295	HeartRate	65	\N
-1494	yes	63	3	148	295	HeartRate	65	\N
-1495	yes	63	3	148	295	HeartRate	65	\N
-1496	yes	63	3	148	295	HeartRate	65	\N
-1497	yes	63	3	148	295	HeartRate	65	\N
-1498	yes	63	3	148	295	HeartRate	65	\N
-1499	yes	63	3	148	295	HeartRate	65	\N
-1500	yes	63	3	148	295	HeartRate	65	\N
-1501	yes	63	3	148	295	HeartRate	65	\N
-1502	yes	63	3	148	295	HeartRate	65	\N
-1503	yes	63	3	148	295	HeartRate	65	\N
-1504	yes	63	3	148	295	HeartRate	65	\N
-1505	yes	63	3	148	295	HeartRate	65	\N
-1506	yes	63	3	148	295	HeartRate	65	\N
-1507	yes	62	3	145	290	HeartRate	65	\N
-1508	yes	62	3	145	290	HeartRate	65	\N
-1509	yes	63	3	148	295	HeartRate	65	\N
-1510	yes	62	3	145	290	HeartRate	65	\N
-1511	yes	62	3	145	290	HeartRate	65	\N
-1512	yes	62	3	145	290	HeartRate	65	\N
-1513	yes	62	3	145	290	HeartRate	65	\N
-1514	yes	62	3	145	290	HeartRate	65	\N
-1515	yes	62	3	145	290	HeartRate	65	\N
-1516	yes	62	3	145	290	HeartRate	65	\N
-1517	yes	62	3	145	290	HeartRate	65	\N
-1518	yes	62	3	145	290	HeartRate	65	\N
-1519	yes	62	3	145	290	HeartRate	65	\N
-1520	yes	62	3	145	290	HeartRate	65	\N
-1521	yes	62	3	145	290	HeartRate	65	\N
-1522	yes	62	3	145	290	HeartRate	65	\N
-1523	yes	62	3	145	290	HeartRate	65	\N
-1524	yes	62	3	145	290	HeartRate	65	\N
-1525	yes	62	3	145	290	HeartRate	65	\N
-1526	yes	62	3	145	290	HeartRate	65	\N
-1527	yes	62	3	145	290	HeartRate	65	\N
-1528	yes	62	3	145	290	HeartRate	65	\N
-1529	yes	62	3	145	290	HeartRate	65	\N
-1530	yes	62	3	145	290	HeartRate	65	\N
-1531	yes	62	3	145	290	HeartRate	65	\N
-1532	yes	62	3	145	290	HeartRate	65	\N
-1533	yes	62	3	145	290	HeartRate	65	\N
-1534	yes	62	3	145	290	HeartRate	65	\N
-1535	yes	63	3	148	295	HeartRate	65	\N
-1536	yes	63	3	148	295	HeartRate	65	\N
-1537	yes	63	3	148	295	HeartRate	65	\N
-1538	yes	63	3	148	295	HeartRate	65	\N
-1539	yes	63	3	148	295	HeartRate	65	\N
-1540	yes	63	3	148	295	HeartRate	65	\N
-1541	yes	63	3	148	295	HeartRate	65	\N
-1542	yes	63	3	148	295	HeartRate	65	\N
-1543	yes	63	3	148	295	HeartRate	65	\N
-1544	yes	63	3	148	295	HeartRate	65	\N
-1545	yes	63	3	148	295	HeartRate	65	\N
-1546	yes	63	3	148	295	HeartRate	65	\N
-1547	yes	63	3	148	295	HeartRate	65	\N
-1548	yes	63	3	148	295	HeartRate	65	\N
-1549	yes	63	3	148	295	HeartRate	65	\N
-1550	yes	63	3	148	295	HeartRate	65	\N
-1551	yes	63	3	148	295	HeartRate	65	\N
-1552	yes	63	3	148	295	HeartRate	65	\N
-1553	yes	63	3	148	295	HeartRate	65	\N
-1554	yes	63	3	148	295	HeartRate	65	\N
-1555	yes	63	3	148	295	HeartRate	65	\N
-1628	yes	30	1	100	200	HeartRate	65	\N
-1629	yes	30	1	100	200	HeartRate	65	\N
-1630	yes	30	1	100	200	HeartRate	65	\N
-1631	yes	30	1	100	200	HeartRate	65	\N
-1632	yes	30	1	100	200	HeartRate	65	\N
-1633	yes	30	1	100	200	HeartRate	65	\N
-1634	yes	30	1	100	200	HeartRate	65	\N
-1635	yes	30	1	100	200	HeartRate	65	\N
-1636	yes	30	1	100	200	HeartRate	65	\N
-1637	yes	30	1	100	200	HeartRate	65	\N
-1638	yes	30	1	100	200	HeartRate	65	\N
-1639	yes	30	1	100	200	HeartRate	65	\N
-1640	yes	30	1	100	200	HeartRate	65	\N
-1641	yes	30	1	100	200	HeartRate	65	\N
-1642	yes	30	1	100	200	HeartRate	65	\N
-1643	yes	30	1	100	200	HeartRate	65	\N
-1644	yes	30	1	100	200	HeartRate	65	\N
-1645	yes	30	1	100	200	HeartRate	65	\N
-1646	yes	30	1	100	200	HeartRate	65	\N
-1647	yes	30	1	100	200	HeartRate	65	\N
-1648	yes	30	1	100	200	HeartRate	65	\N
-1649	yes	30	1	100	200	HeartRate	65	\N
-1650	yes	30	1	100	200	HeartRate	65	\N
-1651	yes	30	1	100	200	HeartRate	65	\N
-1652	yes	30	1	100	200	HeartRate	65	\N
-1653	yes	30	1	100	200	HeartRate	65	\N
-1654	yes	30	1	100	200	HeartRate	65	\N
-1655	yes	30	1	100	200	HeartRate	65	\N
-1656	yes	30	1	100	200	HeartRate	65	\N
-1657	yes	30	1	100	200	HeartRate	65	\N
-1658	yes	30	1	100	200	HeartRate	65	\N
-1659	yes	30	1	100	200	HeartRate	65	\N
-1660	yes	30	1	100	200	HeartRate	65	\N
-1661	yes	30	1	100	200	HeartRate	65	\N
-1662	yes	30	1	100	200	HeartRate	65	\N
-1663	yes	30	1	100	200	HeartRate	65	\N
-1664	yes	30	1	100	200	HeartRate	65	\N
-1665	yes	30	1	100	200	HeartRate	65	\N
-1666	yes	30	1	100	200	HeartRate	65	\N
-1667	yes	30	1	100	200	HeartRate	65	\N
-1668	yes	30	1	100	200	HeartRate	65	\N
-1669	yes	30	1	100	200	HeartRate	65	\N
-1670	yes	30	1	100	200	HeartRate	65	\N
-1671	yes	30	1	100	200	HeartRate	65	\N
-1672	yes	30	1	100	200	HeartRate	65	\N
-1673	yes	30	1	100	200	HeartRate	65	\N
-1674	yes	30	1	100	200	HeartRate	65	\N
-1675	yes	30	1	100	200	HeartRate	65	\N
-1676	yes	30	1	100	200	HeartRate	65	\N
-1677	yes	30	1	100	200	HeartRate	65	\N
-1678	yes	30	1	100	200	HeartRate	65	\N
-1679	yes	30	1	100	200	HeartRate	65	\N
-1680	yes	30	1	100	200	HeartRate	65	\N
-1681	yes	30	1	100	200	HeartRate	65	\N
-1682	yes	30	1	100	200	HeartRate	65	\N
-1683	yes	30	1	100	200	HeartRate	65	\N
-1684	yes	30	1	100	200	HeartRate	65	\N
-1685	yes	30	1	100	200	HeartRate	65	\N
-1686	yes	30	1	100	200	HeartRate	65	\N
-1687	yes	30	1	100	200	HeartRate	65	\N
-1688	yes	30	1	100	200	HeartRate	65	\N
-1689	yes	30	1	100	200	HeartRate	65	\N
-1690	yes	30	1	100	200	HeartRate	65	\N
-1691	yes	30	1	100	200	HeartRate	65	\N
-1692	yes	30	1	100	200	HeartRate	65	\N
-1693	yes	30	1	100	200	HeartRate	65	\N
-1694	yes	30	1	100	200	HeartRate	65	\N
-1695	yes	30	1	100	200	HeartRate	65	\N
-1696	yes	30	1	100	200	HeartRate	65	\N
-1697	yes	30	1	100	200	HeartRate	65	\N
-1698	yes	30	1	100	200	HeartRate	65	\N
-1699	yes	30	1	100	200	HeartRate	65	\N
-1700	yes	30	1	100	200	HeartRate	65	\N
-1701	yes	30	1	100	200	HeartRate	65	\N
-1702	yes	30	1	100	200	HeartRate	65	\N
-1703	yes	30	1	100	200	HeartRate	65	\N
-1704	yes	30	1	100	200	HeartRate	65	\N
-1705	yes	30	1	100	200	HeartRate	65	\N
-1706	yes	30	1	100	200	HeartRate	65	\N
-1707	yes	30	1	100	200	HeartRate	65	\N
-1708	yes	30	1	100	200	HeartRate	65	\N
-1709	yes	30	1	100	200	HeartRate	65	\N
-1710	yes	30	1	100	200	HeartRate	65	\N
-1711	yes	30	1	100	200	HeartRate	65	\N
-1712	yes	30	1	100	200	HeartRate	65	\N
-1713	yes	30	1	100	200	HeartRate	65	\N
-1714	yes	30	1	100	200	HeartRate	65	\N
-1715	yes	30	1	100	200	HeartRate	65	\N
-1716	yes	30	1	100	200	HeartRate	65	\N
-1717	yes	30	1	100	200	HeartRate	65	\N
-1718	yes	30	1	100	200	HeartRate	65	\N
-1719	yes	30	1	100	200	HeartRate	65	\N
-1720	yes	30	1	100	200	HeartRate	65	\N
-1721	yes	30	1	100	200	HeartRate	65	\N
-1722	yes	30	1	100	200	HeartRate	65	\N
-1723	yes	30	1	100	200	HeartRate	65	\N
-1724	yes	30	1	100	200	HeartRate	65	\N
-1725	yes	30	1	100	200	HeartRate	65	\N
-1726	yes	30	1	100	200	HeartRate	65	\N
-1727	yes	30	1	100	200	HeartRate	65	\N
-1728	yes	30	1	100	200	HeartRate	65	\N
-1729	yes	30	1	100	200	HeartRate	65	\N
-1730	yes	30	1	100	200	HeartRate	65	\N
-1731	yes	30	1	100	200	HeartRate	65	\N
-1732	yes	30	1	100	200	HeartRate	65	\N
-1733	yes	30	1	100	200	HeartRate	65	\N
-1734	yes	30	1	100	200	HeartRate	65	\N
-1735	yes	30	1	100	200	HeartRate	65	\N
-1736	yes	30	1	100	200	HeartRate	65	\N
-1737	yes	30	1	100	200	HeartRate	65	\N
-1738	yes	30	1	100	200	HeartRate	65	\N
-1739	yes	30	1	100	200	HeartRate	65	\N
-1740	yes	30	1	100	200	HeartRate	65	\N
-1741	yes	30	1	100	200	HeartRate	65	\N
-1742	yes	30	1	100	200	HeartRate	65	\N
-1743	yes	30	1	100	200	HeartRate	65	\N
-1744	yes	30	1	100	200	HeartRate	65	\N
-1745	yes	30	1	100	200	HeartRate	65	\N
-1746	yes	30	1	100	200	HeartRate	65	\N
-1747	yes	30	1	100	200	HeartRate	65	\N
-1748	yes	30	1	100	200	HeartRate	65	\N
-1749	yes	30	1	100	200	HeartRate	65	\N
-1750	yes	30	1	100	200	HeartRate	65	\N
-1751	yes	30	1	100	200	HeartRate	65	\N
-1752	yes	30	1	100	200	HeartRate	65	\N
-1753	yes	30	1	100	200	HeartRate	65	\N
-1754	yes	30	1	100	200	HeartRate	65	\N
-1755	yes	30	1	100	200	HeartRate	65	\N
-1756	yes	30	1	100	200	HeartRate	65	\N
-1757	yes	30	1	100	200	HeartRate	65	\N
-1758	yes	30	1	100	200	HeartRate	65	\N
-1759	yes	30	1	100	200	HeartRate	65	\N
-1760	yes	30	1	100	200	HeartRate	65	\N
-1761	yes	30	1	100	200	HeartRate	65	\N
-1762	yes	30	1	100	200	HeartRate	65	\N
-1763	yes	30	1	100	200	HeartRate	65	\N
-1764	yes	30	1	100	200	HeartRate	65	\N
-1765	yes	30	1	100	200	HeartRate	65	\N
-1766	yes	30	1	100	200	HeartRate	65	\N
-1767	yes	30	1	100	200	HeartRate	65	\N
-1768	yes	30	1	100	200	HeartRate	65	\N
-1769	yes	30	1	100	200	HeartRate	65	\N
-1770	yes	30	1	100	200	HeartRate	65	\N
-1771	yes	30	1	100	200	HeartRate	65	\N
-1772	yes	30	1	100	200	HeartRate	65	\N
-1773	yes	30	1	100	200	HeartRate	65	\N
-1774	yes	30	1	100	200	HeartRate	65	\N
-1775	yes	30	1	100	200	HeartRate	65	\N
-1776	yes	30	1	100	200	HeartRate	65	\N
-1777	yes	30	1	100	200	HeartRate	65	\N
-1778	yes	30	1	100	200	HeartRate	65	\N
-1779	yes	30	1	100	200	HeartRate	65	\N
-1780	yes	30	1	100	200	HeartRate	65	\N
-1781	yes	30	1	100	200	HeartRate	65	\N
-1782	yes	32	1	103	205	HeartRate	65	\N
-1783	yes	32	1	103	205	HeartRate	65	\N
-1784	yes	32	1	103	205	HeartRate	65	\N
-1785	yes	32	1	103	205	HeartRate	65	\N
-1786	yes	30	1	100	200	HeartRate	65	\N
-1787	yes	32	1	103	205	HeartRate	65	\N
-1788	yes	32	1	103	205	HeartRate	65	\N
-1789	yes	32	1	103	205	HeartRate	65	\N
-1790	yes	32	1	103	205	HeartRate	65	\N
-1791	yes	32	1	103	205	HeartRate	65	\N
-1792	yes	32	1	103	205	HeartRate	65	\N
-1793	yes	32	1	103	205	HeartRate	65	\N
-1794	yes	32	1	103	205	HeartRate	65	\N
-1795	yes	32	1	103	205	HeartRate	65	\N
-1796	yes	32	1	103	205	HeartRate	65	\N
-1797	yes	32	1	103	205	HeartRate	65	\N
-1798	yes	32	1	103	205	HeartRate	65	\N
-1799	yes	32	1	103	205	HeartRate	65	\N
-1800	yes	32	1	103	205	HeartRate	65	\N
-1801	yes	32	1	103	205	HeartRate	65	\N
-1802	yes	32	1	103	205	HeartRate	65	\N
-1803	yes	32	1	103	205	HeartRate	65	\N
-1804	yes	32	1	103	205	HeartRate	65	\N
-1805	yes	32	1	103	205	HeartRate	65	\N
-1806	yes	32	1	103	205	HeartRate	65	\N
-1807	yes	32	1	103	205	HeartRate	65	\N
-1808	yes	32	1	103	205	HeartRate	65	\N
-1809	yes	32	1	103	205	HeartRate	65	\N
-1810	yes	32	1	103	205	HeartRate	65	\N
-1811	yes	32	1	103	205	HeartRate	65	\N
-1812	yes	32	1	103	205	HeartRate	65	\N
-1813	yes	32	1	103	205	HeartRate	65	\N
-1814	yes	32	1	103	205	HeartRate	65	\N
-1815	yes	32	1	103	205	HeartRate	65	\N
-1877	yes	255	5	103	561	HeartRate	99	\N
-1887	yes	255	5	103	566	HeartRate	99	\N
-1896	yes	255	5	104	567	HeartRate	99	\N
-1906	yes	255	5	104	567	HeartRate	99	\N
-1915	yes	255	5	104	569	HeartRate	99	\N
-1924	yes	255	5	104	570	HeartRate	99	\N
-1933	yes	255	5	104	577	HeartRate	99	\N
-1943	yes	255	5	105	580	HeartRate	99	\N
-1952	yes	255	5	105	584	HeartRate	99	\N
-1962	yes	255	5	105	585	HeartRate	99	\N
-1972	yes	255	5	105	587	HeartRate	99	\N
-1982	yes	255	6	106	598	HeartRate	99	\N
-1991	yes	255	6	106	596	HeartRate	99	\N
-2001	yes	255	6	106	596	HeartRate	99	\N
-2009	yes	255	6	106	596	HeartRate	99	\N
-2019	yes	255	6	106	596	HeartRate	99	\N
-2028	yes	255	6	106	596	HeartRate	99	\N
-2029	yes	255	6	106	596	HeartRate	99	\N
-2038	yes	255	6	106	596	HeartRate	99	\N
-2047	yes	255	6	106	596	HeartRate	99	\N
-2056	yes	255	6	106	596	HeartRate	99	\N
-1878	yes	255	5	103	561	HeartRate	99	\N
-1888	yes	255	5	104	566	HeartRate	99	\N
-1833	yes	43	2	118	237	HeartRate	65	\N
-1842	yes	43	2	118	237	HeartRate	65	\N
-1852	yes	255	5	103	561	HeartRate	99	\N
-1853	yes	255	5	103	561	HeartRate	99	\N
-1862	yes	255	5	103	561	HeartRate	99	\N
-1870	yes	255	5	103	561	HeartRate	99	\N
-1897	yes	255	5	104	567	HeartRate	99	\N
-1907	yes	255	5	104	567	HeartRate	99	\N
-1916	yes	255	5	104	569	HeartRate	99	\N
-1925	yes	255	5	104	570	HeartRate	99	\N
-1934	yes	255	5	104	578	HeartRate	99	\N
-1944	yes	255	5	105	580	HeartRate	99	\N
-1953	yes	255	5	105	585	HeartRate	99	\N
-1954	yes	255	5	105	585	HeartRate	99	\N
-1963	yes	255	5	105	584	HeartRate	99	\N
-1973	yes	255	5	105	589	HeartRate	99	\N
-1983	yes	255	6	105	593	HeartRate	99	\N
-1992	yes	255	6	106	596	HeartRate	99	\N
-2000	yes	255	6	106	596	HeartRate	99	\N
-2010	yes	255	6	106	596	HeartRate	99	\N
-2020	yes	255	6	106	596	HeartRate	99	\N
-2030	yes	255	6	106	596	HeartRate	99	\N
-2039	yes	255	6	106	596	HeartRate	99	\N
-2048	yes	255	6	106	596	HeartRate	99	\N
-2057	yes	255	6	106	596	HeartRate	99	\N
-2065	yes	255	5	100	521	HeartRate	99	\N
-2572	yes	150	3	200	100	HeartRate	120	\N
-2573	yes	150	3	200	100	HeartRate	120	\N
-2574	yes	150	3	200	100	HeartRate	120	\N
-2575	yes	150	3	200	100	HeartRate	120	\N
-2576	yes	150	3	200	100	HeartRate	120	\N
-2577	yes	150	3	200	100	HeartRate	120	\N
-2578	yes	150	3	200	100	HeartRate	120	\N
-2579	yes	150	3	200	100	HeartRate	120	\N
-2580	yes	150	3	200	100	HeartRate	120	\N
-2581	yes	150	3	200	100	HeartRate	120	\N
-2582	yes	150	3	200	100	HeartRate	120	\N
-2583	yes	150	3	200	100	HeartRate	120	\N
-2584	yes	150	3	200	100	HeartRate	120	\N
-2585	yes	150	3	200	100	HeartRate	120	\N
-2586	yes	150	3	200	100	HeartRate	120	\N
-2587	yes	150	3	200	100	HeartRate	120	\N
-2588	yes	150	3	200	100	HeartRate	120	\N
-2589	yes	150	3	200	100	HeartRate	120	\N
-2590	yes	150	3	200	100	HeartRate	120	\N
-2591	yes	150	3	200	100	HeartRate	120	\N
-2592	yes	150	3	200	100	HeartRate	120	\N
-2593	yes	150	3	200	100	HeartRate	120	\N
-2594	yes	150	3	200	100	HeartRate	120	\N
-2595	yes	150	3	200	100	HeartRate	120	\N
-2596	yes	150	3	200	100	HeartRate	120	\N
-2597	yes	150	3	200	100	HeartRate	120	\N
-2598	yes	150	3	200	100	HeartRate	120	\N
-2599	yes	150	3	200	100	HeartRate	120	\N
-2698	yes	150	3	200	100	HeartRate	120	\N
-2699	yes	150	3	200	100	HeartRate	120	\N
-2700	yes	150	3	200	100	HeartRate	120	\N
-2701	yes	150	3	200	100	HeartRate	120	\N
-2702	yes	150	3	200	100	HeartRate	120	\N
-2703	yes	150	3	200	100	HeartRate	120	\N
-2704	yes	150	3	200	100	HeartRate	120	\N
-2705	yes	150	3	200	100	HeartRate	120	\N
-2706	yes	150	3	200	100	HeartRate	120	\N
-2707	yes	150	3	200	100	HeartRate	120	\N
-2708	yes	150	3	200	100	HeartRate	120	\N
-2709	yes	150	3	200	100	HeartRate	120	\N
-2710	yes	150	3	200	100	HeartRate	120	\N
-2711	yes	150	3	200	100	HeartRate	120	\N
-2712	yes	150	3	200	100	HeartRate	120	\N
-2713	yes	150	3	200	100	HeartRate	120	\N
-2714	yes	150	3	200	100	HeartRate	120	\N
-2715	yes	150	3	200	100	HeartRate	120	\N
-2716	yes	150	3	200	100	HeartRate	120	\N
-2717	yes	150	3	200	100	HeartRate	120	\N
-2718	yes	150	3	200	100	HeartRate	120	\N
-2719	yes	150	3	200	100	HeartRate	120	\N
-2720	yes	150	3	200	100	HeartRate	120	\N
-2721	yes	150	3	200	100	HeartRate	120	\N
-2722	yes	150	3	200	100	HeartRate	120	\N
-2723	yes	150	3	200	100	HeartRate	120	\N
-2724	yes	150	3	200	100	HeartRate	120	\N
-2725	yes	150	3	200	100	HeartRate	120	\N
-2726	yes	150	3	200	100	HeartRate	120	\N
-2727	yes	150	3	200	100	HeartRate	120	\N
-2728	yes	150	3	200	100	HeartRate	120	\N
-2729	yes	150	3	200	100	HeartRate	120	\N
-2730	yes	150	3	200	100	HeartRate	120	\N
-2731	yes	150	3	200	100	HeartRate	120	\N
-2732	yes	150	3	200	100	HeartRate	120	\N
-2733	yes	150	3	200	100	HeartRate	120	\N
-2779	yes	255	7	111	672	HeartRate	138	\N
-2780	yes	255	7	111	674	HeartRate	138	\N
-2781	yes	255	7	112	675	HeartRate	138	\N
-2782	yes	255	7	112	677	HeartRate	138	\N
-2783	yes	255	7	112	678	HeartRate	138	\N
-2784	yes	255	7	112	680	HeartRate	138	\N
-2785	yes	255	7	112	681	HeartRate	138	\N
-2786	yes	255	7	112	683	HeartRate	138	\N
-2787	yes	255	7	112	684	HeartRate	138	\N
-2788	yes	255	7	112	686	HeartRate	138	\N
-2789	yes	255	7	112	687	HeartRate	138	\N
-2790	yes	255	7	112	687	HeartRate	138	\N
-2791	yes	255	7	113	688	HeartRate	138	\N
-2792	yes	255	7	113	689	HeartRate	138	\N
-2793	yes	255	7	113	692	HeartRate	138	\N
-2794	yes	255	7	113	698	HeartRate	138	\N
-2795	yes	255	7	113	698	HeartRate	138	\N
-2796	yes	255	7	113	701	HeartRate	138	\N
-2797	yes	255	7	113	700	HeartRate	138	\N
-2798	yes	255	7	113	700	HeartRate	138	\N
-2799	yes	255	7	113	701	HeartRate	138	\N
-2800	yes	255	7	114	701	HeartRate	138	\N
-2801	yes	255	7	113	701	HeartRate	138	\N
-2802	yes	255	7	113	698	HeartRate	138	\N
-2803	yes	255	7	113	701	HeartRate	138	\N
-2804	yes	255	7	114	705	HeartRate	138	\N
-2805	yes	255	7	114	706	HeartRate	138	\N
-2806	yes	255	7	114	709	HeartRate	138	\N
-1879	yes	255	5	103	561	HeartRate	99	\N
-1889	yes	255	5	104	567	HeartRate	99	\N
-1834	yes	43	2	118	237	HeartRate	65	\N
-1843	yes	255	5	103	560	HeartRate	99	\N
-1854	yes	255	5	103	561	HeartRate	99	\N
-1863	yes	255	5	103	561	HeartRate	99	\N
-1871	yes	255	5	103	561	HeartRate	99	\N
-1898	yes	255	5	104	567	HeartRate	99	\N
-1908	yes	255	5	104	569	HeartRate	99	\N
-1917	yes	255	5	104	569	HeartRate	99	\N
-1926	yes	255	5	104	572	HeartRate	99	\N
-1935	yes	255	5	104	577	HeartRate	99	\N
-1945	yes	255	5	105	581	HeartRate	99	\N
-1955	yes	255	5	105	585	HeartRate	99	\N
-1964	yes	255	5	105	584	HeartRate	99	\N
-1974	yes	255	5	105	589	HeartRate	99	\N
-1984	yes	255	6	105	593	HeartRate	99	\N
-1993	yes	255	6	106	596	HeartRate	99	\N
-2002	yes	255	6	106	596	HeartRate	99	\N
-2011	yes	255	6	106	596	HeartRate	99	\N
-2021	yes	255	6	106	596	HeartRate	99	\N
-2031	yes	255	6	106	596	HeartRate	99	\N
-2040	yes	255	6	106	596	HeartRate	99	\N
-2049	yes	255	6	106	596	HeartRate	99	\N
-2058	yes	255	6	106	596	HeartRate	99	\N
 2066	no	0	0	0	0	SunAzimuth	0	\N
-2600	yes	150	3	200	100	HeartRate	120	\N
-2601	yes	150	3	200	100	HeartRate	120	\N
-2602	yes	150	3	200	100	HeartRate	120	\N
-2603	yes	150	3	200	100	HeartRate	120	\N
-2604	yes	150	3	200	100	HeartRate	120	\N
-2605	yes	150	3	200	100	HeartRate	120	\N
-2606	yes	150	3	200	100	HeartRate	120	\N
-2607	yes	150	3	200	100	HeartRate	120	\N
-2608	yes	150	3	200	100	HeartRate	120	\N
-2609	yes	150	3	200	100	HeartRate	120	\N
-2610	yes	150	3	200	100	HeartRate	120	\N
-2611	yes	150	3	200	100	HeartRate	120	\N
-2612	yes	150	3	200	100	HeartRate	120	\N
-2613	yes	150	3	200	100	HeartRate	120	\N
-2614	yes	150	3	200	100	HeartRate	120	\N
-2615	yes	150	3	200	100	HeartRate	120	\N
-2616	yes	150	3	200	100	HeartRate	120	\N
-2617	yes	150	3	200	100	HeartRate	120	\N
-2618	yes	150	3	200	100	HeartRate	120	\N
-2619	yes	150	3	200	100	HeartRate	120	\N
-2620	yes	150	3	200	100	HeartRate	120	\N
-2621	yes	150	3	200	100	HeartRate	120	\N
-2622	yes	150	3	200	100	HeartRate	120	\N
-2623	yes	150	3	200	100	HeartRate	120	\N
-2624	yes	150	3	200	100	HeartRate	120	\N
-2625	yes	150	3	200	100	HeartRate	120	\N
-2626	yes	150	3	200	100	HeartRate	120	\N
-2627	yes	150	3	200	100	HeartRate	120	\N
-2628	yes	150	3	200	100	HeartRate	120	\N
-2629	yes	150	3	200	100	HeartRate	120	\N
-2630	yes	150	3	200	100	HeartRate	120	\N
-2631	yes	150	3	200	100	HeartRate	120	\N
-2632	yes	150	3	200	100	HeartRate	120	\N
-2633	yes	150	3	200	100	HeartRate	120	\N
-2634	yes	150	3	200	100	HeartRate	120	\N
-2635	yes	150	3	200	100	HeartRate	120	\N
-2636	yes	150	3	200	100	HeartRate	120	\N
-2637	yes	150	3	200	100	HeartRate	120	\N
-2638	yes	150	3	200	100	HeartRate	120	\N
-2639	yes	150	3	200	100	HeartRate	120	\N
-2640	yes	150	3	200	100	HeartRate	120	\N
-2641	yes	150	3	200	100	HeartRate	120	\N
-2642	yes	150	3	200	100	HeartRate	120	\N
-2643	yes	150	3	200	100	HeartRate	120	\N
-2644	yes	150	3	200	100	HeartRate	120	\N
-2645	yes	150	3	200	100	HeartRate	120	\N
-2646	yes	150	3	200	100	HeartRate	120	\N
-2647	yes	150	3	200	100	HeartRate	120	\N
-2648	yes	150	3	200	100	HeartRate	120	\N
-2734	yes	255	7	110	656	HeartRate	138	\N
-2735	yes	255	7	110	656	HeartRate	138	\N
-2736	yes	255	7	110	656	HeartRate	138	\N
-2737	yes	255	7	110	656	HeartRate	138	\N
-2738	yes	255	7	110	656	HeartRate	138	\N
-2739	yes	255	7	110	656	HeartRate	138	\N
-2740	yes	255	7	110	656	HeartRate	138	\N
-2741	yes	255	7	110	656	HeartRate	138	\N
-2742	yes	255	7	110	656	HeartRate	138	\N
-2743	yes	255	7	110	652	HeartRate	138	\N
-2744	yes	255	7	110	653	HeartRate	138	\N
-2745	yes	255	7	110	652	HeartRate	138	\N
-2746	yes	255	7	110	653	HeartRate	138	\N
-2747	yes	255	7	110	653	HeartRate	138	\N
-2748	yes	255	7	110	654	HeartRate	138	\N
-2749	yes	255	7	110	654	HeartRate	138	\N
-2750	yes	255	7	110	653	HeartRate	138	\N
-2751	yes	255	7	110	653	HeartRate	138	\N
-2752	yes	255	7	110	653	HeartRate	138	\N
-2753	yes	255	7	110	653	HeartRate	138	\N
-2754	yes	255	7	110	653	HeartRate	138	\N
-2755	yes	255	7	110	653	HeartRate	138	\N
-2756	yes	255	7	110	653	HeartRate	138	\N
-2757	yes	255	7	110	653	HeartRate	138	\N
-2758	yes	255	7	110	653	HeartRate	138	\N
-2759	yes	255	7	110	653	HeartRate	138	\N
-2760	yes	255	7	110	653	HeartRate	138	\N
-2761	yes	255	7	110	653	HeartRate	138	\N
-2762	yes	255	7	110	653	HeartRate	138	\N
-2763	yes	255	7	110	653	HeartRate	138	\N
-2764	yes	255	7	110	653	HeartRate	138	\N
-2765	yes	255	7	110	653	HeartRate	138	\N
-2766	yes	255	7	110	653	HeartRate	138	\N
-2767	yes	255	7	110	654	HeartRate	138	\N
-2768	yes	255	7	110	656	HeartRate	138	\N
-2769	yes	255	7	110	656	HeartRate	138	\N
-2770	yes	255	7	110	657	HeartRate	138	\N
-2771	yes	255	7	110	659	HeartRate	138	\N
-2772	yes	255	7	111	661	HeartRate	138	\N
-2773	yes	255	7	111	662	HeartRate	138	\N
-2774	yes	255	7	111	663	HeartRate	138	\N
-2775	yes	255	7	111	665	HeartRate	138	\N
-2776	yes	255	7	111	667	HeartRate	138	\N
-2777	yes	255	7	111	669	HeartRate	138	\N
-2778	yes	255	7	111	670	HeartRate	138	\N
-1880	yes	255	5	103	561	HeartRate	99	\N
-1826	yes	42	2	118	235	HeartRate	65	\N
-1827	yes	43	2	119	238	HeartRate	65	\N
-1835	yes	43	2	118	237	HeartRate	65	\N
-1844	yes	255	5	103	561	HeartRate	99	\N
-1855	yes	255	5	103	561	HeartRate	99	\N
-1864	yes	255	5	103	561	HeartRate	99	\N
-1872	yes	255	5	103	561	HeartRate	99	\N
-1890	yes	255	5	104	567	HeartRate	99	\N
-1899	yes	255	5	104	567	HeartRate	99	\N
-1909	yes	255	5	104	569	HeartRate	99	\N
-1918	yes	255	5	104	568	HeartRate	99	\N
-1927	yes	255	5	104	572	HeartRate	99	\N
-1936	yes	255	5	104	577	HeartRate	99	\N
-1946	yes	255	5	105	581	HeartRate	99	\N
-1956	yes	255	5	105	585	HeartRate	99	\N
-1965	yes	255	5	105	585	HeartRate	99	\N
-1966	yes	255	5	105	585	HeartRate	99	\N
-1975	yes	255	6	105	591	HeartRate	99	\N
-1976	yes	255	6	105	591	HeartRate	99	\N
-1985	yes	255	6	106	600	HeartRate	99	\N
-1994	yes	255	6	106	596	HeartRate	99	\N
-2003	yes	255	6	106	596	HeartRate	99	\N
-2013	yes	255	6	106	596	HeartRate	99	\N
-2022	yes	255	6	106	596	HeartRate	99	\N
-2032	yes	255	6	106	596	HeartRate	99	\N
-2041	yes	255	6	106	596	HeartRate	99	\N
-2050	yes	255	6	106	596	HeartRate	99	\N
-2059	yes	255	6	106	596	HeartRate	99	\N
-2067	yes	150	3	200	100	HeartRate	120	\N
-2068	yes	150	3	200	100	HeartRate	120	\N
-2069	yes	150	3	200	100	HeartRate	120	\N
-2070	yes	150	3	200	100	HeartRate	120	\N
-2071	yes	150	3	200	100	HeartRate	120	\N
-2072	yes	150	3	200	100	HeartRate	120	\N
-2073	yes	150	3	200	100	HeartRate	120	\N
-2074	yes	150	3	200	100	HeartRate	120	\N
-2075	yes	150	3	200	100	HeartRate	120	\N
-2076	yes	150	3	200	100	HeartRate	120	\N
-2077	yes	150	3	200	100	HeartRate	120	\N
-2078	yes	150	3	200	100	HeartRate	120	\N
-2079	yes	150	3	200	100	HeartRate	120	\N
-2080	yes	150	3	200	100	HeartRate	120	\N
-2081	yes	150	3	200	100	HeartRate	120	\N
-2082	yes	150	3	200	100	HeartRate	120	\N
-2083	yes	150	3	200	100	HeartRate	120	\N
-2084	yes	150	3	200	100	HeartRate	120	\N
-2085	yes	150	3	200	100	HeartRate	120	\N
-2086	yes	150	3	200	100	HeartRate	120	\N
-2087	yes	150	3	200	100	HeartRate	120	\N
-2088	yes	150	3	200	100	HeartRate	120	\N
-2089	yes	150	3	200	100	HeartRate	120	\N
-2090	yes	150	3	200	100	HeartRate	120	\N
-2091	yes	150	3	200	100	HeartRate	120	\N
-2092	yes	150	3	200	100	HeartRate	120	\N
-2093	yes	150	3	200	100	HeartRate	120	\N
-2094	yes	150	3	200	100	HeartRate	120	\N
-2095	yes	150	3	200	100	HeartRate	120	\N
-2096	yes	150	3	200	100	HeartRate	120	\N
-2097	yes	150	3	200	100	HeartRate	120	\N
-2098	yes	150	3	200	100	HeartRate	120	\N
-2099	yes	150	3	200	100	HeartRate	120	\N
-2100	yes	150	3	200	100	HeartRate	120	\N
-2101	yes	150	3	200	100	HeartRate	120	\N
-2102	yes	150	3	200	100	HeartRate	120	\N
-2103	yes	150	3	200	100	HeartRate	120	\N
-2104	yes	150	3	200	100	HeartRate	120	\N
-2105	yes	150	3	200	100	HeartRate	120	\N
-2106	yes	150	3	200	100	HeartRate	120	\N
-2107	yes	150	3	200	100	HeartRate	120	\N
-2108	yes	150	3	200	100	HeartRate	120	\N
-2109	yes	150	3	200	100	HeartRate	120	\N
-2110	yes	150	3	200	100	HeartRate	120	\N
-2111	yes	150	3	200	100	HeartRate	120	\N
-2112	yes	150	3	200	100	HeartRate	120	\N
-2113	yes	150	3	200	100	HeartRate	120	\N
-2114	yes	150	3	200	100	HeartRate	120	\N
-2115	yes	150	3	200	100	HeartRate	120	\N
-2116	yes	150	3	200	100	HeartRate	120	\N
-2117	yes	150	3	200	100	HeartRate	120	\N
-2118	yes	150	3	200	100	HeartRate	120	\N
-2119	yes	150	3	200	100	HeartRate	120	\N
-2120	yes	150	3	200	100	HeartRate	120	\N
-2121	yes	150	3	200	100	HeartRate	120	\N
-2122	yes	150	3	200	100	HeartRate	120	\N
-2123	yes	150	3	200	100	HeartRate	120	\N
-2124	yes	150	3	200	100	HeartRate	120	\N
-2125	yes	150	3	200	100	HeartRate	120	\N
-2126	yes	150	3	200	100	HeartRate	120	\N
-2127	yes	150	3	200	100	HeartRate	120	\N
-2128	yes	150	3	200	100	HeartRate	120	\N
-2129	yes	150	3	200	100	HeartRate	120	\N
-2130	yes	150	3	200	100	HeartRate	120	\N
-2131	yes	150	3	200	100	HeartRate	120	\N
-2132	yes	150	3	200	100	HeartRate	120	\N
-2133	yes	150	3	200	100	HeartRate	120	\N
-2134	yes	150	3	200	100	HeartRate	120	\N
-2135	yes	150	3	200	100	HeartRate	120	\N
-2136	yes	150	3	200	100	HeartRate	120	\N
-2137	yes	150	3	200	100	HeartRate	120	\N
-2138	yes	150	3	200	100	HeartRate	120	\N
-2139	yes	150	3	200	100	HeartRate	120	\N
-2140	yes	150	3	200	100	HeartRate	120	\N
-2141	yes	150	3	200	100	HeartRate	120	\N
-2142	yes	150	3	200	100	HeartRate	120	\N
-2143	yes	150	3	200	100	HeartRate	120	\N
-2144	yes	150	3	200	100	HeartRate	120	\N
-2145	yes	150	3	200	100	HeartRate	120	\N
-2146	yes	150	3	200	100	HeartRate	120	\N
-2147	yes	150	3	200	100	HeartRate	120	\N
-2148	yes	150	3	200	100	HeartRate	120	\N
-2149	yes	150	3	200	100	HeartRate	120	\N
-2150	yes	150	3	200	100	HeartRate	120	\N
-2151	yes	150	3	200	100	HeartRate	120	\N
-2152	yes	150	3	200	100	HeartRate	120	\N
-2153	yes	150	3	200	100	HeartRate	120	\N
-2154	yes	150	3	200	100	HeartRate	120	\N
-2155	yes	150	3	200	100	HeartRate	120	\N
-2156	yes	150	3	200	100	HeartRate	120	\N
-2157	yes	150	3	200	100	HeartRate	120	\N
-1881	yes	255	5	104	568	HeartRate	99	\N
-1828	yes	43	2	119	238	HeartRate	65	\N
-1836	yes	43	2	118	237	HeartRate	65	\N
-1845	yes	255	5	103	561	HeartRate	99	\N
-1856	yes	255	5	103	561	HeartRate	99	\N
-1865	yes	255	5	103	561	HeartRate	99	\N
-1873	yes	255	5	103	561	HeartRate	99	\N
-1891	yes	255	5	104	567	HeartRate	99	\N
-1900	yes	255	5	104	568	HeartRate	99	\N
-1901	yes	255	5	104	568	HeartRate	99	\N
-1910	yes	255	5	104	569	HeartRate	99	\N
-1919	yes	255	5	104	568	HeartRate	99	\N
-1928	yes	255	5	104	570	HeartRate	99	\N
-1937	yes	255	5	104	577	HeartRate	99	\N
-1938	yes	255	5	104	577	HeartRate	99	\N
-1947	yes	255	5	105	582	HeartRate	99	\N
-1957	yes	255	5	105	585	HeartRate	99	\N
-1967	yes	255	5	105	586	HeartRate	99	\N
-1977	yes	255	6	105	593	HeartRate	99	\N
-1986	yes	255	6	106	595	HeartRate	99	\N
-1995	yes	255	6	106	596	HeartRate	99	\N
-2004	yes	255	6	106	596	HeartRate	99	\N
-2012	yes	255	6	106	596	HeartRate	99	\N
-2023	yes	255	6	106	596	HeartRate	99	\N
-2033	yes	255	6	106	596	HeartRate	99	\N
-2042	yes	255	6	106	596	HeartRate	99	\N
-2051	yes	255	6	106	596	HeartRate	99	\N
-2060	yes	255	6	106	596	HeartRate	99	\N
-2158	yes	150	3	200	100	HeartRate	120	\N
-2159	yes	150	3	200	100	HeartRate	120	\N
-2160	yes	150	3	200	100	HeartRate	120	\N
-2161	yes	150	3	200	100	HeartRate	120	\N
-2162	yes	150	3	200	100	HeartRate	120	\N
-2163	yes	150	3	200	100	HeartRate	120	\N
-2164	yes	150	3	200	100	HeartRate	120	\N
-2165	yes	150	3	200	100	HeartRate	120	\N
-2166	yes	150	3	200	100	HeartRate	120	\N
-2167	yes	150	3	200	100	HeartRate	120	\N
-2168	yes	150	3	200	100	HeartRate	120	\N
-2169	yes	150	3	200	100	HeartRate	120	\N
-2170	yes	150	3	200	100	HeartRate	120	\N
-2171	yes	150	3	200	100	HeartRate	120	\N
-2172	yes	150	3	200	100	HeartRate	120	\N
-2173	yes	150	3	200	100	HeartRate	120	\N
-2174	yes	150	3	200	100	HeartRate	120	\N
-2175	yes	150	3	200	100	HeartRate	120	\N
-2176	yes	150	3	200	100	HeartRate	120	\N
-2177	yes	150	3	200	100	HeartRate	120	\N
-2178	yes	150	3	200	100	HeartRate	120	\N
-2179	yes	150	3	200	100	HeartRate	120	\N
-2180	yes	150	3	200	100	HeartRate	120	\N
-2181	yes	150	3	200	100	HeartRate	120	\N
-2182	yes	150	3	200	100	HeartRate	120	\N
-2183	yes	150	3	200	100	HeartRate	120	\N
-2184	yes	150	3	200	100	HeartRate	120	\N
-2185	yes	150	3	200	100	HeartRate	120	\N
-2186	yes	150	3	200	100	HeartRate	120	\N
-2187	yes	150	3	200	100	HeartRate	120	\N
-2188	yes	150	3	200	100	HeartRate	120	\N
-2189	yes	150	3	200	100	HeartRate	120	\N
-2190	yes	150	3	200	100	HeartRate	120	\N
-2191	yes	150	3	200	100	HeartRate	120	\N
-2192	yes	150	3	200	100	HeartRate	120	\N
-2193	yes	150	3	200	100	HeartRate	120	\N
-2194	yes	150	3	200	100	HeartRate	120	\N
-2195	yes	150	3	200	100	HeartRate	120	\N
-2196	yes	150	3	200	100	HeartRate	120	\N
-2197	yes	150	3	200	100	HeartRate	120	\N
-2198	yes	150	3	200	100	HeartRate	120	\N
-2199	yes	150	3	200	100	HeartRate	120	\N
-2200	yes	150	3	200	100	HeartRate	120	\N
-2201	yes	150	3	200	100	HeartRate	120	\N
-2202	yes	150	3	200	100	HeartRate	120	\N
-2203	yes	150	3	200	100	HeartRate	120	\N
-2204	yes	150	3	200	100	HeartRate	120	\N
-2205	yes	150	3	200	100	HeartRate	120	\N
-2206	yes	150	3	200	100	HeartRate	120	\N
-2207	yes	150	3	200	100	HeartRate	120	\N
-2208	yes	150	3	200	100	HeartRate	120	\N
-2209	yes	150	3	200	100	HeartRate	120	\N
-2210	yes	150	3	200	100	HeartRate	120	\N
-2211	yes	150	3	200	100	HeartRate	120	\N
-2212	yes	150	3	200	100	HeartRate	120	\N
-2213	yes	150	3	200	100	HeartRate	120	\N
-2214	yes	150	3	200	100	HeartRate	120	\N
-2215	yes	150	3	200	100	HeartRate	120	\N
-2216	yes	150	3	200	100	HeartRate	120	\N
-2217	yes	150	3	200	100	HeartRate	120	\N
-2218	yes	150	3	200	100	HeartRate	120	\N
-2219	yes	150	3	200	100	HeartRate	120	\N
-2220	yes	150	3	200	100	HeartRate	120	\N
-2221	yes	150	3	200	100	HeartRate	120	\N
-2222	yes	150	3	200	100	HeartRate	120	\N
-2223	yes	150	3	200	100	HeartRate	120	\N
-2224	yes	150	3	200	100	HeartRate	120	\N
-2225	yes	150	3	200	100	HeartRate	120	\N
-2226	yes	150	3	200	100	HeartRate	120	\N
-2227	yes	150	3	200	100	HeartRate	120	\N
-2228	yes	150	3	200	100	HeartRate	120	\N
-2229	yes	150	3	200	100	HeartRate	120	\N
-2230	yes	150	3	200	100	HeartRate	120	\N
-2231	yes	150	3	200	100	HeartRate	120	\N
-2232	yes	150	3	200	100	HeartRate	120	\N
-2233	yes	150	3	200	100	HeartRate	120	\N
-2234	yes	150	3	200	100	HeartRate	120	\N
-2235	yes	150	3	200	100	HeartRate	120	\N
-2236	yes	150	3	200	100	HeartRate	120	\N
-2237	yes	150	3	200	100	HeartRate	120	\N
-2238	yes	150	3	200	100	HeartRate	120	\N
-2649	yes	150	3	200	100	HeartRate	120	\N
-2650	yes	150	3	200	100	HeartRate	120	\N
-2651	yes	150	3	200	100	HeartRate	120	\N
-2652	yes	150	3	200	100	HeartRate	120	\N
-2653	yes	150	3	200	100	HeartRate	120	\N
-2654	yes	150	3	200	100	HeartRate	120	\N
-2655	yes	150	3	200	100	HeartRate	120	\N
-2656	yes	150	3	200	100	HeartRate	120	\N
-2657	yes	150	3	200	100	HeartRate	120	\N
-2658	yes	150	3	200	100	HeartRate	120	\N
-2659	yes	150	3	200	100	HeartRate	120	\N
-1882	yes	255	5	104	568	HeartRate	99	\N
-1829	yes	43	2	119	238	HeartRate	65	\N
-1837	yes	43	2	118	237	HeartRate	65	\N
-1846	yes	255	5	103	561	HeartRate	99	\N
-1847	yes	255	5	103	561	HeartRate	99	\N
-1857	yes	255	5	103	561	HeartRate	99	\N
-1866	yes	255	5	103	561	HeartRate	99	\N
-1874	yes	255	5	103	561	HeartRate	99	\N
-1892	yes	255	5	104	568	HeartRate	99	\N
-1902	yes	255	5	104	568	HeartRate	99	\N
-1911	yes	255	5	104	569	HeartRate	99	\N
-1920	yes	255	5	104	569	HeartRate	99	\N
-1929	yes	255	5	104	573	HeartRate	99	\N
-1939	yes	255	5	104	578	HeartRate	99	\N
-1948	yes	255	5	105	582	HeartRate	99	\N
-1958	yes	255	5	105	585	HeartRate	99	\N
-1968	yes	255	5	105	586	HeartRate	99	\N
-1978	yes	255	6	105	593	HeartRate	99	\N
-1987	yes	255	6	106	595	HeartRate	99	\N
-1996	yes	255	6	106	595	HeartRate	99	\N
-2005	yes	255	6	106	596	HeartRate	99	\N
-2014	yes	255	6	106	596	HeartRate	99	\N
-2015	yes	255	6	106	596	HeartRate	99	\N
-2024	yes	255	6	106	596	HeartRate	99	\N
-2034	yes	255	6	106	596	HeartRate	99	\N
-2043	yes	255	6	106	596	HeartRate	99	\N
-2052	yes	255	6	106	596	HeartRate	99	\N
-2061	yes	255	6	106	596	HeartRate	99	\N
-2239	yes	150	3	200	100	HeartRate	120	\N
-2240	yes	150	3	200	100	HeartRate	120	\N
-2241	yes	150	3	200	100	HeartRate	120	\N
-2242	yes	150	3	200	100	HeartRate	120	\N
-2243	yes	150	3	200	100	HeartRate	120	\N
-2244	yes	150	3	200	100	HeartRate	120	\N
-2245	yes	150	3	200	100	HeartRate	120	\N
-2246	yes	150	3	200	100	HeartRate	120	\N
-2247	yes	150	3	200	100	HeartRate	120	\N
-2248	yes	150	3	200	100	HeartRate	120	\N
-2249	yes	150	3	200	100	HeartRate	120	\N
-2250	yes	150	3	200	100	HeartRate	120	\N
-2251	yes	150	3	200	100	HeartRate	120	\N
-2252	yes	150	3	200	100	HeartRate	120	\N
-2253	yes	150	3	200	100	HeartRate	120	\N
-2254	yes	150	3	200	100	HeartRate	120	\N
-2255	yes	150	3	200	100	HeartRate	120	\N
-2256	yes	150	3	200	100	HeartRate	120	\N
-2257	yes	150	3	200	100	HeartRate	120	\N
-2258	yes	150	3	200	100	HeartRate	120	\N
-2259	yes	150	3	200	100	HeartRate	120	\N
-2260	yes	150	3	200	100	HeartRate	120	\N
-2261	yes	150	3	200	100	HeartRate	120	\N
-2262	yes	150	3	200	100	HeartRate	120	\N
-2263	yes	150	3	200	100	HeartRate	120	\N
-2264	yes	150	3	200	100	HeartRate	120	\N
-2265	yes	150	3	200	100	HeartRate	120	\N
-2266	yes	150	3	200	100	HeartRate	120	\N
-2267	yes	150	3	200	100	HeartRate	120	\N
-2268	yes	150	3	200	100	HeartRate	120	\N
-2269	yes	150	3	200	100	HeartRate	120	\N
-2270	yes	150	3	200	100	HeartRate	120	\N
-2271	yes	150	3	200	100	HeartRate	120	\N
-2272	yes	150	3	200	100	HeartRate	120	\N
-2273	yes	150	3	200	100	HeartRate	120	\N
-2274	yes	150	3	200	100	HeartRate	120	\N
-2275	yes	150	3	200	100	HeartRate	120	\N
-2276	yes	150	3	200	100	HeartRate	120	\N
-2277	yes	150	3	200	100	HeartRate	120	\N
-2278	yes	150	3	200	100	HeartRate	120	\N
-2279	yes	150	3	200	100	HeartRate	120	\N
-2280	yes	150	3	200	100	HeartRate	120	\N
-2281	yes	150	3	200	100	HeartRate	120	\N
-2282	yes	150	3	200	100	HeartRate	120	\N
-2283	yes	150	3	200	100	HeartRate	120	\N
-2284	yes	150	3	200	100	HeartRate	120	\N
-2285	yes	150	3	200	100	HeartRate	120	\N
-2286	yes	150	3	200	100	HeartRate	120	\N
-2287	yes	150	3	200	100	HeartRate	120	\N
-2288	yes	150	3	200	100	HeartRate	120	\N
-2289	yes	150	3	200	100	HeartRate	120	\N
-2290	yes	150	3	200	100	HeartRate	120	\N
-2291	yes	150	3	200	100	HeartRate	120	\N
-2292	yes	150	3	200	100	HeartRate	120	\N
-2293	yes	150	3	200	100	HeartRate	120	\N
-2294	yes	150	3	200	100	HeartRate	120	\N
-2295	yes	150	3	200	100	HeartRate	120	\N
-2296	yes	150	3	200	100	HeartRate	120	\N
-2297	yes	150	3	200	100	HeartRate	120	\N
-2298	yes	150	3	200	100	HeartRate	120	\N
-2299	yes	150	3	200	100	HeartRate	120	\N
-2300	yes	150	3	200	100	HeartRate	120	\N
-2301	yes	150	3	200	100	HeartRate	120	\N
-2302	yes	150	3	200	100	HeartRate	120	\N
-2303	yes	150	3	200	100	HeartRate	120	\N
-2304	yes	150	3	200	100	HeartRate	120	\N
-2305	yes	150	3	200	100	HeartRate	120	\N
-2306	yes	150	3	200	100	HeartRate	120	\N
-2307	yes	150	3	200	100	HeartRate	120	\N
-2308	yes	150	3	200	100	HeartRate	120	\N
-2309	yes	150	3	200	100	HeartRate	120	\N
-2310	yes	150	3	200	100	HeartRate	120	\N
-2311	yes	150	3	200	100	HeartRate	120	\N
-2312	yes	150	3	200	100	HeartRate	120	\N
-2313	yes	150	3	200	100	HeartRate	120	\N
-2314	yes	150	3	200	100	HeartRate	120	\N
-2315	yes	150	3	200	100	HeartRate	120	\N
-2316	yes	150	3	200	100	HeartRate	120	\N
-2317	yes	150	3	200	100	HeartRate	120	\N
-2318	yes	150	3	200	100	HeartRate	120	\N
-2319	yes	150	3	200	100	HeartRate	120	\N
-2320	yes	150	3	200	100	HeartRate	120	\N
-2321	yes	150	3	200	100	HeartRate	120	\N
-2322	yes	150	3	200	100	HeartRate	120	\N
-2323	yes	150	3	200	100	HeartRate	120	\N
-2324	yes	150	3	200	100	HeartRate	120	\N
-2325	yes	150	3	200	100	HeartRate	120	\N
-2326	yes	150	3	200	100	HeartRate	120	\N
-2327	yes	150	3	200	100	HeartRate	120	\N
-2328	yes	150	3	200	100	HeartRate	120	\N
-2329	yes	150	3	200	100	HeartRate	120	\N
-2330	yes	150	3	200	100	HeartRate	120	\N
-1883	yes	255	5	104	570	HeartRate	99	\N
-1830	yes	43	2	118	237	HeartRate	65	\N
-1838	yes	43	2	118	237	HeartRate	65	\N
-1848	yes	255	5	103	561	HeartRate	99	\N
-1858	yes	255	5	103	561	HeartRate	99	\N
-1867	yes	255	5	103	561	HeartRate	99	\N
-1875	yes	255	5	103	561	HeartRate	99	\N
-1884	yes	255	5	104	571	HeartRate	99	\N
-1893	yes	255	5	104	568	HeartRate	99	\N
-1903	yes	255	5	104	568	HeartRate	99	\N
-1912	yes	255	5	104	569	HeartRate	99	\N
-1921	yes	255	5	104	569	HeartRate	99	\N
-1930	yes	255	5	104	573	HeartRate	99	\N
-1940	yes	255	5	104	578	HeartRate	99	\N
-1949	yes	255	5	105	583	HeartRate	99	\N
-1959	yes	255	5	105	585	HeartRate	99	\N
-1969	yes	255	5	105	586	HeartRate	99	\N
-1979	yes	255	6	106	595	HeartRate	99	\N
-1988	yes	255	6	106	595	HeartRate	99	\N
-1997	yes	255	6	106	595	HeartRate	99	\N
-2006	yes	255	6	106	596	HeartRate	99	\N
-2016	yes	255	6	106	596	HeartRate	99	\N
-2025	yes	255	6	106	596	HeartRate	99	\N
-2035	yes	255	6	106	596	HeartRate	99	\N
-2044	yes	255	6	106	596	HeartRate	99	\N
-2053	yes	255	6	106	596	HeartRate	99	\N
 3440	yes	166	3	230	115	HeartRate	140	\N
-2331	yes	150	3	200	100	HeartRate	120	\N
-2332	yes	150	3	200	100	HeartRate	120	\N
-2333	yes	150	3	200	100	HeartRate	120	\N
-2334	yes	150	3	200	100	HeartRate	120	\N
-2335	yes	150	3	200	100	HeartRate	120	\N
-2336	yes	150	3	200	100	HeartRate	120	\N
-2337	yes	150	3	200	100	HeartRate	120	\N
-2338	yes	150	3	200	100	HeartRate	120	\N
-2339	yes	150	3	200	100	HeartRate	120	\N
-2340	yes	150	3	200	100	HeartRate	120	\N
-2341	yes	150	3	200	100	HeartRate	120	\N
-2342	yes	150	3	200	100	HeartRate	120	\N
-2343	yes	150	3	200	100	HeartRate	120	\N
-2344	yes	150	3	200	100	HeartRate	120	\N
-2345	yes	150	3	200	100	HeartRate	120	\N
-2346	yes	150	3	200	100	HeartRate	120	\N
-2347	yes	150	3	200	100	HeartRate	120	\N
-2348	yes	150	3	200	100	HeartRate	120	\N
-2349	yes	150	3	200	100	HeartRate	120	\N
-2350	yes	150	3	200	100	HeartRate	120	\N
-2351	yes	150	3	200	100	HeartRate	120	\N
-2352	yes	150	3	200	100	HeartRate	120	\N
-2353	yes	150	3	200	100	HeartRate	120	\N
-2354	yes	150	3	200	100	HeartRate	120	\N
-2355	yes	150	3	200	100	HeartRate	120	\N
-2356	yes	150	3	200	100	HeartRate	120	\N
-2357	yes	150	3	200	100	HeartRate	120	\N
-2358	yes	150	3	200	100	HeartRate	120	\N
-2359	yes	150	3	200	100	HeartRate	120	\N
-2360	yes	150	3	200	100	HeartRate	120	\N
-2361	yes	150	3	200	100	HeartRate	120	\N
-2362	yes	150	3	200	100	HeartRate	120	\N
-2363	yes	150	3	200	100	HeartRate	120	\N
-2364	yes	150	3	200	100	HeartRate	120	\N
-2365	yes	150	3	200	100	HeartRate	120	\N
-2366	yes	150	3	200	100	HeartRate	120	\N
-2367	yes	150	3	200	100	HeartRate	120	\N
-2368	yes	150	3	200	100	HeartRate	120	\N
-2369	yes	150	3	200	100	HeartRate	120	\N
-2370	yes	150	3	200	100	HeartRate	120	\N
-2371	yes	150	3	200	100	HeartRate	120	\N
-2372	yes	150	3	200	100	HeartRate	120	\N
-2373	yes	150	3	200	100	HeartRate	120	\N
-2374	yes	150	3	200	100	HeartRate	120	\N
-2375	yes	150	3	200	100	HeartRate	120	\N
-2376	yes	150	3	200	100	HeartRate	120	\N
-2377	yes	150	3	200	100	HeartRate	120	\N
-2378	yes	150	3	200	100	HeartRate	120	\N
-2379	yes	150	3	200	100	HeartRate	120	\N
-2380	yes	150	3	200	100	HeartRate	120	\N
-2381	yes	150	3	200	100	HeartRate	120	\N
-2382	yes	150	3	200	100	HeartRate	120	\N
-2383	yes	150	3	200	100	HeartRate	120	\N
-2384	yes	150	3	200	100	HeartRate	120	\N
-2385	yes	150	3	200	100	HeartRate	120	\N
-2386	yes	150	3	200	100	HeartRate	120	\N
-2387	yes	150	3	200	100	HeartRate	120	\N
-2388	yes	150	3	200	100	HeartRate	120	\N
-2389	yes	150	3	200	100	HeartRate	120	\N
-2390	yes	150	3	200	100	HeartRate	120	\N
-2391	yes	150	3	200	100	HeartRate	120	\N
-2392	yes	150	3	200	100	HeartRate	120	\N
-2393	yes	150	3	200	100	HeartRate	120	\N
-2394	yes	150	3	200	100	HeartRate	120	\N
-2395	yes	150	3	200	100	HeartRate	120	\N
-2396	yes	150	3	200	100	HeartRate	120	\N
-2397	yes	150	3	200	100	HeartRate	120	\N
-2398	yes	150	3	200	100	HeartRate	120	\N
-2399	yes	150	3	200	100	HeartRate	120	\N
-2400	yes	150	3	200	100	HeartRate	120	\N
-2401	yes	150	3	200	100	HeartRate	120	\N
-2402	yes	150	3	200	100	HeartRate	120	\N
-2403	yes	150	3	200	100	HeartRate	120	\N
-2404	yes	150	3	200	100	HeartRate	120	\N
-2405	yes	150	3	200	100	HeartRate	120	\N
-2406	yes	150	3	200	100	HeartRate	120	\N
-2407	yes	150	3	200	100	HeartRate	120	\N
-2408	yes	150	3	200	100	HeartRate	120	\N
-2409	yes	150	3	200	100	HeartRate	120	\N
-2410	yes	150	3	200	100	HeartRate	120	\N
-2411	yes	150	3	200	100	HeartRate	120	\N
-2412	yes	150	3	200	100	HeartRate	120	\N
-2413	yes	150	3	200	100	HeartRate	120	\N
-2414	yes	150	3	200	100	HeartRate	120	\N
-2415	yes	150	3	200	100	HeartRate	120	\N
-2416	yes	150	3	200	100	HeartRate	120	\N
-2417	yes	150	3	200	100	HeartRate	120	\N
-2418	yes	150	3	200	100	HeartRate	120	\N
-2419	yes	150	3	200	100	HeartRate	120	\N
-2420	yes	150	3	200	100	HeartRate	120	\N
-2421	yes	150	3	200	100	HeartRate	120	\N
-2422	yes	150	3	200	100	HeartRate	120	\N
-2423	yes	150	3	200	100	HeartRate	120	\N
-1885	yes	255	5	104	572	HeartRate	99	\N
-1831	yes	43	2	118	237	HeartRate	65	\N
-1839	yes	43	2	118	237	HeartRate	65	\N
-1849	yes	255	5	103	561	HeartRate	99	\N
-1859	yes	255	5	103	561	HeartRate	99	\N
-1868	yes	255	5	103	561	HeartRate	99	\N
-1876	yes	255	5	103	561	HeartRate	99	\N
-1894	yes	255	5	104	568	HeartRate	99	\N
-1904	yes	255	5	104	567	HeartRate	99	\N
-1913	yes	255	5	104	569	HeartRate	99	\N
-1922	yes	255	5	104	569	HeartRate	99	\N
-1931	yes	255	5	104	576	HeartRate	99	\N
-1941	yes	255	5	104	579	HeartRate	99	\N
-1950	yes	255	5	105	583	HeartRate	99	\N
-1960	yes	255	5	105	585	HeartRate	99	\N
-1970	yes	255	5	105	586	HeartRate	99	\N
-1980	yes	255	6	106	595	HeartRate	99	\N
-1989	yes	255	6	106	595	HeartRate	99	\N
-1998	yes	255	6	106	596	HeartRate	99	\N
-2007	yes	255	6	106	596	HeartRate	99	\N
-2017	yes	255	6	106	596	HeartRate	99	\N
-2026	yes	255	6	106	596	HeartRate	99	\N
-2036	yes	255	6	106	596	HeartRate	99	\N
-2045	yes	255	6	106	596	HeartRate	99	\N
-2054	yes	255	6	106	596	HeartRate	99	\N
-2063	yes	255	5	100	519	HeartRate	99	\N
-2424	yes	150	3	200	100	HeartRate	120	\N
-2425	yes	150	3	200	100	HeartRate	120	\N
-2426	yes	150	3	200	100	HeartRate	120	\N
-2427	yes	150	3	200	100	HeartRate	120	\N
-2428	yes	150	3	200	100	HeartRate	120	\N
-2429	yes	150	3	200	100	HeartRate	120	\N
-2430	yes	150	3	200	100	HeartRate	120	\N
-2431	yes	150	3	200	100	HeartRate	120	\N
-2432	yes	150	3	200	100	HeartRate	120	\N
-2433	yes	150	3	200	100	HeartRate	120	\N
-2434	yes	150	3	200	100	HeartRate	120	\N
-2435	yes	150	3	200	100	HeartRate	120	\N
-2436	yes	150	3	200	100	HeartRate	120	\N
-2437	yes	150	3	200	100	HeartRate	120	\N
-2438	yes	150	3	200	100	HeartRate	120	\N
-2439	yes	150	3	200	100	HeartRate	120	\N
-2440	yes	150	3	200	100	HeartRate	120	\N
-2441	yes	150	3	200	100	HeartRate	120	\N
-2442	yes	150	3	200	100	HeartRate	120	\N
-2443	yes	150	3	200	100	HeartRate	120	\N
-2444	yes	150	3	200	100	HeartRate	120	\N
-2445	yes	150	3	200	100	HeartRate	120	\N
-2446	yes	150	3	200	100	HeartRate	120	\N
-2447	yes	150	3	200	100	HeartRate	120	\N
-2448	yes	150	3	200	100	HeartRate	120	\N
-2449	yes	150	3	200	100	HeartRate	120	\N
-2450	yes	150	3	200	100	HeartRate	120	\N
-2451	yes	150	3	200	100	HeartRate	120	\N
-2452	yes	150	3	200	100	HeartRate	120	\N
-2453	yes	150	3	200	100	HeartRate	120	\N
-2454	yes	150	3	200	100	HeartRate	120	\N
-2455	yes	150	3	200	100	HeartRate	120	\N
-2456	yes	150	3	200	100	HeartRate	120	\N
-2457	yes	150	3	200	100	HeartRate	120	\N
-2458	yes	150	3	200	100	HeartRate	120	\N
-2459	yes	150	3	200	100	HeartRate	120	\N
-2460	yes	150	3	200	100	HeartRate	120	\N
-2461	yes	150	3	200	100	HeartRate	120	\N
-2462	yes	150	3	200	100	HeartRate	120	\N
-2463	yes	150	3	200	100	HeartRate	120	\N
-2464	yes	150	3	200	100	HeartRate	120	\N
-2465	yes	150	3	200	100	HeartRate	120	\N
-2466	yes	150	3	200	100	HeartRate	120	\N
-2467	yes	150	3	200	100	HeartRate	120	\N
-2468	yes	150	3	200	100	HeartRate	120	\N
-2469	yes	150	3	200	100	HeartRate	120	\N
-2470	yes	150	3	200	100	HeartRate	120	\N
-2471	yes	150	3	200	100	HeartRate	120	\N
-2472	yes	150	3	200	100	HeartRate	120	\N
-2473	yes	150	3	200	100	HeartRate	120	\N
-2474	yes	150	3	200	100	HeartRate	120	\N
-2475	yes	150	3	200	100	HeartRate	120	\N
-2476	yes	150	3	200	100	HeartRate	120	\N
-2477	yes	150	3	200	100	HeartRate	120	\N
-2478	yes	150	3	200	100	HeartRate	120	\N
-2479	yes	150	3	200	100	HeartRate	120	\N
-2660	yes	150	3	200	100	HeartRate	120	\N
-2661	yes	150	3	200	100	HeartRate	120	\N
-2662	yes	150	3	200	100	HeartRate	120	\N
-2663	yes	150	3	200	100	HeartRate	120	\N
-2664	yes	150	3	200	100	HeartRate	120	\N
-2665	yes	150	3	200	100	HeartRate	120	\N
-2666	yes	150	3	200	100	HeartRate	120	\N
-2667	yes	150	3	200	100	HeartRate	120	\N
-2668	yes	150	3	200	100	HeartRate	120	\N
-2669	yes	150	3	200	100	HeartRate	120	\N
-2670	yes	150	3	200	100	HeartRate	120	\N
-2671	yes	150	3	200	100	HeartRate	120	\N
-2672	yes	150	3	200	100	HeartRate	120	\N
-2673	yes	150	3	200	100	HeartRate	120	\N
-2674	yes	150	3	200	100	HeartRate	120	\N
-2675	yes	150	3	200	100	HeartRate	120	\N
-2676	yes	150	3	200	100	HeartRate	120	\N
-2677	yes	150	3	200	100	HeartRate	120	\N
-2678	yes	150	3	200	100	HeartRate	120	\N
-2679	yes	150	3	200	100	HeartRate	120	\N
-2680	yes	150	3	200	100	HeartRate	120	\N
-2681	yes	150	3	200	100	HeartRate	120	\N
-2682	yes	150	3	200	100	HeartRate	120	\N
-2683	yes	150	3	200	100	HeartRate	120	\N
-2684	yes	150	3	200	100	HeartRate	120	\N
-2685	yes	150	3	200	100	HeartRate	120	\N
-2686	yes	150	3	200	100	HeartRate	120	\N
-2687	yes	150	3	200	100	HeartRate	120	\N
-2688	yes	150	3	200	100	HeartRate	120	\N
-2689	yes	150	3	200	100	HeartRate	120	\N
-2690	yes	150	3	200	100	HeartRate	120	\N
-2691	yes	150	3	200	100	HeartRate	120	\N
-2692	yes	150	3	200	100	HeartRate	120	\N
-2693	yes	150	3	200	100	HeartRate	120	\N
-2694	yes	150	3	200	100	HeartRate	120	\N
-2695	yes	150	3	200	100	HeartRate	120	\N
-2696	yes	150	3	200	100	HeartRate	120	\N
-2697	yes	150	3	200	100	HeartRate	120	\N
-1886	yes	255	5	103	565	HeartRate	99	\N
-1832	yes	43	2	119	237	HeartRate	65	\N
-1840	yes	43	2	118	237	HeartRate	65	\N
-1841	yes	43	2	118	237	HeartRate	65	\N
-1850	yes	255	5	103	561	HeartRate	99	\N
-1851	yes	255	5	103	561	HeartRate	99	\N
-1860	yes	255	5	103	561	HeartRate	99	\N
-1861	yes	255	5	103	561	HeartRate	99	\N
-1869	yes	255	5	103	561	HeartRate	99	\N
-1895	yes	255	5	104	568	HeartRate	99	\N
-1905	yes	255	5	104	567	HeartRate	99	\N
-1914	yes	255	5	104	569	HeartRate	99	\N
-1923	yes	255	5	104	569	HeartRate	99	\N
-1932	yes	255	5	104	576	HeartRate	99	\N
-1942	yes	255	5	104	579	HeartRate	99	\N
-1951	yes	255	5	105	584	HeartRate	99	\N
-1961	yes	255	5	105	585	HeartRate	99	\N
-1971	yes	255	5	105	587	HeartRate	99	\N
-1981	yes	255	6	106	597	HeartRate	99	\N
-1990	yes	255	6	106	596	HeartRate	99	\N
-1999	yes	255	6	106	596	HeartRate	99	\N
-2008	yes	255	6	106	596	HeartRate	99	\N
-2018	yes	255	6	106	596	HeartRate	99	\N
-2027	yes	255	6	106	596	HeartRate	99	\N
-2037	yes	255	6	106	596	HeartRate	99	\N
-2046	yes	255	6	106	596	HeartRate	99	\N
-2055	yes	255	6	106	596	HeartRate	99	\N
-2064	yes	255	5	100	520	HeartRate	99	\N
-2480	yes	150	3	200	100	HeartRate	120	\N
-2481	yes	150	3	200	100	HeartRate	120	\N
-2482	yes	150	3	200	100	HeartRate	120	\N
-2483	yes	150	3	200	100	HeartRate	120	\N
-2484	yes	150	3	200	100	HeartRate	120	\N
-2485	yes	150	3	200	100	HeartRate	120	\N
-2486	yes	150	3	200	100	HeartRate	120	\N
-2487	yes	150	3	200	100	HeartRate	120	\N
-2488	yes	150	3	200	100	HeartRate	120	\N
-2489	yes	150	3	200	100	HeartRate	120	\N
-2490	yes	150	3	200	100	HeartRate	120	\N
-2491	yes	150	3	200	100	HeartRate	120	\N
-2492	yes	150	3	200	100	HeartRate	120	\N
-2493	yes	150	3	200	100	HeartRate	120	\N
-2494	yes	150	3	200	100	HeartRate	120	\N
-2495	yes	150	3	200	100	HeartRate	120	\N
-2496	yes	150	3	200	100	HeartRate	120	\N
-2497	yes	150	3	200	100	HeartRate	120	\N
-2498	yes	150	3	200	100	HeartRate	120	\N
-2499	yes	150	3	200	100	HeartRate	120	\N
-2500	yes	150	3	200	100	HeartRate	120	\N
-2501	yes	150	3	200	100	HeartRate	120	\N
-2502	yes	150	3	200	100	HeartRate	120	\N
-2503	yes	150	3	200	100	HeartRate	120	\N
-2504	yes	150	3	200	100	HeartRate	120	\N
-2505	yes	150	3	200	100	HeartRate	120	\N
-2506	yes	150	3	200	100	HeartRate	120	\N
-2507	yes	150	3	200	100	HeartRate	120	\N
-2508	yes	150	3	200	100	HeartRate	120	\N
-2509	yes	150	3	200	100	HeartRate	120	\N
-2510	yes	150	3	200	100	HeartRate	120	\N
-2511	yes	150	3	200	100	HeartRate	120	\N
-2512	yes	150	3	200	100	HeartRate	120	\N
-2513	yes	150	3	200	100	HeartRate	120	\N
-2514	yes	150	3	200	100	HeartRate	120	\N
-2515	yes	150	3	200	100	HeartRate	120	\N
-2516	yes	150	3	200	100	HeartRate	120	\N
-2517	yes	150	3	200	100	HeartRate	120	\N
-2518	yes	150	3	200	100	HeartRate	120	\N
-2519	yes	150	3	200	100	HeartRate	120	\N
-2520	yes	150	3	200	100	HeartRate	120	\N
-2521	yes	150	3	200	100	HeartRate	120	\N
-2522	yes	150	3	200	100	HeartRate	120	\N
-2523	yes	150	3	200	100	HeartRate	120	\N
-2524	yes	150	3	200	100	HeartRate	120	\N
-2525	yes	150	3	200	100	HeartRate	120	\N
-2526	yes	150	3	200	100	HeartRate	120	\N
-2527	yes	150	3	200	100	HeartRate	120	\N
-2528	yes	150	3	200	100	HeartRate	120	\N
-2529	yes	150	3	200	100	HeartRate	120	\N
-2530	yes	150	3	200	100	HeartRate	120	\N
-2531	yes	150	3	200	100	HeartRate	120	\N
-2532	yes	150	3	200	100	HeartRate	120	\N
-2533	yes	150	3	200	100	HeartRate	120	\N
-2534	yes	150	3	200	100	HeartRate	120	\N
-2535	yes	150	3	200	100	HeartRate	120	\N
-2536	yes	150	3	200	100	HeartRate	120	\N
-2537	yes	150	3	200	100	HeartRate	120	\N
-2538	yes	150	3	200	100	HeartRate	120	\N
-2539	yes	150	3	200	100	HeartRate	120	\N
-2540	yes	150	3	200	100	HeartRate	120	\N
-2541	yes	150	3	200	100	HeartRate	120	\N
-2542	yes	150	3	200	100	HeartRate	120	\N
-2543	yes	150	3	200	100	HeartRate	120	\N
-2544	yes	150	3	200	100	HeartRate	120	\N
-2545	yes	150	3	200	100	HeartRate	120	\N
-2546	yes	150	3	200	100	HeartRate	120	\N
-2547	yes	150	3	200	100	HeartRate	120	\N
-2548	yes	150	3	200	100	HeartRate	120	\N
-2549	yes	150	3	200	100	HeartRate	120	\N
-2550	yes	150	3	200	100	HeartRate	120	\N
-2551	yes	150	3	200	100	HeartRate	120	\N
-2552	yes	150	3	200	100	HeartRate	120	\N
-2553	yes	150	3	200	100	HeartRate	120	\N
-2554	yes	150	3	200	100	HeartRate	120	\N
-2555	yes	150	3	200	100	HeartRate	120	\N
-2556	yes	150	3	200	100	HeartRate	120	\N
-2557	yes	150	3	200	100	HeartRate	120	\N
-2558	yes	150	3	200	100	HeartRate	120	\N
-2559	yes	150	3	200	100	HeartRate	120	\N
-2560	yes	150	3	200	100	HeartRate	120	\N
-2561	yes	150	3	200	100	HeartRate	120	\N
-2562	yes	150	3	200	100	HeartRate	120	\N
-2563	yes	150	3	200	100	HeartRate	120	\N
-2564	yes	150	3	200	100	HeartRate	120	\N
-2565	yes	150	3	200	100	HeartRate	120	\N
-2566	yes	150	3	200	100	HeartRate	120	\N
-2567	yes	150	3	200	100	HeartRate	120	\N
-2568	yes	150	3	200	100	HeartRate	120	\N
-2569	yes	150	3	200	100	HeartRate	120	\N
-2570	yes	150	3	200	100	HeartRate	120	\N
-2571	yes	150	3	200	100	HeartRate	120	\N
-2807	yes	255	7	114	709	HeartRate	138	\N
-2808	yes	255	7	114	710	HeartRate	138	\N
-2809	yes	255	7	114	712	HeartRate	138	\N
-2810	yes	255	7	114	713	HeartRate	138	\N
-2811	yes	255	7	115	715	HeartRate	138	\N
-2812	yes	255	7	115	719	HeartRate	138	\N
-2813	yes	255	7	115	719	HeartRate	138	\N
-2814	yes	255	7	115	719	HeartRate	138	\N
-2815	yes	255	7	115	721	HeartRate	138	\N
-2816	yes	255	7	115	721	HeartRate	138	\N
-2817	yes	255	7	115	716	HeartRate	138	\N
-2818	yes	255	7	115	721	HeartRate	138	\N
-2819	yes	255	7	115	724	HeartRate	138	\N
-2820	yes	255	7	115	726	HeartRate	138	\N
-2821	yes	255	7	116	730	HeartRate	138	\N
-2822	yes	255	7	116	731	HeartRate	138	\N
-2823	yes	255	7	116	737	HeartRate	138	\N
-2824	yes	255	7	116	738	HeartRate	138	\N
-2825	yes	255	7	117	741	HeartRate	138	\N
-2826	yes	255	7	117	747	HeartRate	138	\N
-2827	yes	255	8	117	750	HeartRate	138	\N
-2828	yes	255	8	118	756	HeartRate	138	\N
-2829	yes	255	8	118	759	HeartRate	138	\N
-2830	yes	255	8	118	760	HeartRate	138	\N
-2831	yes	255	8	118	764	HeartRate	138	\N
-2832	yes	255	8	118	767	HeartRate	138	\N
-2833	yes	255	8	119	771	HeartRate	138	\N
-2834	yes	255	8	119	773	HeartRate	138	\N
-2835	yes	255	8	119	777	HeartRate	138	\N
-2836	yes	255	8	119	779	HeartRate	138	\N
-2837	yes	255	8	120	783	HeartRate	138	\N
-2838	yes	255	8	120	787	HeartRate	138	\N
-2839	yes	255	8	120	790	HeartRate	138	\N
-2840	yes	255	8	120	792	HeartRate	138	\N
-2841	yes	255	8	120	794	HeartRate	138	\N
-2842	yes	255	8	121	796	HeartRate	138	\N
-2843	yes	255	8	121	798	HeartRate	138	\N
-2844	yes	255	8	121	800	HeartRate	138	\N
-2845	yes	255	8	121	803	HeartRate	138	\N
-2846	yes	255	8	121	806	HeartRate	138	\N
-2847	yes	255	8	122	809	HeartRate	138	\N
-2848	yes	255	8	122	811	HeartRate	138	\N
-2849	yes	255	8	122	812	HeartRate	138	\N
-2850	yes	255	8	122	812	HeartRate	138	\N
-2851	yes	255	8	122	813	HeartRate	138	\N
-2852	yes	255	8	122	814	HeartRate	138	\N
-2853	yes	255	8	122	814	HeartRate	138	\N
-2854	yes	255	8	122	814	HeartRate	138	\N
-2855	yes	255	8	122	815	HeartRate	138	\N
-2856	yes	255	8	122	815	HeartRate	138	\N
-2857	yes	255	8	122	815	HeartRate	138	\N
-2858	yes	255	8	122	815	HeartRate	138	\N
-2859	yes	255	8	122	816	HeartRate	138	\N
-2860	yes	255	8	122	817	HeartRate	138	\N
-2861	yes	255	8	122	816	HeartRate	138	\N
-2862	yes	255	8	122	815	HeartRate	138	\N
-2863	yes	255	8	122	815	HeartRate	138	\N
-2864	yes	255	8	122	816	HeartRate	138	\N
-2865	yes	255	8	122	816	HeartRate	138	\N
-2866	yes	255	8	122	817	HeartRate	138	\N
-2867	yes	255	8	122	817	HeartRate	138	\N
-2868	yes	255	8	122	817	HeartRate	138	\N
-2869	yes	255	8	122	817	HeartRate	138	\N
-2870	yes	255	8	122	816	HeartRate	138	\N
-2871	yes	255	8	122	814	HeartRate	138	\N
-2872	yes	255	8	122	812	HeartRate	138	\N
-2873	yes	255	8	122	812	HeartRate	138	\N
-2874	yes	255	8	122	811	HeartRate	138	\N
-2875	yes	255	8	122	809	HeartRate	138	\N
-2876	yes	255	8	121	808	HeartRate	138	\N
-2877	yes	255	8	122	813	HeartRate	138	\N
-2878	yes	255	8	121	809	HeartRate	138	\N
-2879	yes	255	8	121	808	HeartRate	138	\N
-2880	yes	255	8	121	806	HeartRate	138	\N
-2881	yes	255	8	121	805	HeartRate	138	\N
-2882	yes	255	8	121	804	HeartRate	138	\N
-2883	yes	255	8	121	802	HeartRate	138	\N
-2884	yes	255	8	121	801	HeartRate	138	\N
-2885	yes	255	8	121	800	HeartRate	138	\N
-2886	yes	255	8	121	797	HeartRate	138	\N
-2887	yes	255	8	121	796	HeartRate	138	\N
-2888	yes	255	8	120	795	HeartRate	138	\N
-2889	yes	255	8	120	791	HeartRate	138	\N
-2890	yes	255	8	120	787	HeartRate	138	\N
-2891	yes	255	8	120	784	HeartRate	138	\N
-2892	yes	255	8	119	781	HeartRate	138	\N
-2893	yes	255	8	119	778	HeartRate	138	\N
-2894	yes	255	8	119	775	HeartRate	138	\N
-2895	yes	255	8	119	771	HeartRate	138	\N
-2896	yes	255	8	119	769	HeartRate	138	\N
-2897	yes	255	8	118	767	HeartRate	138	\N
-2898	yes	255	8	118	763	HeartRate	138	\N
-2899	yes	255	8	118	761	HeartRate	138	\N
-2900	yes	255	8	118	757	HeartRate	138	\N
-2901	yes	255	8	117	754	HeartRate	138	\N
-2902	yes	255	8	117	752	HeartRate	138	\N
-2903	yes	255	7	117	749	HeartRate	138	\N
-2904	yes	255	7	117	747	HeartRate	138	\N
-2905	yes	255	7	117	745	HeartRate	138	\N
-2906	yes	255	7	117	744	HeartRate	138	\N
-2907	yes	255	7	117	741	HeartRate	138	\N
-2908	yes	255	7	116	740	HeartRate	138	\N
-2909	yes	255	7	116	738	HeartRate	138	\N
-2910	yes	255	7	116	735	HeartRate	138	\N
-2911	yes	255	7	116	732	HeartRate	138	\N
-2912	yes	255	7	116	730	HeartRate	138	\N
-2913	yes	255	7	116	730	HeartRate	138	\N
-2914	yes	255	7	116	729	HeartRate	138	\N
-2915	yes	255	7	116	736	HeartRate	138	\N
-2916	yes	255	7	116	736	HeartRate	138	\N
-2917	yes	255	7	116	735	HeartRate	138	\N
-2918	yes	255	7	116	734	HeartRate	138	\N
-2919	yes	255	7	116	734	HeartRate	138	\N
-2920	yes	255	7	116	733	HeartRate	138	\N
-2921	yes	255	7	116	733	HeartRate	138	\N
-2922	yes	255	7	116	733	HeartRate	138	\N
-2923	yes	255	7	116	733	HeartRate	138	\N
-2924	yes	255	7	116	734	HeartRate	138	\N
-2925	yes	255	7	116	734	HeartRate	138	\N
-2926	yes	255	7	116	734	HeartRate	138	\N
-2927	yes	255	7	116	734	HeartRate	138	\N
-2928	yes	255	7	116	734	HeartRate	138	\N
-2929	yes	255	7	116	733	HeartRate	138	\N
-2930	yes	255	7	116	733	HeartRate	138	\N
-2931	yes	255	7	116	734	HeartRate	138	\N
-2932	yes	255	7	116	734	HeartRate	138	\N
-2933	yes	255	7	116	734	HeartRate	138	\N
-2934	yes	255	7	116	734	HeartRate	138	\N
-2935	yes	255	7	116	734	HeartRate	138	\N
-2936	yes	255	7	116	734	HeartRate	138	\N
-2937	yes	255	7	115	726	HeartRate	138	\N
-2938	yes	255	7	115	727	HeartRate	138	\N
-2939	yes	255	7	115	727	HeartRate	138	\N
-2940	yes	255	7	115	727	HeartRate	138	\N
-2941	yes	255	7	115	727	HeartRate	138	\N
-2942	yes	255	7	115	726	HeartRate	138	\N
-2943	yes	255	7	115	727	HeartRate	138	\N
-2944	yes	255	7	115	725	HeartRate	138	\N
-2945	yes	255	7	115	724	HeartRate	138	\N
-2946	yes	255	7	115	725	HeartRate	138	\N
-2947	yes	255	7	115	726	HeartRate	138	\N
-2948	yes	255	7	115	727	HeartRate	138	\N
-2949	yes	255	7	115	727	HeartRate	138	\N
-2950	yes	255	7	115	725	HeartRate	138	\N
-2951	yes	255	7	115	726	HeartRate	138	\N
-2952	yes	255	7	116	728	HeartRate	138	\N
-2953	yes	255	7	115	726	HeartRate	138	\N
-2954	yes	255	7	115	726	HeartRate	138	\N
-2955	yes	255	7	116	728	HeartRate	138	\N
-2956	yes	255	7	115	726	HeartRate	138	\N
-2957	yes	255	7	115	726	HeartRate	138	\N
-2958	yes	255	7	115	727	HeartRate	138	\N
-2959	yes	255	7	115	727	HeartRate	138	\N
-2960	yes	255	7	116	732	HeartRate	138	\N
-2961	yes	255	7	116	734	HeartRate	138	\N
-2962	yes	255	7	116	735	HeartRate	138	\N
-2963	yes	255	7	116	735	HeartRate	138	\N
-2964	yes	255	7	116	734	HeartRate	138	\N
-2965	yes	255	7	116	734	HeartRate	138	\N
-2966	yes	255	7	116	733	HeartRate	138	\N
-2967	yes	255	7	116	734	HeartRate	138	\N
-2968	yes	255	7	116	735	HeartRate	138	\N
-2969	yes	255	7	116	737	HeartRate	138	\N
-2970	yes	255	7	116	741	HeartRate	138	\N
-2971	yes	255	7	116	741	HeartRate	138	\N
-2972	yes	255	7	117	743	HeartRate	138	\N
-2973	yes	255	7	117	749	HeartRate	138	\N
-2974	yes	255	8	117	751	HeartRate	138	\N
-2975	yes	255	8	117	754	HeartRate	138	\N
-2976	yes	255	8	118	759	HeartRate	138	\N
-2977	yes	255	8	118	762	HeartRate	138	\N
-2978	yes	255	8	118	764	HeartRate	138	\N
-2979	yes	255	8	118	766	HeartRate	138	\N
-2980	yes	255	8	119	769	HeartRate	138	\N
-2981	yes	255	8	119	772	HeartRate	138	\N
-2982	yes	255	8	119	774	HeartRate	138	\N
-2983	yes	255	8	119	776	HeartRate	138	\N
-2984	yes	255	8	119	779	HeartRate	138	\N
-2985	yes	255	8	119	781	HeartRate	138	\N
-2986	yes	255	8	120	784	HeartRate	138	\N
-2987	yes	255	8	120	787	HeartRate	138	\N
-2988	yes	255	8	120	790	HeartRate	138	\N
-2989	yes	255	8	120	791	HeartRate	138	\N
-2990	yes	255	8	120	793	HeartRate	138	\N
-2991	yes	255	8	120	795	HeartRate	138	\N
-2992	yes	255	8	121	796	HeartRate	138	\N
-2993	yes	255	8	121	797	HeartRate	138	\N
-2994	yes	255	8	121	800	HeartRate	138	\N
-2995	yes	255	8	121	800	HeartRate	138	\N
-2996	yes	255	8	120	793	HeartRate	138	\N
-2997	yes	255	8	121	802	HeartRate	138	\N
-2998	yes	255	8	121	805	HeartRate	138	\N
-2999	yes	255	8	121	807	HeartRate	138	\N
-3000	yes	255	8	122	810	HeartRate	138	\N
-3001	yes	255	8	122	810	HeartRate	138	\N
-3002	yes	255	8	122	810	HeartRate	138	\N
-3003	yes	255	8	122	812	HeartRate	138	\N
-3004	yes	255	8	121	805	HeartRate	138	\N
-3005	yes	255	8	122	812	HeartRate	138	\N
-3006	yes	255	8	122	813	HeartRate	138	\N
-3007	yes	255	8	122	814	HeartRate	138	\N
-3008	yes	255	8	122	815	HeartRate	138	\N
-3009	yes	255	8	122	817	HeartRate	138	\N
-3010	yes	255	8	122	816	HeartRate	138	\N
-3011	yes	255	8	122	817	HeartRate	138	\N
-3012	yes	255	8	122	817	HeartRate	138	\N
-3013	yes	255	8	122	818	HeartRate	138	\N
-3014	yes	255	8	122	818	HeartRate	138	\N
-3015	yes	255	8	122	819	HeartRate	138	\N
-3016	yes	255	8	122	818	HeartRate	138	\N
-3017	yes	255	8	122	818	HeartRate	138	\N
-3018	yes	255	8	122	819	HeartRate	138	\N
-3019	yes	255	8	122	821	HeartRate	138	\N
-3020	yes	255	8	123	822	HeartRate	138	\N
-3021	yes	255	8	122	822	HeartRate	138	\N
-3022	yes	255	8	122	822	HeartRate	138	\N
-3023	yes	255	8	123	822	HeartRate	138	\N
-3024	yes	255	8	122	822	HeartRate	138	\N
-3025	yes	255	8	122	819	HeartRate	138	\N
-3026	yes	255	8	122	821	HeartRate	138	\N
-3027	yes	255	8	122	821	HeartRate	138	\N
-3028	yes	255	8	123	822	HeartRate	138	\N
-3029	yes	255	8	123	823	HeartRate	138	\N
-3030	yes	255	8	122	822	HeartRate	138	\N
-3031	yes	255	8	122	820	HeartRate	138	\N
-3032	yes	255	8	122	819	HeartRate	138	\N
-3033	yes	255	8	122	815	HeartRate	138	\N
-3034	yes	255	8	122	814	HeartRate	138	\N
-3035	yes	255	8	122	815	HeartRate	138	\N
-3036	yes	255	8	122	814	HeartRate	138	\N
-3037	yes	255	8	122	812	HeartRate	138	\N
-3038	yes	255	8	122	811	HeartRate	138	\N
-3039	yes	255	8	122	813	HeartRate	138	\N
-3040	yes	255	8	122	812	HeartRate	138	\N
-3041	yes	255	8	122	812	HeartRate	138	\N
-3042	yes	255	8	122	811	HeartRate	138	\N
-3043	yes	255	8	122	809	HeartRate	138	\N
-3044	yes	255	8	122	809	HeartRate	138	\N
-3045	yes	255	8	121	808	HeartRate	138	\N
-3046	yes	255	8	121	807	HeartRate	138	\N
-3047	yes	255	8	121	808	HeartRate	138	\N
-3048	yes	255	8	121	808	HeartRate	138	\N
-3049	yes	255	8	122	809	HeartRate	138	\N
-3050	yes	255	8	122	811	HeartRate	138	\N
-3051	yes	255	8	122	812	HeartRate	138	\N
-3052	yes	255	8	122	811	HeartRate	138	\N
-3053	yes	255	8	122	811	HeartRate	138	\N
-3054	yes	255	8	122	812	HeartRate	138	\N
-3055	yes	255	8	122	810	HeartRate	138	\N
-3056	yes	255	8	122	810	HeartRate	138	\N
-3057	yes	255	8	121	808	HeartRate	138	\N
-3058	yes	255	8	121	808	HeartRate	138	\N
-3059	yes	255	8	121	808	HeartRate	138	\N
-3060	yes	255	8	121	808	HeartRate	138	\N
-3061	yes	255	8	121	807	HeartRate	138	\N
-3062	yes	255	8	121	806	HeartRate	138	\N
-3063	yes	255	8	121	806	HeartRate	138	\N
-3064	yes	255	8	121	804	HeartRate	138	\N
-3065	yes	255	8	121	805	HeartRate	138	\N
-3066	yes	255	8	121	806	HeartRate	138	\N
-3067	yes	255	8	121	807	HeartRate	138	\N
-3068	yes	255	8	121	807	HeartRate	138	\N
-3069	yes	255	8	121	807	HeartRate	138	\N
-3070	yes	255	8	121	807	HeartRate	138	\N
-3071	yes	255	8	121	807	HeartRate	138	\N
-3072	yes	255	8	121	808	HeartRate	138	\N
-3073	yes	255	8	121	807	HeartRate	138	\N
-3074	yes	255	8	121	805	HeartRate	138	\N
-3075	yes	255	8	121	805	HeartRate	138	\N
-3076	yes	255	8	121	807	HeartRate	138	\N
-3077	yes	255	8	121	806	HeartRate	138	\N
-3078	yes	255	8	121	807	HeartRate	138	\N
-3079	yes	255	8	121	806	HeartRate	138	\N
-3080	yes	255	8	121	806	HeartRate	138	\N
-3081	yes	255	8	121	806	HeartRate	138	\N
-3082	yes	255	8	121	806	HeartRate	138	\N
-3083	yes	255	8	121	806	HeartRate	138	\N
-3084	yes	255	8	121	808	HeartRate	138	\N
-3085	yes	255	8	122	809	HeartRate	138	\N
-3086	yes	255	8	122	810	HeartRate	138	\N
-3087	yes	255	8	122	810	HeartRate	138	\N
-3088	yes	255	8	121	808	HeartRate	138	\N
-3089	yes	255	8	121	807	HeartRate	138	\N
-3090	yes	255	8	121	805	HeartRate	138	\N
-3091	yes	255	8	121	805	HeartRate	138	\N
-3092	yes	255	8	121	805	HeartRate	138	\N
-3093	yes	255	8	121	805	HeartRate	138	\N
-3094	yes	255	8	121	807	HeartRate	138	\N
-3095	yes	255	8	121	805	HeartRate	138	\N
-3096	yes	255	8	121	805	HeartRate	138	\N
-3097	yes	255	8	121	807	HeartRate	138	\N
-3098	yes	255	8	121	805	HeartRate	138	\N
-3099	yes	255	8	121	804	HeartRate	138	\N
-3100	yes	255	8	121	803	HeartRate	138	\N
-3101	yes	255	8	121	802	HeartRate	138	\N
-3102	yes	255	8	121	802	HeartRate	138	\N
-3103	yes	255	8	121	803	HeartRate	138	\N
-3104	yes	255	8	121	803	HeartRate	138	\N
-3105	yes	255	8	121	803	HeartRate	138	\N
-3106	yes	255	8	121	801	HeartRate	138	\N
-3107	yes	255	8	121	801	HeartRate	138	\N
-3108	yes	255	8	121	800	HeartRate	138	\N
-3109	yes	255	8	121	800	HeartRate	138	\N
-3110	yes	255	8	121	800	HeartRate	138	\N
-3111	yes	255	8	121	802	HeartRate	138	\N
 3112	yes	174	3	245	123	HeartRate	140	\N
 3113	yes	174	3	245	123	HeartRate	140	\N
 3114	yes	174	3	245	123	HeartRate	140	\N
@@ -3962,192 +1595,6 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 3877	yes	255	10	137	1243	HeartRate	140	\N
 3878	yes	255	10	137	1241	HeartRate	140	\N
 3879	yes	255	10	137	1240	HeartRate	140	\N
-3880	yes	144	4	189	94	HeartRate	141	\N
-3881	yes	144	4	188	94	HeartRate	141	\N
-3882	yes	144	4	188	94	HeartRate	141	\N
-3883	yes	144	4	188	94	HeartRate	141	\N
-3884	yes	144	4	187	94	HeartRate	141	\N
-3885	yes	144	4	188	94	HeartRate	141	\N
-3886	yes	143	4	187	93	HeartRate	141	\N
-3887	yes	143	4	186	93	HeartRate	141	\N
-3888	yes	143	4	186	93	HeartRate	141	\N
-3889	yes	143	4	186	93	HeartRate	141	\N
-3890	yes	143	4	186	93	HeartRate	141	\N
-3891	yes	143	4	186	93	HeartRate	141	\N
-3892	yes	143	4	185	93	HeartRate	141	\N
-3893	yes	142	4	185	92	HeartRate	141	\N
-3894	yes	142	4	185	92	HeartRate	141	\N
-3895	yes	142	4	184	92	HeartRate	141	\N
-3896	yes	142	4	184	92	HeartRate	141	\N
-3897	yes	142	4	183	92	HeartRate	141	\N
-3898	yes	141	4	183	91	HeartRate	141	\N
-3899	yes	141	4	183	91	HeartRate	141	\N
-3900	yes	141	4	182	91	HeartRate	141	\N
-3901	yes	141	4	182	91	HeartRate	141	\N
-3902	yes	141	4	182	91	HeartRate	141	\N
-3903	yes	141	4	181	91	HeartRate	141	\N
-3904	yes	140	4	181	90	HeartRate	141	\N
-3905	yes	140	4	180	90	HeartRate	141	\N
-3906	yes	140	4	180	90	HeartRate	141	\N
-3907	yes	140	4	180	90	HeartRate	141	\N
-3908	yes	140	4	179	90	HeartRate	141	\N
-3909	yes	140	4	179	90	HeartRate	141	\N
-3910	yes	139	4	179	89	HeartRate	141	\N
-3911	yes	139	4	178	89	HeartRate	141	\N
-3912	yes	139	4	178	89	HeartRate	141	\N
-3913	yes	139	4	178	89	HeartRate	141	\N
-3914	yes	139	4	178	89	HeartRate	141	\N
-3915	yes	139	4	177	89	HeartRate	141	\N
-3916	yes	138	4	177	88	HeartRate	141	\N
-3917	yes	138	4	176	88	HeartRate	141	\N
-3918	yes	138	4	176	88	HeartRate	141	\N
-3919	yes	138	4	176	88	HeartRate	141	\N
-3920	yes	138	4	176	88	HeartRate	141	\N
-3921	yes	138	4	176	88	HeartRate	141	\N
-3922	yes	138	4	176	88	HeartRate	141	\N
-3923	yes	138	4	176	88	HeartRate	141	\N
-3924	yes	138	4	175	88	HeartRate	141	\N
-3925	yes	138	4	175	88	HeartRate	141	\N
-3926	yes	138	4	175	88	HeartRate	141	\N
-3927	yes	137	4	175	87	HeartRate	141	\N
-3928	yes	137	4	175	87	HeartRate	141	\N
-3929	yes	137	4	175	87	HeartRate	141	\N
-3930	yes	137	4	175	87	HeartRate	141	\N
-3931	yes	137	4	175	87	HeartRate	141	\N
-3932	yes	137	4	175	87	HeartRate	141	\N
-3933	yes	137	4	175	87	HeartRate	141	\N
-3934	yes	137	4	175	87	HeartRate	141	\N
-3935	yes	137	4	175	87	HeartRate	141	\N
-3936	yes	137	4	175	87	HeartRate	141	\N
-3937	yes	137	4	175	87	HeartRate	141	\N
-3938	yes	137	4	174	87	HeartRate	141	\N
-3939	yes	137	4	174	87	HeartRate	141	\N
-3940	yes	137	4	174	87	HeartRate	141	\N
-3941	yes	137	4	174	87	HeartRate	141	\N
-3942	yes	137	4	174	87	HeartRate	141	\N
-3943	yes	137	4	174	87	HeartRate	141	\N
-3944	yes	137	4	174	87	HeartRate	141	\N
-3945	yes	137	4	173	87	HeartRate	141	\N
-3946	yes	137	4	173	87	HeartRate	141	\N
-3947	yes	136	4	173	86	HeartRate	141	\N
-3948	yes	136	4	173	86	HeartRate	141	\N
-3949	yes	136	4	173	86	HeartRate	141	\N
-3950	yes	136	4	173	86	HeartRate	141	\N
-3951	yes	136	4	173	86	HeartRate	141	\N
-3952	yes	136	4	173	86	HeartRate	141	\N
-3953	yes	136	4	172	86	HeartRate	141	\N
-3954	yes	136	4	172	86	HeartRate	141	\N
-3955	yes	136	4	172	86	HeartRate	141	\N
-3956	yes	136	4	172	86	HeartRate	141	\N
-3957	yes	136	4	172	86	HeartRate	141	\N
-3958	yes	136	4	172	86	HeartRate	141	\N
-3959	yes	136	4	172	86	HeartRate	141	\N
-3960	yes	136	4	172	86	HeartRate	141	\N
-3961	yes	136	4	171	86	HeartRate	141	\N
-3962	yes	136	4	171	86	HeartRate	141	\N
-3963	yes	135	4	171	85	HeartRate	141	\N
-3964	yes	135	4	170	85	HeartRate	141	\N
-3965	yes	135	4	170	85	HeartRate	141	\N
-3966	yes	135	4	170	85	HeartRate	141	\N
-3967	yes	135	4	169	85	HeartRate	141	\N
-3968	yes	135	4	169	85	HeartRate	141	\N
-3969	yes	134	4	169	84	HeartRate	141	\N
-3970	yes	134	4	168	84	HeartRate	141	\N
-3971	yes	134	4	168	84	HeartRate	141	\N
-3972	yes	134	4	168	84	HeartRate	141	\N
-3973	yes	134	4	168	84	HeartRate	141	\N
-3974	yes	134	4	168	84	HeartRate	141	\N
-3975	yes	134	4	167	84	HeartRate	141	\N
-3976	yes	134	4	167	84	HeartRate	141	\N
-3977	yes	134	4	167	84	HeartRate	141	\N
-3978	yes	133	4	167	83	HeartRate	141	\N
-3979	yes	133	4	167	83	HeartRate	141	\N
-3980	yes	133	4	166	83	HeartRate	141	\N
-3981	yes	133	4	166	83	HeartRate	141	\N
-3982	yes	134	4	167	84	HeartRate	141	\N
-3983	yes	133	4	166	83	HeartRate	141	\N
-3984	yes	133	4	166	83	HeartRate	141	\N
-3985	yes	133	4	166	83	HeartRate	141	\N
-3986	yes	133	4	166	83	HeartRate	141	\N
-3987	yes	133	4	166	83	HeartRate	141	\N
-3988	yes	133	4	166	83	HeartRate	141	\N
-3989	yes	133	4	166	83	HeartRate	141	\N
-3990	yes	133	4	166	83	HeartRate	141	\N
-3991	yes	133	4	166	83	HeartRate	141	\N
-3992	yes	133	4	165	83	HeartRate	141	\N
-3993	yes	133	4	165	83	HeartRate	141	\N
-3994	yes	133	4	165	83	HeartRate	141	\N
-3995	yes	132	4	165	82	HeartRate	141	\N
-3996	yes	132	4	165	82	HeartRate	141	\N
-3997	yes	132	4	165	82	HeartRate	141	\N
-3998	yes	132	4	165	82	HeartRate	141	\N
-3999	yes	132	4	165	82	HeartRate	141	\N
-4000	yes	132	4	165	82	HeartRate	141	\N
-4001	yes	132	4	164	82	HeartRate	141	\N
-4002	yes	132	4	164	82	HeartRate	141	\N
-4003	yes	132	4	165	82	HeartRate	141	\N
-4004	yes	132	4	164	82	HeartRate	141	\N
-4005	yes	132	4	164	82	HeartRate	141	\N
-4006	yes	132	4	165	82	HeartRate	141	\N
-4007	yes	132	4	164	82	HeartRate	141	\N
-4008	yes	132	4	164	82	HeartRate	141	\N
-4009	yes	132	4	164	82	HeartRate	141	\N
-4010	yes	132	4	164	82	HeartRate	141	\N
-4011	yes	132	4	164	82	HeartRate	141	\N
-4012	yes	132	4	164	82	HeartRate	141	\N
-4013	yes	132	4	164	82	HeartRate	141	\N
-4014	yes	132	4	163	82	HeartRate	141	\N
-4015	yes	132	4	163	82	HeartRate	141	\N
-4016	yes	132	4	163	82	HeartRate	141	\N
-4017	yes	131	4	163	81	HeartRate	141	\N
-4018	yes	131	4	163	81	HeartRate	141	\N
-4019	yes	131	4	163	81	HeartRate	141	\N
-4020	yes	131	4	163	81	HeartRate	141	\N
-4021	yes	131	4	162	81	HeartRate	141	\N
-4022	yes	131	4	162	81	HeartRate	141	\N
-4023	yes	131	4	162	81	HeartRate	141	\N
-4024	yes	131	4	162	81	HeartRate	141	\N
-4025	yes	131	4	162	81	HeartRate	141	\N
-4026	yes	131	4	162	81	HeartRate	141	\N
-4027	yes	131	4	162	81	HeartRate	141	\N
-4028	yes	131	4	162	81	HeartRate	141	\N
-4029	yes	131	4	162	81	HeartRate	141	\N
-4030	yes	131	4	162	81	HeartRate	141	\N
-4031	yes	131	4	162	81	HeartRate	141	\N
-4032	yes	131	4	162	81	HeartRate	141	\N
-4033	yes	131	4	162	81	HeartRate	141	\N
-4034	yes	131	4	162	81	HeartRate	141	\N
-4035	yes	131	4	162	81	HeartRate	141	\N
-4036	yes	131	4	162	81	HeartRate	141	\N
-4037	yes	131	4	162	81	HeartRate	141	\N
-4038	yes	131	4	161	81	HeartRate	141	\N
-4039	yes	131	4	161	81	HeartRate	141	\N
-4040	yes	131	4	161	81	HeartRate	141	\N
-4041	yes	131	4	161	81	HeartRate	141	\N
-4042	yes	130	4	161	80	HeartRate	141	\N
-4043	yes	130	4	161	80	HeartRate	141	\N
-4044	yes	130	4	161	80	HeartRate	141	\N
-4045	yes	130	4	161	80	HeartRate	141	\N
-4046	yes	130	4	161	80	HeartRate	141	\N
-4047	yes	130	4	161	80	HeartRate	141	\N
-4048	yes	130	4	161	80	HeartRate	141	\N
-4049	yes	130	4	161	80	HeartRate	141	\N
-4050	yes	130	4	161	80	HeartRate	141	\N
-4051	yes	130	4	161	80	HeartRate	141	\N
-4052	yes	130	4	161	80	HeartRate	141	\N
-4053	yes	130	4	161	80	HeartRate	141	\N
-4054	yes	130	4	161	80	HeartRate	141	\N
-4055	yes	130	4	161	80	HeartRate	141	\N
-4056	yes	130	4	161	80	HeartRate	141	\N
-4057	yes	130	4	161	80	HeartRate	141	\N
-4058	yes	130	4	160	80	HeartRate	141	\N
-4059	yes	130	4	160	80	HeartRate	141	\N
-4060	yes	130	4	160	80	HeartRate	141	\N
-4061	yes	130	4	160	80	HeartRate	141	\N
-4062	yes	130	4	160	80	HeartRate	141	\N
-4063	yes	130	4	160	80	HeartRate	141	\N
-4064	yes	130	4	160	80	HeartRate	141	\N
-4065	yes	130	4	160	80	HeartRate	141	\N
 4066	yes	255	9	125	1032	HeartRate	140	\N
 4067	yes	255	9	125	1030	HeartRate	140	\N
 4068	yes	255	9	125	1028	HeartRate	140	\N
@@ -65228,7 +62675,6 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 65613	no	0	0	0	0	HeartRate	9999	\N
 65614	no	0	0	0	0	HeartRate	9999	\N
 65615	no	0	0	0	0	HeartRate	9999	\N
-65619	yes	100	1	100	200	HeartRate	65	\N
 65620	yes	150	10	161	389	HeartRate	140	\N
 65621	no	0	0	0	0	HeartRate	9999	\N
 65622	no	0	0	0	0	HeartRate	9999	\N
@@ -67370,16 +64816,6 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 67758	no	0	0	0	0	HeartRate	9999	\N
 67759	no	0	0	0	0	HeartRate	9999	\N
 67760	no	0	0	0	0	HeartRate	9999	\N
-67761	yes	200	3	300	150	Pollution	145	time_interval
-67762	yes	200	3	300	150	Pollution	145	time_interval
-67763	yes	200	3	300	150	Pollution	145	time_interval
-67764	yes	200	3	300	150	Pollution	145	time_interval
-67765	yes	200	3	300	150	Pollution	145	time_interval
-67766	yes	200	3	300	150	Pollution	145	time_interval
-67767	yes	200	3	300	150	Pollution	145	time_interval
-67768	yes	200	3	300	150	Pollution	145	time_interval
-67769	yes	200	3	300	150	Pollution	145	time_interval
-67770	yes	200	3	300	150	Pollution	145	time_interval
 67771	yes	150	10	176	530	HeartRate	140	time_interval
 67772	no	0	0	0	0	HeartRate	9999	\N
 67773	no	0	0	0	0	HeartRate	9999	\N
@@ -67992,31 +65428,2691 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 68380	no	0	0	0	0	HeartRate	9999	\N
 68381	no	0	0	0	0	HeartRate	9999	\N
 68382	no	0	0	0	0	HeartRate	9999	\N
-68383	yes	200	3	300	150	Pollution	145	time_interval
-68384	yes	200	3	300	150	Pollution	145	time_interval
-68385	yes	200	3	300	150	Pollution	145	time_interval
-68386	yes	200	3	300	150	Pollution	145	time_interval
-68387	yes	200	3	300	150	Pollution	145	time_interval
-68388	yes	200	3	300	150	Pollution	145	time_interval
-68389	yes	200	3	300	150	Pollution	145	time_interval
-68390	yes	200	3	300	150	Pollution	145	time_interval
-68391	yes	200	3	300	150	Pollution	145	time_interval
 68392	no	0	0	0	0	Pollution	9999	rate_limited
-68393	yes	200	3	300	150	Pollution	145	time_interval
 68394	no	0	0	0	0	Pollution	9999	rate_limited
-68395	yes	200	3	300	150	Pollution	145	time_interval
-68397	yes	60	3	100	50	AirPressure	666	time_interval
-68398	yes	60	3	100	50	AirPressure	666	time_interval
-68399	yes	60	3	100	50	AirPressure	666	time_interval
-68400	yes	60	3	100	50	AirPressure	666	time_interval
-68401	yes	60	3	100	50	AirPressure	666	time_interval
-68402	yes	60	3	100	50	AirPressure	666	time_interval
+565	yes	62	3	145	290	HeartRate	140	\N
+566	yes	62	3	145	290	HeartRate	140	\N
+567	yes	60	3	143	285	HeartRate	140	\N
+568	yes	62	3	145	290	HeartRate	140	\N
+569	yes	60	3	143	285	HeartRate	140	\N
+570	yes	60	3	143	285	HeartRate	140	\N
+571	yes	62	3	145	290	HeartRate	140	\N
+572	yes	62	3	145	290	HeartRate	140	\N
+573	yes	62	3	145	290	HeartRate	140	\N
+574	yes	62	3	145	290	HeartRate	140	\N
+575	yes	62	3	145	290	HeartRate	140	\N
+576	yes	62	3	145	290	HeartRate	140	\N
+577	yes	62	3	145	290	HeartRate	140	\N
+578	yes	62	3	145	290	HeartRate	140	\N
+579	yes	62	3	145	290	HeartRate	140	\N
+580	yes	62	3	145	290	HeartRate	140	\N
+581	yes	62	3	145	290	HeartRate	140	\N
+582	yes	62	3	145	290	HeartRate	140	\N
+583	yes	62	3	145	290	HeartRate	140	\N
+584	yes	62	3	145	290	HeartRate	140	\N
+585	yes	62	3	145	290	HeartRate	140	\N
+586	yes	62	3	145	290	HeartRate	140	\N
+587	yes	62	3	145	290	HeartRate	140	\N
+588	yes	62	3	145	290	HeartRate	140	\N
+589	yes	63	3	148	295	HeartRate	140	\N
+590	yes	63	3	148	295	HeartRate	140	\N
+591	yes	63	3	148	295	HeartRate	140	\N
+592	yes	63	3	148	295	HeartRate	140	\N
+593	yes	63	3	148	295	HeartRate	140	\N
+594	yes	63	3	148	295	HeartRate	140	\N
+595	yes	63	3	148	295	HeartRate	140	\N
+596	yes	63	3	148	295	HeartRate	140	\N
+597	yes	63	3	148	295	HeartRate	140	\N
+598	yes	63	3	148	295	HeartRate	140	\N
+599	yes	63	3	148	295	HeartRate	140	\N
+600	yes	63	3	148	295	HeartRate	140	\N
+601	yes	63	3	148	295	HeartRate	140	\N
+602	yes	63	3	148	295	HeartRate	140	\N
+603	yes	63	3	148	295	HeartRate	140	\N
+604	yes	63	3	148	295	HeartRate	140	\N
+605	yes	63	3	148	295	HeartRate	140	\N
+606	yes	63	3	148	295	HeartRate	140	\N
+607	yes	63	3	148	295	HeartRate	140	\N
+608	yes	63	3	148	295	HeartRate	140	\N
+609	yes	62	3	145	290	HeartRate	140	\N
+610	yes	62	3	145	290	HeartRate	140	\N
+611	yes	62	3	145	290	HeartRate	140	\N
+612	yes	62	3	145	290	HeartRate	140	\N
+613	yes	62	3	145	290	HeartRate	140	\N
+614	yes	62	3	145	290	HeartRate	140	\N
+615	yes	60	3	143	285	HeartRate	140	\N
+616	yes	60	3	143	285	HeartRate	140	\N
+617	yes	60	3	143	285	HeartRate	140	\N
+618	yes	60	3	143	285	HeartRate	140	\N
+619	yes	58	3	140	280	HeartRate	140	\N
+620	yes	58	3	140	280	HeartRate	140	\N
+621	yes	58	3	140	280	HeartRate	140	\N
+622	yes	58	3	140	280	HeartRate	140	\N
+623	yes	58	3	140	280	HeartRate	140	\N
+624	yes	56	3	138	275	HeartRate	140	\N
+625	yes	56	3	138	275	HeartRate	140	\N
+626	yes	56	3	138	275	HeartRate	140	\N
+627	yes	56	3	138	275	HeartRate	140	\N
+628	yes	56	3	138	275	HeartRate	140	\N
+629	yes	56	3	138	275	HeartRate	140	\N
+630	yes	56	3	138	275	HeartRate	140	\N
+631	yes	56	3	138	275	HeartRate	140	\N
+632	yes	55	2	135	270	HeartRate	140	\N
+633	yes	55	2	135	270	HeartRate	140	\N
+634	yes	55	2	135	270	HeartRate	140	\N
+635	yes	55	2	135	270	HeartRate	140	\N
+636	yes	55	2	135	270	HeartRate	140	\N
+637	yes	55	2	135	270	HeartRate	140	\N
+638	yes	55	2	135	270	HeartRate	140	\N
+639	yes	55	2	135	270	HeartRate	140	\N
+640	yes	55	2	135	270	HeartRate	140	\N
+641	yes	53	2	133	265	HeartRate	140	\N
+642	yes	53	2	133	265	HeartRate	140	\N
+643	yes	53	2	133	265	HeartRate	140	\N
+644	yes	53	2	133	265	HeartRate	140	\N
+645	yes	53	2	133	265	HeartRate	140	\N
+646	yes	53	2	133	265	HeartRate	140	\N
+647	yes	53	2	133	265	HeartRate	140	\N
+648	yes	53	2	133	265	HeartRate	140	\N
+649	yes	53	2	133	265	HeartRate	140	\N
+650	yes	53	2	133	265	HeartRate	140	\N
+651	yes	53	2	133	265	HeartRate	140	\N
+652	yes	53	2	133	265	HeartRate	140	\N
+653	yes	53	2	133	265	HeartRate	140	\N
+654	yes	53	2	133	265	HeartRate	140	\N
+655	yes	53	2	133	265	HeartRate	140	\N
+656	yes	51	2	130	260	HeartRate	140	\N
+657	yes	51	2	130	260	HeartRate	140	\N
+658	yes	51	2	130	260	HeartRate	140	\N
+659	yes	51	2	130	260	HeartRate	140	\N
+660	yes	51	2	130	260	HeartRate	140	\N
+661	yes	51	2	130	260	HeartRate	140	\N
+662	yes	51	2	130	260	HeartRate	140	\N
+663	yes	51	2	130	260	HeartRate	140	\N
+664	yes	51	2	130	260	HeartRate	140	\N
+665	yes	51	2	130	260	HeartRate	140	\N
+666	yes	51	2	130	260	HeartRate	140	\N
+667	yes	51	2	130	260	HeartRate	140	\N
+668	yes	51	2	130	260	HeartRate	140	\N
+669	yes	51	2	130	260	HeartRate	140	\N
+670	yes	51	2	130	260	HeartRate	140	\N
+671	yes	51	2	130	260	HeartRate	140	\N
+672	yes	51	2	130	260	HeartRate	140	\N
+673	yes	51	2	130	260	HeartRate	140	\N
+674	yes	53	2	133	265	HeartRate	140	\N
+675	yes	53	2	133	265	HeartRate	140	\N
+676	yes	53	2	133	265	HeartRate	140	\N
+677	yes	53	2	133	265	HeartRate	140	\N
+678	yes	53	2	133	265	HeartRate	140	\N
+679	yes	53	2	133	265	HeartRate	140	\N
+680	yes	53	2	133	265	HeartRate	140	\N
+681	yes	53	2	133	265	HeartRate	140	\N
+682	yes	53	2	133	265	HeartRate	140	\N
+683	yes	53	2	133	265	HeartRate	140	\N
+684	yes	53	2	133	265	HeartRate	140	\N
+685	yes	53	2	133	265	HeartRate	140	\N
+686	yes	53	2	133	265	HeartRate	140	\N
+687	yes	53	2	133	265	HeartRate	140	\N
+688	yes	53	2	133	265	HeartRate	140	\N
+689	yes	53	2	133	265	HeartRate	140	\N
+690	yes	53	2	133	265	HeartRate	140	\N
+691	yes	53	2	133	265	HeartRate	140	\N
+692	yes	53	2	133	265	HeartRate	140	\N
+693	yes	53	2	133	265	HeartRate	140	\N
+694	yes	53	2	133	265	HeartRate	140	\N
+695	yes	53	2	133	265	HeartRate	140	\N
+696	yes	53	2	133	265	HeartRate	140	\N
+697	yes	53	2	133	265	HeartRate	140	\N
+698	yes	53	2	133	265	HeartRate	140	\N
+699	yes	53	2	133	265	HeartRate	140	\N
+700	yes	53	2	133	265	HeartRate	140	\N
+701	yes	53	2	133	265	HeartRate	140	\N
+702	yes	53	2	133	265	HeartRate	140	\N
+703	yes	53	2	133	265	HeartRate	140	\N
+704	yes	53	2	133	265	HeartRate	140	\N
+705	yes	53	2	133	265	HeartRate	140	\N
+706	yes	53	2	133	265	HeartRate	140	\N
+707	yes	53	2	133	265	HeartRate	140	\N
+708	yes	53	2	133	265	HeartRate	140	\N
+709	yes	53	2	133	265	HeartRate	140	\N
+710	yes	53	2	133	265	HeartRate	140	\N
+711	yes	53	2	133	265	HeartRate	140	\N
+712	yes	53	2	133	265	HeartRate	140	\N
+713	yes	53	2	133	265	HeartRate	140	\N
+714	yes	53	2	133	265	HeartRate	140	\N
+715	yes	53	2	133	265	HeartRate	140	\N
+716	yes	53	2	133	265	HeartRate	140	\N
+717	yes	53	2	133	265	HeartRate	140	\N
+718	yes	53	2	133	265	HeartRate	140	\N
+719	yes	53	2	133	265	HeartRate	140	\N
+720	yes	53	2	133	265	HeartRate	140	\N
+721	yes	53	2	133	265	HeartRate	140	\N
+722	yes	53	2	133	265	HeartRate	140	\N
+723	yes	53	2	133	265	HeartRate	140	\N
+724	yes	53	2	133	265	HeartRate	140	\N
+725	yes	53	2	133	265	HeartRate	140	\N
+726	yes	53	2	133	265	HeartRate	140	\N
+727	yes	53	2	133	265	HeartRate	140	\N
+728	yes	53	2	133	265	HeartRate	140	\N
+729	yes	53	2	133	265	HeartRate	140	\N
+730	yes	53	2	133	265	HeartRate	140	\N
+731	yes	53	2	133	265	HeartRate	140	\N
+732	yes	53	2	133	265	HeartRate	140	\N
+733	yes	53	2	133	265	HeartRate	140	\N
+734	yes	53	2	133	265	HeartRate	140	\N
+735	yes	53	2	133	265	HeartRate	140	\N
+736	yes	53	2	133	265	HeartRate	140	\N
+737	yes	53	2	133	265	HeartRate	140	\N
+738	yes	53	2	133	265	HeartRate	140	\N
+739	yes	53	2	133	265	HeartRate	140	\N
+740	yes	53	2	133	265	HeartRate	140	\N
+741	yes	53	2	133	265	HeartRate	140	\N
+742	yes	53	2	133	265	HeartRate	140	\N
+743	yes	53	2	133	265	HeartRate	140	\N
+744	yes	53	2	133	265	HeartRate	140	\N
+745	yes	53	2	133	265	HeartRate	140	\N
+746	yes	53	2	133	265	HeartRate	140	\N
+747	yes	53	2	133	265	HeartRate	140	\N
+748	yes	53	2	133	265	HeartRate	140	\N
+749	yes	53	2	133	265	HeartRate	140	\N
+750	yes	53	2	133	265	HeartRate	140	\N
+751	yes	53	2	133	265	HeartRate	140	\N
+752	yes	53	2	133	265	HeartRate	140	\N
+753	yes	53	2	133	265	HeartRate	140	\N
+754	yes	53	2	133	265	HeartRate	140	\N
+755	yes	53	2	133	265	HeartRate	140	\N
+756	yes	51	2	130	260	HeartRate	140	\N
+757	yes	51	2	130	260	HeartRate	140	\N
+758	yes	51	2	130	260	HeartRate	140	\N
+759	yes	51	2	130	260	HeartRate	140	\N
+760	yes	51	2	130	260	HeartRate	140	\N
+761	yes	51	2	130	260	HeartRate	140	\N
+762	yes	51	2	130	260	HeartRate	140	\N
+763	yes	51	2	130	260	HeartRate	140	\N
+764	yes	51	2	130	260	HeartRate	140	\N
+765	yes	51	2	130	260	HeartRate	140	\N
+766	yes	51	2	130	260	HeartRate	140	\N
+767	yes	51	2	130	260	HeartRate	140	\N
+768	yes	51	2	130	260	HeartRate	140	\N
+769	yes	51	2	130	260	HeartRate	140	\N
+770	yes	51	2	130	260	HeartRate	140	\N
+771	yes	51	2	130	260	HeartRate	140	\N
+772	yes	51	2	130	260	HeartRate	140	\N
+773	yes	51	2	130	260	HeartRate	140	\N
+774	yes	51	2	130	260	HeartRate	140	\N
+775	yes	51	2	130	260	HeartRate	140	\N
+776	yes	51	2	130	260	HeartRate	140	\N
+777	yes	51	2	130	260	HeartRate	140	\N
+778	yes	51	2	130	260	HeartRate	140	\N
+779	yes	51	2	130	260	HeartRate	140	\N
+780	yes	51	2	130	260	HeartRate	140	\N
+781	yes	51	2	130	260	HeartRate	140	\N
+782	yes	51	2	130	260	HeartRate	140	\N
+783	yes	51	2	130	260	HeartRate	140	\N
+784	yes	53	2	133	265	HeartRate	140	\N
+785	yes	53	2	133	265	HeartRate	140	\N
+786	yes	53	2	133	265	HeartRate	140	\N
+787	yes	53	2	133	265	HeartRate	140	\N
+788	yes	53	2	133	265	HeartRate	140	\N
+789	yes	53	2	133	265	HeartRate	140	\N
+790	yes	53	2	133	265	HeartRate	140	\N
+791	yes	53	2	133	265	HeartRate	140	\N
+792	yes	53	2	133	265	HeartRate	140	\N
+793	yes	53	2	133	265	HeartRate	140	\N
+794	yes	53	2	133	265	HeartRate	140	\N
+795	yes	53	2	133	265	HeartRate	140	\N
+796	yes	53	2	133	265	HeartRate	140	\N
+797	yes	53	2	133	265	HeartRate	140	\N
+798	yes	53	2	133	265	HeartRate	140	\N
+799	yes	53	2	133	265	HeartRate	140	\N
+800	yes	53	2	133	265	HeartRate	140	\N
+801	yes	53	2	133	265	HeartRate	140	\N
+802	yes	53	2	133	265	HeartRate	140	\N
+803	yes	53	2	133	265	HeartRate	140	\N
+804	yes	53	2	133	265	HeartRate	140	\N
+805	yes	55	2	135	270	HeartRate	140	\N
+806	yes	55	2	135	270	HeartRate	140	\N
+807	yes	55	2	135	270	HeartRate	140	\N
+808	yes	55	2	135	270	HeartRate	140	\N
+809	yes	55	2	135	270	HeartRate	140	\N
+810	yes	55	2	135	270	HeartRate	140	\N
+811	yes	55	2	135	270	HeartRate	140	\N
+812	yes	56	3	138	275	HeartRate	140	\N
+813	yes	56	3	138	275	HeartRate	140	\N
+814	yes	56	3	138	275	HeartRate	140	\N
+815	yes	56	3	138	275	HeartRate	140	\N
+816	yes	56	3	138	275	HeartRate	140	\N
+817	yes	56	3	138	275	HeartRate	140	\N
+818	yes	56	3	138	275	HeartRate	140	\N
+819	yes	56	3	138	275	HeartRate	140	\N
+820	yes	56	3	138	275	HeartRate	140	\N
+821	yes	56	3	138	275	HeartRate	140	\N
+822	yes	56	3	138	275	HeartRate	140	\N
+823	yes	56	3	138	275	HeartRate	140	\N
+824	yes	56	3	138	275	HeartRate	140	\N
+825	yes	56	3	138	275	HeartRate	140	\N
+826	yes	56	3	138	275	HeartRate	140	\N
+827	yes	56	3	138	275	HeartRate	140	\N
+828	yes	56	3	138	275	HeartRate	140	\N
+829	yes	56	3	138	275	HeartRate	140	\N
+830	yes	56	3	138	275	HeartRate	140	\N
+831	yes	58	3	140	280	HeartRate	140	\N
+832	yes	58	3	140	280	HeartRate	140	\N
+833	yes	58	3	140	280	HeartRate	140	\N
+834	yes	58	3	140	280	HeartRate	140	\N
+835	yes	58	3	140	280	HeartRate	140	\N
+836	yes	58	3	140	280	HeartRate	140	\N
+837	yes	58	3	140	280	HeartRate	140	\N
+838	yes	58	3	140	280	HeartRate	140	\N
+839	yes	58	3	140	280	HeartRate	140	\N
+840	yes	58	3	140	280	HeartRate	140	\N
+841	yes	58	3	140	280	HeartRate	140	\N
+842	yes	58	3	140	280	HeartRate	140	\N
+843	yes	58	3	140	280	HeartRate	140	\N
+844	yes	58	3	140	280	HeartRate	140	\N
+845	yes	58	3	140	280	HeartRate	140	\N
+846	yes	58	3	140	280	HeartRate	140	\N
+847	yes	58	3	140	280	HeartRate	140	\N
+848	yes	58	3	140	280	HeartRate	140	\N
+849	yes	58	3	140	280	HeartRate	140	\N
+850	yes	58	3	140	280	HeartRate	140	\N
+851	yes	58	3	140	280	HeartRate	140	\N
+852	yes	56	3	138	275	HeartRate	140	\N
+853	yes	56	3	138	275	HeartRate	140	\N
+854	yes	58	3	140	280	HeartRate	140	\N
+855	yes	58	3	140	280	HeartRate	140	\N
+856	yes	58	3	140	280	HeartRate	140	\N
+857	yes	58	3	140	280	HeartRate	140	\N
+858	yes	58	3	140	280	HeartRate	140	\N
+859	yes	58	3	140	280	HeartRate	140	\N
+860	yes	58	3	140	280	HeartRate	140	\N
+861	yes	58	3	140	280	HeartRate	140	\N
+862	yes	58	3	140	280	HeartRate	140	\N
+863	yes	58	3	140	280	HeartRate	140	\N
+864	yes	58	3	140	280	HeartRate	140	\N
+865	yes	58	3	140	280	HeartRate	140	\N
+866	yes	58	3	140	280	HeartRate	140	\N
+867	yes	58	3	140	280	HeartRate	140	\N
+868	yes	58	3	140	280	HeartRate	140	\N
+869	yes	58	3	140	280	HeartRate	140	\N
+870	yes	58	3	140	280	HeartRate	140	\N
+871	yes	58	3	140	280	HeartRate	140	\N
+872	yes	58	3	140	280	HeartRate	140	\N
+873	yes	58	3	140	280	HeartRate	140	\N
+874	yes	58	3	140	280	HeartRate	140	\N
+875	yes	58	3	140	280	HeartRate	140	\N
+876	yes	58	3	140	280	HeartRate	140	\N
+877	yes	58	3	140	280	HeartRate	140	\N
+878	yes	58	3	140	280	HeartRate	140	\N
+879	yes	58	3	140	280	HeartRate	140	\N
+880	yes	58	3	140	280	HeartRate	140	\N
+881	yes	58	3	140	280	HeartRate	140	\N
+882	yes	58	3	140	280	HeartRate	140	\N
+883	yes	58	3	140	280	HeartRate	140	\N
+884	yes	58	3	140	280	HeartRate	140	\N
+885	yes	58	3	140	280	HeartRate	140	\N
+886	yes	58	3	140	280	HeartRate	140	\N
+887	yes	58	3	140	280	HeartRate	140	\N
+888	yes	58	3	140	280	HeartRate	140	\N
+889	yes	58	3	140	280	HeartRate	140	\N
+890	yes	58	3	140	280	HeartRate	140	\N
+891	yes	58	3	140	280	HeartRate	140	\N
+892	yes	58	3	140	280	HeartRate	140	\N
+893	yes	58	3	140	280	HeartRate	140	\N
+894	yes	58	3	140	280	HeartRate	140	\N
+895	yes	58	3	140	280	HeartRate	140	\N
+896	yes	58	3	140	280	HeartRate	140	\N
+897	yes	58	3	140	280	HeartRate	140	\N
+898	yes	56	3	138	275	HeartRate	140	\N
+899	yes	56	3	138	275	HeartRate	140	\N
+900	yes	56	3	138	275	HeartRate	140	\N
+901	yes	56	3	138	275	HeartRate	140	\N
+902	yes	56	3	138	275	HeartRate	140	\N
+903	yes	56	3	138	275	HeartRate	140	\N
+904	yes	56	3	138	275	HeartRate	140	\N
+905	yes	55	2	135	270	HeartRate	140	\N
+906	yes	55	2	135	270	HeartRate	140	\N
+907	yes	55	2	135	270	HeartRate	140	\N
+908	yes	55	2	135	270	HeartRate	140	\N
+909	yes	55	2	135	270	HeartRate	140	\N
+910	yes	55	2	135	270	HeartRate	140	\N
+911	yes	53	2	133	265	HeartRate	140	\N
+912	yes	53	2	133	265	HeartRate	140	\N
+913	yes	53	2	133	265	HeartRate	140	\N
+914	yes	53	2	133	265	HeartRate	140	\N
+915	yes	53	2	133	265	HeartRate	140	\N
+916	yes	53	2	133	265	HeartRate	140	\N
+917	yes	53	2	133	265	HeartRate	140	\N
+918	yes	51	2	130	260	HeartRate	140	\N
+919	yes	51	2	130	260	HeartRate	140	\N
+920	yes	51	2	130	260	HeartRate	140	\N
+921	yes	51	2	130	260	HeartRate	140	\N
+922	yes	51	2	130	260	HeartRate	140	\N
+923	yes	51	2	130	260	HeartRate	140	\N
+924	yes	51	2	130	260	HeartRate	140	\N
+925	yes	51	2	130	260	HeartRate	140	\N
+926	yes	51	2	130	260	HeartRate	140	\N
+927	yes	51	2	130	260	HeartRate	140	\N
+928	yes	51	2	130	260	HeartRate	140	\N
+929	yes	51	2	130	260	HeartRate	140	\N
+930	yes	51	2	130	260	HeartRate	140	\N
+931	yes	51	2	130	260	HeartRate	140	\N
+932	yes	51	2	130	260	HeartRate	140	\N
+933	yes	51	2	130	260	HeartRate	140	\N
+934	yes	49	2	128	255	HeartRate	140	\N
+935	yes	49	2	128	255	HeartRate	140	\N
+936	yes	49	2	128	255	HeartRate	140	\N
+937	yes	49	2	128	255	HeartRate	140	\N
+938	yes	49	2	128	255	HeartRate	140	\N
+939	yes	49	2	128	255	HeartRate	140	\N
+940	yes	49	2	128	255	HeartRate	140	\N
+941	yes	49	2	128	255	HeartRate	140	\N
+942	yes	49	2	128	255	HeartRate	140	\N
+943	yes	49	2	128	255	HeartRate	140	\N
+944	yes	49	2	128	255	HeartRate	140	\N
+945	yes	49	2	128	255	HeartRate	140	\N
+946	yes	49	2	128	255	HeartRate	140	\N
+947	yes	49	2	128	255	HeartRate	140	\N
+948	yes	49	2	128	255	HeartRate	140	\N
+949	yes	49	2	128	255	HeartRate	140	\N
+950	yes	49	2	128	255	HeartRate	140	\N
+951	yes	49	2	128	255	HeartRate	140	\N
+952	yes	49	2	128	255	HeartRate	140	\N
+953	yes	49	2	128	255	HeartRate	140	\N
+954	yes	51	2	130	260	HeartRate	140	\N
+955	yes	51	2	130	260	HeartRate	140	\N
+956	yes	51	2	130	260	HeartRate	140	\N
+957	yes	51	2	130	260	HeartRate	140	\N
+958	yes	51	2	130	260	HeartRate	140	\N
+959	yes	51	2	130	260	HeartRate	140	\N
+960	yes	51	2	130	260	HeartRate	140	\N
+961	yes	51	2	130	260	HeartRate	140	\N
+962	yes	51	2	130	260	HeartRate	140	\N
+963	yes	51	2	130	260	HeartRate	140	\N
+964	yes	51	2	130	260	HeartRate	140	\N
+965	yes	51	2	130	260	HeartRate	140	\N
+966	yes	51	2	130	260	HeartRate	140	\N
+967	yes	51	2	130	260	HeartRate	140	\N
+968	yes	51	2	130	260	HeartRate	140	\N
+969	yes	51	2	130	260	HeartRate	140	\N
+970	yes	51	2	130	260	HeartRate	140	\N
+971	yes	51	2	130	260	HeartRate	140	\N
+972	yes	51	2	130	260	HeartRate	140	\N
+973	yes	51	2	130	260	HeartRate	140	\N
+974	yes	51	2	130	260	HeartRate	140	\N
+975	yes	51	2	130	260	HeartRate	140	\N
+976	yes	51	2	130	260	HeartRate	140	\N
+977	yes	51	2	130	260	HeartRate	140	\N
+978	yes	51	2	130	260	HeartRate	140	\N
+979	yes	51	2	130	260	HeartRate	140	\N
+980	yes	51	2	130	260	HeartRate	140	\N
+981	yes	51	2	130	260	HeartRate	140	\N
+982	yes	51	2	130	260	HeartRate	140	\N
+983	yes	51	2	130	260	HeartRate	140	\N
+984	yes	51	2	130	260	HeartRate	140	\N
+985	yes	51	2	130	260	HeartRate	140	\N
+986	yes	51	2	130	260	HeartRate	140	\N
+987	yes	51	2	130	260	HeartRate	140	\N
+988	yes	51	2	130	260	HeartRate	140	\N
+989	yes	51	2	130	260	HeartRate	140	\N
+990	yes	51	2	130	260	HeartRate	140	\N
+991	yes	53	2	133	265	HeartRate	140	\N
+992	yes	53	2	133	265	HeartRate	140	\N
+993	yes	53	2	133	265	HeartRate	140	\N
+994	yes	53	2	133	265	HeartRate	140	\N
+995	yes	55	2	135	270	HeartRate	140	\N
+996	yes	55	2	135	270	HeartRate	140	\N
+997	yes	55	2	135	270	HeartRate	140	\N
+998	yes	55	2	135	270	HeartRate	140	\N
+999	yes	53	2	133	265	HeartRate	140	\N
+1000	yes	55	2	135	270	HeartRate	140	\N
+1001	yes	56	3	138	275	HeartRate	140	\N
+1002	yes	56	3	138	275	HeartRate	140	\N
+1003	yes	56	3	138	275	HeartRate	140	\N
+1004	yes	58	3	140	280	HeartRate	140	\N
+1005	yes	58	3	140	280	HeartRate	140	\N
+1006	yes	58	3	140	280	HeartRate	140	\N
+1007	yes	60	3	143	285	HeartRate	140	\N
+1008	yes	60	3	143	285	HeartRate	140	\N
+1009	yes	60	3	143	285	HeartRate	140	\N
+1010	yes	62	3	145	290	HeartRate	140	\N
+1011	yes	62	3	145	290	HeartRate	140	\N
+1012	yes	62	3	145	290	HeartRate	140	\N
+1013	yes	62	3	145	290	HeartRate	140	\N
+1014	yes	62	3	145	290	HeartRate	140	\N
+1015	yes	63	3	148	295	HeartRate	140	\N
+1016	yes	63	3	148	295	HeartRate	140	\N
+1017	yes	63	3	148	295	HeartRate	140	\N
+1018	yes	65	3	150	300	HeartRate	140	\N
+1019	yes	65	3	150	300	HeartRate	140	\N
+1020	yes	65	3	150	300	HeartRate	140	\N
+1021	yes	65	3	150	300	HeartRate	140	\N
+1022	yes	65	3	150	300	HeartRate	140	\N
+1023	yes	65	3	150	300	HeartRate	140	\N
+1024	yes	65	3	150	300	HeartRate	140	\N
+1025	yes	65	3	150	300	HeartRate	140	\N
+1026	yes	67	3	153	305	HeartRate	140	\N
+1027	yes	67	3	153	305	HeartRate	140	\N
+1028	yes	67	3	153	305	HeartRate	140	\N
+1029	yes	67	3	153	305	HeartRate	140	\N
+1030	yes	67	3	153	305	HeartRate	140	\N
+1031	yes	67	3	153	305	HeartRate	140	\N
+1032	yes	67	3	153	305	HeartRate	140	\N
+1033	yes	67	3	153	305	HeartRate	140	\N
+1034	yes	67	3	153	305	HeartRate	140	\N
+1035	yes	67	3	153	305	HeartRate	140	\N
+1036	yes	67	3	153	305	HeartRate	140	\N
+1037	yes	69	3	155	310	HeartRate	140	\N
+1038	yes	67	3	153	305	HeartRate	140	\N
+1039	yes	67	3	153	305	HeartRate	140	\N
+1040	yes	67	3	153	305	HeartRate	140	\N
+1041	yes	67	3	153	305	HeartRate	140	\N
+1042	yes	67	3	153	305	HeartRate	140	\N
+1043	yes	67	3	153	305	HeartRate	140	\N
+1044	yes	67	3	153	305	HeartRate	140	\N
+1045	yes	67	3	153	305	HeartRate	140	\N
+1046	yes	67	3	153	305	HeartRate	140	\N
+1047	yes	67	3	153	305	HeartRate	140	\N
+1048	yes	67	3	153	305	HeartRate	140	\N
+1049	yes	67	3	153	305	HeartRate	140	\N
+1050	yes	65	3	150	300	HeartRate	140	\N
+1051	yes	65	3	150	300	HeartRate	140	\N
+1052	yes	65	3	150	300	HeartRate	140	\N
+1053	yes	65	3	150	300	HeartRate	140	\N
+1054	yes	65	3	150	300	HeartRate	140	\N
+1055	yes	65	3	150	300	HeartRate	140	\N
+1056	yes	65	3	150	300	HeartRate	140	\N
+1057	yes	65	3	150	300	HeartRate	140	\N
+1058	yes	65	3	150	300	HeartRate	140	\N
+1059	yes	65	3	150	300	HeartRate	140	\N
+1060	yes	65	3	150	300	HeartRate	140	\N
+1061	yes	65	3	150	300	HeartRate	140	\N
+1062	yes	63	3	148	295	HeartRate	140	\N
+1063	yes	63	3	148	295	HeartRate	140	\N
+1064	yes	63	3	148	295	HeartRate	140	\N
+1065	yes	63	3	148	295	HeartRate	140	\N
+1066	yes	63	3	148	295	HeartRate	140	\N
+1067	yes	63	3	148	295	HeartRate	140	\N
+1068	yes	63	3	148	295	HeartRate	140	\N
+1069	yes	63	3	148	295	HeartRate	140	\N
+1070	yes	63	3	148	295	HeartRate	140	\N
+1071	yes	63	3	148	295	HeartRate	140	\N
+1072	yes	63	3	148	295	HeartRate	140	\N
+1073	yes	63	3	148	295	HeartRate	140	\N
+1074	yes	63	3	148	295	HeartRate	140	\N
+1075	yes	63	3	148	295	HeartRate	140	\N
+1076	yes	63	3	148	295	HeartRate	140	\N
+1077	yes	63	3	148	295	HeartRate	140	\N
+1078	yes	65	3	150	300	HeartRate	140	\N
+1079	yes	65	3	150	300	HeartRate	140	\N
+1080	yes	65	3	150	300	HeartRate	140	\N
+1081	yes	65	3	150	300	HeartRate	140	\N
+1082	yes	65	3	150	300	HeartRate	140	\N
+1083	yes	65	3	150	300	HeartRate	140	\N
+1084	yes	65	3	150	300	HeartRate	140	\N
+1085	yes	65	3	150	300	HeartRate	140	\N
+1086	yes	65	3	150	300	HeartRate	140	\N
+1087	yes	65	3	150	300	HeartRate	140	\N
+1088	yes	65	3	150	300	HeartRate	140	\N
+1089	yes	65	3	150	300	HeartRate	140	\N
+1090	yes	67	3	153	305	HeartRate	140	\N
+1091	yes	65	3	150	300	HeartRate	140	\N
+1092	yes	67	3	153	305	HeartRate	140	\N
+1093	yes	67	3	153	305	HeartRate	140	\N
+1094	yes	67	3	153	305	HeartRate	140	\N
+1095	yes	67	3	153	305	HeartRate	140	\N
+1096	yes	67	3	153	305	HeartRate	140	\N
+1097	yes	67	3	153	305	HeartRate	140	\N
+1098	yes	67	3	153	305	HeartRate	140	\N
+1099	yes	67	3	153	305	HeartRate	140	\N
+1100	yes	67	3	153	305	HeartRate	140	\N
+1101	yes	67	3	153	305	HeartRate	140	\N
+1102	yes	67	3	153	305	HeartRate	140	\N
+1103	yes	67	3	153	305	HeartRate	140	\N
+1104	yes	67	3	153	305	HeartRate	140	\N
+1105	yes	67	3	153	305	HeartRate	140	\N
+1106	yes	65	3	150	300	HeartRate	140	\N
+1107	yes	65	3	150	300	HeartRate	140	\N
+1108	yes	65	3	150	300	HeartRate	140	\N
+1109	yes	65	3	150	300	HeartRate	140	\N
+1110	yes	65	3	150	300	HeartRate	140	\N
+1111	yes	65	3	150	300	HeartRate	140	\N
+1112	yes	65	3	150	300	HeartRate	140	\N
+1113	yes	63	3	148	295	HeartRate	140	\N
+1114	yes	63	3	148	295	HeartRate	140	\N
+1115	yes	63	3	148	295	HeartRate	140	\N
+1116	yes	62	3	145	290	HeartRate	140	\N
+1117	yes	62	3	145	290	HeartRate	140	\N
+1118	yes	62	3	145	290	HeartRate	140	\N
+1119	yes	62	3	145	290	HeartRate	140	\N
+1120	yes	60	3	143	285	HeartRate	140	\N
+1121	yes	60	3	143	285	HeartRate	140	\N
+1122	yes	60	3	143	285	HeartRate	140	\N
+1123	yes	58	3	140	280	HeartRate	140	\N
+1124	yes	58	3	140	280	HeartRate	140	\N
+1125	yes	58	3	140	280	HeartRate	140	\N
+1126	yes	58	3	140	280	HeartRate	140	\N
+1127	yes	56	3	138	275	HeartRate	140	\N
+1128	yes	56	3	138	275	HeartRate	140	\N
+1129	yes	56	3	138	275	HeartRate	140	\N
+1130	yes	56	3	138	275	HeartRate	140	\N
+1131	yes	55	2	135	270	HeartRate	140	\N
+1132	yes	55	2	135	270	HeartRate	140	\N
+1133	yes	55	2	135	270	HeartRate	140	\N
+1134	yes	55	2	135	270	HeartRate	140	\N
+1135	yes	55	2	135	270	HeartRate	140	\N
+1136	yes	55	2	135	270	HeartRate	140	\N
+1137	yes	53	2	133	265	HeartRate	140	\N
+1138	yes	53	2	133	265	HeartRate	140	\N
+1139	yes	53	2	133	265	HeartRate	140	\N
+1140	yes	53	2	133	265	HeartRate	140	\N
+1141	yes	51	2	130	260	HeartRate	140	\N
+1142	yes	51	2	130	260	HeartRate	140	\N
+1143	yes	51	2	130	260	HeartRate	140	\N
+1144	yes	51	2	130	260	HeartRate	140	\N
+1145	yes	49	2	128	255	HeartRate	140	\N
+1146	yes	49	2	128	255	HeartRate	140	\N
+1147	yes	49	2	128	255	HeartRate	140	\N
+1148	yes	49	2	128	255	HeartRate	140	\N
+1149	yes	49	2	128	255	HeartRate	140	\N
+1150	yes	49	2	128	255	HeartRate	140	\N
+1151	yes	48	2	125	250	HeartRate	140	\N
+1152	yes	48	2	125	250	HeartRate	140	\N
+1153	yes	48	2	125	250	HeartRate	140	\N
+1154	yes	48	2	125	250	HeartRate	140	\N
+1155	yes	48	2	125	250	HeartRate	140	\N
+1156	yes	48	2	125	250	HeartRate	140	\N
+1157	yes	46	2	123	245	HeartRate	140	\N
+1158	yes	46	2	123	245	HeartRate	140	\N
+1159	yes	46	2	123	245	HeartRate	140	\N
+1160	yes	46	2	123	245	HeartRate	140	\N
+1161	yes	46	2	123	245	HeartRate	140	\N
+1162	yes	46	2	123	245	HeartRate	140	\N
+1163	yes	46	2	123	245	HeartRate	140	\N
+1164	yes	46	2	123	245	HeartRate	140	\N
+1165	yes	46	2	123	245	HeartRate	140	\N
+1166	yes	46	2	123	245	HeartRate	140	\N
+1167	yes	46	2	123	245	HeartRate	140	\N
+1168	yes	46	2	123	245	HeartRate	140	\N
+1169	yes	46	2	123	245	HeartRate	140	\N
+1170	yes	46	2	123	245	HeartRate	140	\N
+1171	yes	46	2	123	245	HeartRate	140	\N
+1172	yes	46	2	123	245	HeartRate	140	\N
+1173	yes	46	2	123	245	HeartRate	140	\N
+1174	yes	46	2	123	245	HeartRate	140	\N
+1175	yes	46	2	123	245	HeartRate	140	\N
+1176	yes	46	2	123	245	HeartRate	140	\N
+1177	yes	46	2	123	245	HeartRate	140	\N
+1178	yes	46	2	123	245	HeartRate	140	\N
+1179	yes	46	2	123	245	HeartRate	140	\N
+1180	yes	46	2	123	245	HeartRate	140	\N
+1181	yes	46	2	123	245	HeartRate	140	\N
+1182	yes	46	2	123	245	HeartRate	140	\N
+1183	yes	46	2	123	245	HeartRate	140	\N
+1184	yes	46	2	123	245	HeartRate	140	\N
+1185	yes	46	2	123	245	HeartRate	140	\N
+1186	yes	46	2	123	245	HeartRate	140	\N
+1187	yes	46	2	123	245	HeartRate	140	\N
+1188	yes	46	2	123	245	HeartRate	140	\N
+1189	yes	46	2	123	245	HeartRate	140	\N
+1190	yes	46	2	123	245	HeartRate	140	\N
+1191	yes	46	2	123	245	HeartRate	140	\N
+1192	yes	46	2	123	245	HeartRate	140	\N
+1193	yes	46	2	123	245	HeartRate	140	\N
+1194	yes	46	2	123	245	HeartRate	140	\N
+1195	yes	46	2	123	245	HeartRate	140	\N
+1196	yes	46	2	123	245	HeartRate	140	\N
+1197	yes	46	2	123	245	HeartRate	140	\N
+1198	yes	46	2	123	245	HeartRate	140	\N
+1199	yes	46	2	123	245	HeartRate	140	\N
+1200	yes	46	2	123	245	HeartRate	140	\N
+1201	yes	46	2	123	245	HeartRate	140	\N
+1202	yes	46	2	123	245	HeartRate	140	\N
+1203	yes	46	2	123	245	HeartRate	140	\N
+1204	yes	46	2	123	245	HeartRate	140	\N
+1205	yes	46	2	123	245	HeartRate	140	\N
+1206	yes	46	2	123	245	HeartRate	140	\N
+1207	yes	46	2	123	245	HeartRate	140	\N
+1208	yes	46	2	123	245	HeartRate	140	\N
+1209	yes	46	2	123	245	HeartRate	140	\N
+1210	yes	46	2	123	245	HeartRate	140	\N
+1211	yes	46	2	123	245	HeartRate	140	\N
+1212	yes	46	2	123	245	HeartRate	140	\N
+1213	yes	46	2	123	245	HeartRate	140	\N
+1214	yes	48	2	125	250	HeartRate	140	\N
+1215	yes	48	2	125	250	HeartRate	140	\N
+1216	yes	48	2	125	250	HeartRate	140	\N
+1217	yes	48	2	125	250	HeartRate	140	\N
+1218	yes	48	2	125	250	HeartRate	140	\N
+1219	yes	48	2	125	250	HeartRate	140	\N
+1220	yes	48	2	125	250	HeartRate	140	\N
+1221	yes	48	2	125	250	HeartRate	140	\N
+1222	yes	48	2	125	250	HeartRate	140	\N
+1223	yes	48	2	125	250	HeartRate	140	\N
+1224	yes	48	2	125	250	HeartRate	140	\N
+1225	yes	48	2	125	250	HeartRate	140	\N
+1226	yes	48	2	125	250	HeartRate	140	\N
+1227	yes	48	2	125	250	HeartRate	140	\N
+1228	yes	48	2	125	250	HeartRate	140	\N
+1229	yes	48	2	125	250	HeartRate	140	\N
+1230	yes	48	2	125	250	HeartRate	140	\N
+1231	yes	48	2	125	250	HeartRate	140	\N
+1232	yes	48	2	125	250	HeartRate	140	\N
+1233	yes	48	2	125	250	HeartRate	140	\N
+1234	yes	48	2	125	250	HeartRate	140	\N
+1235	yes	48	2	125	250	HeartRate	140	\N
+1236	yes	48	2	125	250	HeartRate	140	\N
+1237	yes	48	2	125	250	HeartRate	140	\N
+1238	yes	48	2	125	250	HeartRate	140	\N
+1239	yes	48	2	125	250	HeartRate	140	\N
+1240	yes	48	2	125	250	HeartRate	140	\N
+1241	yes	48	2	125	250	HeartRate	140	\N
+1242	yes	48	2	125	250	HeartRate	140	\N
+1243	yes	48	2	125	250	HeartRate	140	\N
+1244	yes	48	2	125	250	HeartRate	140	\N
+1245	yes	48	2	125	250	HeartRate	140	\N
+1246	yes	48	2	125	250	HeartRate	140	\N
+1247	yes	48	2	125	250	HeartRate	140	\N
+1248	yes	48	2	125	250	HeartRate	140	\N
+1249	yes	48	2	125	250	HeartRate	140	\N
+1250	yes	48	2	125	250	HeartRate	140	\N
+1251	yes	48	2	125	250	HeartRate	140	\N
+1252	yes	48	2	125	250	HeartRate	140	\N
+1253	yes	48	2	125	250	HeartRate	140	\N
+1254	yes	48	2	125	250	HeartRate	140	\N
+1255	yes	48	2	125	250	HeartRate	140	\N
+1256	yes	48	2	125	250	HeartRate	140	\N
+1257	yes	48	2	125	250	HeartRate	140	\N
+1258	yes	48	2	125	250	HeartRate	140	\N
+1259	yes	48	2	125	250	HeartRate	140	\N
+1260	yes	48	2	125	250	HeartRate	140	\N
+1261	yes	48	2	125	250	HeartRate	140	\N
+1262	yes	48	2	125	250	HeartRate	140	\N
+1263	yes	48	2	125	250	HeartRate	140	\N
+1264	yes	48	2	125	250	HeartRate	140	\N
+1265	yes	48	2	125	250	HeartRate	140	\N
+1266	yes	48	2	125	250	HeartRate	140	\N
+1267	yes	48	2	125	250	HeartRate	140	\N
+1268	yes	48	2	125	250	HeartRate	140	\N
+1269	yes	48	2	125	250	HeartRate	140	\N
+1270	yes	48	2	125	250	HeartRate	140	\N
+1271	yes	48	2	125	250	HeartRate	140	\N
+1272	yes	48	2	125	250	HeartRate	140	\N
+1273	yes	48	2	125	250	HeartRate	140	\N
+1274	yes	48	2	125	250	HeartRate	140	\N
+1275	yes	48	2	125	250	HeartRate	140	\N
+1276	yes	48	2	125	250	HeartRate	140	\N
+1277	yes	48	2	125	250	HeartRate	140	\N
+1278	yes	48	2	125	250	HeartRate	140	\N
+1279	yes	48	2	125	250	HeartRate	140	\N
+1280	yes	48	2	125	250	HeartRate	140	\N
+1281	yes	48	2	125	250	HeartRate	140	\N
+1282	yes	48	2	125	250	HeartRate	140	\N
+1283	yes	48	2	125	250	HeartRate	140	\N
+1284	yes	48	2	125	250	HeartRate	140	\N
+1285	yes	48	2	125	250	HeartRate	140	\N
+1286	yes	48	2	125	250	HeartRate	140	\N
+1287	yes	46	2	123	245	HeartRate	140	\N
+1288	yes	46	2	123	245	HeartRate	140	\N
+1289	yes	46	2	123	245	HeartRate	140	\N
+1290	yes	46	2	123	245	HeartRate	140	\N
+1291	yes	46	2	123	245	HeartRate	140	\N
+1292	yes	46	2	123	245	HeartRate	140	\N
+1293	yes	46	2	123	245	HeartRate	140	\N
+1294	yes	46	2	123	245	HeartRate	140	\N
+1295	yes	46	2	123	245	HeartRate	140	\N
+1296	yes	46	2	123	245	HeartRate	140	\N
+1297	yes	46	2	123	245	HeartRate	140	\N
+1298	yes	46	2	123	245	HeartRate	140	\N
+1299	yes	46	2	123	245	HeartRate	140	\N
+1300	yes	44	2	120	240	HeartRate	140	\N
+1301	yes	44	2	120	240	HeartRate	140	\N
+1302	yes	44	2	120	240	HeartRate	140	\N
+1303	yes	44	2	120	240	HeartRate	140	\N
+1304	yes	44	2	120	240	HeartRate	140	\N
+1305	yes	44	2	120	240	HeartRate	140	\N
+1306	yes	44	2	120	240	HeartRate	140	\N
+1307	yes	46	2	123	245	HeartRate	140	\N
+1308	yes	44	2	120	240	HeartRate	140	\N
+1309	yes	44	2	120	240	HeartRate	140	\N
+1310	yes	44	2	120	240	HeartRate	140	\N
+1311	yes	44	2	120	240	HeartRate	140	\N
+1312	yes	44	2	120	240	HeartRate	140	\N
+1313	yes	44	2	120	240	HeartRate	140	\N
+1314	yes	44	2	120	240	HeartRate	140	\N
+1315	yes	44	2	120	240	HeartRate	140	\N
+1316	yes	44	2	120	240	HeartRate	140	\N
+1317	yes	44	2	120	240	HeartRate	140	\N
+1318	yes	42	2	118	235	HeartRate	140	\N
+1319	yes	42	2	118	235	HeartRate	140	\N
+1320	yes	42	2	118	235	HeartRate	140	\N
+1321	yes	42	2	118	235	HeartRate	140	\N
+1322	yes	42	2	118	235	HeartRate	140	\N
+1323	yes	42	2	118	235	HeartRate	140	\N
+1324	yes	42	2	118	235	HeartRate	140	\N
+1325	yes	42	2	118	235	HeartRate	140	\N
+1326	yes	42	2	118	235	HeartRate	140	\N
+1327	yes	42	2	118	235	HeartRate	140	\N
+1328	yes	42	2	118	235	HeartRate	140	\N
+1329	yes	42	2	118	235	HeartRate	140	\N
+1330	yes	42	2	118	235	HeartRate	140	\N
+1331	yes	42	2	118	235	HeartRate	140	\N
+1332	yes	42	2	118	235	HeartRate	140	\N
+1333	yes	41	2	115	230	HeartRate	140	\N
+1334	yes	41	2	115	230	HeartRate	140	\N
+1335	yes	41	2	115	230	HeartRate	140	\N
+1336	yes	41	2	115	230	HeartRate	140	\N
+1337	yes	41	2	115	230	HeartRate	140	\N
+1338	yes	41	2	115	230	HeartRate	140	\N
+1339	yes	41	2	115	230	HeartRate	140	\N
+1340	yes	39	2	113	225	HeartRate	140	\N
+1341	yes	39	2	113	225	HeartRate	140	\N
+1342	yes	39	2	113	225	HeartRate	140	\N
+1343	yes	39	2	113	225	HeartRate	140	\N
+1344	yes	39	2	113	225	HeartRate	140	\N
+1345	yes	39	2	113	225	HeartRate	140	\N
+1346	yes	39	2	113	225	HeartRate	140	\N
+1347	yes	39	2	113	225	HeartRate	140	\N
+1348	yes	39	2	113	225	HeartRate	140	\N
+1349	yes	39	2	113	225	HeartRate	140	\N
+1350	yes	39	2	113	225	HeartRate	140	\N
+1351	yes	39	2	113	225	HeartRate	140	\N
+1352	yes	39	2	113	225	HeartRate	140	\N
+1353	yes	39	2	113	225	HeartRate	140	\N
+1354	yes	39	2	113	225	HeartRate	140	\N
+1355	yes	39	2	113	225	HeartRate	140	\N
+1356	yes	39	2	113	225	HeartRate	140	\N
+1357	yes	39	2	113	225	HeartRate	140	\N
+1358	yes	39	2	113	225	HeartRate	140	\N
+1359	yes	39	2	113	225	HeartRate	140	\N
+1360	yes	39	2	113	225	HeartRate	140	\N
+1361	yes	39	2	113	225	HeartRate	140	\N
+1362	yes	39	2	113	225	HeartRate	140	\N
+1363	yes	39	2	113	225	HeartRate	140	\N
+1364	yes	39	2	113	225	HeartRate	140	\N
+1365	yes	39	2	113	225	HeartRate	140	\N
+1366	yes	39	2	113	225	HeartRate	140	\N
+1367	yes	39	2	113	225	HeartRate	140	\N
+1368	yes	39	2	113	225	HeartRate	140	\N
+1369	yes	39	2	113	225	HeartRate	140	\N
+1370	yes	39	2	113	225	HeartRate	140	\N
+1371	yes	41	2	115	230	HeartRate	140	\N
+1372	yes	41	2	115	230	HeartRate	140	\N
+1373	yes	41	2	115	230	HeartRate	140	\N
+1374	yes	41	2	115	230	HeartRate	140	\N
+1375	yes	41	2	115	230	HeartRate	140	\N
+1376	yes	41	2	115	230	HeartRate	140	\N
+1377	yes	41	2	115	230	HeartRate	140	\N
+1378	yes	41	2	115	230	HeartRate	140	\N
+1379	yes	41	2	115	230	HeartRate	140	\N
+1380	yes	41	2	115	230	HeartRate	140	\N
+1381	yes	41	2	115	230	HeartRate	140	\N
+1382	yes	41	2	115	230	HeartRate	140	\N
+1383	yes	41	2	115	230	HeartRate	140	\N
+1384	yes	41	2	115	230	HeartRate	140	\N
+1385	yes	42	2	118	235	HeartRate	140	\N
+1386	yes	42	2	118	235	HeartRate	140	\N
+1387	yes	42	2	118	235	HeartRate	140	\N
+1388	yes	42	2	118	235	HeartRate	140	\N
+1389	yes	42	2	118	235	HeartRate	140	\N
+1390	yes	42	2	118	235	HeartRate	140	\N
+1391	yes	42	2	118	235	HeartRate	140	\N
+1392	yes	44	2	120	240	HeartRate	140	\N
+1393	yes	44	2	120	240	HeartRate	140	\N
+1394	yes	44	2	120	240	HeartRate	140	\N
+1395	yes	44	2	120	240	HeartRate	140	\N
+1396	yes	44	2	120	240	HeartRate	140	\N
+1397	yes	44	2	120	240	HeartRate	140	\N
+1398	yes	44	2	120	240	HeartRate	140	\N
+1399	yes	46	2	123	245	HeartRate	140	\N
+1400	yes	46	2	123	245	HeartRate	140	\N
+1401	yes	46	2	123	245	HeartRate	140	\N
+1402	yes	48	2	125	250	HeartRate	140	\N
+1403	yes	48	2	125	250	HeartRate	140	\N
+1404	yes	48	2	125	250	HeartRate	140	\N
+1405	yes	48	2	125	250	HeartRate	140	\N
+1406	yes	48	2	125	250	HeartRate	140	\N
+1407	yes	48	2	125	250	HeartRate	140	\N
+1408	yes	49	2	128	255	HeartRate	140	\N
+1409	yes	49	2	128	255	HeartRate	140	\N
+1410	yes	49	2	128	255	HeartRate	140	\N
+1411	yes	49	2	128	255	HeartRate	140	\N
+1412	yes	49	2	128	255	HeartRate	140	\N
+1413	yes	49	2	128	255	HeartRate	140	\N
+1414	yes	49	2	128	255	HeartRate	140	\N
+1415	yes	49	2	128	255	HeartRate	140	\N
+1416	yes	49	2	128	255	HeartRate	140	\N
+1417	yes	49	2	128	255	HeartRate	140	\N
+1418	yes	49	2	128	255	HeartRate	140	\N
+1419	yes	49	2	128	255	HeartRate	140	\N
+1420	yes	49	2	128	255	HeartRate	140	\N
+1421	yes	51	2	130	260	HeartRate	140	\N
+1422	yes	51	2	130	260	HeartRate	140	\N
+1423	yes	51	2	130	260	HeartRate	140	\N
+1424	yes	51	2	130	260	HeartRate	140	\N
+1425	yes	51	2	130	260	HeartRate	140	\N
+1426	yes	51	2	130	260	HeartRate	140	\N
+1427	yes	51	2	130	260	HeartRate	140	\N
+1428	yes	53	2	133	265	HeartRate	140	\N
+1429	yes	51	2	130	260	HeartRate	140	\N
+1430	yes	53	2	133	265	HeartRate	140	\N
+1431	yes	53	2	133	265	HeartRate	140	\N
+1432	yes	53	2	133	265	HeartRate	140	\N
+1433	yes	53	2	133	265	HeartRate	140	\N
+1434	yes	53	2	133	265	HeartRate	140	\N
+1435	yes	53	2	133	265	HeartRate	140	\N
+1436	yes	53	2	133	265	HeartRate	140	\N
+1437	yes	53	2	133	265	HeartRate	140	\N
+1438	yes	53	2	133	265	HeartRate	140	\N
+1439	yes	53	2	133	265	HeartRate	140	\N
+1440	yes	53	2	133	265	HeartRate	140	\N
+1441	yes	55	2	135	270	HeartRate	140	\N
+1442	yes	55	2	135	270	HeartRate	140	\N
+1443	yes	55	2	135	270	HeartRate	140	\N
+1444	yes	55	2	135	270	HeartRate	140	\N
+1445	yes	55	2	135	270	HeartRate	140	\N
+1446	yes	55	2	135	270	HeartRate	140	\N
+1447	yes	55	2	135	270	HeartRate	140	\N
+1448	yes	55	2	135	270	HeartRate	140	\N
+1449	yes	55	2	135	270	HeartRate	140	\N
+1450	yes	56	3	138	275	HeartRate	140	\N
+1451	yes	56	3	138	275	HeartRate	140	\N
+1452	yes	56	3	138	275	HeartRate	140	\N
+1453	yes	56	3	138	275	HeartRate	140	\N
+1454	yes	56	3	138	275	HeartRate	140	\N
+1455	yes	56	3	138	275	HeartRate	140	\N
+1456	yes	56	3	138	275	HeartRate	140	\N
+1457	yes	56	3	138	275	HeartRate	140	\N
+1458	yes	56	3	138	275	HeartRate	140	\N
+1459	yes	58	3	140	280	HeartRate	140	\N
+1460	yes	58	3	140	280	HeartRate	140	\N
+1461	yes	58	3	140	280	HeartRate	140	\N
+1462	yes	58	3	140	280	HeartRate	140	\N
+1463	yes	58	3	140	280	HeartRate	140	\N
+1464	yes	58	3	140	280	HeartRate	140	\N
+1465	yes	58	3	140	280	HeartRate	140	\N
+1466	yes	58	3	140	280	HeartRate	140	\N
+1467	yes	58	3	140	280	HeartRate	140	\N
+1468	yes	60	3	143	285	HeartRate	140	\N
+1469	yes	60	3	143	285	HeartRate	140	\N
+1470	yes	60	3	143	285	HeartRate	140	\N
+1471	yes	60	3	143	285	HeartRate	140	\N
+1472	yes	60	3	143	285	HeartRate	140	\N
+1473	yes	60	3	143	285	HeartRate	140	\N
+1474	yes	60	3	143	285	HeartRate	140	\N
+1475	yes	60	3	143	285	HeartRate	140	\N
+1476	yes	60	3	143	285	HeartRate	140	\N
+1477	yes	62	3	145	290	HeartRate	140	\N
+1478	yes	62	3	145	290	HeartRate	140	\N
+1479	yes	62	3	145	290	HeartRate	140	\N
+1480	yes	62	3	145	290	HeartRate	140	\N
+1481	yes	62	3	145	290	HeartRate	140	\N
+1482	yes	62	3	145	290	HeartRate	140	\N
+1483	yes	62	3	145	290	HeartRate	140	\N
+1484	yes	62	3	145	290	HeartRate	140	\N
+1485	yes	62	3	145	290	HeartRate	140	\N
+1486	yes	63	3	148	295	HeartRate	140	\N
+1487	yes	63	3	148	295	HeartRate	140	\N
+1488	yes	63	3	148	295	HeartRate	140	\N
+1489	yes	63	3	148	295	HeartRate	140	\N
+1490	yes	63	3	148	295	HeartRate	140	\N
+1491	yes	63	3	148	295	HeartRate	140	\N
+1492	yes	63	3	148	295	HeartRate	140	\N
+1493	yes	63	3	148	295	HeartRate	140	\N
+1494	yes	63	3	148	295	HeartRate	140	\N
+1495	yes	63	3	148	295	HeartRate	140	\N
+1496	yes	63	3	148	295	HeartRate	140	\N
+1497	yes	63	3	148	295	HeartRate	140	\N
+1498	yes	63	3	148	295	HeartRate	140	\N
+1499	yes	63	3	148	295	HeartRate	140	\N
+1500	yes	63	3	148	295	HeartRate	140	\N
+1501	yes	63	3	148	295	HeartRate	140	\N
+1502	yes	63	3	148	295	HeartRate	140	\N
+1503	yes	63	3	148	295	HeartRate	140	\N
+1504	yes	63	3	148	295	HeartRate	140	\N
+1505	yes	63	3	148	295	HeartRate	140	\N
+1506	yes	63	3	148	295	HeartRate	140	\N
+1507	yes	62	3	145	290	HeartRate	140	\N
+1508	yes	62	3	145	290	HeartRate	140	\N
+1509	yes	63	3	148	295	HeartRate	140	\N
+1510	yes	62	3	145	290	HeartRate	140	\N
+1511	yes	62	3	145	290	HeartRate	140	\N
+1512	yes	62	3	145	290	HeartRate	140	\N
+1513	yes	62	3	145	290	HeartRate	140	\N
+1514	yes	62	3	145	290	HeartRate	140	\N
+1515	yes	62	3	145	290	HeartRate	140	\N
+1516	yes	62	3	145	290	HeartRate	140	\N
+1517	yes	62	3	145	290	HeartRate	140	\N
+1518	yes	62	3	145	290	HeartRate	140	\N
+1519	yes	62	3	145	290	HeartRate	140	\N
+1520	yes	62	3	145	290	HeartRate	140	\N
+1521	yes	62	3	145	290	HeartRate	140	\N
+1522	yes	62	3	145	290	HeartRate	140	\N
+1523	yes	62	3	145	290	HeartRate	140	\N
+1524	yes	62	3	145	290	HeartRate	140	\N
+1525	yes	62	3	145	290	HeartRate	140	\N
+1526	yes	62	3	145	290	HeartRate	140	\N
+1527	yes	62	3	145	290	HeartRate	140	\N
+1528	yes	62	3	145	290	HeartRate	140	\N
+1529	yes	62	3	145	290	HeartRate	140	\N
+1530	yes	62	3	145	290	HeartRate	140	\N
+1531	yes	62	3	145	290	HeartRate	140	\N
+1532	yes	62	3	145	290	HeartRate	140	\N
+1533	yes	62	3	145	290	HeartRate	140	\N
+1534	yes	62	3	145	290	HeartRate	140	\N
+1535	yes	63	3	148	295	HeartRate	140	\N
+1536	yes	63	3	148	295	HeartRate	140	\N
+1537	yes	63	3	148	295	HeartRate	140	\N
+1538	yes	63	3	148	295	HeartRate	140	\N
+1539	yes	63	3	148	295	HeartRate	140	\N
+1540	yes	63	3	148	295	HeartRate	140	\N
+1541	yes	63	3	148	295	HeartRate	140	\N
+1542	yes	63	3	148	295	HeartRate	140	\N
+1543	yes	63	3	148	295	HeartRate	140	\N
+1544	yes	63	3	148	295	HeartRate	140	\N
+1545	yes	63	3	148	295	HeartRate	140	\N
+1546	yes	63	3	148	295	HeartRate	140	\N
+1547	yes	63	3	148	295	HeartRate	140	\N
+1548	yes	63	3	148	295	HeartRate	140	\N
+1549	yes	63	3	148	295	HeartRate	140	\N
+1550	yes	63	3	148	295	HeartRate	140	\N
+1551	yes	63	3	148	295	HeartRate	140	\N
+1552	yes	63	3	148	295	HeartRate	140	\N
+1553	yes	63	3	148	295	HeartRate	140	\N
+1554	yes	63	3	148	295	HeartRate	140	\N
+1555	yes	63	3	148	295	HeartRate	140	\N
+1628	yes	30	1	100	200	HeartRate	140	\N
+1629	yes	30	1	100	200	HeartRate	140	\N
+1630	yes	30	1	100	200	HeartRate	140	\N
+1631	yes	30	1	100	200	HeartRate	140	\N
+1632	yes	30	1	100	200	HeartRate	140	\N
+1633	yes	30	1	100	200	HeartRate	140	\N
+1634	yes	30	1	100	200	HeartRate	140	\N
+1635	yes	30	1	100	200	HeartRate	140	\N
+1636	yes	30	1	100	200	HeartRate	140	\N
+1637	yes	30	1	100	200	HeartRate	140	\N
+1638	yes	30	1	100	200	HeartRate	140	\N
+1639	yes	30	1	100	200	HeartRate	140	\N
+1640	yes	30	1	100	200	HeartRate	140	\N
+1641	yes	30	1	100	200	HeartRate	140	\N
+1642	yes	30	1	100	200	HeartRate	140	\N
+1643	yes	30	1	100	200	HeartRate	140	\N
+1644	yes	30	1	100	200	HeartRate	140	\N
+1645	yes	30	1	100	200	HeartRate	140	\N
+1646	yes	30	1	100	200	HeartRate	140	\N
+1647	yes	30	1	100	200	HeartRate	140	\N
+1648	yes	30	1	100	200	HeartRate	140	\N
+1649	yes	30	1	100	200	HeartRate	140	\N
+1650	yes	30	1	100	200	HeartRate	140	\N
+1651	yes	30	1	100	200	HeartRate	140	\N
+1652	yes	30	1	100	200	HeartRate	140	\N
+1653	yes	30	1	100	200	HeartRate	140	\N
+1654	yes	30	1	100	200	HeartRate	140	\N
+1655	yes	30	1	100	200	HeartRate	140	\N
+1656	yes	30	1	100	200	HeartRate	140	\N
+1657	yes	30	1	100	200	HeartRate	140	\N
+1658	yes	30	1	100	200	HeartRate	140	\N
+1659	yes	30	1	100	200	HeartRate	140	\N
+1660	yes	30	1	100	200	HeartRate	140	\N
+1661	yes	30	1	100	200	HeartRate	140	\N
+1662	yes	30	1	100	200	HeartRate	140	\N
+1663	yes	30	1	100	200	HeartRate	140	\N
+1664	yes	30	1	100	200	HeartRate	140	\N
+1665	yes	30	1	100	200	HeartRate	140	\N
+1666	yes	30	1	100	200	HeartRate	140	\N
+1667	yes	30	1	100	200	HeartRate	140	\N
+1668	yes	30	1	100	200	HeartRate	140	\N
+1669	yes	30	1	100	200	HeartRate	140	\N
+1670	yes	30	1	100	200	HeartRate	140	\N
+1671	yes	30	1	100	200	HeartRate	140	\N
+1672	yes	30	1	100	200	HeartRate	140	\N
+1673	yes	30	1	100	200	HeartRate	140	\N
+1674	yes	30	1	100	200	HeartRate	140	\N
+1675	yes	30	1	100	200	HeartRate	140	\N
+1676	yes	30	1	100	200	HeartRate	140	\N
+1677	yes	30	1	100	200	HeartRate	140	\N
+1678	yes	30	1	100	200	HeartRate	140	\N
+1679	yes	30	1	100	200	HeartRate	140	\N
+1680	yes	30	1	100	200	HeartRate	140	\N
+1681	yes	30	1	100	200	HeartRate	140	\N
+1682	yes	30	1	100	200	HeartRate	140	\N
+1683	yes	30	1	100	200	HeartRate	140	\N
+1684	yes	30	1	100	200	HeartRate	140	\N
+1685	yes	30	1	100	200	HeartRate	140	\N
+1686	yes	30	1	100	200	HeartRate	140	\N
+1687	yes	30	1	100	200	HeartRate	140	\N
+1688	yes	30	1	100	200	HeartRate	140	\N
+1689	yes	30	1	100	200	HeartRate	140	\N
+1690	yes	30	1	100	200	HeartRate	140	\N
+1691	yes	30	1	100	200	HeartRate	140	\N
+1692	yes	30	1	100	200	HeartRate	140	\N
+1693	yes	30	1	100	200	HeartRate	140	\N
+1694	yes	30	1	100	200	HeartRate	140	\N
+1695	yes	30	1	100	200	HeartRate	140	\N
+1696	yes	30	1	100	200	HeartRate	140	\N
+1697	yes	30	1	100	200	HeartRate	140	\N
+1698	yes	30	1	100	200	HeartRate	140	\N
+1699	yes	30	1	100	200	HeartRate	140	\N
+1700	yes	30	1	100	200	HeartRate	140	\N
+1701	yes	30	1	100	200	HeartRate	140	\N
+1702	yes	30	1	100	200	HeartRate	140	\N
+1703	yes	30	1	100	200	HeartRate	140	\N
+1704	yes	30	1	100	200	HeartRate	140	\N
+1705	yes	30	1	100	200	HeartRate	140	\N
+1706	yes	30	1	100	200	HeartRate	140	\N
+1707	yes	30	1	100	200	HeartRate	140	\N
+1708	yes	30	1	100	200	HeartRate	140	\N
+1709	yes	30	1	100	200	HeartRate	140	\N
+1710	yes	30	1	100	200	HeartRate	140	\N
+1711	yes	30	1	100	200	HeartRate	140	\N
+1712	yes	30	1	100	200	HeartRate	140	\N
+1713	yes	30	1	100	200	HeartRate	140	\N
+1714	yes	30	1	100	200	HeartRate	140	\N
+1715	yes	30	1	100	200	HeartRate	140	\N
+1716	yes	30	1	100	200	HeartRate	140	\N
+1717	yes	30	1	100	200	HeartRate	140	\N
+1718	yes	30	1	100	200	HeartRate	140	\N
+1719	yes	30	1	100	200	HeartRate	140	\N
+1720	yes	30	1	100	200	HeartRate	140	\N
+1721	yes	30	1	100	200	HeartRate	140	\N
+1722	yes	30	1	100	200	HeartRate	140	\N
+1723	yes	30	1	100	200	HeartRate	140	\N
+1724	yes	30	1	100	200	HeartRate	140	\N
+1725	yes	30	1	100	200	HeartRate	140	\N
+1726	yes	30	1	100	200	HeartRate	140	\N
+1727	yes	30	1	100	200	HeartRate	140	\N
+1728	yes	30	1	100	200	HeartRate	140	\N
+1729	yes	30	1	100	200	HeartRate	140	\N
+1730	yes	30	1	100	200	HeartRate	140	\N
+1731	yes	30	1	100	200	HeartRate	140	\N
+1732	yes	30	1	100	200	HeartRate	140	\N
+1733	yes	30	1	100	200	HeartRate	140	\N
+1734	yes	30	1	100	200	HeartRate	140	\N
+1735	yes	30	1	100	200	HeartRate	140	\N
+1736	yes	30	1	100	200	HeartRate	140	\N
+1737	yes	30	1	100	200	HeartRate	140	\N
+1738	yes	30	1	100	200	HeartRate	140	\N
+1739	yes	30	1	100	200	HeartRate	140	\N
+1740	yes	30	1	100	200	HeartRate	140	\N
+1741	yes	30	1	100	200	HeartRate	140	\N
+1742	yes	30	1	100	200	HeartRate	140	\N
+1743	yes	30	1	100	200	HeartRate	140	\N
+1744	yes	30	1	100	200	HeartRate	140	\N
+1745	yes	30	1	100	200	HeartRate	140	\N
+1746	yes	30	1	100	200	HeartRate	140	\N
+1747	yes	30	1	100	200	HeartRate	140	\N
+1748	yes	30	1	100	200	HeartRate	140	\N
+1749	yes	30	1	100	200	HeartRate	140	\N
+1750	yes	30	1	100	200	HeartRate	140	\N
+1751	yes	30	1	100	200	HeartRate	140	\N
+1752	yes	30	1	100	200	HeartRate	140	\N
+1753	yes	30	1	100	200	HeartRate	140	\N
+1754	yes	30	1	100	200	HeartRate	140	\N
+1755	yes	30	1	100	200	HeartRate	140	\N
+1756	yes	30	1	100	200	HeartRate	140	\N
+1757	yes	30	1	100	200	HeartRate	140	\N
+1758	yes	30	1	100	200	HeartRate	140	\N
+1759	yes	30	1	100	200	HeartRate	140	\N
+1760	yes	30	1	100	200	HeartRate	140	\N
+1761	yes	30	1	100	200	HeartRate	140	\N
+1762	yes	30	1	100	200	HeartRate	140	\N
+1763	yes	30	1	100	200	HeartRate	140	\N
+1764	yes	30	1	100	200	HeartRate	140	\N
+1765	yes	30	1	100	200	HeartRate	140	\N
+1766	yes	30	1	100	200	HeartRate	140	\N
+1767	yes	30	1	100	200	HeartRate	140	\N
+1768	yes	30	1	100	200	HeartRate	140	\N
+1769	yes	30	1	100	200	HeartRate	140	\N
+1770	yes	30	1	100	200	HeartRate	140	\N
+1771	yes	30	1	100	200	HeartRate	140	\N
+1772	yes	30	1	100	200	HeartRate	140	\N
+1773	yes	30	1	100	200	HeartRate	140	\N
+1774	yes	30	1	100	200	HeartRate	140	\N
+1775	yes	30	1	100	200	HeartRate	140	\N
+1776	yes	30	1	100	200	HeartRate	140	\N
+1777	yes	30	1	100	200	HeartRate	140	\N
+1778	yes	30	1	100	200	HeartRate	140	\N
+1779	yes	30	1	100	200	HeartRate	140	\N
+1780	yes	30	1	100	200	HeartRate	140	\N
+1781	yes	30	1	100	200	HeartRate	140	\N
+1782	yes	32	1	103	205	HeartRate	140	\N
+1783	yes	32	1	103	205	HeartRate	140	\N
+1784	yes	32	1	103	205	HeartRate	140	\N
+1785	yes	32	1	103	205	HeartRate	140	\N
+1786	yes	30	1	100	200	HeartRate	140	\N
+1787	yes	32	1	103	205	HeartRate	140	\N
+1788	yes	32	1	103	205	HeartRate	140	\N
+1789	yes	32	1	103	205	HeartRate	140	\N
+1790	yes	32	1	103	205	HeartRate	140	\N
+1791	yes	32	1	103	205	HeartRate	140	\N
+1792	yes	32	1	103	205	HeartRate	140	\N
+1793	yes	32	1	103	205	HeartRate	140	\N
+1794	yes	32	1	103	205	HeartRate	140	\N
+1795	yes	32	1	103	205	HeartRate	140	\N
+1796	yes	32	1	103	205	HeartRate	140	\N
+1797	yes	32	1	103	205	HeartRate	140	\N
+1798	yes	32	1	103	205	HeartRate	140	\N
+1799	yes	32	1	103	205	HeartRate	140	\N
+1800	yes	32	1	103	205	HeartRate	140	\N
+1801	yes	32	1	103	205	HeartRate	140	\N
+1802	yes	32	1	103	205	HeartRate	140	\N
+1803	yes	32	1	103	205	HeartRate	140	\N
+1804	yes	32	1	103	205	HeartRate	140	\N
+1805	yes	32	1	103	205	HeartRate	140	\N
+1806	yes	32	1	103	205	HeartRate	140	\N
+1807	yes	32	1	103	205	HeartRate	140	\N
+1808	yes	32	1	103	205	HeartRate	140	\N
+1809	yes	32	1	103	205	HeartRate	140	\N
+1810	yes	32	1	103	205	HeartRate	140	\N
+1811	yes	32	1	103	205	HeartRate	140	\N
+1812	yes	32	1	103	205	HeartRate	140	\N
+1813	yes	32	1	103	205	HeartRate	140	\N
+1814	yes	32	1	103	205	HeartRate	140	\N
+1815	yes	32	1	103	205	HeartRate	140	\N
+1877	yes	255	5	103	561	HeartRate	140	\N
+1887	yes	255	5	103	566	HeartRate	140	\N
+1896	yes	255	5	104	567	HeartRate	140	\N
+1906	yes	255	5	104	567	HeartRate	140	\N
+1915	yes	255	5	104	569	HeartRate	140	\N
+1924	yes	255	5	104	570	HeartRate	140	\N
+1933	yes	255	5	104	577	HeartRate	140	\N
+1943	yes	255	5	105	580	HeartRate	140	\N
+1952	yes	255	5	105	584	HeartRate	140	\N
+1962	yes	255	5	105	585	HeartRate	140	\N
+1972	yes	255	5	105	587	HeartRate	140	\N
+1982	yes	255	6	106	598	HeartRate	140	\N
+1991	yes	255	6	106	596	HeartRate	140	\N
+2001	yes	255	6	106	596	HeartRate	140	\N
+2009	yes	255	6	106	596	HeartRate	140	\N
+2019	yes	255	6	106	596	HeartRate	140	\N
+2028	yes	255	6	106	596	HeartRate	140	\N
+2029	yes	255	6	106	596	HeartRate	140	\N
+2038	yes	255	6	106	596	HeartRate	140	\N
+2047	yes	255	6	106	596	HeartRate	140	\N
+2056	yes	255	6	106	596	HeartRate	140	\N
+1878	yes	255	5	103	561	HeartRate	140	\N
+1888	yes	255	5	104	566	HeartRate	140	\N
+1833	yes	43	2	118	237	HeartRate	140	\N
+1842	yes	43	2	118	237	HeartRate	140	\N
+1852	yes	255	5	103	561	HeartRate	140	\N
+1853	yes	255	5	103	561	HeartRate	140	\N
+1862	yes	255	5	103	561	HeartRate	140	\N
+1870	yes	255	5	103	561	HeartRate	140	\N
+1897	yes	255	5	104	567	HeartRate	140	\N
+1907	yes	255	5	104	567	HeartRate	140	\N
+1916	yes	255	5	104	569	HeartRate	140	\N
+1925	yes	255	5	104	570	HeartRate	140	\N
+1934	yes	255	5	104	578	HeartRate	140	\N
+1944	yes	255	5	105	580	HeartRate	140	\N
+1953	yes	255	5	105	585	HeartRate	140	\N
+1954	yes	255	5	105	585	HeartRate	140	\N
+1963	yes	255	5	105	584	HeartRate	140	\N
+1973	yes	255	5	105	589	HeartRate	140	\N
+1983	yes	255	6	105	593	HeartRate	140	\N
+1992	yes	255	6	106	596	HeartRate	140	\N
+2000	yes	255	6	106	596	HeartRate	140	\N
+2010	yes	255	6	106	596	HeartRate	140	\N
+2020	yes	255	6	106	596	HeartRate	140	\N
+2030	yes	255	6	106	596	HeartRate	140	\N
+2039	yes	255	6	106	596	HeartRate	140	\N
+2048	yes	255	6	106	596	HeartRate	140	\N
+2057	yes	255	6	106	596	HeartRate	140	\N
+2065	yes	255	5	100	521	HeartRate	140	\N
+2572	yes	150	3	200	100	HeartRate	140	\N
+2573	yes	150	3	200	100	HeartRate	140	\N
+2574	yes	150	3	200	100	HeartRate	140	\N
+2575	yes	150	3	200	100	HeartRate	140	\N
+2576	yes	150	3	200	100	HeartRate	140	\N
+2577	yes	150	3	200	100	HeartRate	140	\N
+2578	yes	150	3	200	100	HeartRate	140	\N
+2579	yes	150	3	200	100	HeartRate	140	\N
+2580	yes	150	3	200	100	HeartRate	140	\N
+2581	yes	150	3	200	100	HeartRate	140	\N
+2582	yes	150	3	200	100	HeartRate	140	\N
+2583	yes	150	3	200	100	HeartRate	140	\N
+2584	yes	150	3	200	100	HeartRate	140	\N
+2585	yes	150	3	200	100	HeartRate	140	\N
+2586	yes	150	3	200	100	HeartRate	140	\N
+2587	yes	150	3	200	100	HeartRate	140	\N
+2588	yes	150	3	200	100	HeartRate	140	\N
+2589	yes	150	3	200	100	HeartRate	140	\N
+2590	yes	150	3	200	100	HeartRate	140	\N
+2591	yes	150	3	200	100	HeartRate	140	\N
+2592	yes	150	3	200	100	HeartRate	140	\N
+2593	yes	150	3	200	100	HeartRate	140	\N
+2594	yes	150	3	200	100	HeartRate	140	\N
+2595	yes	150	3	200	100	HeartRate	140	\N
+2596	yes	150	3	200	100	HeartRate	140	\N
+2597	yes	150	3	200	100	HeartRate	140	\N
+2598	yes	150	3	200	100	HeartRate	140	\N
+2599	yes	150	3	200	100	HeartRate	140	\N
+2698	yes	150	3	200	100	HeartRate	140	\N
+2699	yes	150	3	200	100	HeartRate	140	\N
+2700	yes	150	3	200	100	HeartRate	140	\N
+2701	yes	150	3	200	100	HeartRate	140	\N
+2702	yes	150	3	200	100	HeartRate	140	\N
+2703	yes	150	3	200	100	HeartRate	140	\N
+2704	yes	150	3	200	100	HeartRate	140	\N
+2705	yes	150	3	200	100	HeartRate	140	\N
+2706	yes	150	3	200	100	HeartRate	140	\N
+2707	yes	150	3	200	100	HeartRate	140	\N
+2708	yes	150	3	200	100	HeartRate	140	\N
+2709	yes	150	3	200	100	HeartRate	140	\N
+2710	yes	150	3	200	100	HeartRate	140	\N
+2711	yes	150	3	200	100	HeartRate	140	\N
+2712	yes	150	3	200	100	HeartRate	140	\N
+2713	yes	150	3	200	100	HeartRate	140	\N
+2714	yes	150	3	200	100	HeartRate	140	\N
+2715	yes	150	3	200	100	HeartRate	140	\N
+2716	yes	150	3	200	100	HeartRate	140	\N
+2717	yes	150	3	200	100	HeartRate	140	\N
+2718	yes	150	3	200	100	HeartRate	140	\N
+2719	yes	150	3	200	100	HeartRate	140	\N
+2720	yes	150	3	200	100	HeartRate	140	\N
+2721	yes	150	3	200	100	HeartRate	140	\N
+2722	yes	150	3	200	100	HeartRate	140	\N
+2723	yes	150	3	200	100	HeartRate	140	\N
+2724	yes	150	3	200	100	HeartRate	140	\N
+2725	yes	150	3	200	100	HeartRate	140	\N
+2726	yes	150	3	200	100	HeartRate	140	\N
+2727	yes	150	3	200	100	HeartRate	140	\N
+2728	yes	150	3	200	100	HeartRate	140	\N
+2729	yes	150	3	200	100	HeartRate	140	\N
+2730	yes	150	3	200	100	HeartRate	140	\N
+2731	yes	150	3	200	100	HeartRate	140	\N
+2732	yes	150	3	200	100	HeartRate	140	\N
+2733	yes	150	3	200	100	HeartRate	140	\N
+2779	yes	255	7	111	672	HeartRate	140	\N
+2780	yes	255	7	111	674	HeartRate	140	\N
+2781	yes	255	7	112	675	HeartRate	140	\N
+2782	yes	255	7	112	677	HeartRate	140	\N
+2783	yes	255	7	112	678	HeartRate	140	\N
+2784	yes	255	7	112	680	HeartRate	140	\N
+2785	yes	255	7	112	681	HeartRate	140	\N
+2786	yes	255	7	112	683	HeartRate	140	\N
+2787	yes	255	7	112	684	HeartRate	140	\N
+2788	yes	255	7	112	686	HeartRate	140	\N
+2789	yes	255	7	112	687	HeartRate	140	\N
+2790	yes	255	7	112	687	HeartRate	140	\N
+2791	yes	255	7	113	688	HeartRate	140	\N
+2792	yes	255	7	113	689	HeartRate	140	\N
+2793	yes	255	7	113	692	HeartRate	140	\N
+2794	yes	255	7	113	698	HeartRate	140	\N
+2795	yes	255	7	113	698	HeartRate	140	\N
+2796	yes	255	7	113	701	HeartRate	140	\N
+2797	yes	255	7	113	700	HeartRate	140	\N
+2798	yes	255	7	113	700	HeartRate	140	\N
+2799	yes	255	7	113	701	HeartRate	140	\N
+2800	yes	255	7	114	701	HeartRate	140	\N
+2801	yes	255	7	113	701	HeartRate	140	\N
+2802	yes	255	7	113	698	HeartRate	140	\N
+2803	yes	255	7	113	701	HeartRate	140	\N
+2804	yes	255	7	114	705	HeartRate	140	\N
+2805	yes	255	7	114	706	HeartRate	140	\N
+2806	yes	255	7	114	709	HeartRate	140	\N
+1879	yes	255	5	103	561	HeartRate	140	\N
+1889	yes	255	5	104	567	HeartRate	140	\N
+1834	yes	43	2	118	237	HeartRate	140	\N
+1843	yes	255	5	103	560	HeartRate	140	\N
+1854	yes	255	5	103	561	HeartRate	140	\N
+1863	yes	255	5	103	561	HeartRate	140	\N
+1871	yes	255	5	103	561	HeartRate	140	\N
+1898	yes	255	5	104	567	HeartRate	140	\N
+1908	yes	255	5	104	569	HeartRate	140	\N
+1917	yes	255	5	104	569	HeartRate	140	\N
+1926	yes	255	5	104	572	HeartRate	140	\N
+1935	yes	255	5	104	577	HeartRate	140	\N
+1945	yes	255	5	105	581	HeartRate	140	\N
+1955	yes	255	5	105	585	HeartRate	140	\N
+1964	yes	255	5	105	584	HeartRate	140	\N
+1974	yes	255	5	105	589	HeartRate	140	\N
+1984	yes	255	6	105	593	HeartRate	140	\N
+1993	yes	255	6	106	596	HeartRate	140	\N
+2002	yes	255	6	106	596	HeartRate	140	\N
+2011	yes	255	6	106	596	HeartRate	140	\N
+2021	yes	255	6	106	596	HeartRate	140	\N
+2031	yes	255	6	106	596	HeartRate	140	\N
+2040	yes	255	6	106	596	HeartRate	140	\N
+2049	yes	255	6	106	596	HeartRate	140	\N
+2058	yes	255	6	106	596	HeartRate	140	\N
+2600	yes	150	3	200	100	HeartRate	140	\N
+2601	yes	150	3	200	100	HeartRate	140	\N
+2602	yes	150	3	200	100	HeartRate	140	\N
+2603	yes	150	3	200	100	HeartRate	140	\N
+2604	yes	150	3	200	100	HeartRate	140	\N
+2605	yes	150	3	200	100	HeartRate	140	\N
+2606	yes	150	3	200	100	HeartRate	140	\N
+2607	yes	150	3	200	100	HeartRate	140	\N
+2608	yes	150	3	200	100	HeartRate	140	\N
+2609	yes	150	3	200	100	HeartRate	140	\N
+2610	yes	150	3	200	100	HeartRate	140	\N
+2611	yes	150	3	200	100	HeartRate	140	\N
+2612	yes	150	3	200	100	HeartRate	140	\N
+2613	yes	150	3	200	100	HeartRate	140	\N
+2614	yes	150	3	200	100	HeartRate	140	\N
+2615	yes	150	3	200	100	HeartRate	140	\N
+2616	yes	150	3	200	100	HeartRate	140	\N
+2617	yes	150	3	200	100	HeartRate	140	\N
+2618	yes	150	3	200	100	HeartRate	140	\N
+2619	yes	150	3	200	100	HeartRate	140	\N
+2620	yes	150	3	200	100	HeartRate	140	\N
+2621	yes	150	3	200	100	HeartRate	140	\N
+2622	yes	150	3	200	100	HeartRate	140	\N
+2623	yes	150	3	200	100	HeartRate	140	\N
+2624	yes	150	3	200	100	HeartRate	140	\N
+2625	yes	150	3	200	100	HeartRate	140	\N
+2626	yes	150	3	200	100	HeartRate	140	\N
+2627	yes	150	3	200	100	HeartRate	140	\N
+2628	yes	150	3	200	100	HeartRate	140	\N
+2629	yes	150	3	200	100	HeartRate	140	\N
+2630	yes	150	3	200	100	HeartRate	140	\N
+2631	yes	150	3	200	100	HeartRate	140	\N
+2632	yes	150	3	200	100	HeartRate	140	\N
+2633	yes	150	3	200	100	HeartRate	140	\N
+2634	yes	150	3	200	100	HeartRate	140	\N
+2635	yes	150	3	200	100	HeartRate	140	\N
+2636	yes	150	3	200	100	HeartRate	140	\N
+2637	yes	150	3	200	100	HeartRate	140	\N
+2638	yes	150	3	200	100	HeartRate	140	\N
+2639	yes	150	3	200	100	HeartRate	140	\N
+2640	yes	150	3	200	100	HeartRate	140	\N
+2641	yes	150	3	200	100	HeartRate	140	\N
+2642	yes	150	3	200	100	HeartRate	140	\N
+2643	yes	150	3	200	100	HeartRate	140	\N
+2644	yes	150	3	200	100	HeartRate	140	\N
+2645	yes	150	3	200	100	HeartRate	140	\N
+2646	yes	150	3	200	100	HeartRate	140	\N
+2647	yes	150	3	200	100	HeartRate	140	\N
+2648	yes	150	3	200	100	HeartRate	140	\N
+2734	yes	255	7	110	656	HeartRate	140	\N
+2735	yes	255	7	110	656	HeartRate	140	\N
+2736	yes	255	7	110	656	HeartRate	140	\N
+2737	yes	255	7	110	656	HeartRate	140	\N
+2738	yes	255	7	110	656	HeartRate	140	\N
+2739	yes	255	7	110	656	HeartRate	140	\N
+2740	yes	255	7	110	656	HeartRate	140	\N
+2741	yes	255	7	110	656	HeartRate	140	\N
+2742	yes	255	7	110	656	HeartRate	140	\N
+2743	yes	255	7	110	652	HeartRate	140	\N
+2744	yes	255	7	110	653	HeartRate	140	\N
+2745	yes	255	7	110	652	HeartRate	140	\N
+2746	yes	255	7	110	653	HeartRate	140	\N
+2747	yes	255	7	110	653	HeartRate	140	\N
+2748	yes	255	7	110	654	HeartRate	140	\N
+2749	yes	255	7	110	654	HeartRate	140	\N
+2750	yes	255	7	110	653	HeartRate	140	\N
+2751	yes	255	7	110	653	HeartRate	140	\N
+2752	yes	255	7	110	653	HeartRate	140	\N
+2753	yes	255	7	110	653	HeartRate	140	\N
+2754	yes	255	7	110	653	HeartRate	140	\N
+2755	yes	255	7	110	653	HeartRate	140	\N
+2756	yes	255	7	110	653	HeartRate	140	\N
+2757	yes	255	7	110	653	HeartRate	140	\N
+2758	yes	255	7	110	653	HeartRate	140	\N
+2759	yes	255	7	110	653	HeartRate	140	\N
+2760	yes	255	7	110	653	HeartRate	140	\N
+2761	yes	255	7	110	653	HeartRate	140	\N
+2762	yes	255	7	110	653	HeartRate	140	\N
+2763	yes	255	7	110	653	HeartRate	140	\N
+2764	yes	255	7	110	653	HeartRate	140	\N
+2765	yes	255	7	110	653	HeartRate	140	\N
+2766	yes	255	7	110	653	HeartRate	140	\N
+2767	yes	255	7	110	654	HeartRate	140	\N
+2768	yes	255	7	110	656	HeartRate	140	\N
+2769	yes	255	7	110	656	HeartRate	140	\N
+2770	yes	255	7	110	657	HeartRate	140	\N
+2771	yes	255	7	110	659	HeartRate	140	\N
+2772	yes	255	7	111	661	HeartRate	140	\N
+2773	yes	255	7	111	662	HeartRate	140	\N
+2774	yes	255	7	111	663	HeartRate	140	\N
+2775	yes	255	7	111	665	HeartRate	140	\N
+2776	yes	255	7	111	667	HeartRate	140	\N
+2777	yes	255	7	111	669	HeartRate	140	\N
+2778	yes	255	7	111	670	HeartRate	140	\N
+1880	yes	255	5	103	561	HeartRate	140	\N
+1826	yes	42	2	118	235	HeartRate	140	\N
+1827	yes	43	2	119	238	HeartRate	140	\N
+1835	yes	43	2	118	237	HeartRate	140	\N
+1844	yes	255	5	103	561	HeartRate	140	\N
+1855	yes	255	5	103	561	HeartRate	140	\N
+1864	yes	255	5	103	561	HeartRate	140	\N
+1872	yes	255	5	103	561	HeartRate	140	\N
+1890	yes	255	5	104	567	HeartRate	140	\N
+1899	yes	255	5	104	567	HeartRate	140	\N
+1909	yes	255	5	104	569	HeartRate	140	\N
+1918	yes	255	5	104	568	HeartRate	140	\N
+1927	yes	255	5	104	572	HeartRate	140	\N
+1936	yes	255	5	104	577	HeartRate	140	\N
+1946	yes	255	5	105	581	HeartRate	140	\N
+1956	yes	255	5	105	585	HeartRate	140	\N
+1965	yes	255	5	105	585	HeartRate	140	\N
+1966	yes	255	5	105	585	HeartRate	140	\N
+1975	yes	255	6	105	591	HeartRate	140	\N
+1976	yes	255	6	105	591	HeartRate	140	\N
+1985	yes	255	6	106	600	HeartRate	140	\N
+1994	yes	255	6	106	596	HeartRate	140	\N
+2003	yes	255	6	106	596	HeartRate	140	\N
+2013	yes	255	6	106	596	HeartRate	140	\N
+2022	yes	255	6	106	596	HeartRate	140	\N
+2032	yes	255	6	106	596	HeartRate	140	\N
+2041	yes	255	6	106	596	HeartRate	140	\N
+2050	yes	255	6	106	596	HeartRate	140	\N
+2059	yes	255	6	106	596	HeartRate	140	\N
+2067	yes	150	3	200	100	HeartRate	140	\N
+2068	yes	150	3	200	100	HeartRate	140	\N
+2069	yes	150	3	200	100	HeartRate	140	\N
+2070	yes	150	3	200	100	HeartRate	140	\N
+2071	yes	150	3	200	100	HeartRate	140	\N
+2072	yes	150	3	200	100	HeartRate	140	\N
+2073	yes	150	3	200	100	HeartRate	140	\N
+2074	yes	150	3	200	100	HeartRate	140	\N
+2075	yes	150	3	200	100	HeartRate	140	\N
+2076	yes	150	3	200	100	HeartRate	140	\N
+2077	yes	150	3	200	100	HeartRate	140	\N
+2078	yes	150	3	200	100	HeartRate	140	\N
+2079	yes	150	3	200	100	HeartRate	140	\N
+2080	yes	150	3	200	100	HeartRate	140	\N
+2081	yes	150	3	200	100	HeartRate	140	\N
+2082	yes	150	3	200	100	HeartRate	140	\N
+2083	yes	150	3	200	100	HeartRate	140	\N
+2084	yes	150	3	200	100	HeartRate	140	\N
+2085	yes	150	3	200	100	HeartRate	140	\N
+2086	yes	150	3	200	100	HeartRate	140	\N
+2087	yes	150	3	200	100	HeartRate	140	\N
+2088	yes	150	3	200	100	HeartRate	140	\N
+2089	yes	150	3	200	100	HeartRate	140	\N
+2090	yes	150	3	200	100	HeartRate	140	\N
+2091	yes	150	3	200	100	HeartRate	140	\N
+2092	yes	150	3	200	100	HeartRate	140	\N
+2093	yes	150	3	200	100	HeartRate	140	\N
+2094	yes	150	3	200	100	HeartRate	140	\N
+2095	yes	150	3	200	100	HeartRate	140	\N
+2096	yes	150	3	200	100	HeartRate	140	\N
+2097	yes	150	3	200	100	HeartRate	140	\N
+2098	yes	150	3	200	100	HeartRate	140	\N
+2099	yes	150	3	200	100	HeartRate	140	\N
+2100	yes	150	3	200	100	HeartRate	140	\N
+2101	yes	150	3	200	100	HeartRate	140	\N
+2102	yes	150	3	200	100	HeartRate	140	\N
+2103	yes	150	3	200	100	HeartRate	140	\N
+2104	yes	150	3	200	100	HeartRate	140	\N
+2105	yes	150	3	200	100	HeartRate	140	\N
+2106	yes	150	3	200	100	HeartRate	140	\N
+2107	yes	150	3	200	100	HeartRate	140	\N
+2108	yes	150	3	200	100	HeartRate	140	\N
+2109	yes	150	3	200	100	HeartRate	140	\N
+2110	yes	150	3	200	100	HeartRate	140	\N
+2111	yes	150	3	200	100	HeartRate	140	\N
+2112	yes	150	3	200	100	HeartRate	140	\N
+2113	yes	150	3	200	100	HeartRate	140	\N
+2114	yes	150	3	200	100	HeartRate	140	\N
+2115	yes	150	3	200	100	HeartRate	140	\N
+2116	yes	150	3	200	100	HeartRate	140	\N
+2117	yes	150	3	200	100	HeartRate	140	\N
+2118	yes	150	3	200	100	HeartRate	140	\N
+2119	yes	150	3	200	100	HeartRate	140	\N
+2120	yes	150	3	200	100	HeartRate	140	\N
+2121	yes	150	3	200	100	HeartRate	140	\N
+2122	yes	150	3	200	100	HeartRate	140	\N
+2123	yes	150	3	200	100	HeartRate	140	\N
+2124	yes	150	3	200	100	HeartRate	140	\N
+2125	yes	150	3	200	100	HeartRate	140	\N
+2126	yes	150	3	200	100	HeartRate	140	\N
+2127	yes	150	3	200	100	HeartRate	140	\N
+2128	yes	150	3	200	100	HeartRate	140	\N
+2129	yes	150	3	200	100	HeartRate	140	\N
+2130	yes	150	3	200	100	HeartRate	140	\N
+2131	yes	150	3	200	100	HeartRate	140	\N
+2132	yes	150	3	200	100	HeartRate	140	\N
+2133	yes	150	3	200	100	HeartRate	140	\N
+2134	yes	150	3	200	100	HeartRate	140	\N
+2135	yes	150	3	200	100	HeartRate	140	\N
+2136	yes	150	3	200	100	HeartRate	140	\N
+2137	yes	150	3	200	100	HeartRate	140	\N
+2138	yes	150	3	200	100	HeartRate	140	\N
+2139	yes	150	3	200	100	HeartRate	140	\N
+2140	yes	150	3	200	100	HeartRate	140	\N
+2141	yes	150	3	200	100	HeartRate	140	\N
+2142	yes	150	3	200	100	HeartRate	140	\N
+2143	yes	150	3	200	100	HeartRate	140	\N
+2144	yes	150	3	200	100	HeartRate	140	\N
+2145	yes	150	3	200	100	HeartRate	140	\N
+2146	yes	150	3	200	100	HeartRate	140	\N
+2147	yes	150	3	200	100	HeartRate	140	\N
+2148	yes	150	3	200	100	HeartRate	140	\N
+2149	yes	150	3	200	100	HeartRate	140	\N
+2150	yes	150	3	200	100	HeartRate	140	\N
+2151	yes	150	3	200	100	HeartRate	140	\N
+2152	yes	150	3	200	100	HeartRate	140	\N
+2153	yes	150	3	200	100	HeartRate	140	\N
+2154	yes	150	3	200	100	HeartRate	140	\N
+2155	yes	150	3	200	100	HeartRate	140	\N
+2156	yes	150	3	200	100	HeartRate	140	\N
+2157	yes	150	3	200	100	HeartRate	140	\N
+1881	yes	255	5	104	568	HeartRate	140	\N
+1828	yes	43	2	119	238	HeartRate	140	\N
+1836	yes	43	2	118	237	HeartRate	140	\N
+1845	yes	255	5	103	561	HeartRate	140	\N
+1856	yes	255	5	103	561	HeartRate	140	\N
+1865	yes	255	5	103	561	HeartRate	140	\N
+1873	yes	255	5	103	561	HeartRate	140	\N
+1891	yes	255	5	104	567	HeartRate	140	\N
+1900	yes	255	5	104	568	HeartRate	140	\N
+1901	yes	255	5	104	568	HeartRate	140	\N
+1910	yes	255	5	104	569	HeartRate	140	\N
+1919	yes	255	5	104	568	HeartRate	140	\N
+1928	yes	255	5	104	570	HeartRate	140	\N
+1937	yes	255	5	104	577	HeartRate	140	\N
+1938	yes	255	5	104	577	HeartRate	140	\N
+1947	yes	255	5	105	582	HeartRate	140	\N
+1957	yes	255	5	105	585	HeartRate	140	\N
+1967	yes	255	5	105	586	HeartRate	140	\N
+1977	yes	255	6	105	593	HeartRate	140	\N
+1986	yes	255	6	106	595	HeartRate	140	\N
+1995	yes	255	6	106	596	HeartRate	140	\N
+2004	yes	255	6	106	596	HeartRate	140	\N
+2012	yes	255	6	106	596	HeartRate	140	\N
+2023	yes	255	6	106	596	HeartRate	140	\N
+2033	yes	255	6	106	596	HeartRate	140	\N
+2042	yes	255	6	106	596	HeartRate	140	\N
+2051	yes	255	6	106	596	HeartRate	140	\N
+2060	yes	255	6	106	596	HeartRate	140	\N
+2158	yes	150	3	200	100	HeartRate	140	\N
+2159	yes	150	3	200	100	HeartRate	140	\N
+2160	yes	150	3	200	100	HeartRate	140	\N
+2161	yes	150	3	200	100	HeartRate	140	\N
+2162	yes	150	3	200	100	HeartRate	140	\N
+2163	yes	150	3	200	100	HeartRate	140	\N
+2164	yes	150	3	200	100	HeartRate	140	\N
+2165	yes	150	3	200	100	HeartRate	140	\N
+2166	yes	150	3	200	100	HeartRate	140	\N
+2167	yes	150	3	200	100	HeartRate	140	\N
+2168	yes	150	3	200	100	HeartRate	140	\N
+2169	yes	150	3	200	100	HeartRate	140	\N
+2170	yes	150	3	200	100	HeartRate	140	\N
+2171	yes	150	3	200	100	HeartRate	140	\N
+2172	yes	150	3	200	100	HeartRate	140	\N
+2173	yes	150	3	200	100	HeartRate	140	\N
+2174	yes	150	3	200	100	HeartRate	140	\N
+2175	yes	150	3	200	100	HeartRate	140	\N
+2176	yes	150	3	200	100	HeartRate	140	\N
+2177	yes	150	3	200	100	HeartRate	140	\N
+2178	yes	150	3	200	100	HeartRate	140	\N
+2179	yes	150	3	200	100	HeartRate	140	\N
+2180	yes	150	3	200	100	HeartRate	140	\N
+2181	yes	150	3	200	100	HeartRate	140	\N
+2182	yes	150	3	200	100	HeartRate	140	\N
+2183	yes	150	3	200	100	HeartRate	140	\N
+2184	yes	150	3	200	100	HeartRate	140	\N
+2185	yes	150	3	200	100	HeartRate	140	\N
+2186	yes	150	3	200	100	HeartRate	140	\N
+2187	yes	150	3	200	100	HeartRate	140	\N
+2188	yes	150	3	200	100	HeartRate	140	\N
+2189	yes	150	3	200	100	HeartRate	140	\N
+2190	yes	150	3	200	100	HeartRate	140	\N
+2191	yes	150	3	200	100	HeartRate	140	\N
+2192	yes	150	3	200	100	HeartRate	140	\N
+2193	yes	150	3	200	100	HeartRate	140	\N
+2194	yes	150	3	200	100	HeartRate	140	\N
+2195	yes	150	3	200	100	HeartRate	140	\N
+2196	yes	150	3	200	100	HeartRate	140	\N
+2197	yes	150	3	200	100	HeartRate	140	\N
+2198	yes	150	3	200	100	HeartRate	140	\N
+2199	yes	150	3	200	100	HeartRate	140	\N
+2200	yes	150	3	200	100	HeartRate	140	\N
+2201	yes	150	3	200	100	HeartRate	140	\N
+2202	yes	150	3	200	100	HeartRate	140	\N
+2203	yes	150	3	200	100	HeartRate	140	\N
+2204	yes	150	3	200	100	HeartRate	140	\N
+2205	yes	150	3	200	100	HeartRate	140	\N
+2206	yes	150	3	200	100	HeartRate	140	\N
+2207	yes	150	3	200	100	HeartRate	140	\N
+2208	yes	150	3	200	100	HeartRate	140	\N
+2209	yes	150	3	200	100	HeartRate	140	\N
+2210	yes	150	3	200	100	HeartRate	140	\N
+2211	yes	150	3	200	100	HeartRate	140	\N
+2212	yes	150	3	200	100	HeartRate	140	\N
+2213	yes	150	3	200	100	HeartRate	140	\N
+2214	yes	150	3	200	100	HeartRate	140	\N
+2215	yes	150	3	200	100	HeartRate	140	\N
+2216	yes	150	3	200	100	HeartRate	140	\N
+2217	yes	150	3	200	100	HeartRate	140	\N
+2218	yes	150	3	200	100	HeartRate	140	\N
+2219	yes	150	3	200	100	HeartRate	140	\N
+2220	yes	150	3	200	100	HeartRate	140	\N
+2221	yes	150	3	200	100	HeartRate	140	\N
+2222	yes	150	3	200	100	HeartRate	140	\N
+2223	yes	150	3	200	100	HeartRate	140	\N
+2224	yes	150	3	200	100	HeartRate	140	\N
+2225	yes	150	3	200	100	HeartRate	140	\N
+2226	yes	150	3	200	100	HeartRate	140	\N
+2227	yes	150	3	200	100	HeartRate	140	\N
+2228	yes	150	3	200	100	HeartRate	140	\N
+2229	yes	150	3	200	100	HeartRate	140	\N
+2230	yes	150	3	200	100	HeartRate	140	\N
+2231	yes	150	3	200	100	HeartRate	140	\N
+2232	yes	150	3	200	100	HeartRate	140	\N
+2233	yes	150	3	200	100	HeartRate	140	\N
+2234	yes	150	3	200	100	HeartRate	140	\N
+2235	yes	150	3	200	100	HeartRate	140	\N
+2236	yes	150	3	200	100	HeartRate	140	\N
+2237	yes	150	3	200	100	HeartRate	140	\N
+2238	yes	150	3	200	100	HeartRate	140	\N
+2649	yes	150	3	200	100	HeartRate	140	\N
+2650	yes	150	3	200	100	HeartRate	140	\N
+2651	yes	150	3	200	100	HeartRate	140	\N
+2652	yes	150	3	200	100	HeartRate	140	\N
+2653	yes	150	3	200	100	HeartRate	140	\N
+2654	yes	150	3	200	100	HeartRate	140	\N
+2655	yes	150	3	200	100	HeartRate	140	\N
+2656	yes	150	3	200	100	HeartRate	140	\N
+2657	yes	150	3	200	100	HeartRate	140	\N
+2658	yes	150	3	200	100	HeartRate	140	\N
+2659	yes	150	3	200	100	HeartRate	140	\N
+1882	yes	255	5	104	568	HeartRate	140	\N
+1829	yes	43	2	119	238	HeartRate	140	\N
+1837	yes	43	2	118	237	HeartRate	140	\N
+1846	yes	255	5	103	561	HeartRate	140	\N
+1847	yes	255	5	103	561	HeartRate	140	\N
+1857	yes	255	5	103	561	HeartRate	140	\N
+1866	yes	255	5	103	561	HeartRate	140	\N
+1874	yes	255	5	103	561	HeartRate	140	\N
+1892	yes	255	5	104	568	HeartRate	140	\N
+1902	yes	255	5	104	568	HeartRate	140	\N
+1911	yes	255	5	104	569	HeartRate	140	\N
+1920	yes	255	5	104	569	HeartRate	140	\N
+1929	yes	255	5	104	573	HeartRate	140	\N
+1939	yes	255	5	104	578	HeartRate	140	\N
+1948	yes	255	5	105	582	HeartRate	140	\N
+1958	yes	255	5	105	585	HeartRate	140	\N
+1968	yes	255	5	105	586	HeartRate	140	\N
+1978	yes	255	6	105	593	HeartRate	140	\N
+1987	yes	255	6	106	595	HeartRate	140	\N
+1996	yes	255	6	106	595	HeartRate	140	\N
+2005	yes	255	6	106	596	HeartRate	140	\N
+2014	yes	255	6	106	596	HeartRate	140	\N
+2015	yes	255	6	106	596	HeartRate	140	\N
+2024	yes	255	6	106	596	HeartRate	140	\N
+2034	yes	255	6	106	596	HeartRate	140	\N
+2043	yes	255	6	106	596	HeartRate	140	\N
+2052	yes	255	6	106	596	HeartRate	140	\N
+2061	yes	255	6	106	596	HeartRate	140	\N
+2239	yes	150	3	200	100	HeartRate	140	\N
+2240	yes	150	3	200	100	HeartRate	140	\N
+2241	yes	150	3	200	100	HeartRate	140	\N
+2242	yes	150	3	200	100	HeartRate	140	\N
+2243	yes	150	3	200	100	HeartRate	140	\N
+2244	yes	150	3	200	100	HeartRate	140	\N
+2245	yes	150	3	200	100	HeartRate	140	\N
+2246	yes	150	3	200	100	HeartRate	140	\N
+2247	yes	150	3	200	100	HeartRate	140	\N
+2248	yes	150	3	200	100	HeartRate	140	\N
+2249	yes	150	3	200	100	HeartRate	140	\N
+2250	yes	150	3	200	100	HeartRate	140	\N
+2251	yes	150	3	200	100	HeartRate	140	\N
+2252	yes	150	3	200	100	HeartRate	140	\N
+2253	yes	150	3	200	100	HeartRate	140	\N
+2254	yes	150	3	200	100	HeartRate	140	\N
+2255	yes	150	3	200	100	HeartRate	140	\N
+2256	yes	150	3	200	100	HeartRate	140	\N
+2257	yes	150	3	200	100	HeartRate	140	\N
+2258	yes	150	3	200	100	HeartRate	140	\N
+2259	yes	150	3	200	100	HeartRate	140	\N
+2260	yes	150	3	200	100	HeartRate	140	\N
+2261	yes	150	3	200	100	HeartRate	140	\N
+2262	yes	150	3	200	100	HeartRate	140	\N
+2263	yes	150	3	200	100	HeartRate	140	\N
+2264	yes	150	3	200	100	HeartRate	140	\N
+2265	yes	150	3	200	100	HeartRate	140	\N
+2266	yes	150	3	200	100	HeartRate	140	\N
+2267	yes	150	3	200	100	HeartRate	140	\N
+2268	yes	150	3	200	100	HeartRate	140	\N
+2269	yes	150	3	200	100	HeartRate	140	\N
+2270	yes	150	3	200	100	HeartRate	140	\N
+2271	yes	150	3	200	100	HeartRate	140	\N
+2272	yes	150	3	200	100	HeartRate	140	\N
+2273	yes	150	3	200	100	HeartRate	140	\N
+2274	yes	150	3	200	100	HeartRate	140	\N
+2275	yes	150	3	200	100	HeartRate	140	\N
+2276	yes	150	3	200	100	HeartRate	140	\N
+2277	yes	150	3	200	100	HeartRate	140	\N
+2278	yes	150	3	200	100	HeartRate	140	\N
+2279	yes	150	3	200	100	HeartRate	140	\N
+2280	yes	150	3	200	100	HeartRate	140	\N
+2281	yes	150	3	200	100	HeartRate	140	\N
+2282	yes	150	3	200	100	HeartRate	140	\N
+2283	yes	150	3	200	100	HeartRate	140	\N
+2284	yes	150	3	200	100	HeartRate	140	\N
+2285	yes	150	3	200	100	HeartRate	140	\N
+2286	yes	150	3	200	100	HeartRate	140	\N
+2287	yes	150	3	200	100	HeartRate	140	\N
+2288	yes	150	3	200	100	HeartRate	140	\N
+2289	yes	150	3	200	100	HeartRate	140	\N
+2290	yes	150	3	200	100	HeartRate	140	\N
+2291	yes	150	3	200	100	HeartRate	140	\N
+2292	yes	150	3	200	100	HeartRate	140	\N
+2293	yes	150	3	200	100	HeartRate	140	\N
+2294	yes	150	3	200	100	HeartRate	140	\N
+2295	yes	150	3	200	100	HeartRate	140	\N
+2296	yes	150	3	200	100	HeartRate	140	\N
+2297	yes	150	3	200	100	HeartRate	140	\N
+2298	yes	150	3	200	100	HeartRate	140	\N
+2299	yes	150	3	200	100	HeartRate	140	\N
+2300	yes	150	3	200	100	HeartRate	140	\N
+2301	yes	150	3	200	100	HeartRate	140	\N
+2302	yes	150	3	200	100	HeartRate	140	\N
+2303	yes	150	3	200	100	HeartRate	140	\N
+2304	yes	150	3	200	100	HeartRate	140	\N
+2305	yes	150	3	200	100	HeartRate	140	\N
+2306	yes	150	3	200	100	HeartRate	140	\N
+2307	yes	150	3	200	100	HeartRate	140	\N
+2308	yes	150	3	200	100	HeartRate	140	\N
+2309	yes	150	3	200	100	HeartRate	140	\N
+2310	yes	150	3	200	100	HeartRate	140	\N
+2311	yes	150	3	200	100	HeartRate	140	\N
+2312	yes	150	3	200	100	HeartRate	140	\N
+2313	yes	150	3	200	100	HeartRate	140	\N
+2314	yes	150	3	200	100	HeartRate	140	\N
+2315	yes	150	3	200	100	HeartRate	140	\N
+2316	yes	150	3	200	100	HeartRate	140	\N
+2317	yes	150	3	200	100	HeartRate	140	\N
+2318	yes	150	3	200	100	HeartRate	140	\N
+2319	yes	150	3	200	100	HeartRate	140	\N
+2320	yes	150	3	200	100	HeartRate	140	\N
+2321	yes	150	3	200	100	HeartRate	140	\N
+2322	yes	150	3	200	100	HeartRate	140	\N
+2323	yes	150	3	200	100	HeartRate	140	\N
+2324	yes	150	3	200	100	HeartRate	140	\N
+2325	yes	150	3	200	100	HeartRate	140	\N
+2326	yes	150	3	200	100	HeartRate	140	\N
+2327	yes	150	3	200	100	HeartRate	140	\N
+2328	yes	150	3	200	100	HeartRate	140	\N
+2329	yes	150	3	200	100	HeartRate	140	\N
+2330	yes	150	3	200	100	HeartRate	140	\N
+1883	yes	255	5	104	570	HeartRate	140	\N
+1830	yes	43	2	118	237	HeartRate	140	\N
+1838	yes	43	2	118	237	HeartRate	140	\N
+1848	yes	255	5	103	561	HeartRate	140	\N
+1858	yes	255	5	103	561	HeartRate	140	\N
+1867	yes	255	5	103	561	HeartRate	140	\N
+1875	yes	255	5	103	561	HeartRate	140	\N
+1884	yes	255	5	104	571	HeartRate	140	\N
+1893	yes	255	5	104	568	HeartRate	140	\N
+1903	yes	255	5	104	568	HeartRate	140	\N
+1912	yes	255	5	104	569	HeartRate	140	\N
+1921	yes	255	5	104	569	HeartRate	140	\N
+1930	yes	255	5	104	573	HeartRate	140	\N
+1940	yes	255	5	104	578	HeartRate	140	\N
+1949	yes	255	5	105	583	HeartRate	140	\N
+1959	yes	255	5	105	585	HeartRate	140	\N
+1969	yes	255	5	105	586	HeartRate	140	\N
+1979	yes	255	6	106	595	HeartRate	140	\N
+1988	yes	255	6	106	595	HeartRate	140	\N
+1997	yes	255	6	106	595	HeartRate	140	\N
+2006	yes	255	6	106	596	HeartRate	140	\N
+2016	yes	255	6	106	596	HeartRate	140	\N
+2025	yes	255	6	106	596	HeartRate	140	\N
+2035	yes	255	6	106	596	HeartRate	140	\N
+2044	yes	255	6	106	596	HeartRate	140	\N
+2053	yes	255	6	106	596	HeartRate	140	\N
+2331	yes	150	3	200	100	HeartRate	140	\N
+2332	yes	150	3	200	100	HeartRate	140	\N
+2333	yes	150	3	200	100	HeartRate	140	\N
+2334	yes	150	3	200	100	HeartRate	140	\N
+2335	yes	150	3	200	100	HeartRate	140	\N
+2336	yes	150	3	200	100	HeartRate	140	\N
+2337	yes	150	3	200	100	HeartRate	140	\N
+2338	yes	150	3	200	100	HeartRate	140	\N
+2339	yes	150	3	200	100	HeartRate	140	\N
+2340	yes	150	3	200	100	HeartRate	140	\N
+2341	yes	150	3	200	100	HeartRate	140	\N
+2342	yes	150	3	200	100	HeartRate	140	\N
+2343	yes	150	3	200	100	HeartRate	140	\N
+2344	yes	150	3	200	100	HeartRate	140	\N
+2345	yes	150	3	200	100	HeartRate	140	\N
+2346	yes	150	3	200	100	HeartRate	140	\N
+2347	yes	150	3	200	100	HeartRate	140	\N
+2348	yes	150	3	200	100	HeartRate	140	\N
+2349	yes	150	3	200	100	HeartRate	140	\N
+2350	yes	150	3	200	100	HeartRate	140	\N
+2351	yes	150	3	200	100	HeartRate	140	\N
+2352	yes	150	3	200	100	HeartRate	140	\N
+2353	yes	150	3	200	100	HeartRate	140	\N
+2354	yes	150	3	200	100	HeartRate	140	\N
+2355	yes	150	3	200	100	HeartRate	140	\N
+2356	yes	150	3	200	100	HeartRate	140	\N
+2357	yes	150	3	200	100	HeartRate	140	\N
+2358	yes	150	3	200	100	HeartRate	140	\N
+2359	yes	150	3	200	100	HeartRate	140	\N
+2360	yes	150	3	200	100	HeartRate	140	\N
+2361	yes	150	3	200	100	HeartRate	140	\N
+2362	yes	150	3	200	100	HeartRate	140	\N
+2363	yes	150	3	200	100	HeartRate	140	\N
+2364	yes	150	3	200	100	HeartRate	140	\N
+2365	yes	150	3	200	100	HeartRate	140	\N
+2366	yes	150	3	200	100	HeartRate	140	\N
+2367	yes	150	3	200	100	HeartRate	140	\N
+2368	yes	150	3	200	100	HeartRate	140	\N
+2369	yes	150	3	200	100	HeartRate	140	\N
+2370	yes	150	3	200	100	HeartRate	140	\N
+2371	yes	150	3	200	100	HeartRate	140	\N
+2372	yes	150	3	200	100	HeartRate	140	\N
+2373	yes	150	3	200	100	HeartRate	140	\N
+2374	yes	150	3	200	100	HeartRate	140	\N
+2375	yes	150	3	200	100	HeartRate	140	\N
+2376	yes	150	3	200	100	HeartRate	140	\N
+2377	yes	150	3	200	100	HeartRate	140	\N
+2378	yes	150	3	200	100	HeartRate	140	\N
+2379	yes	150	3	200	100	HeartRate	140	\N
+2380	yes	150	3	200	100	HeartRate	140	\N
+2381	yes	150	3	200	100	HeartRate	140	\N
+2382	yes	150	3	200	100	HeartRate	140	\N
+2383	yes	150	3	200	100	HeartRate	140	\N
+2384	yes	150	3	200	100	HeartRate	140	\N
+2385	yes	150	3	200	100	HeartRate	140	\N
+2386	yes	150	3	200	100	HeartRate	140	\N
+2387	yes	150	3	200	100	HeartRate	140	\N
+2388	yes	150	3	200	100	HeartRate	140	\N
+2389	yes	150	3	200	100	HeartRate	140	\N
+2390	yes	150	3	200	100	HeartRate	140	\N
+2391	yes	150	3	200	100	HeartRate	140	\N
+2392	yes	150	3	200	100	HeartRate	140	\N
+2393	yes	150	3	200	100	HeartRate	140	\N
+2394	yes	150	3	200	100	HeartRate	140	\N
+2395	yes	150	3	200	100	HeartRate	140	\N
+2396	yes	150	3	200	100	HeartRate	140	\N
+2397	yes	150	3	200	100	HeartRate	140	\N
+2398	yes	150	3	200	100	HeartRate	140	\N
+2399	yes	150	3	200	100	HeartRate	140	\N
+2400	yes	150	3	200	100	HeartRate	140	\N
+2401	yes	150	3	200	100	HeartRate	140	\N
+2402	yes	150	3	200	100	HeartRate	140	\N
+2403	yes	150	3	200	100	HeartRate	140	\N
+2404	yes	150	3	200	100	HeartRate	140	\N
+2405	yes	150	3	200	100	HeartRate	140	\N
+2406	yes	150	3	200	100	HeartRate	140	\N
+2407	yes	150	3	200	100	HeartRate	140	\N
+2408	yes	150	3	200	100	HeartRate	140	\N
+2409	yes	150	3	200	100	HeartRate	140	\N
+2410	yes	150	3	200	100	HeartRate	140	\N
+2411	yes	150	3	200	100	HeartRate	140	\N
+2412	yes	150	3	200	100	HeartRate	140	\N
+2413	yes	150	3	200	100	HeartRate	140	\N
+2414	yes	150	3	200	100	HeartRate	140	\N
+2415	yes	150	3	200	100	HeartRate	140	\N
+2416	yes	150	3	200	100	HeartRate	140	\N
+2417	yes	150	3	200	100	HeartRate	140	\N
+2418	yes	150	3	200	100	HeartRate	140	\N
+2419	yes	150	3	200	100	HeartRate	140	\N
+2420	yes	150	3	200	100	HeartRate	140	\N
+2421	yes	150	3	200	100	HeartRate	140	\N
+2422	yes	150	3	200	100	HeartRate	140	\N
+2423	yes	150	3	200	100	HeartRate	140	\N
+1885	yes	255	5	104	572	HeartRate	140	\N
+1831	yes	43	2	118	237	HeartRate	140	\N
+1839	yes	43	2	118	237	HeartRate	140	\N
+1849	yes	255	5	103	561	HeartRate	140	\N
+1859	yes	255	5	103	561	HeartRate	140	\N
+1868	yes	255	5	103	561	HeartRate	140	\N
+1876	yes	255	5	103	561	HeartRate	140	\N
+1894	yes	255	5	104	568	HeartRate	140	\N
+1904	yes	255	5	104	567	HeartRate	140	\N
+1913	yes	255	5	104	569	HeartRate	140	\N
+1922	yes	255	5	104	569	HeartRate	140	\N
+1931	yes	255	5	104	576	HeartRate	140	\N
+1941	yes	255	5	104	579	HeartRate	140	\N
+1950	yes	255	5	105	583	HeartRate	140	\N
+1960	yes	255	5	105	585	HeartRate	140	\N
+1970	yes	255	5	105	586	HeartRate	140	\N
+1980	yes	255	6	106	595	HeartRate	140	\N
+1989	yes	255	6	106	595	HeartRate	140	\N
+1998	yes	255	6	106	596	HeartRate	140	\N
+2007	yes	255	6	106	596	HeartRate	140	\N
+2017	yes	255	6	106	596	HeartRate	140	\N
+2026	yes	255	6	106	596	HeartRate	140	\N
+2036	yes	255	6	106	596	HeartRate	140	\N
+2045	yes	255	6	106	596	HeartRate	140	\N
+2054	yes	255	6	106	596	HeartRate	140	\N
+2063	yes	255	5	100	519	HeartRate	140	\N
+2424	yes	150	3	200	100	HeartRate	140	\N
+2425	yes	150	3	200	100	HeartRate	140	\N
+2426	yes	150	3	200	100	HeartRate	140	\N
+2427	yes	150	3	200	100	HeartRate	140	\N
+2428	yes	150	3	200	100	HeartRate	140	\N
+2429	yes	150	3	200	100	HeartRate	140	\N
+2430	yes	150	3	200	100	HeartRate	140	\N
+2431	yes	150	3	200	100	HeartRate	140	\N
+2432	yes	150	3	200	100	HeartRate	140	\N
+2433	yes	150	3	200	100	HeartRate	140	\N
+2434	yes	150	3	200	100	HeartRate	140	\N
+2435	yes	150	3	200	100	HeartRate	140	\N
+2436	yes	150	3	200	100	HeartRate	140	\N
+2437	yes	150	3	200	100	HeartRate	140	\N
+2438	yes	150	3	200	100	HeartRate	140	\N
+2439	yes	150	3	200	100	HeartRate	140	\N
+2440	yes	150	3	200	100	HeartRate	140	\N
+2441	yes	150	3	200	100	HeartRate	140	\N
+2442	yes	150	3	200	100	HeartRate	140	\N
+2443	yes	150	3	200	100	HeartRate	140	\N
+2444	yes	150	3	200	100	HeartRate	140	\N
+2445	yes	150	3	200	100	HeartRate	140	\N
+2446	yes	150	3	200	100	HeartRate	140	\N
+2447	yes	150	3	200	100	HeartRate	140	\N
+2448	yes	150	3	200	100	HeartRate	140	\N
+2449	yes	150	3	200	100	HeartRate	140	\N
+2450	yes	150	3	200	100	HeartRate	140	\N
+2451	yes	150	3	200	100	HeartRate	140	\N
+2452	yes	150	3	200	100	HeartRate	140	\N
+2453	yes	150	3	200	100	HeartRate	140	\N
+2454	yes	150	3	200	100	HeartRate	140	\N
+2455	yes	150	3	200	100	HeartRate	140	\N
+2456	yes	150	3	200	100	HeartRate	140	\N
+2457	yes	150	3	200	100	HeartRate	140	\N
+2458	yes	150	3	200	100	HeartRate	140	\N
+2459	yes	150	3	200	100	HeartRate	140	\N
+2460	yes	150	3	200	100	HeartRate	140	\N
+2461	yes	150	3	200	100	HeartRate	140	\N
+2462	yes	150	3	200	100	HeartRate	140	\N
+2463	yes	150	3	200	100	HeartRate	140	\N
+2464	yes	150	3	200	100	HeartRate	140	\N
+2465	yes	150	3	200	100	HeartRate	140	\N
+2466	yes	150	3	200	100	HeartRate	140	\N
+2467	yes	150	3	200	100	HeartRate	140	\N
+2468	yes	150	3	200	100	HeartRate	140	\N
+2469	yes	150	3	200	100	HeartRate	140	\N
+2470	yes	150	3	200	100	HeartRate	140	\N
+2471	yes	150	3	200	100	HeartRate	140	\N
+2472	yes	150	3	200	100	HeartRate	140	\N
+2473	yes	150	3	200	100	HeartRate	140	\N
+2474	yes	150	3	200	100	HeartRate	140	\N
+2475	yes	150	3	200	100	HeartRate	140	\N
+2476	yes	150	3	200	100	HeartRate	140	\N
+2477	yes	150	3	200	100	HeartRate	140	\N
+2478	yes	150	3	200	100	HeartRate	140	\N
+2479	yes	150	3	200	100	HeartRate	140	\N
+2660	yes	150	3	200	100	HeartRate	140	\N
+2661	yes	150	3	200	100	HeartRate	140	\N
+2662	yes	150	3	200	100	HeartRate	140	\N
+2663	yes	150	3	200	100	HeartRate	140	\N
+2664	yes	150	3	200	100	HeartRate	140	\N
+2665	yes	150	3	200	100	HeartRate	140	\N
+2666	yes	150	3	200	100	HeartRate	140	\N
+2667	yes	150	3	200	100	HeartRate	140	\N
+2668	yes	150	3	200	100	HeartRate	140	\N
+2669	yes	150	3	200	100	HeartRate	140	\N
+2670	yes	150	3	200	100	HeartRate	140	\N
+2671	yes	150	3	200	100	HeartRate	140	\N
+2672	yes	150	3	200	100	HeartRate	140	\N
+2673	yes	150	3	200	100	HeartRate	140	\N
+2674	yes	150	3	200	100	HeartRate	140	\N
+2675	yes	150	3	200	100	HeartRate	140	\N
+2676	yes	150	3	200	100	HeartRate	140	\N
+2677	yes	150	3	200	100	HeartRate	140	\N
+2678	yes	150	3	200	100	HeartRate	140	\N
+2679	yes	150	3	200	100	HeartRate	140	\N
+2680	yes	150	3	200	100	HeartRate	140	\N
+2681	yes	150	3	200	100	HeartRate	140	\N
+2682	yes	150	3	200	100	HeartRate	140	\N
+2683	yes	150	3	200	100	HeartRate	140	\N
+2684	yes	150	3	200	100	HeartRate	140	\N
+2685	yes	150	3	200	100	HeartRate	140	\N
+2686	yes	150	3	200	100	HeartRate	140	\N
+2687	yes	150	3	200	100	HeartRate	140	\N
+2688	yes	150	3	200	100	HeartRate	140	\N
+2689	yes	150	3	200	100	HeartRate	140	\N
+2690	yes	150	3	200	100	HeartRate	140	\N
+2691	yes	150	3	200	100	HeartRate	140	\N
+2692	yes	150	3	200	100	HeartRate	140	\N
+2693	yes	150	3	200	100	HeartRate	140	\N
+2694	yes	150	3	200	100	HeartRate	140	\N
+2695	yes	150	3	200	100	HeartRate	140	\N
+2696	yes	150	3	200	100	HeartRate	140	\N
+2697	yes	150	3	200	100	HeartRate	140	\N
+1886	yes	255	5	103	565	HeartRate	140	\N
+1832	yes	43	2	119	237	HeartRate	140	\N
+1840	yes	43	2	118	237	HeartRate	140	\N
+1841	yes	43	2	118	237	HeartRate	140	\N
+1850	yes	255	5	103	561	HeartRate	140	\N
+1851	yes	255	5	103	561	HeartRate	140	\N
+1860	yes	255	5	103	561	HeartRate	140	\N
+1861	yes	255	5	103	561	HeartRate	140	\N
+1869	yes	255	5	103	561	HeartRate	140	\N
+1895	yes	255	5	104	568	HeartRate	140	\N
+1905	yes	255	5	104	567	HeartRate	140	\N
+1914	yes	255	5	104	569	HeartRate	140	\N
+1923	yes	255	5	104	569	HeartRate	140	\N
+1932	yes	255	5	104	576	HeartRate	140	\N
+1942	yes	255	5	104	579	HeartRate	140	\N
+1951	yes	255	5	105	584	HeartRate	140	\N
+1961	yes	255	5	105	585	HeartRate	140	\N
+1971	yes	255	5	105	587	HeartRate	140	\N
+1981	yes	255	6	106	597	HeartRate	140	\N
+1990	yes	255	6	106	596	HeartRate	140	\N
+1999	yes	255	6	106	596	HeartRate	140	\N
+2008	yes	255	6	106	596	HeartRate	140	\N
+2018	yes	255	6	106	596	HeartRate	140	\N
+2027	yes	255	6	106	596	HeartRate	140	\N
+2037	yes	255	6	106	596	HeartRate	140	\N
+2046	yes	255	6	106	596	HeartRate	140	\N
+2055	yes	255	6	106	596	HeartRate	140	\N
+2064	yes	255	5	100	520	HeartRate	140	\N
+2480	yes	150	3	200	100	HeartRate	140	\N
+2481	yes	150	3	200	100	HeartRate	140	\N
+2482	yes	150	3	200	100	HeartRate	140	\N
+2483	yes	150	3	200	100	HeartRate	140	\N
+2484	yes	150	3	200	100	HeartRate	140	\N
+2485	yes	150	3	200	100	HeartRate	140	\N
+2486	yes	150	3	200	100	HeartRate	140	\N
+2487	yes	150	3	200	100	HeartRate	140	\N
+2488	yes	150	3	200	100	HeartRate	140	\N
+2489	yes	150	3	200	100	HeartRate	140	\N
+2490	yes	150	3	200	100	HeartRate	140	\N
+2491	yes	150	3	200	100	HeartRate	140	\N
+2492	yes	150	3	200	100	HeartRate	140	\N
+2493	yes	150	3	200	100	HeartRate	140	\N
+2494	yes	150	3	200	100	HeartRate	140	\N
+2495	yes	150	3	200	100	HeartRate	140	\N
+2496	yes	150	3	200	100	HeartRate	140	\N
+2497	yes	150	3	200	100	HeartRate	140	\N
+2498	yes	150	3	200	100	HeartRate	140	\N
+2499	yes	150	3	200	100	HeartRate	140	\N
+2500	yes	150	3	200	100	HeartRate	140	\N
+2501	yes	150	3	200	100	HeartRate	140	\N
+2502	yes	150	3	200	100	HeartRate	140	\N
+2503	yes	150	3	200	100	HeartRate	140	\N
+2504	yes	150	3	200	100	HeartRate	140	\N
+2505	yes	150	3	200	100	HeartRate	140	\N
+2506	yes	150	3	200	100	HeartRate	140	\N
+2507	yes	150	3	200	100	HeartRate	140	\N
+2508	yes	150	3	200	100	HeartRate	140	\N
+2509	yes	150	3	200	100	HeartRate	140	\N
+2510	yes	150	3	200	100	HeartRate	140	\N
+2511	yes	150	3	200	100	HeartRate	140	\N
+2512	yes	150	3	200	100	HeartRate	140	\N
+2513	yes	150	3	200	100	HeartRate	140	\N
+2514	yes	150	3	200	100	HeartRate	140	\N
+2515	yes	150	3	200	100	HeartRate	140	\N
+2516	yes	150	3	200	100	HeartRate	140	\N
+2517	yes	150	3	200	100	HeartRate	140	\N
+2518	yes	150	3	200	100	HeartRate	140	\N
+2519	yes	150	3	200	100	HeartRate	140	\N
+2520	yes	150	3	200	100	HeartRate	140	\N
+2521	yes	150	3	200	100	HeartRate	140	\N
+2522	yes	150	3	200	100	HeartRate	140	\N
+2523	yes	150	3	200	100	HeartRate	140	\N
+2524	yes	150	3	200	100	HeartRate	140	\N
+2525	yes	150	3	200	100	HeartRate	140	\N
+2526	yes	150	3	200	100	HeartRate	140	\N
+2527	yes	150	3	200	100	HeartRate	140	\N
+2528	yes	150	3	200	100	HeartRate	140	\N
+2529	yes	150	3	200	100	HeartRate	140	\N
+2530	yes	150	3	200	100	HeartRate	140	\N
+2531	yes	150	3	200	100	HeartRate	140	\N
+2532	yes	150	3	200	100	HeartRate	140	\N
+2533	yes	150	3	200	100	HeartRate	140	\N
+2534	yes	150	3	200	100	HeartRate	140	\N
+2535	yes	150	3	200	100	HeartRate	140	\N
+2536	yes	150	3	200	100	HeartRate	140	\N
+2537	yes	150	3	200	100	HeartRate	140	\N
+2538	yes	150	3	200	100	HeartRate	140	\N
+2539	yes	150	3	200	100	HeartRate	140	\N
+2540	yes	150	3	200	100	HeartRate	140	\N
+2541	yes	150	3	200	100	HeartRate	140	\N
+2542	yes	150	3	200	100	HeartRate	140	\N
+2543	yes	150	3	200	100	HeartRate	140	\N
+2544	yes	150	3	200	100	HeartRate	140	\N
+2545	yes	150	3	200	100	HeartRate	140	\N
+2546	yes	150	3	200	100	HeartRate	140	\N
+2547	yes	150	3	200	100	HeartRate	140	\N
+2548	yes	150	3	200	100	HeartRate	140	\N
+2549	yes	150	3	200	100	HeartRate	140	\N
+2550	yes	150	3	200	100	HeartRate	140	\N
+2551	yes	150	3	200	100	HeartRate	140	\N
+2552	yes	150	3	200	100	HeartRate	140	\N
+2553	yes	150	3	200	100	HeartRate	140	\N
+2554	yes	150	3	200	100	HeartRate	140	\N
+2555	yes	150	3	200	100	HeartRate	140	\N
+2556	yes	150	3	200	100	HeartRate	140	\N
+2557	yes	150	3	200	100	HeartRate	140	\N
+2558	yes	150	3	200	100	HeartRate	140	\N
+2559	yes	150	3	200	100	HeartRate	140	\N
+2560	yes	150	3	200	100	HeartRate	140	\N
+2561	yes	150	3	200	100	HeartRate	140	\N
+2562	yes	150	3	200	100	HeartRate	140	\N
+2563	yes	150	3	200	100	HeartRate	140	\N
+2564	yes	150	3	200	100	HeartRate	140	\N
+2565	yes	150	3	200	100	HeartRate	140	\N
+2566	yes	150	3	200	100	HeartRate	140	\N
+2567	yes	150	3	200	100	HeartRate	140	\N
+2568	yes	150	3	200	100	HeartRate	140	\N
+2569	yes	150	3	200	100	HeartRate	140	\N
+2570	yes	150	3	200	100	HeartRate	140	\N
+2571	yes	150	3	200	100	HeartRate	140	\N
+2807	yes	255	7	114	709	HeartRate	140	\N
+2808	yes	255	7	114	710	HeartRate	140	\N
+2809	yes	255	7	114	712	HeartRate	140	\N
+2810	yes	255	7	114	713	HeartRate	140	\N
+2811	yes	255	7	115	715	HeartRate	140	\N
+2812	yes	255	7	115	719	HeartRate	140	\N
+2813	yes	255	7	115	719	HeartRate	140	\N
+2814	yes	255	7	115	719	HeartRate	140	\N
+2815	yes	255	7	115	721	HeartRate	140	\N
+2816	yes	255	7	115	721	HeartRate	140	\N
+2817	yes	255	7	115	716	HeartRate	140	\N
+2818	yes	255	7	115	721	HeartRate	140	\N
+2819	yes	255	7	115	724	HeartRate	140	\N
+2820	yes	255	7	115	726	HeartRate	140	\N
+2821	yes	255	7	116	730	HeartRate	140	\N
+2822	yes	255	7	116	731	HeartRate	140	\N
+2823	yes	255	7	116	737	HeartRate	140	\N
+2824	yes	255	7	116	738	HeartRate	140	\N
+2825	yes	255	7	117	741	HeartRate	140	\N
+2826	yes	255	7	117	747	HeartRate	140	\N
+2827	yes	255	8	117	750	HeartRate	140	\N
+2828	yes	255	8	118	756	HeartRate	140	\N
+2829	yes	255	8	118	759	HeartRate	140	\N
+2830	yes	255	8	118	760	HeartRate	140	\N
+2831	yes	255	8	118	764	HeartRate	140	\N
+2832	yes	255	8	118	767	HeartRate	140	\N
+2833	yes	255	8	119	771	HeartRate	140	\N
+2834	yes	255	8	119	773	HeartRate	140	\N
+2835	yes	255	8	119	777	HeartRate	140	\N
+2836	yes	255	8	119	779	HeartRate	140	\N
+2837	yes	255	8	120	783	HeartRate	140	\N
+2838	yes	255	8	120	787	HeartRate	140	\N
+2839	yes	255	8	120	790	HeartRate	140	\N
+2840	yes	255	8	120	792	HeartRate	140	\N
+2841	yes	255	8	120	794	HeartRate	140	\N
+2842	yes	255	8	121	796	HeartRate	140	\N
+2843	yes	255	8	121	798	HeartRate	140	\N
+2844	yes	255	8	121	800	HeartRate	140	\N
+2845	yes	255	8	121	803	HeartRate	140	\N
+2846	yes	255	8	121	806	HeartRate	140	\N
+2847	yes	255	8	122	809	HeartRate	140	\N
+2848	yes	255	8	122	811	HeartRate	140	\N
+2849	yes	255	8	122	812	HeartRate	140	\N
+2850	yes	255	8	122	812	HeartRate	140	\N
+2851	yes	255	8	122	813	HeartRate	140	\N
+2852	yes	255	8	122	814	HeartRate	140	\N
+2853	yes	255	8	122	814	HeartRate	140	\N
+2854	yes	255	8	122	814	HeartRate	140	\N
+2855	yes	255	8	122	815	HeartRate	140	\N
+2856	yes	255	8	122	815	HeartRate	140	\N
+2857	yes	255	8	122	815	HeartRate	140	\N
+2858	yes	255	8	122	815	HeartRate	140	\N
+2859	yes	255	8	122	816	HeartRate	140	\N
+2860	yes	255	8	122	817	HeartRate	140	\N
+2861	yes	255	8	122	816	HeartRate	140	\N
+2862	yes	255	8	122	815	HeartRate	140	\N
+2863	yes	255	8	122	815	HeartRate	140	\N
+2864	yes	255	8	122	816	HeartRate	140	\N
+2865	yes	255	8	122	816	HeartRate	140	\N
+2866	yes	255	8	122	817	HeartRate	140	\N
+2867	yes	255	8	122	817	HeartRate	140	\N
+2868	yes	255	8	122	817	HeartRate	140	\N
+2869	yes	255	8	122	817	HeartRate	140	\N
+2870	yes	255	8	122	816	HeartRate	140	\N
+2871	yes	255	8	122	814	HeartRate	140	\N
+2872	yes	255	8	122	812	HeartRate	140	\N
+2873	yes	255	8	122	812	HeartRate	140	\N
+2874	yes	255	8	122	811	HeartRate	140	\N
+2875	yes	255	8	122	809	HeartRate	140	\N
+2876	yes	255	8	121	808	HeartRate	140	\N
+2877	yes	255	8	122	813	HeartRate	140	\N
+2878	yes	255	8	121	809	HeartRate	140	\N
+2879	yes	255	8	121	808	HeartRate	140	\N
+2880	yes	255	8	121	806	HeartRate	140	\N
+2881	yes	255	8	121	805	HeartRate	140	\N
+2882	yes	255	8	121	804	HeartRate	140	\N
+2883	yes	255	8	121	802	HeartRate	140	\N
+2884	yes	255	8	121	801	HeartRate	140	\N
+2885	yes	255	8	121	800	HeartRate	140	\N
+2886	yes	255	8	121	797	HeartRate	140	\N
+2887	yes	255	8	121	796	HeartRate	140	\N
+2888	yes	255	8	120	795	HeartRate	140	\N
+2889	yes	255	8	120	791	HeartRate	140	\N
+2890	yes	255	8	120	787	HeartRate	140	\N
+2891	yes	255	8	120	784	HeartRate	140	\N
+2892	yes	255	8	119	781	HeartRate	140	\N
+2893	yes	255	8	119	778	HeartRate	140	\N
+2894	yes	255	8	119	775	HeartRate	140	\N
+2895	yes	255	8	119	771	HeartRate	140	\N
+2896	yes	255	8	119	769	HeartRate	140	\N
+2897	yes	255	8	118	767	HeartRate	140	\N
+2898	yes	255	8	118	763	HeartRate	140	\N
+2899	yes	255	8	118	761	HeartRate	140	\N
+2900	yes	255	8	118	757	HeartRate	140	\N
+2901	yes	255	8	117	754	HeartRate	140	\N
+2902	yes	255	8	117	752	HeartRate	140	\N
+2903	yes	255	7	117	749	HeartRate	140	\N
+2904	yes	255	7	117	747	HeartRate	140	\N
+2905	yes	255	7	117	745	HeartRate	140	\N
+2906	yes	255	7	117	744	HeartRate	140	\N
+2907	yes	255	7	117	741	HeartRate	140	\N
+2908	yes	255	7	116	740	HeartRate	140	\N
+2909	yes	255	7	116	738	HeartRate	140	\N
+2910	yes	255	7	116	735	HeartRate	140	\N
+2911	yes	255	7	116	732	HeartRate	140	\N
+2912	yes	255	7	116	730	HeartRate	140	\N
+2913	yes	255	7	116	730	HeartRate	140	\N
+2914	yes	255	7	116	729	HeartRate	140	\N
+2915	yes	255	7	116	736	HeartRate	140	\N
+2916	yes	255	7	116	736	HeartRate	140	\N
+2917	yes	255	7	116	735	HeartRate	140	\N
+2918	yes	255	7	116	734	HeartRate	140	\N
+2919	yes	255	7	116	734	HeartRate	140	\N
+2920	yes	255	7	116	733	HeartRate	140	\N
+2921	yes	255	7	116	733	HeartRate	140	\N
+2922	yes	255	7	116	733	HeartRate	140	\N
+2923	yes	255	7	116	733	HeartRate	140	\N
+2924	yes	255	7	116	734	HeartRate	140	\N
+2925	yes	255	7	116	734	HeartRate	140	\N
+2926	yes	255	7	116	734	HeartRate	140	\N
+2927	yes	255	7	116	734	HeartRate	140	\N
+2928	yes	255	7	116	734	HeartRate	140	\N
+2929	yes	255	7	116	733	HeartRate	140	\N
+2930	yes	255	7	116	733	HeartRate	140	\N
+2931	yes	255	7	116	734	HeartRate	140	\N
+2932	yes	255	7	116	734	HeartRate	140	\N
+2933	yes	255	7	116	734	HeartRate	140	\N
+2934	yes	255	7	116	734	HeartRate	140	\N
+2935	yes	255	7	116	734	HeartRate	140	\N
+2936	yes	255	7	116	734	HeartRate	140	\N
+2937	yes	255	7	115	726	HeartRate	140	\N
+2938	yes	255	7	115	727	HeartRate	140	\N
+2939	yes	255	7	115	727	HeartRate	140	\N
+2940	yes	255	7	115	727	HeartRate	140	\N
+2941	yes	255	7	115	727	HeartRate	140	\N
+2942	yes	255	7	115	726	HeartRate	140	\N
+2943	yes	255	7	115	727	HeartRate	140	\N
+2944	yes	255	7	115	725	HeartRate	140	\N
+2945	yes	255	7	115	724	HeartRate	140	\N
+2946	yes	255	7	115	725	HeartRate	140	\N
+2947	yes	255	7	115	726	HeartRate	140	\N
+2948	yes	255	7	115	727	HeartRate	140	\N
+2949	yes	255	7	115	727	HeartRate	140	\N
+2950	yes	255	7	115	725	HeartRate	140	\N
+2951	yes	255	7	115	726	HeartRate	140	\N
+2952	yes	255	7	116	728	HeartRate	140	\N
+2953	yes	255	7	115	726	HeartRate	140	\N
+2954	yes	255	7	115	726	HeartRate	140	\N
+2955	yes	255	7	116	728	HeartRate	140	\N
+2956	yes	255	7	115	726	HeartRate	140	\N
+2957	yes	255	7	115	726	HeartRate	140	\N
+2958	yes	255	7	115	727	HeartRate	140	\N
+2959	yes	255	7	115	727	HeartRate	140	\N
+2960	yes	255	7	116	732	HeartRate	140	\N
+2961	yes	255	7	116	734	HeartRate	140	\N
+2962	yes	255	7	116	735	HeartRate	140	\N
+2963	yes	255	7	116	735	HeartRate	140	\N
+2964	yes	255	7	116	734	HeartRate	140	\N
+2965	yes	255	7	116	734	HeartRate	140	\N
+2966	yes	255	7	116	733	HeartRate	140	\N
+2967	yes	255	7	116	734	HeartRate	140	\N
+2968	yes	255	7	116	735	HeartRate	140	\N
+2969	yes	255	7	116	737	HeartRate	140	\N
+2970	yes	255	7	116	741	HeartRate	140	\N
+2971	yes	255	7	116	741	HeartRate	140	\N
+2972	yes	255	7	117	743	HeartRate	140	\N
+2973	yes	255	7	117	749	HeartRate	140	\N
+2974	yes	255	8	117	751	HeartRate	140	\N
+2975	yes	255	8	117	754	HeartRate	140	\N
+2976	yes	255	8	118	759	HeartRate	140	\N
+2977	yes	255	8	118	762	HeartRate	140	\N
+2978	yes	255	8	118	764	HeartRate	140	\N
+2979	yes	255	8	118	766	HeartRate	140	\N
+2980	yes	255	8	119	769	HeartRate	140	\N
+2981	yes	255	8	119	772	HeartRate	140	\N
+2982	yes	255	8	119	774	HeartRate	140	\N
+2983	yes	255	8	119	776	HeartRate	140	\N
+2984	yes	255	8	119	779	HeartRate	140	\N
+2985	yes	255	8	119	781	HeartRate	140	\N
+2986	yes	255	8	120	784	HeartRate	140	\N
+2987	yes	255	8	120	787	HeartRate	140	\N
+2988	yes	255	8	120	790	HeartRate	140	\N
+2989	yes	255	8	120	791	HeartRate	140	\N
+2990	yes	255	8	120	793	HeartRate	140	\N
+2991	yes	255	8	120	795	HeartRate	140	\N
+2992	yes	255	8	121	796	HeartRate	140	\N
+2993	yes	255	8	121	797	HeartRate	140	\N
+2994	yes	255	8	121	800	HeartRate	140	\N
+2995	yes	255	8	121	800	HeartRate	140	\N
+2996	yes	255	8	120	793	HeartRate	140	\N
+2997	yes	255	8	121	802	HeartRate	140	\N
+2998	yes	255	8	121	805	HeartRate	140	\N
+2999	yes	255	8	121	807	HeartRate	140	\N
+3000	yes	255	8	122	810	HeartRate	140	\N
+3001	yes	255	8	122	810	HeartRate	140	\N
+3002	yes	255	8	122	810	HeartRate	140	\N
+3003	yes	255	8	122	812	HeartRate	140	\N
+3004	yes	255	8	121	805	HeartRate	140	\N
+3005	yes	255	8	122	812	HeartRate	140	\N
+3006	yes	255	8	122	813	HeartRate	140	\N
+3007	yes	255	8	122	814	HeartRate	140	\N
+3008	yes	255	8	122	815	HeartRate	140	\N
+3009	yes	255	8	122	817	HeartRate	140	\N
+3010	yes	255	8	122	816	HeartRate	140	\N
+3011	yes	255	8	122	817	HeartRate	140	\N
+3012	yes	255	8	122	817	HeartRate	140	\N
+3013	yes	255	8	122	818	HeartRate	140	\N
+3014	yes	255	8	122	818	HeartRate	140	\N
+3015	yes	255	8	122	819	HeartRate	140	\N
+3016	yes	255	8	122	818	HeartRate	140	\N
+3017	yes	255	8	122	818	HeartRate	140	\N
+3018	yes	255	8	122	819	HeartRate	140	\N
+3019	yes	255	8	122	821	HeartRate	140	\N
+3020	yes	255	8	123	822	HeartRate	140	\N
+3021	yes	255	8	122	822	HeartRate	140	\N
+3022	yes	255	8	122	822	HeartRate	140	\N
+3023	yes	255	8	123	822	HeartRate	140	\N
+3024	yes	255	8	122	822	HeartRate	140	\N
+3025	yes	255	8	122	819	HeartRate	140	\N
+3026	yes	255	8	122	821	HeartRate	140	\N
+3027	yes	255	8	122	821	HeartRate	140	\N
+3028	yes	255	8	123	822	HeartRate	140	\N
+3029	yes	255	8	123	823	HeartRate	140	\N
+3030	yes	255	8	122	822	HeartRate	140	\N
+3031	yes	255	8	122	820	HeartRate	140	\N
+3032	yes	255	8	122	819	HeartRate	140	\N
+3033	yes	255	8	122	815	HeartRate	140	\N
+3034	yes	255	8	122	814	HeartRate	140	\N
+3035	yes	255	8	122	815	HeartRate	140	\N
+3036	yes	255	8	122	814	HeartRate	140	\N
+3037	yes	255	8	122	812	HeartRate	140	\N
+3038	yes	255	8	122	811	HeartRate	140	\N
+3039	yes	255	8	122	813	HeartRate	140	\N
+3040	yes	255	8	122	812	HeartRate	140	\N
+3041	yes	255	8	122	812	HeartRate	140	\N
+3042	yes	255	8	122	811	HeartRate	140	\N
+3043	yes	255	8	122	809	HeartRate	140	\N
+3044	yes	255	8	122	809	HeartRate	140	\N
+3045	yes	255	8	121	808	HeartRate	140	\N
+3046	yes	255	8	121	807	HeartRate	140	\N
+3047	yes	255	8	121	808	HeartRate	140	\N
+3048	yes	255	8	121	808	HeartRate	140	\N
+3049	yes	255	8	122	809	HeartRate	140	\N
+3050	yes	255	8	122	811	HeartRate	140	\N
+3051	yes	255	8	122	812	HeartRate	140	\N
+3052	yes	255	8	122	811	HeartRate	140	\N
+3053	yes	255	8	122	811	HeartRate	140	\N
+3054	yes	255	8	122	812	HeartRate	140	\N
+3055	yes	255	8	122	810	HeartRate	140	\N
+3056	yes	255	8	122	810	HeartRate	140	\N
+3057	yes	255	8	121	808	HeartRate	140	\N
+3058	yes	255	8	121	808	HeartRate	140	\N
+3059	yes	255	8	121	808	HeartRate	140	\N
+3060	yes	255	8	121	808	HeartRate	140	\N
+3061	yes	255	8	121	807	HeartRate	140	\N
+3062	yes	255	8	121	806	HeartRate	140	\N
+3063	yes	255	8	121	806	HeartRate	140	\N
+3064	yes	255	8	121	804	HeartRate	140	\N
+3065	yes	255	8	121	805	HeartRate	140	\N
+3066	yes	255	8	121	806	HeartRate	140	\N
+3067	yes	255	8	121	807	HeartRate	140	\N
+3068	yes	255	8	121	807	HeartRate	140	\N
+3069	yes	255	8	121	807	HeartRate	140	\N
+3070	yes	255	8	121	807	HeartRate	140	\N
+3071	yes	255	8	121	807	HeartRate	140	\N
+3072	yes	255	8	121	808	HeartRate	140	\N
+3073	yes	255	8	121	807	HeartRate	140	\N
+3074	yes	255	8	121	805	HeartRate	140	\N
+3075	yes	255	8	121	805	HeartRate	140	\N
+3076	yes	255	8	121	807	HeartRate	140	\N
+3077	yes	255	8	121	806	HeartRate	140	\N
+3078	yes	255	8	121	807	HeartRate	140	\N
+3079	yes	255	8	121	806	HeartRate	140	\N
+3080	yes	255	8	121	806	HeartRate	140	\N
+3081	yes	255	8	121	806	HeartRate	140	\N
+3082	yes	255	8	121	806	HeartRate	140	\N
+3083	yes	255	8	121	806	HeartRate	140	\N
+3084	yes	255	8	121	808	HeartRate	140	\N
+3085	yes	255	8	122	809	HeartRate	140	\N
+3086	yes	255	8	122	810	HeartRate	140	\N
+3087	yes	255	8	122	810	HeartRate	140	\N
+3088	yes	255	8	121	808	HeartRate	140	\N
+3089	yes	255	8	121	807	HeartRate	140	\N
+3090	yes	255	8	121	805	HeartRate	140	\N
+3091	yes	255	8	121	805	HeartRate	140	\N
+3092	yes	255	8	121	805	HeartRate	140	\N
+3093	yes	255	8	121	805	HeartRate	140	\N
+3094	yes	255	8	121	807	HeartRate	140	\N
+3095	yes	255	8	121	805	HeartRate	140	\N
+3096	yes	255	8	121	805	HeartRate	140	\N
+3097	yes	255	8	121	807	HeartRate	140	\N
+3098	yes	255	8	121	805	HeartRate	140	\N
+3099	yes	255	8	121	804	HeartRate	140	\N
+3100	yes	255	8	121	803	HeartRate	140	\N
+3101	yes	255	8	121	802	HeartRate	140	\N
+3102	yes	255	8	121	802	HeartRate	140	\N
+3103	yes	255	8	121	803	HeartRate	140	\N
+3104	yes	255	8	121	803	HeartRate	140	\N
+3105	yes	255	8	121	803	HeartRate	140	\N
+3106	yes	255	8	121	801	HeartRate	140	\N
+3107	yes	255	8	121	801	HeartRate	140	\N
+3108	yes	255	8	121	800	HeartRate	140	\N
+3109	yes	255	8	121	800	HeartRate	140	\N
+3110	yes	255	8	121	800	HeartRate	140	\N
+3111	yes	255	8	121	802	HeartRate	140	\N
+3880	yes	144	4	189	94	HeartRate	140	\N
+3881	yes	144	4	188	94	HeartRate	140	\N
+3882	yes	144	4	188	94	HeartRate	140	\N
+3883	yes	144	4	188	94	HeartRate	140	\N
+3884	yes	144	4	187	94	HeartRate	140	\N
+3885	yes	144	4	188	94	HeartRate	140	\N
+3886	yes	143	4	187	93	HeartRate	140	\N
+3887	yes	143	4	186	93	HeartRate	140	\N
+3888	yes	143	4	186	93	HeartRate	140	\N
+3889	yes	143	4	186	93	HeartRate	140	\N
+3890	yes	143	4	186	93	HeartRate	140	\N
+3891	yes	143	4	186	93	HeartRate	140	\N
+3892	yes	143	4	185	93	HeartRate	140	\N
+3893	yes	142	4	185	92	HeartRate	140	\N
+3894	yes	142	4	185	92	HeartRate	140	\N
+3895	yes	142	4	184	92	HeartRate	140	\N
+3896	yes	142	4	184	92	HeartRate	140	\N
+3897	yes	142	4	183	92	HeartRate	140	\N
+3898	yes	141	4	183	91	HeartRate	140	\N
+3899	yes	141	4	183	91	HeartRate	140	\N
+3900	yes	141	4	182	91	HeartRate	140	\N
+3901	yes	141	4	182	91	HeartRate	140	\N
+3902	yes	141	4	182	91	HeartRate	140	\N
+3903	yes	141	4	181	91	HeartRate	140	\N
+3904	yes	140	4	181	90	HeartRate	140	\N
+3905	yes	140	4	180	90	HeartRate	140	\N
+3906	yes	140	4	180	90	HeartRate	140	\N
+3907	yes	140	4	180	90	HeartRate	140	\N
+3908	yes	140	4	179	90	HeartRate	140	\N
+3909	yes	140	4	179	90	HeartRate	140	\N
+3910	yes	139	4	179	89	HeartRate	140	\N
+3911	yes	139	4	178	89	HeartRate	140	\N
+3912	yes	139	4	178	89	HeartRate	140	\N
+3913	yes	139	4	178	89	HeartRate	140	\N
+3914	yes	139	4	178	89	HeartRate	140	\N
+3915	yes	139	4	177	89	HeartRate	140	\N
+3916	yes	138	4	177	88	HeartRate	140	\N
+3917	yes	138	4	176	88	HeartRate	140	\N
+3918	yes	138	4	176	88	HeartRate	140	\N
+3919	yes	138	4	176	88	HeartRate	140	\N
+3920	yes	138	4	176	88	HeartRate	140	\N
+3921	yes	138	4	176	88	HeartRate	140	\N
+3922	yes	138	4	176	88	HeartRate	140	\N
+3923	yes	138	4	176	88	HeartRate	140	\N
+3924	yes	138	4	175	88	HeartRate	140	\N
+3925	yes	138	4	175	88	HeartRate	140	\N
+3926	yes	138	4	175	88	HeartRate	140	\N
+3927	yes	137	4	175	87	HeartRate	140	\N
+3928	yes	137	4	175	87	HeartRate	140	\N
+3929	yes	137	4	175	87	HeartRate	140	\N
+3930	yes	137	4	175	87	HeartRate	140	\N
+3931	yes	137	4	175	87	HeartRate	140	\N
+3932	yes	137	4	175	87	HeartRate	140	\N
+3933	yes	137	4	175	87	HeartRate	140	\N
+3934	yes	137	4	175	87	HeartRate	140	\N
+3935	yes	137	4	175	87	HeartRate	140	\N
+3936	yes	137	4	175	87	HeartRate	140	\N
+3937	yes	137	4	175	87	HeartRate	140	\N
+3938	yes	137	4	174	87	HeartRate	140	\N
+3939	yes	137	4	174	87	HeartRate	140	\N
+3940	yes	137	4	174	87	HeartRate	140	\N
+3941	yes	137	4	174	87	HeartRate	140	\N
+3942	yes	137	4	174	87	HeartRate	140	\N
+3943	yes	137	4	174	87	HeartRate	140	\N
+3944	yes	137	4	174	87	HeartRate	140	\N
+3945	yes	137	4	173	87	HeartRate	140	\N
+3946	yes	137	4	173	87	HeartRate	140	\N
+3947	yes	136	4	173	86	HeartRate	140	\N
+3948	yes	136	4	173	86	HeartRate	140	\N
+3949	yes	136	4	173	86	HeartRate	140	\N
+3950	yes	136	4	173	86	HeartRate	140	\N
+3951	yes	136	4	173	86	HeartRate	140	\N
+3952	yes	136	4	173	86	HeartRate	140	\N
+3953	yes	136	4	172	86	HeartRate	140	\N
+3954	yes	136	4	172	86	HeartRate	140	\N
+3955	yes	136	4	172	86	HeartRate	140	\N
+3956	yes	136	4	172	86	HeartRate	140	\N
+3957	yes	136	4	172	86	HeartRate	140	\N
+3958	yes	136	4	172	86	HeartRate	140	\N
+3959	yes	136	4	172	86	HeartRate	140	\N
+3960	yes	136	4	172	86	HeartRate	140	\N
+3961	yes	136	4	171	86	HeartRate	140	\N
+3962	yes	136	4	171	86	HeartRate	140	\N
+3963	yes	135	4	171	85	HeartRate	140	\N
+3964	yes	135	4	170	85	HeartRate	140	\N
+3965	yes	135	4	170	85	HeartRate	140	\N
+3966	yes	135	4	170	85	HeartRate	140	\N
+3967	yes	135	4	169	85	HeartRate	140	\N
+3968	yes	135	4	169	85	HeartRate	140	\N
+3969	yes	134	4	169	84	HeartRate	140	\N
+3970	yes	134	4	168	84	HeartRate	140	\N
+3971	yes	134	4	168	84	HeartRate	140	\N
+3972	yes	134	4	168	84	HeartRate	140	\N
+3973	yes	134	4	168	84	HeartRate	140	\N
+3974	yes	134	4	168	84	HeartRate	140	\N
+3975	yes	134	4	167	84	HeartRate	140	\N
+3976	yes	134	4	167	84	HeartRate	140	\N
+3977	yes	134	4	167	84	HeartRate	140	\N
+3978	yes	133	4	167	83	HeartRate	140	\N
+3979	yes	133	4	167	83	HeartRate	140	\N
+3980	yes	133	4	166	83	HeartRate	140	\N
+3981	yes	133	4	166	83	HeartRate	140	\N
+3982	yes	134	4	167	84	HeartRate	140	\N
+3983	yes	133	4	166	83	HeartRate	140	\N
+3984	yes	133	4	166	83	HeartRate	140	\N
+3985	yes	133	4	166	83	HeartRate	140	\N
+3986	yes	133	4	166	83	HeartRate	140	\N
+3987	yes	133	4	166	83	HeartRate	140	\N
+3988	yes	133	4	166	83	HeartRate	140	\N
+3989	yes	133	4	166	83	HeartRate	140	\N
+3990	yes	133	4	166	83	HeartRate	140	\N
+3991	yes	133	4	166	83	HeartRate	140	\N
+3992	yes	133	4	165	83	HeartRate	140	\N
+3993	yes	133	4	165	83	HeartRate	140	\N
+3994	yes	133	4	165	83	HeartRate	140	\N
+3995	yes	132	4	165	82	HeartRate	140	\N
+3996	yes	132	4	165	82	HeartRate	140	\N
+3997	yes	132	4	165	82	HeartRate	140	\N
+3998	yes	132	4	165	82	HeartRate	140	\N
+3999	yes	132	4	165	82	HeartRate	140	\N
+4000	yes	132	4	165	82	HeartRate	140	\N
+4001	yes	132	4	164	82	HeartRate	140	\N
+4002	yes	132	4	164	82	HeartRate	140	\N
+4003	yes	132	4	165	82	HeartRate	140	\N
+4004	yes	132	4	164	82	HeartRate	140	\N
+4005	yes	132	4	164	82	HeartRate	140	\N
+4006	yes	132	4	165	82	HeartRate	140	\N
+4007	yes	132	4	164	82	HeartRate	140	\N
+4008	yes	132	4	164	82	HeartRate	140	\N
+4009	yes	132	4	164	82	HeartRate	140	\N
+4010	yes	132	4	164	82	HeartRate	140	\N
+4011	yes	132	4	164	82	HeartRate	140	\N
+4012	yes	132	4	164	82	HeartRate	140	\N
+4013	yes	132	4	164	82	HeartRate	140	\N
+4014	yes	132	4	163	82	HeartRate	140	\N
+4015	yes	132	4	163	82	HeartRate	140	\N
+4016	yes	132	4	163	82	HeartRate	140	\N
+4017	yes	131	4	163	81	HeartRate	140	\N
+4018	yes	131	4	163	81	HeartRate	140	\N
+4019	yes	131	4	163	81	HeartRate	140	\N
+4020	yes	131	4	163	81	HeartRate	140	\N
+4021	yes	131	4	162	81	HeartRate	140	\N
+4022	yes	131	4	162	81	HeartRate	140	\N
+4023	yes	131	4	162	81	HeartRate	140	\N
+4024	yes	131	4	162	81	HeartRate	140	\N
+4025	yes	131	4	162	81	HeartRate	140	\N
+4026	yes	131	4	162	81	HeartRate	140	\N
+4027	yes	131	4	162	81	HeartRate	140	\N
+4028	yes	131	4	162	81	HeartRate	140	\N
+4029	yes	131	4	162	81	HeartRate	140	\N
+4030	yes	131	4	162	81	HeartRate	140	\N
+4031	yes	131	4	162	81	HeartRate	140	\N
+4032	yes	131	4	162	81	HeartRate	140	\N
+4033	yes	131	4	162	81	HeartRate	140	\N
+4034	yes	131	4	162	81	HeartRate	140	\N
+4035	yes	131	4	162	81	HeartRate	140	\N
+4036	yes	131	4	162	81	HeartRate	140	\N
+4037	yes	131	4	162	81	HeartRate	140	\N
+4038	yes	131	4	161	81	HeartRate	140	\N
+4039	yes	131	4	161	81	HeartRate	140	\N
+4040	yes	131	4	161	81	HeartRate	140	\N
+4041	yes	131	4	161	81	HeartRate	140	\N
+4042	yes	130	4	161	80	HeartRate	140	\N
+4043	yes	130	4	161	80	HeartRate	140	\N
+4044	yes	130	4	161	80	HeartRate	140	\N
+4045	yes	130	4	161	80	HeartRate	140	\N
+4046	yes	130	4	161	80	HeartRate	140	\N
+4047	yes	130	4	161	80	HeartRate	140	\N
+4048	yes	130	4	161	80	HeartRate	140	\N
+4049	yes	130	4	161	80	HeartRate	140	\N
+4050	yes	130	4	161	80	HeartRate	140	\N
+4051	yes	130	4	161	80	HeartRate	140	\N
+4052	yes	130	4	161	80	HeartRate	140	\N
+4053	yes	130	4	161	80	HeartRate	140	\N
+4054	yes	130	4	161	80	HeartRate	140	\N
+4055	yes	130	4	161	80	HeartRate	140	\N
+4056	yes	130	4	161	80	HeartRate	140	\N
+4057	yes	130	4	161	80	HeartRate	140	\N
+4058	yes	130	4	160	80	HeartRate	140	\N
+4059	yes	130	4	160	80	HeartRate	140	\N
+4060	yes	130	4	160	80	HeartRate	140	\N
+4061	yes	130	4	160	80	HeartRate	140	\N
+4062	yes	130	4	160	80	HeartRate	140	\N
+4063	yes	130	4	160	80	HeartRate	140	\N
+4064	yes	130	4	160	80	HeartRate	140	\N
+4065	yes	130	4	160	80	HeartRate	140	\N
+65619	yes	100	1	100	200	HeartRate	140	\N
+67761	yes	200	3	300	150	Pollution	144	time_interval
+67762	yes	200	3	300	150	Pollution	144	time_interval
+67763	yes	200	3	300	150	Pollution	144	time_interval
+67764	yes	200	3	300	150	Pollution	144	time_interval
+67765	yes	200	3	300	150	Pollution	144	time_interval
+67766	yes	200	3	300	150	Pollution	144	time_interval
+67767	yes	200	3	300	150	Pollution	144	time_interval
+67768	yes	200	3	300	150	Pollution	144	time_interval
+67769	yes	200	3	300	150	Pollution	144	time_interval
+67770	yes	200	3	300	150	Pollution	144	time_interval
+68383	yes	200	3	300	150	Pollution	144	time_interval
+68384	yes	200	3	300	150	Pollution	144	time_interval
+68385	yes	200	3	300	150	Pollution	144	time_interval
+68386	yes	200	3	300	150	Pollution	144	time_interval
+68387	yes	200	3	300	150	Pollution	144	time_interval
+68388	yes	200	3	300	150	Pollution	144	time_interval
+68389	yes	200	3	300	150	Pollution	144	time_interval
+68390	yes	200	3	300	150	Pollution	144	time_interval
+68391	yes	200	3	300	150	Pollution	144	time_interval
+68393	yes	200	3	300	150	Pollution	144	time_interval
+68395	yes	200	3	300	150	Pollution	144	time_interval
+68397	yes	60	3	100	50	AirPressure	166	time_interval
+68398	yes	60	3	100	50	AirPressure	166	time_interval
+68399	yes	60	3	100	50	AirPressure	166	time_interval
+68400	yes	60	3	100	50	AirPressure	166	time_interval
+68401	yes	60	3	100	50	AirPressure	166	time_interval
+68402	yes	60	3	100	50	AirPressure	166	time_interval
 \.
 
 
 --
--- TOC entry 4986 (class 0 OID 17619)
--- Dependencies: 219
+-- TOC entry 5167 (class 0 OID 26228)
+-- Dependencies: 223
 -- Data for Name: AndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -68027,8 +68123,8 @@ COPY public."AndroidPhone" (phoneid) FROM stdin;
 
 
 --
--- TOC entry 4988 (class 0 OID 17623)
--- Dependencies: 221
+-- TOC entry 5169 (class 0 OID 26233)
+-- Dependencies: 225
 -- Data for Name: DeviceSensor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -68045,8 +68141,8 @@ COPY public."DeviceSensor" (watchid, phoneid, userid, usecase_id) FROM stdin;
 
 
 --
--- TOC entry 4989 (class 0 OID 17626)
--- Dependencies: 222
+-- TOC entry 5170 (class 0 OID 26239)
+-- Dependencies: 226
 -- Data for Name: SensorData; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135341,8 +135437,8 @@ COPY public."SensorData" (id, watchid, phoneid, alertid, userid, value, "time", 
 
 
 --
--- TOC entry 4991 (class 0 OID 17631)
--- Dependencies: 224
+-- TOC entry 5172 (class 0 OID 26245)
+-- Dependencies: 228
 -- Data for Name: UseCase; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135357,8 +135453,8 @@ COPY public."UseCase" (usecase_id, name, description, log_interval) FROM stdin;
 
 
 --
--- TOC entry 4992 (class 0 OID 17636)
--- Dependencies: 225
+-- TOC entry 5173 (class 0 OID 26252)
+-- Dependencies: 229
 -- Data for Name: UseCaseDictionary; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135416,22 +135512,22 @@ COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_nam
 
 
 --
--- TOC entry 4995 (class 0 OID 17644)
--- Dependencies: 228
+-- TOC entry 5176 (class 0 OID 26265)
+-- Dependencies: 232
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."User" (userid, fname, lname, lastrequest, active_usecase_id) FROM stdin;
-666	\N	\N	2026-01-19 17:36:19.345682	1
-101	\N	\N	2026-05-25 07:44:25.10894	4
-102	\N	\N	2026-05-25 17:36:54.538879	12
-100	\N	\N	2026-05-26 13:15:41.074188	3
+COPY public."User" (userid, fname, lname, lastrequest) FROM stdin;
+666	\N	\N	2026-01-19 17:36:19.345682
+101	\N	\N	2026-05-25 07:44:25.10894
+102	\N	\N	2026-05-25 17:36:54.538879
+100	\N	\N	2026-05-26 13:15:41.074188
 \.
 
 
 --
--- TOC entry 4996 (class 0 OID 17647)
--- Dependencies: 229
+-- TOC entry 5177 (class 0 OID 26269)
+-- Dependencies: 233
 -- Data for Name: UserWatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135445,8 +135541,38 @@ COPY public."UserWatchAndroidPhone" (userid, watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 4998 (class 0 OID 17651)
--- Dependencies: 231
+-- TOC entry 5191 (class 0 OID 26491)
+-- Dependencies: 248
+-- Data for Name: User_UC_Mappings; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."User_UC_Mappings" (user_id, feedback_config_rule_id) FROM stdin;
+666	140
+100	4
+101	166
+102	167
+100	140
+101	140
+\.
+
+
+--
+-- TOC entry 5190 (class 0 OID 26473)
+-- Dependencies: 247
+-- Data for Name: User_backup_before_uc_migration; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."User_backup_before_uc_migration" (userid, fname, lname, lastrequest, active_usecase_id) FROM stdin;
+666	\N	\N	2026-01-19 17:36:19.345682	1
+101	\N	\N	2026-05-25 07:44:25.10894	4
+102	\N	\N	2026-05-25 17:36:54.538879	12
+100	\N	\N	2026-05-26 13:15:41.074188	3
+\.
+
+
+--
+-- TOC entry 5179 (class 0 OID 26276)
+-- Dependencies: 235
 -- Data for Name: Watch; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135458,8 +135584,8 @@ COPY public."Watch" (watchid) FROM stdin;
 
 
 --
--- TOC entry 4999 (class 0 OID 17654)
--- Dependencies: 232
+-- TOC entry 5180 (class 0 OID 26280)
+-- Dependencies: 236
 -- Data for Name: WatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135472,55 +135598,58 @@ COPY public."WatchAndroidPhone" (watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5001 (class 0 OID 17658)
--- Dependencies: 234
+-- TOC entry 5182 (class 0 OID 26286)
+-- Dependencies: 238
 -- Data for Name: agent_session; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.agent_session (session_id, researcher_id, current_usecase_id, conversation_history, active_workflow, created_at, updated_at) FROM stdin;
-00000000-0000-0000-0000-000000000001	\N	1	[{"role": "user", "content": "What mappings are currently active?"}, {"role": "assistant", "content": "Currently, there is one active feedback mapping for the HeartRate experiment."}, {"role": "user"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Based on the provided heart rate data, I suggest three new mapping ranges to improve granularity and cover existing gaps. The existing data shows a minimum heart rate of 52 bpm, a maximum of 120 bpm, and an average of 88.4 bpm, with a substantial number of readings taken. \\n\\n### Suggested Mapping Ranges:\\n\\n1. **Range: 52-70 bpm (Low Resting Phase)**\\n   - **Why It Improves the Current Set:** This range captures the lower end of the heart rate spectrum, focused on low-intensity activity or resting states. Although the minimum recorded is 52 bpm, ensuring haptic feedback exists for this range can help users identify when they are in a deeper rest phase, possibly indicative of recovery or relaxation periods. This can be crucial for stress management, where gentle vibrations can promote mindfulness or alert users to maintain their rest.\\n\\n2. **Range: 71-85 bpm (Moderate Activity Phase)**\\n   - **Why It Improves the Current Set:** This range covers a common threshold for moderate-intensity exercise, roughly aligning with activities like brisk walking or light jogging. The heart rate is typically elevated during this phase, and providing distinct haptic feedback can help users gauge their exertion levels without continuously monitoring their devices. This helps reinforce the awareness of performance and effort during workouts, encouraging users to stay within their desired heart rate zones.\\n\\n3. **Range: 86-100 bpm (High Activity Phase)**\\n   - **Why It Improves the Current Set:** This range aligns with high-intensity activities, which can include vigorous exercise like running or fast cycling. By providing specific haptic feedback for this range, users can receive immediate awareness about their cardiovascular effort. This can help them make real-time decisions about their pacing, reducing the risk of overexertion or underperformance. Since the average heart rate is 88.4 bpm, this range also effectively captures a significant portion of typical exercise categories.\\n\\n### Conclusion:\\nImplementing these three new mapping ranges will enhance user awareness of their heart rate during various states of activity. It provides a more nuanced feedback mechanism that accommodates the physiological range observed in typical workouts and daily activities, ultimately improving user engagement and health management."}, {"role": "user", "content": "Add a mapping for values between 80 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "I need a few more details to add this mapping. Please provide: minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 158."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 161."}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Certainly! Here are three suggested haptic feedback mapping ranges for the HeartRate use case, considering the existing data:\\n\\n1. **Low Range: 50-70 BPM**\\n   - **Reasoning**: This range captures bradycardic conditions (lower than normal heart rate). Providing specific haptic feedback for this range can alert users to pay closer attention to potential underperformance or recoveries during rest or sleep phases. It ensures users are notified when in a potentially concerning low state.\\n\\n2. **Normal Range: 71-90 BPM**\\n   - **Reasoning**: This range encompasses the typical resting heart rates for adults, centered around the average of 88.40 BPM from historical data. By isolating this range, users receive reinforcement/confirmation feedback that they are within a healthy, normal resting state. This boosts user confidence in maintaining or adjusting activity levels for optimal health.\\n\\n3. **High Range: 91-120 BPM**\\n   - **Reasoning**: This captures elevated heart rates, typically occurring during physical activities or stress. By providing distinct feedback for this range, users are informed when their heart rate is above the normal resting range, which can be either appropriate during exercise or concerning if at rest or without apparent cause. It helps in distinguishing between productive activity and potential strain.\\n\\nThese mappings improve granularity by creating specific feedback tailored to different health states, rather than having a single feedback response for all conditions. This enhances user awareness and encourages better health management."}, {"role": "user", "content": "Remove mapping ID 158"}, {"role": "assistant", "content": "Mapping ID 158 has been deactivated."}, {"role": "user", "content": "Remove mapping ID 99999"}, {"role": "assistant", "content": "No active mapping found with that ID for this usecase. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Sure, here are three suggestions for new mapping ranges to improve granularity or cover gaps:\\n\\n### Suggestion 1: Low Heart Rates\\n- **Sensor Value Range**: 30-50\\n- **Min Pulses**: 2\\n- **Max Pulses**: 4\\n- **Min Intensity**: 100\\n- **Max Intensity**: 120\\n- **Min Duration**: 250\\n- **Max Duration**: 200\\n- **Min Interval**: 2500\\n- **Max Interval**: 2000\\n\\n**Why**: This mapping targets very low heart rate values, which are below the minimum historical data. It offers more granular feedback for users who might experience lower than average heart rates, perhaps during rest or sleep. Lower intensity and longer intervals help distinguish these from higher heart rates.\\n\\n### Suggestion 2: Moderate Heart Rates\\n- **Sensor Value Range**: 80-100\\n- **Min Pulses**: 8\\n- **Max Pulses**: 12\\n- **Min Intensity**: 140\\n- **Max Intensity**: 160\\n- **Min Duration**: 120\\n- **Max Duration**: 100\\n- **Min Interval**: 1200\\n- **Max Interval**: 800\\n\\n**Why**: This mapping focuses on the average heart rate readings (around 88.4), providing more detailed feedback within common activity levels. By having varied pulses and a slightly higher intensity range, it helps users notice subtle changes in a typical active state.\\n\\n### Suggestion 3: High Heart Rates\\n- **Sensor Value Range**: 110-130\\n- **Min Pulses**: 14\\n- **Max Pulses**: 18\\n- **Min Intensity**: 160\\n- **Max Intensity**: 180\\n- **Min Duration**: 90\\n- **Max Duration**: 70\\n- **Min Interval**: 700\\n- **Max Interval**: 500\\n\\n**Why**: This range is designed for higher heart rates that might occur during exercise or stress. It adds granularity where higher readings are frequent but not extreme. Increased intensity and reduced intervals provide prompt feedback for rapidly changing conditions.\\n\\nThese new ranges aim to refine user experience by offering specific feedback tuned to different physiological states, enhancing both awareness and response precision."}, {"role": "user", "content": "What is sensory substitution and how does it relate to our HeartRate experiment?"}, {"role": "assistant", "content": "Sensory substitution involves using one sensory modality to supply information typically gathered by another sense. This technique is valuable in compensating for sensory impairments or augmenting sensory experiences.\\n\\nIn the context of your HeartRate experiment, sensory substitution could be utilized to convert heart rate data into tactile feedback, providing users a way to perceive their heart rate through touch rather than visually or audibly. This can be particularly beneficial for individuals with visual or auditory impairments or in situations where visual/auditory feedback is impractical.\\n\\nKey concepts from sensory substitution literature include:\\n\\n1. **Transfer of Information**: Sensory substitution devices (SSDs) like the vOICe or the BrainPort map information from one modality (e.g., sight) to another (e.g., touch or sound). For your experiment, this could involve mapping heart rate data to haptic feedback patterns.\\n\\n2. **Neuroplasticity**: The brain's ability to reorganize itself allows it to adapt to the new sensory information provided by SSDs. Over time, users may become proficient at interpreting haptic signals as representing heart rate without active cognitive effort.\\n\\n3. **User Training and Adaptation**: Effective use of sensory substitution requires training. Users learn to interpret the new signals over time, enhancing their ability to perceive and respond to the substituted sensory information.\\n\\n4. **Considerations for Feedback Mapping**: While your experiment currently lacks active feedback mappings, potential mapping strategies include varying vibration intensity, frequency, or pattern to convey different heart rate zones (e.g., resting, active, stressed).\\n\\nImplementing sensory substitution in your HeartRate experiment would involve creating a tactile display system capable of conveying richer, intuitive feedback about heart rate, opening up new avenues for health monitoring and personal awareness."}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, particularly in applications like heart rate monitoring, the intensity and pulse values can significantly impact the effectiveness of communication. Here are some key considerations:\\n\\n1. **Intensity**: Higher intensity vibrations are generally perceived as more urgent. According to research, increasing the amplitude of vibration can effectively communicate a higher level of urgency (van Erp, 2002). In a heart rate monitoring context, an urgent situation like tachycardia could be signaled by a more intense vibration.\\n\\n2. **Pulse Duration and Pattern**: Shorter pulse durations combined with rapid repetition rates can also convey urgency effectively. For instance, a pattern with a short pulse of 100-200 ms, repeated quickly (e.g., 2-4 pulses per second), can signal the need for immediate attention (Brown, Brewster, and Purchase, 2005).\\n\\n3. **Temporal Pattern**: The pattern of the vibration can influence urgency perception. Urgent alerts are often conveyed using continuous or fast-repeated pulses, as opposed to slower, intermittent vibrations that might indicate less critical information (Enriquez, A., et al., 2001).\\n\\n4. **Frequency**: While lower frequencies (e.g., around 200 Hz) are generally more discernible, higher frequencies may be perceived as more urgent, but they can vary depending on individual sensitivity (Lemmens et al., 2009).\\n\\nFor this experiment, where there are currently no active feedback mappings, implementing these parameters could help establish an effective system for conveying urgency via haptic feedback. In essence, high-intensity, short-duration, and rapidly repeated pulses can effectively signal urgency in a heart rate monitoring use case.\\n\\n**References**:\\n- van Erp, J.B.F. (2002). \\"Guidelines for the Use of Vibro-Tactile Displays in Human Computer Interaction.\\" Proceedings of Eurohaptics.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). \\"Multidimensional Tactons for Non-Visual Information Presentation in Mobile Devices.\\" \\n- Enriquez, M., et al. (2001). \\"The Effect of Auditory and Tactile Cues on Smooth Pursuit Eye Movements.\\"\\n- Lemmens, P. M. C., et al. (2009). \\"Tactile Experiences: Towards a Structured Approach for Creating Meaningful Tactile Icons.\\""}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, several factors are important: intensity, frequency (pulses), and cadence.\\n\\n**Intensity**: Typically, higher intensity is associated with increased urgency. However, the intensity in your experiment is fixed at 150, which means adjustments for urgency will have to be made using other parameters like pulse count or interval.\\n\\n**Pulse Frequency and Duration**: Higher pulse frequency and shorter intervals between pulses generally convey a greater sense of urgency. Your experiment has a range of 2 to 20 pulses, with a correspondingly varying duration. To convey urgency effectively, you would likely operate closer to the higher end of this pulse range.\\n\\n**Interval Timing**: Shorter intervals between pulses can enhance the perception of urgency. Your mapping allows intervals as short as 250 ms, which would be more indicative of an urgent signal than longer intervals like 2000 ms.\\n\\n**Literature Insights**:\\nResearch suggests that tactile urgency is often effectively conveyed through combinations of rapid and repetitive vibrations (Smith & Scott, 2003). For instance, studies show that users perceive faster, more frequent vibrations as more urgent (Brown et al., 2005).\\n\\n**Application to Current Experiment**:\\nGiven your parameters:\\n\\n1. To convey urgency, use a higher pulse count (close to 20).\\n2. Opt for the shortest feasible interval (250 ms) between vibrations.\\n3. Keep the intensity constant at 150, as prescribed, but rely on pulse frequency and interval to signify urgency.\\n   \\nThis approach aligns with the literature's findings on how tactile stimuli can be interpreted as urgent signals. Adjusting these parameters can help create a sensation that effectively communicates high importance or immediate attention needs within the constraints provided.\\n\\n**References**:\\n- Smith, A.D., & Scott, J.J. (2003). Tactile Feedback for the Control of Force in the Manipulation of an Elastic Object. Presence: Teleoperators and Virtual Environments.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). A first investigation into the effectiveness of tactons. In Proceedings of the First Joint Eurohaptics Conference and Symposium on Haptic Interfaces for Virtual Environment and Teleoperator Systems."}]	\N	2026-03-15 18:26:34.261881+01	2026-03-17 19:39:10.437256+01
-e33cdff7-90f3-4d18-ad75-aa13fec7e851	\N	1	[{"role": "user", "content": "what can you do?"}, {"role": "assistant", "content": "Could you provide more details about what you want to do? Are you interested in mapping, knowledge, API fetching, or personalization?"}, {"role": "user", "content": "personalization"}, {"role": "assistant", "content": "Let's create automation rules for a specific participant. Please provide the user ID or any specific details."}]	\N	2026-03-19 18:29:53.305903+01	2026-03-19 18:30:20.62988+01
-63b7e984-896e-49b7-bf25-feca0061dbc9	\N	1	[]	\N	2026-04-11 18:40:18.776253+02	2026-04-11 18:41:03.317714+02
-f53accc9-16b7-4bd3-9dde-4078f5360671	\N	1	[]	\N	2026-04-11 18:43:18.874314+02	2026-04-11 18:43:18.874314+02
-c5c7486a-4e16-458d-8d97-812abb3c444a	\N	1	[{"role": "user", "content": "Show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-12 14:49:26.589644+02	2026-04-12 14:51:08.569967+02
-7c773962-ac46-404e-b1dc-ba51842979a6	\N	1	[{"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:04:06.041716+02	2026-04-11 19:04:48.89278+02
-f846658a-a73d-4b54-b79e-4be8b97c7b7e	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}]	\N	2026-04-11 18:45:23.566522+02	2026-04-11 18:47:28.393608+02
-c959c049-6672-41da-ba92-6895be5db31e	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}, {"role": "user", "content": "deactivate the schedule with ID 3"}, {"role": "assistant", "content": "🚫 Schedule undefined deactivated."}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:12:07.185362+02	2026-04-11 19:13:00.732218+02
-231e68b4-ca69-46e0-8c0c-ac20cb4f2f27	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 3 days (Type: median) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "change the schedule with ID 1 to every 5 days"}, {"role": "assistant", "content": "✅ Updated schedule undefined. New interval: undefined days, new measure: undefined."}, {"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 18:49:58.644867+02	2026-04-11 18:53:21.475605+02
-4825c7c0-8a5a-463d-ba11-599a5cf4fed1	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "add a new schedule for user 101: 50% over the heartrate mode, the check should be every week"}, {"role": "assistant", "content": "✨ New schedule created with ID undefined for user undefined."}, {"role": "user", "content": "now show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}]	\N	2026-04-11 19:06:17.86085+02	2026-04-11 19:10:41.041924+02
-118b5b82-728e-4f5a-84f2-e5844427fa77	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 18:55:42.197068+02	2026-04-11 18:56:21.58838+02
-2dd204bc-29ff-4835-a4e2-900863d8ca02	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "create a new one for user 102: check every 8 days, 75% over the average"}, {"role": "assistant", "content": "✨ New schedule created with ID 5 for user 102."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to a median check instead"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: average."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}]	\N	2026-04-12 14:52:23.986523+02	2026-04-12 14:56:05.119974+02
-6a05d4fa-f0f6-47a8-b52b-478eacd2da76	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to be a median"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: median) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "deactivate schedule with ID 5"}, {"role": "assistant", "content": "🚫 Schedule 5 deactivated."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "set trigger percentage for schedule ID 1 to be 33%"}, {"role": "assistant", "content": "✅ Updated schedule 1. New interval: 5 days, new measure: average, new trigger percentage: 0.33."}]	\N	2026-04-12 15:01:25.721421+02	2026-04-12 15:02:55.289458+02
-5f1fc5ea-474f-4816-b7fb-a60d8298e8c7	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}]	\N	2026-04-12 15:09:12.860061+02	2026-04-12 15:09:14.223674+02
-a00d25fe-abb7-4e2a-9f7b-455088fc4a60	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: true\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 15:40:13.439015+02	2026-04-12 15:40:31.456021+02
-13059441-a609-42bb-b199-2ea43019cb15	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 15:42:37.49697+02	2026-04-12 15:42:46.472432+02
-30685d9c-7ea0-4d89-ba99-7cbee95fd65f	\N	1	[{"role": "user", "content": "list the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 15:46:49.422969+02	2026-04-12 15:46:59.804491+02
-8e91f17c-9377-4154-8351-cb739b9f7b91	\N	1	[]	\N	2026-04-12 15:48:36.085544+02	2026-04-12 15:48:36.085544+02
-6f1271ba-6472-421c-8248-f53b42774b92	\N	1	[{"role": "user", "content": "show schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)"}, {"role": "user", "content": "activate schedule with ID 5"}, {"role": "assistant", "content": "✅ Schedule 5 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 15:51:47.843896+02	2026-04-12 15:53:05.440774+02
-b626ae9b-4d85-4527-98fd-5bc92b7ac66c	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}, {"role": "user", "content": "show the active ones"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. User: undefined ,interval: 8 days, measure: median, trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 16:03:49.403697+02	2026-04-12 16:05:34.041344+02
-baddbef4-a5d5-4a2e-91ad-daafeb56a5dd	\N	1	[]	\N	2026-04-13 17:28:52.815406+02	2026-04-13 17:28:52.815406+02
-a3735a6d-c8b2-4876-8338-05d9c60bbcff	\N	1	[]	\N	2026-04-13 17:29:57.806807+02	2026-04-13 17:29:57.806807+02
-1efa15c9-f518-462d-9746-ece88ecd46f5	\N	1	[]	\N	2026-04-13 17:36:37.748813+02	2026-04-13 17:36:37.748813+02
-b6455ae0-c178-4250-a562-25e706209a3d	\N	1	[]	\N	2026-04-13 17:37:39.893296+02	2026-04-13 17:37:39.893296+02
-c8a73d08-941d-4159-831b-3b2601412cf3	\N	1	[]	\N	2026-04-13 18:22:45.682929+02	2026-04-13 18:22:45.682929+02
-b7154b3a-51c1-4146-90a9-3f4c5a7a0d40	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again adding that feeling use case into the dictionary"}, {"role": "assistant", "content": "✅ Successfully added parameter **...** to the **...** use case (ID: 1)."}]	\N	2026-04-13 18:43:25.981139+02	2026-04-13 18:49:33.975133+02
-78b9035f-4d4f-4092-a1d5-0c2b28a63dde	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **undefined**\\n   • undefined (undefined)"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 18:24:01.178796+02	2026-04-13 18:31:01.673425+02
-069da3b8-3ab7-4144-9486-b8b42da5a93a	\N	1	[{"role": "user", "content": "add a new item to the usecase dictionary: use case feeling, parameter name Neurolink, format URL, required"}, {"role": "assistant", "content": "✅ Successfully added parameter **Neurolink** to the **feeling** use case (ID: 2)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "add a new parameter to the feeling use case, name brain size, format integer, not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **brain size** to the **feeling** use case (ID: 3)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • brain size (integer)\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   3 brain size (integer)\\n   2 Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID3 brain size (integer)\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "delete the brain size use case parameter (ID 3)"}, {"role": "assistant", "content": "🗑️ Parameter ID **3** has been deleted from the dictionary."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "set the use case parameter with the ID 2, the format is an API key"}, {"role": "assistant", "content": "🔧 Updated **feeling**. The parameter is now defined as **Neurolink** (API key)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (API key) [Required]"}, {"role": "user", "content": "delete the Feeling use case from the dictionary"}, {"role": "assistant", "content": "🗑️ All parameters for the use case **feeling** have been removed."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 18:54:42.900628+02	2026-04-13 19:10:31.311819+02
-1b2a570a-e182-40b4-bd40-ac39b02af5e5	\N	7	[]	\N	2026-05-09 20:01:34.185001+02	2026-05-09 20:01:34.185001+02
-2befc798-4749-4476-a9a9-2b943843cf7b	\N	7	[{"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: true"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}]	\N	2026-05-09 20:10:05.366753+02	2026-05-09 20:10:38.768479+02
-fbef59fc-91bc-4c9e-ba45-3d3f141a31c2	\N	7	[{"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-05-09 20:04:18.157191+02	2026-05-09 20:05:46.938312+02
-f419497b-b204-4293-bd1b-d4a1e98940f5	\N	7	[{"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "deactivate schedule number 6"}, {"role": "assistant", "content": "🚫 Schedule 6 deactivated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "No active schedules found for HeartRate."}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}, {"role": "user", "content": "activate schedule id 3"}, {"role": "assistant", "content": "✅ Schedule 3 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (3):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}]	\N	2026-05-09 20:16:28.308814+02	2026-05-09 20:25:16.856823+02
-a7fc0956-d06a-4435-95b3-4d46a54ce3cb	\N	1	[{"role": "user", "content": "which APIs are currently stored in the dictionary?"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   ID51 apiKey (string) [Required]\\n   ID50 date (date)\\n   ID48 lat (float) [Required]\\n   ID49 long (float) [Required]\\n   ID47 url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   ID46 apiKey (string) [Required]\\n   ID45 date (date)\\n   ID43 lat (float) [Required]\\n   ID44 long (float) [Required]\\n   ID42 url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   ID25 locations (json) [Required]\\n   ID24 url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   ID12 current (string) [Required]\\n   ID13 latitude (float) [Required]\\n   ID14 longitude (float) [Required]\\n   ID11 url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   ID16 current (string) [Required]\\n   ID17 latitude (float) [Required]\\n   ID18 longitude (float) [Required]\\n   ID15 url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   ID27 current (string) [Required]\\n   ID28 latitude (float) [Required]\\n   ID29 longitude (float) [Required]\\n   ID26 url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   ID35 current (string) [Required]\\n   ID36 latitude (float) [Required]\\n   ID37 longitude (float) [Required]\\n   ID34 url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   ID31 current (string) [Required]\\n   ID32 latitude (float) [Required]\\n   ID33 longitude (float) [Required]\\n   ID30 url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   ID8 current (string) [Required]\\n   ID9 latitude (float) [Required]\\n   ID10 longitude (float) [Required]\\n   ID7 url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   ID39 current (string) [Required]\\n   ID40 latitude (float) [Required]\\n   ID41 longitude (float) [Required]\\n   ID38 url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   ID22 date (string)\\n   ID23 formatted (integer) [Required]\\n   ID20 latitude (float) [Required]\\n   ID21 longitude (float) [Required]\\n   ID19 url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   ID53 lat (float) [Required]\\n   ID54 lon (float) [Required]\\n   ID55 token (string) [Required]\\n   ID52 url (string) [Required]\\n\\n📂 **WorldTime API**\\n   ID5 timezone (string) [Required]\\n   ID4 url (string) [Required]"}]	\N	2026-05-22 18:46:35.755704+02	2026-05-22 18:46:56.9939+02
-40d2f7b5-a6fc-4568-8a70-a75c2f922ddc	\N	1	[{"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   apiKey (string) [Required]\\n   date (date)\\n   lat (float) [Required]\\n   long (float) [Required]\\n   url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   apiKey (string) [Required]\\n   date (date)\\n   lat (float) [Required]\\n   long (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   locations (json) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   date (string)\\n   formatted (integer) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   lat (float) [Required]\\n   lon (float) [Required]\\n   token (string) [Required]\\n   url (string) [Required]\\n\\n📂 **WorldTime API**\\n   timezone (string) [Required]\\n   url (string) [Required]"}, {"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    locations (json) [Required]\\n    url (string = https://api.open-elevation.com/api/v1/lookup) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    current (string) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    current (string = cloudcover) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    current (string = relative_humidity_2m) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    current (string = precipitation) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    current (string = temperature_2m) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    current (string = uv_index) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    current (string = wind_speed_10m) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    date (string)\\n    formatted (integer) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.sunrise-sunset.org/json) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/) [Required]\\n\\n📂 **WorldTime API**\\n    timezone (string) [Required]\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone}) [Required]"}, {"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    locations (json) [Required]\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    current (string) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    date (string)\\n    formatted (integer) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n\\n📂 **WorldTime API**\\n    timezone (string) [Required]\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]"}, {"role": "user", "content": "add for use case WorldTimeAPI a string called temp, the parameter is not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **temp** to the **WorldTime API** use case (ID: 56)."}, {"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    locations (json) [Required]\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    current (string) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    date (string)\\n    formatted (integer) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n\\n📂 **WorldTime API**\\n    timezone (string) [Required]\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]"}, {"role": "user", "content": "add for use case WorldTimeAPI a string called temp, the parameter is not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **temp** to the **WorldTime API** use case (ID: 63)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is not required anymore"}, {"role": "assistant", "content": "🔧 Updated **undefined**. The parameter is now defined as **undefined** (undefined)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is not required anymore"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (string)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is now required"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (0)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is now required"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (string)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is no longer required"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (0)."}, {"role": "user", "content": "change the url parameter for the temperature use case, it is no longer required"}, {"role": "assistant", "content": "🔧 Updated **Open-Meteo Temperature**. The parameter is now defined as **url** (string)."}, {"role": "user", "content": "give me all the parametes fot the air pressure use case"}, {"role": "assistant", "content": "Here are the parameters for the **Open-Meteo Air Pressure** use case:\\n\\n    🔹 url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    🔹 current (string = surface_pressure [Specific value!]) [Required]\\n    🔹 latitude (float) [Required]\\n    🔹 longitude (float) [Required]"}, {"role": "user", "content": "give me all the use cases from the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **WorldTime API**\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]\\n    timezone (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "show me the entire use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n\\n📂 **WorldTime API**\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]\\n    timezone (string) [Required]"}]	\N	2026-05-23 14:33:41.161141+02	2026-05-23 16:39:59.786871+02
-ce8e3712-2a37-468d-88f8-8465087a117e	\N	4	[{"role": "user", "content": "i want to build a new use case using the cloud cover api"}, {"role": "assistant", "content": "Use Case Builder output for **CloudCover**\\n\\nAdd support for CloudCover use case by configuring API request and extraction nodes.\\n\\nFollow these steps in the Vibration Orchestrator template:\\n\\n## 1. Set CloudCover Type\\n**Open node:** Set type useCase1\\n**Change:** Values to Set → type\\n\\n```text\\nCloudCover\\n```\\nSet the type to 'CloudCover' to match the use case name in the database.\\n\\n## 2. Construct API Request for CloudCover\\n**Open node:** Construct API Request\\n**Change:** CONFIG section only\\n\\n```text\\nconst API_NAME = \\"CloudCover\\";\\n\\nconst API_REQUIRES_KEY = false;\\n\\nconst API_KEY = \\"\\";\\n\\nconst BASE_URL = \\"https://api.open-meteo.com/v1/forecast\\";\\n\\nconst REQUIRED_FIELDS = [\\"lat\\", \\"lon\\"];\\n\\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\\n  const params = [\\n    `current=cloudcover`,\\n    `latitude=${encodeURIComponent(lat)}`,\\n    `longitude=${encodeURIComponent(lon)}`\\n  ];\\n\\n  return `${BASE_URL}?${params.join(\\"&\\")}`;\\n}\\n```\\nConfigure the API request to properly call the Cloud Cover API with latitude and longitude.\\n\\n## 3. Extract Cloud Cover Value\\n**Open node:** Extract\\n**Change:** CONFIG section only\\n\\n```text\\nconst NORMALIZE_NODE_NAME = 'Normalize';\\n\\nconst VALUE_CONFIG_BY_TYPE = {\\n  CloudCover: {\\n    valueName: 'cloudcover',\\n    paths: ['current.cloudcover']\\n  }\\n};\\n```\\nExtract the cloud cover value from the API response using the specified path.\\n\\nThat is all the researcher needs to change. The remaining template nodes can stay as they are.\\n"}, {"role": "user", "content": "great, now suggest a mapping I could use for this use case"}, {"role": "assistant", "content": "### Suggestion 1: Mapping for Moderate Pressure Changes\\n\\n**Mapping Parameters:**\\n- **Sensor Value Range:** 1000 to 1100\\n- **Pulses:** 4 to 6\\n- **Intensity:** 80 to 180\\n- **Duration:** 150 to 250 ms\\n- **Interval:** 60 to 120 ms\\n\\n**Rationale:**\\nThis mapping fills the gap between the existing mapping's upper limit (900 to 1200) and provides higher granularity for moderate pressure changes that are not covered by the existing boundaries. Targeting 1000-1100 is crucial because current historical data suggests measurements often fall around this region. This range ensures sensitivity to common pressure readings, enhancing user awareness of subtle changes.\\n\\n### Suggestion 2: Mapping for High Pressure\\n\\n**Mapping Parameters:**\\n- **Sensor Value Range:** 1100 to 1325\\n- **Pulses:** 6 to 7\\n- **Intensity:** 150 to 220\\n- **Duration:** 200 to 350 ms\\n- **Interval:** 80 to 130 ms\\n\\n**Rationale:**\\nThis range addresses the gap between existing mappings (above 1200 and below 1327), ensuring comprehensive coverage for higher values. It is significant because pressures in this range might indicate changing environmental conditions not captured by the first mapping. The focus here is on awareness and proactive response, with increased intensity and duration to underscore the importance of higher pressure.\\n\\n### Suggestion 3: Mapping for Transitional Region\\n\\n**Mapping Parameters:**\\n- **Sensor Value Range:** 1250 to 1326\\n- **Pulses:** 3 to 5\\n- **Intensity:** 100 to 180\\n- **Duration:** 250 to 400 ms\\n- **Interval:** 70 to 140 ms\\n\\n**Rationale:**\\nThis mapping serves as a transitional phase between moderate and high-pressure states, particularly anticipating movement toward critical thresholds captured by the existing higher mapping. By maintaining a lower intensity but longer duration, it signals gradual shifts, preparing users for potential environmental changes without overwhelming them with intense feedback too early. The narrower sensor range ensures precise targeting of transitional data, aiding predictive responsiveness."}, {"role": "user", "content": "I meant suggest a mapping for cloud cover"}, {"role": "assistant", "content": "To enhance the haptic feedback system for air pressure with better granularity and coverage, consider the following three new mapping ranges. These suggestions are designed to fill gaps and improve responsiveness based on historical sensor data.\\n\\n### 1. Mapping Range: Low-Pressure Focus\\n- **Value Range:** 900 to 937\\n- **Pulses:** 2 to 4\\n- **Intensity:** 50 to 80\\n- **Duration:** 100 to 150 ms\\n- **Interval:** 100 to 200 ms\\n\\n**Why this improves the set:**  \\nThis range targets the lower end of the air pressure spectrum which is currently underrepresented. By providing feedback for values just below the historical minimum of 937.50, it alerts users to unusual low-pressure conditions. The lower intensity and fewer pulses indicate a less critical situation compared to mid and high ranges.\\n\\n### 2. Mapping Range: Mid-to-High Range Expansion\\n- **Value Range:** 998 to 1200\\n- **Pulses:** 4 to 6\\n- **Intensity:** 150 to 200\\n- **Duration:** 150 to 250 ms\\n- **Interval:** 75 to 125 ms\\n\\n**Why this improves the set:**  \\nThis mapping expands the current high range, capturing fluctuations around the historical maximum of 998.60. It offers precise feedback for a common operational range by providing differentiation within the upper spectrum while maintaining a balanced intensity and pulse count.\\n\\n### 3. Mapping Range: Beyond the Historical Max\\n- **Value Range:** 1201 to 1326\\n- **Pulses:** 5 to 7\\n- **Intensity:** 180 to 230\\n- **Duration:** 200 to 350 ms\\n- **Interval:** 60 to 110 ms\\n\\n**Why this improves the set:**  \\nBy targeting values above the current maximum mapping but below 1327, this range acts as a buffer for high-pressure events not commonly recorded but still possible. It ensures that unexpected high values prompt appropriate feedback, bridging the gap between existing mappings and potential extreme values.\\n\\nThese new mappings collectively enhance the responsiveness and comprehensiveness of the haptic feedback system, addressing critical operational ranges while anticipating outlier scenarios."}]	\N	2026-05-25 07:41:50.032247+02	2026-05-25 07:44:26.461582+02
-6e9414e8-0e42-46bf-a3e0-0f99b584b8f5	\N	1	[{"role": "user", "content": "Give me ideas for new use cases to create"}, {"role": "assistant", "content": "To enhance the current setup for the haptic feedback parameters associated with heart rate, it's crucial to consider both granularity and comprehensive coverage. Given the absence of historical sensor data, I'll base my suggestions on typical heart rate zones and user comfort considerations.\\n\\n### Suggested Mapping 1: Low-Intensity Range\\n- **Target Sensor Value Range:** 30 to 85 bpm\\n- **Pulses:** 1 to 3\\n- **Intensity:** 100 to 150\\n- **Duration:** 500 to 700 ms\\n- **Interval:** 2500 to 3000 ms\\n\\n**Why:** This range addresses the very low heart rates often seen at rest or during low activity. The lower intensity and longer duration make the feedback more subtle, avoiding unnecessary alerts for users in calm states. This fills a gap in the current mappings where there's a lack of coverage below 86 bpm.\\n\\n### Suggested Mapping 2: Moderate Range\\n- **Target Sensor Value Range:** 107 to 140 bpm\\n- **Pulses:** 6 to 10\\n- **Intensity:** 180 to 220\\n- **Duration:** 300 to 450 ms\\n- **Interval:** 150 to 200 ms\\n\\n**Why:** This range focuses on moderate intensity heart rates, typical during regular, non-strenuous physical activity. The pulse count and intensity are designed to provide clear, but comfortable feedback, ensuring users are aware of their moderate activity levels. It bridges the gap between the existing 163 mapping and higher exertion.\\n\\n### Suggested Mapping 3: High-Intensity Range\\n- **Target Sensor Value Range:** 141 to 180 bpm\\n- **Pulses:** 8 to 12\\n- **Intensity:** 220 to 255\\n- **Duration:** 200 to 300 ms\\n- **Interval:** 100 to 150 ms\\n\\n**Why:** This range is for high-intensity activities, where quick, strong feedback is essential for real-time monitoring. The high intensity and shorter intervals ensure that users receive prompt alerts when their heart rate enters more strenuous zones, promoting awareness for potential over-exertion.\\n\\nThese new mappings aim to improve user experience by offering more nuanced feedback across heart rate ranges, allowing for prompt and tailored alerts during varying types of physical activity."}, {"role": "user", "content": "Show me the list of all available APIs"}, {"role": "assistant", "content": "Could you please specify if you want to see the list of APIs for integration into the Vibrator Orchestrator system or if there's another specific API list you're referring to?"}, {"role": "user", "content": "show me the APIs that are saved in the database"}, {"role": "assistant", "content": "I need to confirm if you want to see the list of APIs that are available for use case development or those specifically integrated into the system. Could you please clarify?"}, {"role": "user", "content": "show me the API dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   ID51 apiKey (string) [Required]\\n   ID50 date (date)\\n   ID48 lat (float) [Required]\\n   ID49 long (float) [Required]\\n   ID47 url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   ID46 apiKey (string) [Required]\\n   ID45 date (date)\\n   ID43 lat (float) [Required]\\n   ID44 long (float) [Required]\\n   ID42 url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   ID25 locations (json) [Required]\\n   ID24 url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   ID12 current (string) [Required]\\n   ID13 latitude (float) [Required]\\n   ID14 longitude (float) [Required]\\n   ID11 url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   ID16 current (string) [Required]\\n   ID17 latitude (float) [Required]\\n   ID18 longitude (float) [Required]\\n   ID15 url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   ID27 current (string) [Required]\\n   ID28 latitude (float) [Required]\\n   ID29 longitude (float) [Required]\\n   ID26 url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   ID35 current (string) [Required]\\n   ID36 latitude (float) [Required]\\n   ID37 longitude (float) [Required]\\n   ID34 url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   ID31 current (string) [Required]\\n   ID32 latitude (float) [Required]\\n   ID33 longitude (float) [Required]\\n   ID30 url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   ID8 current (string) [Required]\\n   ID9 latitude (float) [Required]\\n   ID10 longitude (float) [Required]\\n   ID7 url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   ID39 current (string) [Required]\\n   ID40 lat (float) [Required]\\n   ID41 lng (float) [Required]\\n   ID38 url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   ID22 date (string)\\n   ID23 formatted (integer) [Required]\\n   ID20 latitude (float) [Required]\\n   ID21 longitude (float) [Required]\\n   ID19 url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   ID53 lat (float) [Required]\\n   ID54 lon (float) [Required]\\n   ID55 token (string) [Required]\\n   ID52 url (string) [Required]"}, {"role": "user", "content": "show me the list of all APIS in the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "show me the list again"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n**IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n**Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n**Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n**WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-05-25 10:59:21.142993+02	2026-05-25 11:06:30.927379+02
-1e862b9c-b5ae-4945-8d9b-1462ed63fdba	\N	12	[{"role": "user", "content": "what parameters is this usecase using?"}, {"role": "assistant", "content": "Could you please specify the name of the use case you're referring to?"}, {"role": "user", "content": "show me the list of all the APIs in the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n**IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n**Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n**Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n**WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "IWant ot build a UV inted use case"}, {"role": "assistant", "content": "Use Case Builder output for **UV Index Monitoring**\\n\\nAdd the UV Index Monitoring use case to the Vibration Orchestrator template using the Open-Meteo UV Index API.\\n\\nFollow these steps in the Vibration Orchestrator template:\\n\\n## 1. Set Use Case Type\\n**Open node:** Set type useCase1\\n**Change:** Values to Set → type\\n\\n```text\\nUV Index Monitoring\\n```\\nSet the use case type to 'UV Index Monitoring', matching the database name.\\n\\n## 2. Construct API Request\\n**Open node:** Construct API Request\\n**Change:** CONFIG section only\\n\\n```text\\nconst API_NAME = \\"UV Index Monitoring\\";\\n\\nconst API_REQUIRES_KEY = false;\\n\\nconst API_KEY = \\"\\";\\n\\nconst BASE_URL = \\"https://api.open-meteo.com/v1/forecast\\";\\n\\nconst REQUIRED_FIELDS = [\\"lat\\", \\"lon\\"];\\n\\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\\n  const params = [\\n    `current=uv_index`,\\n    `latitude=${encodeURIComponent(lat)}`,\\n    `longitude=${encodeURIComponent(lon)}`\\n  ];\\n\\n  return `${BASE_URL}?${params.join(\\"&\\")}`;\\n}\\n```\\nConfigure the API request to call the Open-Meteo endpoint for UV Index data, passing in latitude and longitude.\\n\\n## 3. Extract Data\\n**Open node:** Extract\\n**Change:** CONFIG section only\\n\\n```text\\nconst NORMALIZE_NODE_NAME = 'Normalize';\\n\\nconst VALUE_CONFIG_BY_TYPE = {\\n  UV Index Monitoring: {\\n    valueName: 'uv_index',\\n    paths: ['current.uv_index']\\n  }\\n};\\n```\\nExtract the UV Index value from the API response using the specified response path.\\n\\nThat is all you need to change. The remaining template nodes can stay as they are.\\n"}, {"role": "user", "content": "I want to make a new mapping from 0 to 8"}, {"role": "assistant", "content": "Done. New mapping added with ID 167."}, {"role": "user", "content": "I want the pulses to alwasy be maximum strangth, and give the number of pulses based on the index"}, {"role": "assistant", "content": "Done. New mapping added with ID 168."}, {"role": "user", "content": "I want to change this mapping dso that the interval and duration are consistant"}, {"role": "assistant", "content": "Could you please specify the exact values for the interval and duration that you would like to use?"}, {"role": "user", "content": "you can choose"}, {"role": "assistant", "content": "Would you like both the interval and duration to be at a constant value, or just one of them? Please specify which value or range you'd prefer."}, {"role": "user", "content": "duraation 100, interval 50"}, {"role": "assistant", "content": "Done. New mapping added with ID 169."}, {"role": "user", "content": "I Want the overall duration to stay the same with differnet numebr of pulses"}, {"role": "assistant", "content": "Could you specify the new duration and the range for the number of pulses you'd like, so the overall duration remains the same?"}]	\N	2026-05-25 17:11:18.256676+02	2026-05-25 17:47:26.635967+02
+00000000-0000-0000-0000-000000000001	\N	1	[{"role": "user", "content": "What mappings are currently active?"}, {"role": "assistant", "content": "Currently, there is one active feedback mapping for the HeartRate experiment."}, {"role": "user"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Based on the provided heart rate data, I suggest three new mapping ranges to improve granularity and cover existing gaps. The existing data shows a minimum heart rate of 52 bpm, a maximum of 120 bpm, and an average of 88.4 bpm, with a substantial number of readings taken. \\n\\n### Suggested Mapping Ranges:\\n\\n1. **Range: 52-70 bpm (Low Resting Phase)**\\n   - **Why It Improves the Current Set:** This range captures the lower end of the heart rate spectrum, focused on low-intensity activity or resting states. Although the minimum recorded is 52 bpm, ensuring haptic feedback exists for this range can help users identify when they are in a deeper rest phase, possibly indicative of recovery or relaxation periods. This can be crucial for stress management, where gentle vibrations can promote mindfulness or alert users to maintain their rest.\\n\\n2. **Range: 71-85 bpm (Moderate Activity Phase)**\\n   - **Why It Improves the Current Set:** This range covers a common threshold for moderate-intensity exercise, roughly aligning with activities like brisk walking or light jogging. The heart rate is typically elevated during this phase, and providing distinct haptic feedback can help users gauge their exertion levels without continuously monitoring their devices. This helps reinforce the awareness of performance and effort during workouts, encouraging users to stay within their desired heart rate zones.\\n\\n3. **Range: 86-100 bpm (High Activity Phase)**\\n   - **Why It Improves the Current Set:** This range aligns with high-intensity activities, which can include vigorous exercise like running or fast cycling. By providing specific haptic feedback for this range, users can receive immediate awareness about their cardiovascular effort. This can help them make real-time decisions about their pacing, reducing the risk of overexertion or underperformance. Since the average heart rate is 88.4 bpm, this range also effectively captures a significant portion of typical exercise categories.\\n\\n### Conclusion:\\nImplementing these three new mapping ranges will enhance user awareness of their heart rate during various states of activity. It provides a more nuanced feedback mechanism that accommodates the physiological range observed in typical workouts and daily activities, ultimately improving user engagement and health management."}, {"role": "user", "content": "Add a mapping for values between 80 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "I need a few more details to add this mapping. Please provide: minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 158."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 81 and 100, with 3 to 5 pulses, intensity 60 to 80, duration 200 to 300ms, interval 100 to 150ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 158: value 81–100 → pulses 3–5, intensity 60–80, duration 200–300ms, interval 100–150ms"}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "Done. New mapping added with ID 161."}, {"role": "user", "content": "Add a mapping for values between 101 and 120, with 5 to 8 pulses, intensity 80 to 100, duration 300 to 400ms, interval 150 to 200ms"}, {"role": "assistant", "content": "A mapping with those exact values already exists and is active. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Certainly! Here are three suggested haptic feedback mapping ranges for the HeartRate use case, considering the existing data:\\n\\n1. **Low Range: 50-70 BPM**\\n   - **Reasoning**: This range captures bradycardic conditions (lower than normal heart rate). Providing specific haptic feedback for this range can alert users to pay closer attention to potential underperformance or recoveries during rest or sleep phases. It ensures users are notified when in a potentially concerning low state.\\n\\n2. **Normal Range: 71-90 BPM**\\n   - **Reasoning**: This range encompasses the typical resting heart rates for adults, centered around the average of 88.40 BPM from historical data. By isolating this range, users receive reinforcement/confirmation feedback that they are within a healthy, normal resting state. This boosts user confidence in maintaining or adjusting activity levels for optimal health.\\n\\n3. **High Range: 91-120 BPM**\\n   - **Reasoning**: This captures elevated heart rates, typically occurring during physical activities or stress. By providing distinct feedback for this range, users are informed when their heart rate is above the normal resting range, which can be either appropriate during exercise or concerning if at rest or without apparent cause. It helps in distinguishing between productive activity and potential strain.\\n\\nThese mappings improve granularity by creating specific feedback tailored to different health states, rather than having a single feedback response for all conditions. This enhances user awareness and encourages better health management."}, {"role": "user", "content": "Remove mapping ID 158"}, {"role": "assistant", "content": "Mapping ID 158 has been deactivated."}, {"role": "user", "content": "Remove mapping ID 99999"}, {"role": "assistant", "content": "No active mapping found with that ID for this usecase. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "Show me all active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms"}, {"role": "user", "content": "Suggest some new mappings I could add"}, {"role": "assistant", "content": "Sure, here are three suggestions for new mapping ranges to improve granularity or cover gaps:\\n\\n### Suggestion 1: Low Heart Rates\\n- **Sensor Value Range**: 30-50\\n- **Min Pulses**: 2\\n- **Max Pulses**: 4\\n- **Min Intensity**: 100\\n- **Max Intensity**: 120\\n- **Min Duration**: 250\\n- **Max Duration**: 200\\n- **Min Interval**: 2500\\n- **Max Interval**: 2000\\n\\n**Why**: This mapping targets very low heart rate values, which are below the minimum historical data. It offers more granular feedback for users who might experience lower than average heart rates, perhaps during rest or sleep. Lower intensity and longer intervals help distinguish these from higher heart rates.\\n\\n### Suggestion 2: Moderate Heart Rates\\n- **Sensor Value Range**: 80-100\\n- **Min Pulses**: 8\\n- **Max Pulses**: 12\\n- **Min Intensity**: 140\\n- **Max Intensity**: 160\\n- **Min Duration**: 120\\n- **Max Duration**: 100\\n- **Min Interval**: 1200\\n- **Max Interval**: 800\\n\\n**Why**: This mapping focuses on the average heart rate readings (around 88.4), providing more detailed feedback within common activity levels. By having varied pulses and a slightly higher intensity range, it helps users notice subtle changes in a typical active state.\\n\\n### Suggestion 3: High Heart Rates\\n- **Sensor Value Range**: 110-130\\n- **Min Pulses**: 14\\n- **Max Pulses**: 18\\n- **Min Intensity**: 160\\n- **Max Intensity**: 180\\n- **Min Duration**: 90\\n- **Max Duration**: 70\\n- **Min Interval**: 700\\n- **Max Interval**: 500\\n\\n**Why**: This range is designed for higher heart rates that might occur during exercise or stress. It adds granularity where higher readings are frequent but not extreme. Increased intensity and reduced intervals provide prompt feedback for rapidly changing conditions.\\n\\nThese new ranges aim to refine user experience by offering specific feedback tuned to different physiological states, enhancing both awareness and response precision."}, {"role": "user", "content": "What is sensory substitution and how does it relate to our HeartRate experiment?"}, {"role": "assistant", "content": "Sensory substitution involves using one sensory modality to supply information typically gathered by another sense. This technique is valuable in compensating for sensory impairments or augmenting sensory experiences.\\n\\nIn the context of your HeartRate experiment, sensory substitution could be utilized to convert heart rate data into tactile feedback, providing users a way to perceive their heart rate through touch rather than visually or audibly. This can be particularly beneficial for individuals with visual or auditory impairments or in situations where visual/auditory feedback is impractical.\\n\\nKey concepts from sensory substitution literature include:\\n\\n1. **Transfer of Information**: Sensory substitution devices (SSDs) like the vOICe or the BrainPort map information from one modality (e.g., sight) to another (e.g., touch or sound). For your experiment, this could involve mapping heart rate data to haptic feedback patterns.\\n\\n2. **Neuroplasticity**: The brain's ability to reorganize itself allows it to adapt to the new sensory information provided by SSDs. Over time, users may become proficient at interpreting haptic signals as representing heart rate without active cognitive effort.\\n\\n3. **User Training and Adaptation**: Effective use of sensory substitution requires training. Users learn to interpret the new signals over time, enhancing their ability to perceive and respond to the substituted sensory information.\\n\\n4. **Considerations for Feedback Mapping**: While your experiment currently lacks active feedback mappings, potential mapping strategies include varying vibration intensity, frequency, or pattern to convey different heart rate zones (e.g., resting, active, stressed).\\n\\nImplementing sensory substitution in your HeartRate experiment would involve creating a tactile display system capable of conveying richer, intuitive feedback about heart rate, opening up new avenues for health monitoring and personal awareness."}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, particularly in applications like heart rate monitoring, the intensity and pulse values can significantly impact the effectiveness of communication. Here are some key considerations:\\n\\n1. **Intensity**: Higher intensity vibrations are generally perceived as more urgent. According to research, increasing the amplitude of vibration can effectively communicate a higher level of urgency (van Erp, 2002). In a heart rate monitoring context, an urgent situation like tachycardia could be signaled by a more intense vibration.\\n\\n2. **Pulse Duration and Pattern**: Shorter pulse durations combined with rapid repetition rates can also convey urgency effectively. For instance, a pattern with a short pulse of 100-200 ms, repeated quickly (e.g., 2-4 pulses per second), can signal the need for immediate attention (Brown, Brewster, and Purchase, 2005).\\n\\n3. **Temporal Pattern**: The pattern of the vibration can influence urgency perception. Urgent alerts are often conveyed using continuous or fast-repeated pulses, as opposed to slower, intermittent vibrations that might indicate less critical information (Enriquez, A., et al., 2001).\\n\\n4. **Frequency**: While lower frequencies (e.g., around 200 Hz) are generally more discernible, higher frequencies may be perceived as more urgent, but they can vary depending on individual sensitivity (Lemmens et al., 2009).\\n\\nFor this experiment, where there are currently no active feedback mappings, implementing these parameters could help establish an effective system for conveying urgency via haptic feedback. In essence, high-intensity, short-duration, and rapidly repeated pulses can effectively signal urgency in a heart rate monitoring use case.\\n\\n**References**:\\n- van Erp, J.B.F. (2002). \\"Guidelines for the Use of Vibro-Tactile Displays in Human Computer Interaction.\\" Proceedings of Eurohaptics.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). \\"Multidimensional Tactons for Non-Visual Information Presentation in Mobile Devices.\\" \\n- Enriquez, M., et al. (2001). \\"The Effect of Auditory and Tactile Cues on Smooth Pursuit Eye Movements.\\"\\n- Lemmens, P. M. C., et al. (2009). \\"Tactile Experiences: Towards a Structured Approach for Creating Meaningful Tactile Icons.\\""}, {"role": "user", "content": "What intensity and pulse values are typically most effective for conveying urgency in vibrotactile feedback?"}, {"role": "assistant", "content": "In the context of conveying urgency through vibrotactile feedback, several factors are important: intensity, frequency (pulses), and cadence.\\n\\n**Intensity**: Typically, higher intensity is associated with increased urgency. However, the intensity in your experiment is fixed at 150, which means adjustments for urgency will have to be made using other parameters like pulse count or interval.\\n\\n**Pulse Frequency and Duration**: Higher pulse frequency and shorter intervals between pulses generally convey a greater sense of urgency. Your experiment has a range of 2 to 20 pulses, with a correspondingly varying duration. To convey urgency effectively, you would likely operate closer to the higher end of this pulse range.\\n\\n**Interval Timing**: Shorter intervals between pulses can enhance the perception of urgency. Your mapping allows intervals as short as 250 ms, which would be more indicative of an urgent signal than longer intervals like 2000 ms.\\n\\n**Literature Insights**:\\nResearch suggests that tactile urgency is often effectively conveyed through combinations of rapid and repetitive vibrations (Smith & Scott, 2003). For instance, studies show that users perceive faster, more frequent vibrations as more urgent (Brown et al., 2005).\\n\\n**Application to Current Experiment**:\\nGiven your parameters:\\n\\n1. To convey urgency, use a higher pulse count (close to 20).\\n2. Opt for the shortest feasible interval (250 ms) between vibrations.\\n3. Keep the intensity constant at 150, as prescribed, but rely on pulse frequency and interval to signify urgency.\\n   \\nThis approach aligns with the literature's findings on how tactile stimuli can be interpreted as urgent signals. Adjusting these parameters can help create a sensation that effectively communicates high importance or immediate attention needs within the constraints provided.\\n\\n**References**:\\n- Smith, A.D., & Scott, J.J. (2003). Tactile Feedback for the Control of Force in the Manipulation of an Elastic Object. Presence: Teleoperators and Virtual Environments.\\n- Brown, L. M., Brewster, S. A., & Purchase, H. C. (2005). A first investigation into the effectiveness of tactons. In Proceedings of the First Joint Eurohaptics Conference and Symposium on Haptic Interfaces for Virtual Environment and Teleoperator Systems."}]	\N	2026-03-15 19:26:34.261881+02	2026-03-17 20:39:10.437256+02
+e33cdff7-90f3-4d18-ad75-aa13fec7e851	\N	1	[{"role": "user", "content": "what can you do?"}, {"role": "assistant", "content": "Could you provide more details about what you want to do? Are you interested in mapping, knowledge, API fetching, or personalization?"}, {"role": "user", "content": "personalization"}, {"role": "assistant", "content": "Let's create automation rules for a specific participant. Please provide the user ID or any specific details."}]	\N	2026-03-19 19:29:53.305903+02	2026-03-19 19:30:20.62988+02
+63b7e984-896e-49b7-bf25-feca0061dbc9	\N	1	[]	\N	2026-04-11 19:40:18.776253+03	2026-04-11 19:41:03.317714+03
+f53accc9-16b7-4bd3-9dde-4078f5360671	\N	1	[]	\N	2026-04-11 19:43:18.874314+03	2026-04-11 19:43:18.874314+03
+c5c7486a-4e16-458d-8d97-812abb3c444a	\N	1	[{"role": "user", "content": "Show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-12 15:49:26.589644+03	2026-04-12 15:51:08.569967+03
+7c773962-ac46-404e-b1dc-ba51842979a6	\N	1	[{"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 20:04:06.041716+03	2026-04-11 20:04:48.89278+03
+f846658a-a73d-4b54-b79e-4be8b97c7b7e	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}]	\N	2026-04-11 19:45:23.566522+03	2026-04-11 19:47:28.393608+03
+c959c049-6672-41da-ba92-6895be5db31e	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}, {"role": "user", "content": "deactivate the schedule with ID 3"}, {"role": "assistant", "content": "🚫 Schedule undefined deactivated."}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 20:12:07.185362+03	2026-04-11 20:13:00.732218+03
+231e68b4-ca69-46e0-8c0c-ac20cb4f2f27	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 3 days (Type: median) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "change the schedule with ID 1 to every 5 days"}, {"role": "assistant", "content": "✅ Updated schedule undefined. New interval: undefined days, new measure: undefined."}, {"role": "user", "content": "show me all the schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:49:58.644867+03	2026-04-11 19:53:21.475605+03
+4825c7c0-8a5a-463d-ba11-599a5cf4fed1	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "add a new schedule for user 101: 50% over the heartrate mode, the check should be every week"}, {"role": "assistant", "content": "✨ New schedule created with ID undefined for user undefined."}, {"role": "user", "content": "now show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}]	\N	2026-04-11 20:06:17.86085+03	2026-04-11 20:10:41.041924+03
+118b5b82-728e-4f5a-84f2-e5844427fa77	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30–240 → pulses 2–20, intensity 150–150, duration 210–80ms, interval 2000–250ms\\n• ID 163: value 86–106 → pulses 5–8, intensity 200–255, duration 400–600ms, interval 50–100ms"}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:55:42.197068+03	2026-04-11 19:56:21.58838+03
+2dd204bc-29ff-4835-a4e2-900863d8ca02	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "create a new one for user 102: check every 8 days, 75% over the average"}, {"role": "assistant", "content": "✨ New schedule created with ID 5 for user 102."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to a median check instead"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: average."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}]	\N	2026-04-12 15:52:23.986523+03	2026-04-12 15:56:05.119974+03
+6a05d4fa-f0f6-47a8-b52b-478eacd2da76	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to be a median"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\n• ID 5: Every 8 days (Type: median) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "deactivate schedule with ID 5"}, {"role": "assistant", "content": "🚫 Schedule 5 deactivated."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\n• ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "set trigger percentage for schedule ID 1 to be 33%"}, {"role": "assistant", "content": "✅ Updated schedule 1. New interval: 5 days, new measure: average, new trigger percentage: 0.33."}]	\N	2026-04-12 16:01:25.721421+03	2026-04-12 16:02:55.289458+03
+5f1fc5ea-474f-4816-b7fb-a60d8298e8c7	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}]	\N	2026-04-12 16:09:12.860061+03	2026-04-12 16:09:14.223674+03
+a00d25fe-abb7-4e2a-9f7b-455088fc4a60	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: true\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 16:40:13.439015+03	2026-04-12 16:40:31.456021+03
+13059441-a609-42bb-b199-2ea43019cb15	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 16:42:37.49697+03	2026-04-12 16:42:46.472432+03
+30685d9c-7ea0-4d89-ba99-7cbee95fd65f	\N	1	[{"role": "user", "content": "list the schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}]	\N	2026-04-12 16:46:49.422969+03	2026-04-12 16:46:59.804491+03
+8e91f17c-9377-4154-8351-cb739b9f7b91	\N	1	[]	\N	2026-04-12 16:48:36.085544+03	2026-04-12 16:48:36.085544+03
+6f1271ba-6472-421c-8248-f53b42774b92	\N	1	[{"role": "user", "content": "show schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: false"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)"}, {"role": "user", "content": "activate schedule with ID 5"}, {"role": "assistant", "content": "✅ Schedule 5 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 16:51:47.843896+03	2026-04-12 16:53:05.440774+03
+b626ae9b-4d85-4527-98fd-5bc92b7ac66c	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}, {"role": "user", "content": "show the active ones"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 102\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)"}, {"role": "user", "content": "set schedule with ID 5 to be for user 101"}, {"role": "assistant", "content": "✅ Updated schedule 5. User: undefined ,interval: 8 days, measure: median, trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 18 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 6 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 8 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-04-12 17:03:49.403697+03	2026-04-12 17:05:34.041344+03
+baddbef4-a5d5-4a2e-91ad-daafeb56a5dd	\N	1	[]	\N	2026-04-13 18:28:52.815406+03	2026-04-13 18:28:52.815406+03
+a3735a6d-c8b2-4876-8338-05d9c60bbcff	\N	1	[]	\N	2026-04-13 18:29:57.806807+03	2026-04-13 18:29:57.806807+03
+1efa15c9-f518-462d-9746-ece88ecd46f5	\N	1	[]	\N	2026-04-13 18:36:37.748813+03	2026-04-13 18:36:37.748813+03
+b6455ae0-c178-4250-a562-25e706209a3d	\N	1	[]	\N	2026-04-13 18:37:39.893296+03	2026-04-13 18:37:39.893296+03
+c8a73d08-941d-4159-831b-3b2601412cf3	\N	1	[]	\N	2026-04-13 19:22:45.682929+03	2026-04-13 19:22:45.682929+03
+b7154b3a-51c1-4146-90a9-3f4c5a7a0d40	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}, {"role": "user", "content": "please try again adding that feeling use case into the dictionary"}, {"role": "assistant", "content": "✅ Successfully added parameter **...** to the **...** use case (ID: 1)."}]	\N	2026-04-13 19:43:25.981139+03	2026-04-13 19:49:33.975133+03
+78b9035f-4d4f-4092-a1d5-0c2b28a63dde	\N	1	[{"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **undefined**\\n   • undefined (undefined)"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 19:24:01.178796+03	2026-04-13 19:31:01.673425+03
+069da3b8-3ab7-4144-9486-b8b42da5a93a	\N	1	[{"role": "user", "content": "add a new item to the usecase dictionary: use case feeling, parameter name Neurolink, format URL, required"}, {"role": "assistant", "content": "✅ Successfully added parameter **Neurolink** to the **feeling** use case (ID: 2)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "add a new parameter to the feeling use case, name brain size, format integer, not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **brain size** to the **feeling** use case (ID: 3)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   • brain size (integer)\\n   • Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   3 brain size (integer)\\n   2 Neurolink (URL) [Required]"}, {"role": "user", "content": "show the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID3 brain size (integer)\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "delete the brain size use case parameter (ID 3)"}, {"role": "assistant", "content": "🗑️ Parameter ID **3** has been deleted from the dictionary."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (URL) [Required]"}, {"role": "user", "content": "set the use case parameter with the ID 2, the format is an API key"}, {"role": "assistant", "content": "🔧 Updated **feeling**. The parameter is now defined as **Neurolink** (API key)."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **feeling**\\n   ID2 Neurolink (API key) [Required]"}, {"role": "user", "content": "delete the Feeling use case from the dictionary"}, {"role": "assistant", "content": "🗑️ All parameters for the use case **feeling** have been removed."}, {"role": "user", "content": "show the usecase dictionary"}, {"role": "assistant", "content": "The use case dictionary is currently empty."}]	\N	2026-04-13 19:54:42.900628+03	2026-04-13 20:10:31.311819+03
+1b2a570a-e182-40b4-bd40-ac39b02af5e5	\N	7	[]	\N	2026-05-09 21:01:34.185001+03	2026-05-09 21:01:34.185001+03
+2befc798-4749-4476-a9a9-2b943843cf7b	\N	7	[{"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: true"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}]	\N	2026-05-09 21:10:05.366753+03	2026-05-09 21:10:38.768479+03
+fbef59fc-91bc-4c9e-ba45-3d3f141a31c2	\N	7	[{"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "get all active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (2):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33%)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)"}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (0.33)\\n   ⏳ Next Check: in 5 days (Interval: 5 days)\\n   ✅ Active: true\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (0.25)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true"}]	\N	2026-05-09 21:04:18.157191+03	2026-05-09 21:05:46.938312+03
+f419497b-b204-4293-bd1b-d4a1e98940f5	\N	7	[{"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID 6*\\n   👤 User: 102\\n   📊 Type: average (20%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}, {"role": "user", "content": "deactivate schedule number 6"}, {"role": "assistant", "content": "🚫 Schedule 6 deactivated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active HeartRate Schedules (1):*\\n\\n🆔 *ID undefined*\\n   👤 User: undefined\\n   📊 Type: undefined (undefined%)\\n   ⏳ Next Check: N/A (Interval: undefined days)"}, {"role": "user", "content": "get active schedules"}, {"role": "assistant", "content": "No active schedules found for HeartRate."}, {"role": "user", "content": "get all schedules"}, {"role": "assistant", "content": "📋 *All Pollution Schedules (3):*\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)\\n   ✅ Active: false\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n   ✅ Active: true\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n   ✅ Active: true"}, {"role": "user", "content": "activate schedule id 3"}, {"role": "assistant", "content": "✅ Schedule 3 activated."}, {"role": "user", "content": "show active schedules"}, {"role": "assistant", "content": "📋 *Active Pollution Schedules (3):*\\n\\n🆔 *ID 5*\\n   👤 User: 101\\n   📊 Type: median (25%)\\n   ⏳ Next Check: in 5 days (Interval: 8 days)\\n\\n🆔 *ID 1*\\n   👤 User: 101\\n   📊 Type: average (33%)\\n   ⏳ Next Check: today (Interval: 5 days)\\n\\n🆔 *ID 3*\\n   👤 User: 101\\n   📊 Type: mode (50%)\\n   ⏳ Next Check: in 5 days (Interval: 7 days)"}]	\N	2026-05-09 21:16:28.308814+03	2026-05-09 21:25:16.856823+03
+a7fc0956-d06a-4435-95b3-4d46a54ce3cb	\N	1	[{"role": "user", "content": "which APIs are currently stored in the dictionary?"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   ID51 apiKey (string) [Required]\\n   ID50 date (date)\\n   ID48 lat (float) [Required]\\n   ID49 long (float) [Required]\\n   ID47 url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   ID46 apiKey (string) [Required]\\n   ID45 date (date)\\n   ID43 lat (float) [Required]\\n   ID44 long (float) [Required]\\n   ID42 url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   ID25 locations (json) [Required]\\n   ID24 url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   ID12 current (string) [Required]\\n   ID13 latitude (float) [Required]\\n   ID14 longitude (float) [Required]\\n   ID11 url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   ID16 current (string) [Required]\\n   ID17 latitude (float) [Required]\\n   ID18 longitude (float) [Required]\\n   ID15 url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   ID27 current (string) [Required]\\n   ID28 latitude (float) [Required]\\n   ID29 longitude (float) [Required]\\n   ID26 url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   ID35 current (string) [Required]\\n   ID36 latitude (float) [Required]\\n   ID37 longitude (float) [Required]\\n   ID34 url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   ID31 current (string) [Required]\\n   ID32 latitude (float) [Required]\\n   ID33 longitude (float) [Required]\\n   ID30 url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   ID8 current (string) [Required]\\n   ID9 latitude (float) [Required]\\n   ID10 longitude (float) [Required]\\n   ID7 url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   ID39 current (string) [Required]\\n   ID40 latitude (float) [Required]\\n   ID41 longitude (float) [Required]\\n   ID38 url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   ID22 date (string)\\n   ID23 formatted (integer) [Required]\\n   ID20 latitude (float) [Required]\\n   ID21 longitude (float) [Required]\\n   ID19 url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   ID53 lat (float) [Required]\\n   ID54 lon (float) [Required]\\n   ID55 token (string) [Required]\\n   ID52 url (string) [Required]\\n\\n📂 **WorldTime API**\\n   ID5 timezone (string) [Required]\\n   ID4 url (string) [Required]"}]	\N	2026-05-22 19:46:35.755704+03	2026-05-22 19:46:56.9939+03
+40d2f7b5-a6fc-4568-8a70-a75c2f922ddc	\N	1	[{"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   apiKey (string) [Required]\\n   date (date)\\n   lat (float) [Required]\\n   long (float) [Required]\\n   url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   apiKey (string) [Required]\\n   date (date)\\n   lat (float) [Required]\\n   long (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   locations (json) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   current (string) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   date (string)\\n   formatted (integer) [Required]\\n   latitude (float) [Required]\\n   longitude (float) [Required]\\n   url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   lat (float) [Required]\\n   lon (float) [Required]\\n   token (string) [Required]\\n   url (string) [Required]\\n\\n📂 **WorldTime API**\\n   timezone (string) [Required]\\n   url (string) [Required]"}, {"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    locations (json) [Required]\\n    url (string = https://api.open-elevation.com/api/v1/lookup) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    current (string) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    current (string = cloudcover) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    current (string = relative_humidity_2m) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    current (string = precipitation) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    current (string = temperature_2m) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    current (string = uv_index) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    current (string = wind_speed_10m) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    date (string)\\n    formatted (integer) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.sunrise-sunset.org/json) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/) [Required]\\n\\n📂 **WorldTime API**\\n    timezone (string) [Required]\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone}) [Required]"}, {"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    locations (json) [Required]\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    current (string) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    date (string)\\n    formatted (integer) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n\\n📂 **WorldTime API**\\n    timezone (string) [Required]\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]"}, {"role": "user", "content": "add for use case WorldTimeAPI a string called temp, the parameter is not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **temp** to the **WorldTime API** use case (ID: 56)."}, {"role": "user", "content": "show me the use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    apiKey (string) [Required]\\n    date (date)\\n    lat (float) [Required]\\n    long (float) [Required]\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    locations (json) [Required]\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    current (string) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    date (string)\\n    formatted (integer) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n\\n📂 **WorldTime API**\\n    timezone (string) [Required]\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]"}, {"role": "user", "content": "add for use case WorldTimeAPI a string called temp, the parameter is not required"}, {"role": "assistant", "content": "✅ Successfully added parameter **temp** to the **WorldTime API** use case (ID: 63)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is not required anymore"}, {"role": "assistant", "content": "🔧 Updated **undefined**. The parameter is now defined as **undefined** (undefined)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is not required anymore"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (string)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is now required"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (0)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is now required"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (string)."}, {"role": "user", "content": "edit the timezone parameter for the WorldTime API, it is no longer required"}, {"role": "assistant", "content": "🔧 Updated **WorldTime API**. The parameter is now defined as **timezone** (0)."}, {"role": "user", "content": "change the url parameter for the temperature use case, it is no longer required"}, {"role": "assistant", "content": "🔧 Updated **Open-Meteo Temperature**. The parameter is now defined as **url** (string)."}, {"role": "user", "content": "give me all the parametes fot the air pressure use case"}, {"role": "assistant", "content": "Here are the parameters for the **Open-Meteo Air Pressure** use case:\\n\\n    🔹 url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    🔹 current (string = surface_pressure [Specific value!]) [Required]\\n    🔹 latitude (float) [Required]\\n    🔹 longitude (float) [Required]"}, {"role": "user", "content": "give me all the use cases from the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **WorldTime API**\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]\\n    timezone (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "show me the entire use case dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]\\n\\n📂 **WorldTime API**\\n    url (string = https://worldtimeapi.org/api/timezone/{timezone} [Specific value!]) [Required]\\n    timezone (string) [Required]"}]	\N	2026-05-23 15:33:41.161141+03	2026-05-23 17:39:59.786871+03
+ce8e3712-2a37-468d-88f8-8465087a117e	\N	4	[{"role": "user", "content": "i want to build a new use case using the cloud cover api"}, {"role": "assistant", "content": "Use Case Builder output for **CloudCover**\\n\\nAdd support for CloudCover use case by configuring API request and extraction nodes.\\n\\nFollow these steps in the Vibration Orchestrator template:\\n\\n## 1. Set CloudCover Type\\n**Open node:** Set type useCase1\\n**Change:** Values to Set → type\\n\\n```text\\nCloudCover\\n```\\nSet the type to 'CloudCover' to match the use case name in the database.\\n\\n## 2. Construct API Request for CloudCover\\n**Open node:** Construct API Request\\n**Change:** CONFIG section only\\n\\n```text\\nconst API_NAME = \\"CloudCover\\";\\n\\nconst API_REQUIRES_KEY = false;\\n\\nconst API_KEY = \\"\\";\\n\\nconst BASE_URL = \\"https://api.open-meteo.com/v1/forecast\\";\\n\\nconst REQUIRED_FIELDS = [\\"lat\\", \\"lon\\"];\\n\\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\\n  const params = [\\n    `current=cloudcover`,\\n    `latitude=${encodeURIComponent(lat)}`,\\n    `longitude=${encodeURIComponent(lon)}`\\n  ];\\n\\n  return `${BASE_URL}?${params.join(\\"&\\")}`;\\n}\\n```\\nConfigure the API request to properly call the Cloud Cover API with latitude and longitude.\\n\\n## 3. Extract Cloud Cover Value\\n**Open node:** Extract\\n**Change:** CONFIG section only\\n\\n```text\\nconst NORMALIZE_NODE_NAME = 'Normalize';\\n\\nconst VALUE_CONFIG_BY_TYPE = {\\n  CloudCover: {\\n    valueName: 'cloudcover',\\n    paths: ['current.cloudcover']\\n  }\\n};\\n```\\nExtract the cloud cover value from the API response using the specified path.\\n\\nThat is all the researcher needs to change. The remaining template nodes can stay as they are.\\n"}, {"role": "user", "content": "great, now suggest a mapping I could use for this use case"}, {"role": "assistant", "content": "### Suggestion 1: Mapping for Moderate Pressure Changes\\n\\n**Mapping Parameters:**\\n- **Sensor Value Range:** 1000 to 1100\\n- **Pulses:** 4 to 6\\n- **Intensity:** 80 to 180\\n- **Duration:** 150 to 250 ms\\n- **Interval:** 60 to 120 ms\\n\\n**Rationale:**\\nThis mapping fills the gap between the existing mapping's upper limit (900 to 1200) and provides higher granularity for moderate pressure changes that are not covered by the existing boundaries. Targeting 1000-1100 is crucial because current historical data suggests measurements often fall around this region. This range ensures sensitivity to common pressure readings, enhancing user awareness of subtle changes.\\n\\n### Suggestion 2: Mapping for High Pressure\\n\\n**Mapping Parameters:**\\n- **Sensor Value Range:** 1100 to 1325\\n- **Pulses:** 6 to 7\\n- **Intensity:** 150 to 220\\n- **Duration:** 200 to 350 ms\\n- **Interval:** 80 to 130 ms\\n\\n**Rationale:**\\nThis range addresses the gap between existing mappings (above 1200 and below 1327), ensuring comprehensive coverage for higher values. It is significant because pressures in this range might indicate changing environmental conditions not captured by the first mapping. The focus here is on awareness and proactive response, with increased intensity and duration to underscore the importance of higher pressure.\\n\\n### Suggestion 3: Mapping for Transitional Region\\n\\n**Mapping Parameters:**\\n- **Sensor Value Range:** 1250 to 1326\\n- **Pulses:** 3 to 5\\n- **Intensity:** 100 to 180\\n- **Duration:** 250 to 400 ms\\n- **Interval:** 70 to 140 ms\\n\\n**Rationale:**\\nThis mapping serves as a transitional phase between moderate and high-pressure states, particularly anticipating movement toward critical thresholds captured by the existing higher mapping. By maintaining a lower intensity but longer duration, it signals gradual shifts, preparing users for potential environmental changes without overwhelming them with intense feedback too early. The narrower sensor range ensures precise targeting of transitional data, aiding predictive responsiveness."}, {"role": "user", "content": "I meant suggest a mapping for cloud cover"}, {"role": "assistant", "content": "To enhance the haptic feedback system for air pressure with better granularity and coverage, consider the following three new mapping ranges. These suggestions are designed to fill gaps and improve responsiveness based on historical sensor data.\\n\\n### 1. Mapping Range: Low-Pressure Focus\\n- **Value Range:** 900 to 937\\n- **Pulses:** 2 to 4\\n- **Intensity:** 50 to 80\\n- **Duration:** 100 to 150 ms\\n- **Interval:** 100 to 200 ms\\n\\n**Why this improves the set:**  \\nThis range targets the lower end of the air pressure spectrum which is currently underrepresented. By providing feedback for values just below the historical minimum of 937.50, it alerts users to unusual low-pressure conditions. The lower intensity and fewer pulses indicate a less critical situation compared to mid and high ranges.\\n\\n### 2. Mapping Range: Mid-to-High Range Expansion\\n- **Value Range:** 998 to 1200\\n- **Pulses:** 4 to 6\\n- **Intensity:** 150 to 200\\n- **Duration:** 150 to 250 ms\\n- **Interval:** 75 to 125 ms\\n\\n**Why this improves the set:**  \\nThis mapping expands the current high range, capturing fluctuations around the historical maximum of 998.60. It offers precise feedback for a common operational range by providing differentiation within the upper spectrum while maintaining a balanced intensity and pulse count.\\n\\n### 3. Mapping Range: Beyond the Historical Max\\n- **Value Range:** 1201 to 1326\\n- **Pulses:** 5 to 7\\n- **Intensity:** 180 to 230\\n- **Duration:** 200 to 350 ms\\n- **Interval:** 60 to 110 ms\\n\\n**Why this improves the set:**  \\nBy targeting values above the current maximum mapping but below 1327, this range acts as a buffer for high-pressure events not commonly recorded but still possible. It ensures that unexpected high values prompt appropriate feedback, bridging the gap between existing mappings and potential extreme values.\\n\\nThese new mappings collectively enhance the responsiveness and comprehensiveness of the haptic feedback system, addressing critical operational ranges while anticipating outlier scenarios."}]	\N	2026-05-25 08:41:50.032247+03	2026-05-25 08:44:26.461582+03
+6e9414e8-0e42-46bf-a3e0-0f99b584b8f5	\N	1	[{"role": "user", "content": "Give me ideas for new use cases to create"}, {"role": "assistant", "content": "To enhance the current setup for the haptic feedback parameters associated with heart rate, it's crucial to consider both granularity and comprehensive coverage. Given the absence of historical sensor data, I'll base my suggestions on typical heart rate zones and user comfort considerations.\\n\\n### Suggested Mapping 1: Low-Intensity Range\\n- **Target Sensor Value Range:** 30 to 85 bpm\\n- **Pulses:** 1 to 3\\n- **Intensity:** 100 to 150\\n- **Duration:** 500 to 700 ms\\n- **Interval:** 2500 to 3000 ms\\n\\n**Why:** This range addresses the very low heart rates often seen at rest or during low activity. The lower intensity and longer duration make the feedback more subtle, avoiding unnecessary alerts for users in calm states. This fills a gap in the current mappings where there's a lack of coverage below 86 bpm.\\n\\n### Suggested Mapping 2: Moderate Range\\n- **Target Sensor Value Range:** 107 to 140 bpm\\n- **Pulses:** 6 to 10\\n- **Intensity:** 180 to 220\\n- **Duration:** 300 to 450 ms\\n- **Interval:** 150 to 200 ms\\n\\n**Why:** This range focuses on moderate intensity heart rates, typical during regular, non-strenuous physical activity. The pulse count and intensity are designed to provide clear, but comfortable feedback, ensuring users are aware of their moderate activity levels. It bridges the gap between the existing 163 mapping and higher exertion.\\n\\n### Suggested Mapping 3: High-Intensity Range\\n- **Target Sensor Value Range:** 141 to 180 bpm\\n- **Pulses:** 8 to 12\\n- **Intensity:** 220 to 255\\n- **Duration:** 200 to 300 ms\\n- **Interval:** 100 to 150 ms\\n\\n**Why:** This range is for high-intensity activities, where quick, strong feedback is essential for real-time monitoring. The high intensity and shorter intervals ensure that users receive prompt alerts when their heart rate enters more strenuous zones, promoting awareness for potential over-exertion.\\n\\nThese new mappings aim to improve user experience by offering more nuanced feedback across heart rate ranges, allowing for prompt and tailored alerts during varying types of physical activity."}, {"role": "user", "content": "Show me the list of all available APIs"}, {"role": "assistant", "content": "Could you please specify if you want to see the list of APIs for integration into the Vibrator Orchestrator system or if there's another specific API list you're referring to?"}, {"role": "user", "content": "show me the APIs that are saved in the database"}, {"role": "assistant", "content": "I need to confirm if you want to see the list of APIs that are available for use case development or those specifically integrated into the system. Could you please clarify?"}, {"role": "user", "content": "show me the API dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n   ID51 apiKey (string) [Required]\\n   ID50 date (date)\\n   ID48 lat (float) [Required]\\n   ID49 long (float) [Required]\\n   ID47 url (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n   ID46 apiKey (string) [Required]\\n   ID45 date (date)\\n   ID43 lat (float) [Required]\\n   ID44 long (float) [Required]\\n   ID42 url (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n   ID25 locations (json) [Required]\\n   ID24 url (string) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n   ID12 current (string) [Required]\\n   ID13 latitude (float) [Required]\\n   ID14 longitude (float) [Required]\\n   ID11 url (string) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n   ID16 current (string) [Required]\\n   ID17 latitude (float) [Required]\\n   ID18 longitude (float) [Required]\\n   ID15 url (string) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n   ID27 current (string) [Required]\\n   ID28 latitude (float) [Required]\\n   ID29 longitude (float) [Required]\\n   ID26 url (string) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n   ID35 current (string) [Required]\\n   ID36 latitude (float) [Required]\\n   ID37 longitude (float) [Required]\\n   ID34 url (string) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n   ID31 current (string) [Required]\\n   ID32 latitude (float) [Required]\\n   ID33 longitude (float) [Required]\\n   ID30 url (string) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n   ID8 current (string) [Required]\\n   ID9 latitude (float) [Required]\\n   ID10 longitude (float) [Required]\\n   ID7 url (string) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n   ID39 current (string) [Required]\\n   ID40 lat (float) [Required]\\n   ID41 lng (float) [Required]\\n   ID38 url (string) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n   ID22 date (string)\\n   ID23 formatted (integer) [Required]\\n   ID20 latitude (float) [Required]\\n   ID21 longitude (float) [Required]\\n   ID19 url (string) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n   ID53 lat (float) [Required]\\n   ID54 lon (float) [Required]\\n   ID55 token (string) [Required]\\n   ID52 url (string) [Required]"}, {"role": "user", "content": "show me the list of all APIS in the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "show me the list again"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n**IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n**Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n**Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n**WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-05-25 11:59:21.142993+03	2026-05-25 12:06:30.927379+03
+1e862b9c-b5ae-4945-8d9b-1462ed63fdba	\N	12	[{"role": "user", "content": "what parameters is this usecase using?"}, {"role": "assistant", "content": "Could you please specify the name of the use case you're referring to?"}, {"role": "user", "content": "show me the list of all the APIs in the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n**IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n**Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n**Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n**WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "IWant ot build a UV inted use case"}, {"role": "assistant", "content": "Use Case Builder output for **UV Index Monitoring**\\n\\nAdd the UV Index Monitoring use case to the Vibration Orchestrator template using the Open-Meteo UV Index API.\\n\\nFollow these steps in the Vibration Orchestrator template:\\n\\n## 1. Set Use Case Type\\n**Open node:** Set type useCase1\\n**Change:** Values to Set → type\\n\\n```text\\nUV Index Monitoring\\n```\\nSet the use case type to 'UV Index Monitoring', matching the database name.\\n\\n## 2. Construct API Request\\n**Open node:** Construct API Request\\n**Change:** CONFIG section only\\n\\n```text\\nconst API_NAME = \\"UV Index Monitoring\\";\\n\\nconst API_REQUIRES_KEY = false;\\n\\nconst API_KEY = \\"\\";\\n\\nconst BASE_URL = \\"https://api.open-meteo.com/v1/forecast\\";\\n\\nconst REQUIRED_FIELDS = [\\"lat\\", \\"lon\\"];\\n\\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\\n  const params = [\\n    `current=uv_index`,\\n    `latitude=${encodeURIComponent(lat)}`,\\n    `longitude=${encodeURIComponent(lon)}`\\n  ];\\n\\n  return `${BASE_URL}?${params.join(\\"&\\")}`;\\n}\\n```\\nConfigure the API request to call the Open-Meteo endpoint for UV Index data, passing in latitude and longitude.\\n\\n## 3. Extract Data\\n**Open node:** Extract\\n**Change:** CONFIG section only\\n\\n```text\\nconst NORMALIZE_NODE_NAME = 'Normalize';\\n\\nconst VALUE_CONFIG_BY_TYPE = {\\n  UV Index Monitoring: {\\n    valueName: 'uv_index',\\n    paths: ['current.uv_index']\\n  }\\n};\\n```\\nExtract the UV Index value from the API response using the specified response path.\\n\\nThat is all you need to change. The remaining template nodes can stay as they are.\\n"}, {"role": "user", "content": "I want to make a new mapping from 0 to 8"}, {"role": "assistant", "content": "Done. New mapping added with ID 167."}, {"role": "user", "content": "I want the pulses to alwasy be maximum strangth, and give the number of pulses based on the index"}, {"role": "assistant", "content": "Done. New mapping added with ID 168."}, {"role": "user", "content": "I want to change this mapping dso that the interval and duration are consistant"}, {"role": "assistant", "content": "Could you please specify the exact values for the interval and duration that you would like to use?"}, {"role": "user", "content": "you can choose"}, {"role": "assistant", "content": "Would you like both the interval and duration to be at a constant value, or just one of them? Please specify which value or range you'd prefer."}, {"role": "user", "content": "duraation 100, interval 50"}, {"role": "assistant", "content": "Done. New mapping added with ID 169."}, {"role": "user", "content": "I Want the overall duration to stay the same with differnet numebr of pulses"}, {"role": "assistant", "content": "Could you specify the new duration and the range for the number of pulses you'd like, so the overall duration remains the same?"}]	\N	2026-05-25 18:11:18.256676+03	2026-05-25 18:47:26.635967+03
+ecd37c36-db56-4b79-a751-82f1cba272de	\N	1	[{"role": "user", "content": "Show me the full use case dictionary."}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "Show me the full use case dictionary."}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "Show me the full use case dictionary."}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-06-01 11:25:19.175156+03	2026-06-01 11:26:17.198698+03
+21882661-0584-4ba5-b8de-15a08e207406	\N	12	[{"role": "user", "content": "what is the background of this experiment"}, {"role": "assistant", "content": "The experiment you're working on seems to focus on utilizing haptic feedback and sensory substitution to provide real-time information about heart rate patterns to users. This involves translating heart rate data into tactile sensations using wearable devices, facilitating immediate feedback that can be perceived without visual or auditory input. Such applications are particularly relevant in contexts where monitoring physiological parameters is crucial but where traditional monitoring methods might be distracting or impractical.\\n\\n### Background and Concepts:\\n\\n1. **Haptic Feedback:**\\n   - **Definition:** Haptic feedback involves using tactile sensations to convey information to the user. In the context of this experiment, variations in pulse (intensity, frequency, duration) are used to represent different heart rate values.\\n   - **Applications:** Common applications include virtual reality environments, medical training systems, and assistive devices for sensory disabilities.\\n\\n2. **Sensory Substitution:**\\n   - **Definition:** Sensory substitution refers to the use of one sensory modality to supply environmental information typically gathered by another sense. In this research, heart rate data, typically visual or auditory, is conveyed tactilely.\\n   - **Applications:** Sensory substitution is often used for visually or hearing-impaired individuals, allowing them to perceive essential information through alternate senses.\\n\\n3. **Heart Rate Monitoring:**\\n   - **Importance:** Monitoring heart rate provides crucial insights into cardiovascular health, stress levels, and physical activity status. Real-time monitoring is essential in both clinical and personal health management contexts.\\n   - **Challenges:** Traditional monitors (e.g., ECG, chest straps) can be intrusive or cumbersome in certain situations, necessitating inconspicuous alternatives.\\n\\n### Experiment Context:\\n\\n- **Feedback Mappings:**\\n  - The experiment uses two distinct feedback mappings to represent different heart rate ranges. Each mapping adjusts the tactile feedback parameters (pulses, intensity, duration, interval) as heart rate changes. \\n  - For example, Mapping \\"140\\" covers a broad range (30-240 bpm), adjusting pulse number and interval to match the heart rate, while \\"163\\" focuses on a narrower range (86-106 bpm) with stronger and more frequent pulses, suitable for precise monitoring within a normative range.\\n\\n- **Technical Implementation:**\\n  - **Wearable Devices:** Typically involve actuators that translate electronic signals into mechanical pulses.\\n  - **Parameter Tuning:** Requires careful calibration to ensure perceivability and comfort, considering variables like intensity and duration, as reflected in the mappings.\\n\\n- **Human Factors:**\\n  - **Perceptual Limits:** Understanding user perceptual boundaries to ensure effective sensory information conveyance without causing discomfort.\\n  - **User Acceptance:** Ensuring that the tactile feedback does not interfere with daily activities while being easy to interpret.\\n\\n### Literature Basis:\\n\\n- **Haptic Technology:** Studies on wearables for continuous health monitoring suggest that haptic feedback, when effectively designed, can augment user awareness without conventional device reliance.\\n- **Human-Computer Interaction:** Research on intuitive feedback systems emphasizes the balance between informativeness and user comfort in real-time monitoring applications.\\n\\nThis experiment represents an innovative approach in leveraging haptic technology for non-visual heart rate monitoring, contributing to the broader fields of wearable technology and human augmentation."}, {"role": "user", "content": "what is the background of this experiment"}, {"role": "assistant", "content": "The background of this experiment is rooted in the field of haptic feedback and sensory substitution, specifically aimed at conveying UV Index information through tactile means. Sensory substitution involves using one sensory modality to communicate information typically provided by another. In this experiment, tactile feedback is used to substitute for visual or auditory data about UV levels.\\n\\n**UV Index Information**: The UV Index is a scale designed to measure the strength of sun's ultraviolet radiation at a particular place and time. For many individuals, especially those with visual impairments or in situations where visual cues are not feasible, accessing this information through haptic feedback can enhance awareness and aid in making sun safety decisions.\\n\\n**Haptic Feedback Mechanisms**: The feedback mappings provided in your experiment define how haptic feedback components (such as vibration motors) are programmed to respond to UV Index values. Key parameters include:\\n\\n- **Pulse Count**: This correlates to the UV Index value, ranging from 1 to 8, directly representing the range of UV values (0-8). More pulses signify higher UV radiation.\\n\\n- **Intensity, Duration, and Interval**: These parameters are constants in your setup, with intensity set to a mid-level value of 100 for consistent force feedback. The constant duration (100 ms) and interval (50 ms) ensure a uniform temporal pattern, which can be important for user recognition and memory.\\n\\n**Relevance to Literature**: The concept of sensory substitution is well-documented in literature. Paul Bach-y-Rita’s pioneering work on sensory substitution laid the groundwork for such tools, leveraging tactile displays to convey visual information to the blind. This experiment aligns with those principles by translating UV data into sensory experiences that can be perceived through the skin.\\n\\n**Application**: This experiment's goal is likely to evaluate how effectively such tactile patterns can communicate UV levels, enabling users to gauge UV exposure without visual aids. Determining user comprehension and comfort with these haptic signals can aid in refining the approach and offer insights for broader applications.\\n\\nOverall, this experiment leverages the principles of sensory substitution through haptic feedback to enhance situational awareness and decision-making related to UV exposure."}, {"role": "user", "content": "you mentioned a mapping that has puleses ranging from 1 to 8 based on the UV values. which mapping ID is it?"}, {"role": "assistant", "content": "Active mappings for UVIndex (1 total):\\n\\n• ID 169: value 0–8 → pulses 1–8, intensity 100–100, duration 100–100ms, interval 50–50ms"}]	\N	2026-06-01 14:13:11.852932+03	2026-06-01 14:15:37.293066+03
+29d0ba8c-93dc-45a4-affb-739ebca66920	\N	\N	[{"role": "user", "content": "what is this use case"}, {"role": "assistant", "content": "Could you please specify the use case or provide more context?"}]	\N	2026-06-01 12:26:04.24941+03	2026-06-01 12:27:07.169618+03
 \.
 
 
 --
--- TOC entry 5002 (class 0 OID 17667)
--- Dependencies: 235
+-- TOC entry 5183 (class 0 OID 26299)
+-- Dependencies: 239
 -- Data for Name: api_pool; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135541,29 +135670,30 @@ COPY public.api_pool (id, name, category, description, endpoint_url, method, aut
 
 
 --
--- TOC entry 5005 (class 0 OID 17676)
--- Dependencies: 238
+-- TOC entry 5186 (class 0 OID 26314)
+-- Dependencies: 242
 -- Data for Name: feedback_config_rules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, user_id) FROM stdin;
-141	60	180	HeartRate	f	3	5	100	200	100	300	50	150	\N
-65	60	100	HeartRate	f	1	5	30	100	100	200	200	400	\N
-67	100	130	HeartRate	f	6	10	101	150	150	300	100	200	\N
-70	100	130	HeartRate	f	1	5	100	150	150	150	1	150	\N
-74	105	106	HeartRate	f	5	7	10	50	30	50	40	60	\N
-79	20	50	HeartRate	f	40	50	40	50	50	60	50	60	\N
-116	1	200	HeartRate	f	5	5	50	80	200	200	200	200	\N
+COPY public.feedback_config_rules (id, minvalue, maxvalue, active, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, usecase_id) FROM stdin;
+9999	0	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+140	30	240	t	2	20	150	150	210	80	2000	250	1
+4	0	360	t	\N	\N	\N	\N	\N	\N	\N	\N	3
+0	30	240	t	3	5	60	250	100	200	50	150	2
+144	50	500	t	3	5	200	500	300	500	150	400	7
+166	1327	1347	t	5	8	200	255	400	600	50	100	4
+167	0	8	t	1	3	10	50	100	200	50	100	12
+\.
+
+
+--
+-- TOC entry 5189 (class 0 OID 26470)
+-- Dependencies: 246
+-- Data for Name: feedback_config_rules_backup_before_uc_migration; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.feedback_config_rules_backup_before_uc_migration (id, minvalue, maxvalue, type, active, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, user_id) FROM stdin;
 9999	0	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
-137	63	220	HeartRate	f	3	5	150	255	200	400	100	200	\N
-4	0	360	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-30	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-39	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-100	0	360	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-101	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-102	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-99	30	240	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-103	30	240	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
 104	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 105	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 106	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
@@ -135575,24 +135705,29 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 112	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 113	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 114	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+141	60	180	HeartRate	f	3	5	100	200	100	300	50	150	\N
+65	60	100	HeartRate	f	1	5	30	100	100	200	200	400	\N
+67	100	130	HeartRate	f	6	10	101	150	150	300	100	200	\N
+70	100	130	HeartRate	f	1	5	100	150	150	150	1	150	\N
+74	105	106	HeartRate	f	5	7	10	50	30	50	40	60	\N
+79	20	50	HeartRate	f	40	50	40	50	50	60	50	60	\N
+116	1	200	HeartRate	f	5	5	50	80	200	200	200	200	\N
+137	63	220	HeartRate	f	3	5	150	255	200	400	100	200	\N
+99	30	240	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+103	30	240	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
 135	120	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
 134	70	220	HeartRate	f	3	3	50	255	100	500	100	100	\N
-133	130	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
-132	50	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
-129	60	220	HeartRate	f	3	3	50	150	100	200	100	100	\N
-125	60	220	HeartRate	f	3	3	50	255	100	500	100	100	\N
-120	60	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
-115	120	220	HeartRate	f	3	3	50	255	100	500	100	100	\N
-0	30	240	MoonAzimuth	f	3	5	60	250	100	200	50	150	\N
-138	\N	\N	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
-161	101	120	HeartRate	f	5	8	80	100	300	400	150	200	\N
-142	150	150	SunAzimuth	f	1	3	50	100	100	300	50	150	\N
 140	30	240	HeartRate	t	2	20	150	150	210	80	2000	250	\N
-156	80	100	HeartRate	f	3	5	60	80	200	300	100	150	\N
-158	81	100	HeartRate	f	3	5	60	80	200	300	100	150	\N
-163	86	106	HeartRate	t	5	8	200	255	400	600	50	100	\N
+4	0	360	SunAzimuth	t	\N	\N	\N	\N	\N	\N	\N	\N	\N
+30	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+39	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+100	0	360	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+101	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+102	200	250	SunAzimuth	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+0	30	240	MoonAzimuth	t	3	5	60	250	100	200	50	150	\N
+142	150	150	SunAzimuth	f	1	3	50	100	100	300	50	150	\N
 155	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
-144	50	500	Pollution	f	3	5	200	500	300	500	150	400	\N
+144	50	500	Pollution	t	3	5	200	500	300	500	150	400	\N
 145	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 146	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 147	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
@@ -135604,17 +135739,28 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 153	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 154	50	500	Pollution	f	3	\N	200	\N	300	\N	150	\N	\N
 165	49	69	Pollution	f	5	8	200	255	400	600	50	100	\N
-666	900	1200	AirPressure	t	3	5	60	250	100	200	50	150	\N
+666	900	1200	AirPressure	f	3	5	60	250	100	200	50	150	\N
 166	1327	1347	AirPressure	t	5	8	200	255	400	600	50	100	\N
-169	0	8	UVIndex	t	1	8	100	100	100	100	50	50	\N
+169	0	8	UVIndex	f	1	8	100	100	100	100	50	50	\N
 168	0	8	UVIndex	f	1	8	50	50	100	200	50	100	\N
-167	0	8	UVIndex	f	1	3	10	50	100	200	50	100	\N
+133	130	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
+132	50	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
+129	60	220	HeartRate	f	3	3	50	150	100	200	100	100	\N
+125	60	220	HeartRate	f	3	3	50	255	100	500	100	100	\N
+120	60	220	HeartRate	f	3	3	150	150	200	200	100	100	\N
+115	120	220	HeartRate	f	3	3	50	255	100	500	100	100	\N
+138	\N	\N	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	\N
+161	101	120	HeartRate	f	5	8	80	100	300	400	150	200	\N
+156	80	100	HeartRate	f	3	5	60	80	200	300	100	150	\N
+158	81	100	HeartRate	f	3	5	60	80	200	300	100	150	\N
+163	86	106	HeartRate	f	5	8	200	255	400	600	50	100	\N
+167	0	8	UVIndex	t	1	3	10	50	100	200	50	100	\N
 \.
 
 
 --
--- TOC entry 5006 (class 0 OID 17680)
--- Dependencies: 239
+-- TOC entry 5187 (class 0 OID 26319)
+-- Dependencies: 243
 -- Data for Name: user_schedules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135627,8 +135773,8 @@ COPY public.user_schedules (schedule_id, user_id, interval_days, next_run_date, 
 
 
 --
--- TOC entry 5022 (class 0 OID 0)
--- Dependencies: 218
+-- TOC entry 5206 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: Alert_alertid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135636,8 +135782,8 @@ SELECT pg_catalog.setval('public."Alert_alertid_seq"', 68402, true);
 
 
 --
--- TOC entry 5023 (class 0 OID 0)
--- Dependencies: 220
+-- TOC entry 5207 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135645,8 +135791,8 @@ SELECT pg_catalog.setval('public."AndroidPhone_phoneid_seq"', 1, false);
 
 
 --
--- TOC entry 5024 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 5208 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: SensorData_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135654,8 +135800,8 @@ SELECT pg_catalog.setval('public."SensorData_id_seq"', 67670, true);
 
 
 --
--- TOC entry 5025 (class 0 OID 0)
--- Dependencies: 226
+-- TOC entry 5209 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135663,17 +135809,17 @@ SELECT pg_catalog.setval('public."UseCaseDictionary_id_seq"', 55, true);
 
 
 --
--- TOC entry 5026 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 5210 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."UseCase_usecase_id_seq"', 12, true);
+SELECT pg_catalog.setval('public."UseCase_usecase_id_seq"', 17, true);
 
 
 --
--- TOC entry 5027 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 5211 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: User_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135681,8 +135827,8 @@ SELECT pg_catalog.setval('public."User_userid_seq"', 1, false);
 
 
 --
--- TOC entry 5028 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 5212 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: Watch_watchid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135690,8 +135836,8 @@ SELECT pg_catalog.setval('public."Watch_watchid_seq"', 1, false);
 
 
 --
--- TOC entry 5029 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5213 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: api_pool_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135699,8 +135845,8 @@ SELECT pg_catalog.setval('public.api_pool_id_seq', 13, true);
 
 
 --
--- TOC entry 5030 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5214 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135708,8 +135854,8 @@ SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 169, true);
 
 
 --
--- TOC entry 5031 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 5215 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135717,7 +135863,7 @@ SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 6, true);
 
 
 --
--- TOC entry 4788 (class 2606 OID 17706)
+-- TOC entry 4964 (class 2606 OID 26351)
 -- Name: Alert Alert_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135726,7 +135872,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4790 (class 2606 OID 17708)
+-- TOC entry 4966 (class 2606 OID 26353)
 -- Name: AndroidPhone AndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135735,7 +135881,7 @@ ALTER TABLE ONLY public."AndroidPhone"
 
 
 --
--- TOC entry 4792 (class 2606 OID 17710)
+-- TOC entry 4968 (class 2606 OID 26355)
 -- Name: SensorData SensorData_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135744,7 +135890,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4798 (class 2606 OID 17712)
+-- TOC entry 4974 (class 2606 OID 26357)
 -- Name: UseCaseDictionary UseCaseDictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135753,7 +135899,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4794 (class 2606 OID 17714)
+-- TOC entry 4970 (class 2606 OID 26359)
 -- Name: UseCase UseCase_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135762,7 +135908,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4796 (class 2606 OID 17716)
+-- TOC entry 4972 (class 2606 OID 26361)
 -- Name: UseCase UseCase_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135771,7 +135917,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4804 (class 2606 OID 17718)
+-- TOC entry 4980 (class 2606 OID 26363)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135780,7 +135926,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4802 (class 2606 OID 17720)
+-- TOC entry 4978 (class 2606 OID 26365)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135789,7 +135935,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4808 (class 2606 OID 17722)
+-- TOC entry 4984 (class 2606 OID 26367)
 -- Name: WatchAndroidPhone WatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135798,7 +135944,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4806 (class 2606 OID 17724)
+-- TOC entry 4982 (class 2606 OID 26369)
 -- Name: Watch Watch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135807,7 +135953,7 @@ ALTER TABLE ONLY public."Watch"
 
 
 --
--- TOC entry 4810 (class 2606 OID 17726)
+-- TOC entry 4986 (class 2606 OID 26371)
 -- Name: agent_session agent_session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135816,7 +135962,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4814 (class 2606 OID 17728)
+-- TOC entry 4990 (class 2606 OID 26373)
 -- Name: api_pool api_pool_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135825,16 +135971,7 @@ ALTER TABLE ONLY public.api_pool
 
 
 --
--- TOC entry 4816 (class 2606 OID 17730)
--- Name: feedback_config_rules feedback_config_mapped_minpulses_maxpulses_minintensity_max_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.feedback_config_rules
-    ADD CONSTRAINT feedback_config_mapped_minpulses_maxpulses_minintensity_max_key UNIQUE (minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval, minvalue, maxvalue, type);
-
-
---
--- TOC entry 4818 (class 2606 OID 17732)
+-- TOC entry 4992 (class 2606 OID 26377)
 -- Name: feedback_config_rules feedback_config_mapped_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135843,7 +135980,16 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4800 (class 2606 OID 17734)
+-- TOC entry 4999 (class 2606 OID 26497)
+-- Name: User_UC_Mappings pk_user_uc_mappings; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User_UC_Mappings"
+    ADD CONSTRAINT pk_user_uc_mappings PRIMARY KEY (user_id, feedback_config_rule_id);
+
+
+--
+-- TOC entry 4976 (class 2606 OID 26379)
 -- Name: UseCaseDictionary unique_usecase_param; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135852,7 +135998,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4822 (class 2606 OID 17736)
+-- TOC entry 4995 (class 2606 OID 26381)
 -- Name: user_schedules user_schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135861,7 +136007,7 @@ ALTER TABLE ONLY public.user_schedules
 
 
 --
--- TOC entry 4811 (class 1259 OID 17737)
+-- TOC entry 4987 (class 1259 OID 26382)
 -- Name: idx_agent_session_researcher; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135869,7 +136015,7 @@ CREATE INDEX idx_agent_session_researcher ON public.agent_session USING btree (r
 
 
 --
--- TOC entry 4812 (class 1259 OID 17738)
+-- TOC entry 4988 (class 1259 OID 26383)
 -- Name: idx_agent_session_usecase; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135877,15 +136023,7 @@ CREATE INDEX idx_agent_session_usecase ON public.agent_session USING btree (curr
 
 
 --
--- TOC entry 4819 (class 1259 OID 17739)
--- Name: idx_fcr_user_type; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_fcr_user_type ON public.feedback_config_rules USING btree (user_id, type) WHERE (user_id IS NOT NULL);
-
-
---
--- TOC entry 4820 (class 1259 OID 17740)
+-- TOC entry 4993 (class 1259 OID 26385)
 -- Name: idx_next_run_date; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135893,7 +136031,23 @@ CREATE INDEX idx_next_run_date ON public.user_schedules USING btree (next_run_da
 
 
 --
--- TOC entry 4837 (class 2620 OID 17741)
+-- TOC entry 4996 (class 1259 OID 26509)
+-- Name: idx_user_uc_mappings_feedback_config_rule_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_uc_mappings_feedback_config_rule_id ON public."User_UC_Mappings" USING btree (feedback_config_rule_id);
+
+
+--
+-- TOC entry 4997 (class 1259 OID 26508)
+-- Name: idx_user_uc_mappings_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_uc_mappings_user_id ON public."User_UC_Mappings" USING btree (user_id);
+
+
+--
+-- TOC entry 5015 (class 2620 OID 26386)
 -- Name: agent_session trg_agent_session_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -135901,7 +136055,15 @@ CREATE TRIGGER trg_agent_session_updated_at BEFORE UPDATE ON public.agent_sessio
 
 
 --
--- TOC entry 4824 (class 2606 OID 17742)
+-- TOC entry 5016 (class 2620 OID 26513)
+-- Name: User_UC_Mappings trg_one_mapping_per_user_per_usecase; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_one_mapping_per_user_per_usecase BEFORE INSERT OR UPDATE ON public."User_UC_Mappings" FOR EACH ROW EXECUTE FUNCTION public.enforce_one_mapping_per_user_per_usecase();
+
+
+--
+-- TOC entry 5001 (class 2606 OID 26387)
 -- Name: DeviceSensor DeviceSensor_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135910,7 +136072,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4825 (class 2606 OID 17747)
+-- TOC entry 5002 (class 2606 OID 26392)
 -- Name: DeviceSensor DeviceSensor_userid_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135919,7 +136081,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4826 (class 2606 OID 17752)
+-- TOC entry 5003 (class 2606 OID 26397)
 -- Name: SensorData SensorData_alertid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135928,7 +136090,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4827 (class 2606 OID 17757)
+-- TOC entry 5004 (class 2606 OID 26402)
 -- Name: SensorData SensorData_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135937,7 +136099,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4830 (class 2606 OID 17762)
+-- TOC entry 5006 (class 2606 OID 26407)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135946,7 +136108,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4831 (class 2606 OID 17767)
+-- TOC entry 5007 (class 2606 OID 26412)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135955,7 +136117,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4832 (class 2606 OID 17772)
+-- TOC entry 5008 (class 2606 OID 26417)
 -- Name: WatchAndroidPhone WatchAndroidPhone_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135964,7 +136126,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4833 (class 2606 OID 17777)
+-- TOC entry 5009 (class 2606 OID 26422)
 -- Name: WatchAndroidPhone WatchAndroidPhone_watchid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135973,7 +136135,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4834 (class 2606 OID 17782)
+-- TOC entry 5010 (class 2606 OID 26427)
 -- Name: agent_session agent_session_current_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135982,7 +136144,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4828 (class 2606 OID 17787)
+-- TOC entry 5005 (class 2606 OID 26432)
 -- Name: UseCaseDictionary api_pool_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135991,16 +136153,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4835 (class 2606 OID 17792)
--- Name: feedback_config_rules feedback_config_rules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.feedback_config_rules
-    ADD CONSTRAINT feedback_config_rules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
-
-
---
--- TOC entry 4823 (class 2606 OID 17797)
+-- TOC entry 5000 (class 2606 OID 26442)
 -- Name: Alert fk_fb_range; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136009,16 +136162,34 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4829 (class 2606 OID 17802)
--- Name: User fk_user_usecase; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 5011 (class 2606 OID 26486)
+-- Name: feedback_config_rules fk_feedback_config_rules_usecase; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public."User"
-    ADD CONSTRAINT fk_user_usecase FOREIGN KEY (active_usecase_id) REFERENCES public."UseCase"(usecase_id);
+ALTER TABLE ONLY public.feedback_config_rules
+    ADD CONSTRAINT fk_feedback_config_rules_usecase FOREIGN KEY (usecase_id) REFERENCES public."UseCase"(usecase_id) ON DELETE RESTRICT;
 
 
 --
--- TOC entry 4836 (class 2606 OID 17807)
+-- TOC entry 5013 (class 2606 OID 26503)
+-- Name: User_UC_Mappings fk_user_uc_mappings_feedback_config_rule; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User_UC_Mappings"
+    ADD CONSTRAINT fk_user_uc_mappings_feedback_config_rule FOREIGN KEY (feedback_config_rule_id) REFERENCES public.feedback_config_rules(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5014 (class 2606 OID 26498)
+-- Name: User_UC_Mappings fk_user_uc_mappings_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User_UC_Mappings"
+    ADD CONSTRAINT fk_user_uc_mappings_user FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5012 (class 2606 OID 26452)
 -- Name: user_schedules user_schedules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136026,9 +136197,11 @@ ALTER TABLE ONLY public.user_schedules
     ADD CONSTRAINT user_schedules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
 
 
--- Completed on 2026-05-26 13:35:59
+-- Completed on 2026-06-02 11:27:11
 
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict nKldpPikoxamgUN0GMHFFHMbwyNSAuIFoPKF1AdryjhF91618bnp1KDGHJLefNR
 
