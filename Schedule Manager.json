@@ -1,691 +1,707 @@
-{
-  "name": "Schedule Manager",
-  "nodes": [
-    {
-      "parameters": {
-        "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"action\":       \"={{ $json.payload.action }}\",\n  \"params\":       \"={{ $json.payload.params }}\",\n  \"session_id\":   \"={{ $json.session_id }}\",\n  \"usecase_id\":   \"={{ $json.usecase_id }}\",\n  \"usecase_name\": \"={{ $json.usecase_name }}\",\n  \"message\":      \"={{ $json.message }}\"\n}"
-      },
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        -2592,
-        176
-      ],
-      "id": "df729757-b30c-4584-bc71-f58938b3e301",
-      "name": "Execute Workflow Trigger"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT s.*\nFROM user_schedules s INNER JOIN \"User\" u ON s.user_id = u.userid\nWHERE u.active_usecase_id = $1;",
-        "options": {
-          "queryReplacement": "={{ $json.usecase_id}}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1392,
-        528
-      ],
-      "id": "38c2a695-a183-4580-a850-d6f9eb06161a",
-      "name": "List all schedules",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "numberInputs": 6
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        -688,
-        384
-      ],
-      "id": "52179e34-fe2d-47e0-808e-a6776fe2708b",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
+﻿{
+    "name":  "Schedule Manager",
+    "nodes":  [
                   {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "add",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
+                      "parameters":  {
+                                         "inputSource":  "jsonExample",
+                                         "jsonExample":  "{\n  \"action\":       \"={{ $json.payload.action }}\",\n  \"params\":       \"={{ $json.payload.params }}\",\n  \"session_id\":   \"={{ $json.session_id }}\",\n  \"usecase_id\":   \"={{ $json.usecase_id }}\",\n  \"usecase_name\": \"={{ $json.usecase_name }}\",\n  \"message\":      \"={{ $json.message }}\"\n}"
+                                     },
+                      "type":  "n8n-nodes-base.executeWorkflowTrigger",
+                      "typeVersion":  1.1,
+                      "position":  [
+                                       -2592,
+                                       176
+                                   ],
+                      "id":  "df729757-b30c-4584-bc71-f58938b3e301",
+                      "name":  "Execute Workflow Trigger"
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "SELECT s.*\nFROM user_schedules s\nINNER JOIN \"User_UC_Mappings\" um ON um.user_id = s.user_id\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE f.usecase_id = $1;",
+                                         "options":  {
+                                                         "queryReplacement":  "={{ $json.usecase_id}}"
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1392,
+                                       528
+                                   ],
+                      "id":  "38c2a695-a183-4580-a850-d6f9eb06161a",
+                      "name":  "List all schedules",
+                      "alwaysOutputData":  true,
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "numberInputs":  6
+                                     },
+                      "type":  "n8n-nodes-base.merge",
+                      "typeVersion":  3.2,
+                      "position":  [
+                                       -688,
+                                       384
+                                   ],
+                      "id":  "52179e34-fe2d-47e0-808e-a6776fe2708b",
+                      "name":  "Merge"
+                  },
+                  {
+                      "parameters":  {
+                                         "rules":  {
+                                                       "values":  [
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $json.action }}",
+                                                                                                                    "rightValue":  "add",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "14b2f5f3-69a9-4279-8601-0d939c86448a"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         }
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $json.action }}",
+                                                                                                                    "rightValue":  "change",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "0318aff6-9316-4e30-b800-45ab2aa68e90"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         }
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "leftValue":  "={{ $json.action }}",
+                                                                                                                    "rightValue":  "deactivate",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals"
+                                                                                                                                 },
+                                                                                                                    "id":  "6b6cdab4-f9be-4626-a1ef-bd6ce73d75bf"
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         }
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "id":  "1bce94f3-3f7f-48bb-a06e-f425a292fbe2",
+                                                                                                                    "leftValue":  "={{ $json.action }}",
+                                                                                                                    "rightValue":  "listAll",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals",
+                                                                                                                                     "name":  "filter.operator.equals"
+                                                                                                                                 }
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         }
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "id":  "55b24d35-6c1a-4e12-9e7d-100e945450c0",
+                                                                                                                    "leftValue":  "={{ $json.action }}",
+                                                                                                                    "rightValue":  "listActive",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals",
+                                                                                                                                     "name":  "filter.operator.equals"
+                                                                                                                                 }
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         }
+                                                                      },
+                                                                      {
+                                                                          "conditions":  {
+                                                                                             "options":  {
+                                                                                                             "caseSensitive":  true,
+                                                                                                             "leftValue":  "",
+                                                                                                             "typeValidation":  "strict",
+                                                                                                             "version":  1
+                                                                                                         },
+                                                                                             "conditions":  [
+                                                                                                                {
+                                                                                                                    "id":  "a196880f-597e-4677-b44e-24824d277dae",
+                                                                                                                    "leftValue":  "={{ $json.action }}",
+                                                                                                                    "rightValue":  "activate",
+                                                                                                                    "operator":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "operation":  "equals",
+                                                                                                                                     "name":  "filter.operator.equals"
+                                                                                                                                 }
+                                                                                                                }
+                                                                                                            ],
+                                                                                             "combinator":  "and"
+                                                                                         }
+                                                                      }
+                                                                  ]
+                                                   },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "c3a1889a-9c03-4b2b-8260-1f8891615b44",
+                      "name":  "Action Router",
+                      "type":  "n8n-nodes-base.switch",
+                      "typeVersion":  3,
+                      "position":  [
+                                       -2128,
+                                       128
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || \u0027listAll\u0027;\n\n// 2. Safely parse params (since it\u0027s a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === \u0027string\u0027) ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split(\u0027T\u0027)[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? (Number(params.trigger_percentage) \u003c= 1 ? Number(params.trigger_percentage) * 100 : Number(params.trigger_percentage)) : null,\n    measure_type: params.measure_type || \u0027average\u0027,\n    \n    isValid: (action === \u0027list\u0027) || (action == \u0027listAll\u0027) ||\n             (action === \u0027add\u0027 \u0026\u0026 params.user_id \u0026\u0026 params.interval_days) ||\n             (action === \u0027change\u0027 \u0026\u0026 params.schedule_id) ||\n             (action === \u0027deactivate\u0027 \u0026\u0026 params.schedule_id) ||\n      (action === \u0027activate\u0027 \u0026\u0026 params.schedule_id)\n  }\n}];"
+                                     },
+                      "id":  "3d3b3b28-124f-4a52-99ad-cc82b8f9d3e5",
+                      "name":  "Parse Schedule Params",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -2368,
+                                       176
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "UPDATE user_schedules SET interval_days = $2, measure_type = $3, trigger_percentage = $4, user_id = $5 WHERE schedule_id = $1\nRETURNING schedule_id, interval_days, measure_type,trigger_percentage;",
+                                         "options":  {
+                                                         "queryReplacement":  "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }},{{ $json.trigger_percentage }}, {{ $json.user_id }}"
+                                                     }
+                                     },
+                      "id":  "3e6399a5-8e18-485b-9c8c-52ba458157f0",
+                      "name":  "DB: Set Schedule",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1392,
+                                       144
+                                   ],
+                      "alwaysOutputData":  false,
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.schedule_id = {{ $json.schedule_id }}\n  AND s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "d6e127f9-0e86-43e5-ad9e-b1842cb37b24",
+                      "name":  "DB: Set Active False",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1392,
+                                       336
+                                   ],
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "INSERT INTO user_schedules\n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, \u0027{{ $json.next_run_date }}\u0027, \u0027{{ $json.measure_type }}\u0027, {{ $json.trigger_percentage }}, TRUE)\n  RETURNING schedule_id, user_id;",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "540f7a2c-2be9-4cab-952a-674c8586adc3",
+                      "name":  "DB: SQL Insert Schedule",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1392,
+                                       -64
+                                   ],
+                      "alwaysOutputData":  false,
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const rows = $input.all().map(i =\u003e i.json);\nconst session_id = $(\u0027Execute Workflow Trigger\u0027).first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `âœ… Updated schedule ${rows[0].schedule_id}. User: ${rows[0].user_id} ,interval: ${rows[0].interval_days} days, measure: ${rows[0].measure_type}, trigger percentage: ${rows[0].trigger_percentage}.`,\n  session_id\n}}];"
+                                     },
+                      "id":  "c8023a15-c414-45e6-942e-d5e2c274a0bd",
+                      "name":  "Format Update Response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1136,
+                                       144
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const rows = $input.all().map(i =\u003e i.json);\nconst session_id = $(\u0027Execute Workflow Trigger\u0027).first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length \u003e 0 ? `ðŸš« Schedule ${rows[0].schedule_id} deactivated.` : \"Schedule not found.\",\n  session_id\n}}];"
+                                     },
+                      "id":  "0ece984a-0323-4447-8c22-da7585d8cf25",
+                      "name":  "Format Deactivate Response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1136,
+                                       336
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const rows = $input.all().map(i =\u003e i.json);\nconst session_id = $(\u0027Execute Workflow Trigger\u0027).first().json.session_id;\n\nreturn [{ json: {\n  reply: `âœ¨ New schedule created with ID ${rows[0].schedule_id} for user ${rows[0].user_id}.`,\n  session_id\n}}];"
+                                     },
+                      "id":  "18bb2166-af7c-4c6a-97e0-483183246b0a",
+                      "name":  "Format Insert Response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1136,
+                                       -64
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const rows = $input.all().map(i =\u003e i.json);\nconst name = $(\u0027Execute Workflow Trigger\u0027).first().json.usecase_name;\nconst session_id = $(\u0027Execute Workflow Trigger\u0027).first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r =\u003e {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = \u0027N/A\u0027;\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays \u003e 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `ðŸ†” *ID ${r.schedule_id}*\n   ðŸ‘¤ User: ${r.user_id}\n   ðŸ“Š Type: ${r.measure_type} (${r.trigger_percentage}%)\n   â³ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)\n   âœ… Active: ${r.active}`;\n}).join(\u0027\\n\\n\u0027);\n\nreturn [{ json: {\n  reply: `ðŸ“‹ *All ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
+                                     },
+                      "id":  "34ec8b95-7f7b-4e5b-9587-e62a9bf0afe9",
+                      "name":  "Format ListAll Response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1136,
+                                       528
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const rows = $input.all().map(i =\u003e i.json);\nconst name = $(\u0027Execute Workflow Trigger\u0027).first().json.usecase_name;\nconst session_id = $(\u0027Execute Workflow Trigger\u0027).first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r =\u003e {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = \u0027N/A\u0027;\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays \u003e 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `ðŸ†” *ID ${r.schedule_id}*\n   ðŸ‘¤ User: ${r.user_id}\n   ðŸ“Š Type: ${r.measure_type} (${r.trigger_percentage}%)\n   â³ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join(\u0027\\n\\n\u0027);\n\nreturn [{ json: {\n  reply: `ðŸ“‹ *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
+                                     },
+                      "id":  "3fe10b04-1777-411b-941f-963176d21984",
+                      "name":  "Format ListActive Response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1136,
+                                       720
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "UPDATE user_schedules s\nSET active = true\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.schedule_id = {{ $json.schedule_id }}\n  AND s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "71aa5494-8a35-4b9c-ba1c-5679c9afa910",
+                      "name":  "DB: Set Active True",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1376,
+                                       944
+                                   ],
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const rows = $input.all().map(i =\u003e i.json);\nconst session_id = $(\u0027Execute Workflow Trigger\u0027).first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length \u003e 0 ? `âœ… Schedule ${rows[0].schedule_id} activated.` : \"Schedule not found.\",\n  session_id\n}}];"
+                                     },
+                      "id":  "1209d2b0-e4d5-4aec-a6a0-03002838f1f2",
+                      "name":  "Format Activate Response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -1136,
+                                       944
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }};",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "2b4a37d2-971b-4ed4-accd-5b47b25cde35",
+                      "name":  "DB: Deactivate all schedules of the type - ADD",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1616,
+                                       -64
+                                   ],
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }};",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "606fe19e-bd8a-4092-af22-ab4fd6bc2cb2",
+                      "name":  "DB: Deactivate all schedules of the type - ACTIVATE",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1584,
+                                       944
+                                   ],
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "SELECT s.*\nFROM user_schedules s\nINNER JOIN \"User_UC_Mappings\" um ON um.user_id = s.user_id\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE f.usecase_id = $1\n  AND s.active = TRUE;",
+                                         "options":  {
+                                                         "queryReplacement":  "={{ $json.usecase_id }}"
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.6,
+                      "position":  [
+                                       -1392,
+                                       720
+                                   ],
+                      "id":  "9aeaf4be-15d9-4347-abfc-f888e3ff1c0e",
+                      "name":  "List Active schedule",
+                      "alwaysOutputData":  true,
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SxQ8vRANzWTnEuGI",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      }
+                  }
+              ],
+    "pinData":  {
+
+                },
+    "connections":  {
+                        "Execute Workflow Trigger":  {
+                                                         "main":  [
+                                                                      [
+                                                                          {
+                                                                              "node":  "Parse Schedule Params",
+                                                                              "type":  "main",
+                                                                              "index":  0
+                                                                          }
+                                                                      ]
+                                                                  ]
+                                                     },
+                        "List all schedules":  {
+                                                   "main":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "Format ListAll Response",
+                                                                        "type":  "main",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                               },
+                        "Action Router":  {
+                                              "main":  [
+                                                           [
+                                                               {
+                                                                   "node":  "DB: Deactivate all schedules of the type - ADD",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "DB: Set Schedule",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "DB: Set Active False",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "List all schedules",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "List Active schedule",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ],
+                                                           [
+                                                               {
+                                                                   "node":  "DB: Deactivate all schedules of the type - ACTIVATE",
+                                                                   "type":  "main",
+                                                                   "index":  0
+                                                               }
+                                                           ]
+                                                       ]
+                                          },
+                        "Parse Schedule Params":  {
+                                                      "main":  [
+                                                                   [
+                                                                       {
+                                                                           "node":  "Action Router",
+                                                                           "type":  "main",
+                                                                           "index":  0
+                                                                       }
+                                                                   ]
+                                                               ]
+                                                  },
+                        "DB: Set Schedule":  {
+                                                 "main":  [
+                                                              [
+                                                                  {
+                                                                      "node":  "Format Update Response",
+                                                                      "type":  "main",
+                                                                      "index":  0
+                                                                  }
+                                                              ]
+                                                          ]
+                                             },
+                        "DB: Set Active False":  {
+                                                     "main":  [
+                                                                  [
+                                                                      {
+                                                                          "node":  "Format Deactivate Response",
+                                                                          "type":  "main",
+                                                                          "index":  0
+                                                                      }
+                                                                  ]
+                                                              ]
+                                                 },
+                        "DB: SQL Insert Schedule":  {
+                                                        "main":  [
+                                                                     [
+                                                                         {
+                                                                             "node":  "Format Insert Response",
+                                                                             "type":  "main",
+                                                                             "index":  0
+                                                                         }
+                                                                     ]
+                                                                 ]
+                                                    },
+                        "Format Deactivate Response":  {
+                                                           "main":  [
+                                                                        [
+                                                                            {
+                                                                                "node":  "Merge",
+                                                                                "type":  "main",
+                                                                                "index":  2
+                                                                            }
+                                                                        ]
+                                                                    ]
+                                                       },
+                        "Format Update Response":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Merge",
+                                                                            "type":  "main",
+                                                                            "index":  1
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Format Insert Response":  {
+                                                       "main":  [
+                                                                    [
+                                                                        {
+                                                                            "node":  "Merge",
+                                                                            "type":  "main",
+                                                                            "index":  0
+                                                                        }
+                                                                    ]
+                                                                ]
+                                                   },
+                        "Format ListAll Response":  {
+                                                        "main":  [
+                                                                     [
+                                                                         {
+                                                                             "node":  "Merge",
+                                                                             "type":  "main",
+                                                                             "index":  3
+                                                                         }
+                                                                     ]
+                                                                 ]
+                                                    },
+                        "Format ListActive Response":  {
+                                                           "main":  [
+                                                                        [
+                                                                            {
+                                                                                "node":  "Merge",
+                                                                                "type":  "main",
+                                                                                "index":  4
+                                                                            }
+                                                                        ]
+                                                                    ]
+                                                       },
+                        "DB: Set Active True":  {
+                                                    "main":  [
+                                                                 [
+                                                                     {
+                                                                         "node":  "Format Activate Response",
+                                                                         "type":  "main",
+                                                                         "index":  0
+                                                                     }
+                                                                 ]
+                                                             ]
+                                                },
+                        "Format Activate Response":  {
+                                                         "main":  [
+                                                                      [
+                                                                          {
+                                                                              "node":  "Merge",
+                                                                              "type":  "main",
+                                                                              "index":  5
+                                                                          }
+                                                                      ]
+                                                                  ]
+                                                     },
+                        "DB: Deactivate all schedules of the type - ADD":  {
+                                                                               "main":  [
+                                                                                            [
+                                                                                                {
+                                                                                                    "node":  "DB: SQL Insert Schedule",
+                                                                                                    "type":  "main",
+                                                                                                    "index":  0
+                                                                                                }
+                                                                                            ]
+                                                                                        ]
+                                                                           },
+                        "DB: Deactivate all schedules of the type - ACTIVATE":  {
+                                                                                    "main":  [
+                                                                                                 [
+                                                                                                     {
+                                                                                                         "node":  "DB: Set Active True",
+                                                                                                         "type":  "main",
+                                                                                                         "index":  0
+                                                                                                     }
+                                                                                                 ]
+                                                                                             ]
+                                                                                },
+                        "List Active schedule":  {
+                                                     "main":  [
+                                                                  [
+                                                                      {
+                                                                          "node":  "Format ListActive Response",
+                                                                          "type":  "main",
+                                                                          "index":  0
+                                                                      }
+                                                                  ]
+                                                              ]
+                                                 }
                     },
-                    "id": "14b2f5f3-69a9-4279-8601-0d939c86448a"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "change",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "0318aff6-9316-4e30-b800-45ab2aa68e90"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "deactivate",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "6b6cdab4-f9be-4626-a1ef-bd6ce73d75bf"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "id": "1bce94f3-3f7f-48bb-a06e-f425a292fbe2",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "listAll",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "id": "55b24d35-6c1a-4e12-9e7d-100e945450c0",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "listActive",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "id": "a196880f-597e-4677-b44e-24824d277dae",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "activate",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "c3a1889a-9c03-4b2b-8260-1f8891615b44",
-      "name": "Action Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [
-        -2128,
-        128
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const input = $input.first().json;\n\n// 1. Get action from the root\nconst action = input.action || 'listAll';\n\n// 2. Safely parse params (since it's a string in your input)\nlet params = {};\ntry {\n  params = (typeof input.params === 'string') ? JSON.parse(input.params) : (input.params || {});\n} catch (e) {\n  params = {}; // Fallback if JSON is malformed\n}\n\n// 3. Calculate next_run_date (Today + interval_days)\nlet nextRunDate = null;\nconst interval = params.interval_days ? Number(params.interval_days) : null;\n\nif (interval) {\n  const date = new Date();\n  date.setDate(date.getDate() + interval);\n  nextRunDate = date.toISOString().split('T')[0]; // Returns \"YYYY-MM-DD\"\n}\n\nconst session_id = input.session_id;\nconst usecase_id = input.usecase_id;\n\nreturn [{\n  json: {\n    action: action,\n    session_id: session_id,\n    usecase_id: usecase_id,\n    \n    // Use Number() or parseInt() to ensure these are integers\n    schedule_id: params.schedule_id ? Number(params.schedule_id) : null,\n    user_id: params.user_id ? Number(params.user_id) : null,\n    interval_days: params.interval_days ? Number(params.interval_days) : null,\n    trigger_percentage: params.trigger_percentage ? (Number(params.trigger_percentage) <= 1 ? Number(params.trigger_percentage) * 100 : Number(params.trigger_percentage)) : null,\n    measure_type: params.measure_type || 'average',\n    \n    isValid: (action === 'list') || (action == 'listAll') ||\n             (action === 'add' && params.user_id && params.interval_days) ||\n             (action === 'change' && params.schedule_id) ||\n             (action === 'deactivate' && params.schedule_id) ||\n      (action === 'activate' && params.schedule_id)\n  }\n}];"
-      },
-      "id": "3d3b3b28-124f-4a52-99ad-cc82b8f9d3e5",
-      "name": "Parse Schedule Params",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -2368,
-        176
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE user_schedules SET interval_days = $2, measure_type = $3, trigger_percentage = $4, user_id = $5 WHERE schedule_id = $1\nRETURNING schedule_id, interval_days, measure_type,trigger_percentage;",
-        "options": {
-          "queryReplacement": "={{ $json.schedule_id }},{{ $json.interval_days }},{{ $json.measure_type }},{{ $json.trigger_percentage }}, {{ $json.user_id }}"
-        }
-      },
-      "id": "3e6399a5-8e18-485b-9c8c-52ba458157f0",
-      "name": "DB: Set Schedule",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1392,
-        144
-      ],
-      "alwaysOutputData": false,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE user_schedules s\nSET active = false\nFROM \"User\" u\nWHERE s.schedule_id = {{ $json.schedule_id }} AND s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
-        "options": {}
-      },
-      "id": "d6e127f9-0e86-43e5-ad9e-b1842cb37b24",
-      "name": "DB: Set Active False",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1392,
-        336
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO user_schedules\n  (user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) \nVALUES \n  ({{ $json.user_id }}, {{ $json.interval_days }}, '{{ $json.next_run_date }}', '{{ $json.measure_type }}', {{ $json.trigger_percentage }}, TRUE)\n  RETURNING schedule_id, user_id;",
-        "options": {}
-      },
-      "id": "540f7a2c-2be9-4cab-952a-674c8586adc3",
-      "name": "DB: SQL Insert Schedule",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1392,
-        -64
-      ],
-      "alwaysOutputData": false,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0) {\n  return [{ json: { reply: \"Update failed. Schedule ID not found.\", session_id }}];\n}\n\nreturn [{ json: {\n  reply: `✅ Updated schedule ${rows[0].schedule_id}. User: ${rows[0].user_id} ,interval: ${rows[0].interval_days} days, measure: ${rows[0].measure_type}, trigger percentage: ${rows[0].trigger_percentage}.`,\n  session_id\n}}];"
-      },
-      "id": "c8023a15-c414-45e6-942e-d5e2c274a0bd",
-      "name": "Format Update Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        144
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length > 0 ? `🚫 Schedule ${rows[0].schedule_id} deactivated.` : \"Schedule not found.\",\n  session_id\n}}];"
-      },
-      "id": "0ece984a-0323-4447-8c22-da7585d8cf25",
-      "name": "Format Deactivate Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        336
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: `✨ New schedule created with ID ${rows[0].schedule_id} for user ${rows[0].user_id}.`,\n  session_id\n}}];"
-      },
-      "id": "18bb2166-af7c-4c6a-97e0-483183246b0a",
-      "name": "Format Insert Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        -64
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)\n   ✅ Active: ${r.active}`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *All ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
-      },
-      "id": "34ec8b95-7f7b-4e5b-9587-e62a9bf0afe9",
-      "name": "Format ListAll Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        528
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length === 0 || !rows[0].schedule_id) {\n  return [{ json: {\n    reply: `No active schedules found for ${name}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  // Calculate days remaining if next_run_date exists\n  let timingInfo = 'N/A';\n  if (r.next_run_date) {\n    const nextDate = new Date(r.next_run_date);\n    const today = new Date();\n    const diffTime = nextDate - today;\n    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));\n    timingInfo = diffDays > 0 ? `in ${diffDays} days` : \"today\";\n  }\n\n  return `🆔 *ID ${r.schedule_id}*\n   👤 User: ${r.user_id}\n   📊 Type: ${r.measure_type} (${r.trigger_percentage}%)\n   ⏳ Next Check: ${timingInfo} (Interval: ${r.interval_days} days)`;\n}).join('\\n\\n');\n\nreturn [{ json: {\n  reply: `📋 *Active ${name} Schedules (${rows.length}):*\\n\\n${lines}`,\n  session_id\n}}];"
-      },
-      "id": "3fe10b04-1777-411b-941f-963176d21984",
-      "name": "Format ListActive Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        720
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE user_schedules s\nSET active = true\nFROM \"User\" u\nWHERE s.schedule_id = {{ $json.schedule_id }} AND s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
-        "options": {}
-      },
-      "id": "71aa5494-8a35-4b9c-ba1c-5679c9afa910",
-      "name": "DB: Set Active True",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1376,
-        944
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nreturn [{ json: {\n  reply: rows.length > 0 ? `✅ Schedule ${rows[0].schedule_id} activated.` : \"Schedule not found.\",\n  session_id\n}}];"
-      },
-      "id": "1209d2b0-e4d5-4aec-a6a0-03002838f1f2",
-      "name": "Format Activate Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        944
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE user_schedules s\nSET active = false\nFROM \"User\" u\nWHERE s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }};",
-        "options": {}
-      },
-      "id": "2b4a37d2-971b-4ed4-accd-5b47b25cde35",
-      "name": "DB: Deactivate all schedules of the type - ADD",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1616,
-        -64
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE user_schedules s\nSET active = false\nFROM \"User\" u\nWHERE s.user_id = u.userid AND u.active_usecase_id = {{ $json.usecase_id }};",
-        "options": {}
-      },
-      "id": "606fe19e-bd8a-4092-af22-ab4fd6bc2cb2",
-      "name": "DB: Deactivate all schedules of the type - ACTIVATE",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1584,
-        944
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT s.*\nFROM user_schedules s INNER JOIN \"User\" u ON s.user_id = u.userid\nWHERE u.active_usecase_id = $1 AND active = TRUE;",
-        "options": {
-          "queryReplacement": "={{ $json.usecase_id }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1392,
-        720
-      ],
-      "id": "9aeaf4be-15d9-4347-abfc-f888e3ff1c0e",
-      "name": "List Active schedule",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "SxQ8vRANzWTnEuGI",
-          "name": "Postgres account"
-        }
-      }
-    }
-  ],
-  "pinData": {},
-  "connections": {
-    "Execute Workflow Trigger": {
-      "main": [
-        [
-          {
-            "node": "Parse Schedule Params",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "List all schedules": {
-      "main": [
-        [
-          {
-            "node": "Format ListAll Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Action Router": {
-      "main": [
-        [
-          {
-            "node": "DB: Deactivate all schedules of the type - ADD",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "DB: Set Schedule",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "DB: Set Active False",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "List all schedules",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "List Active schedule",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "DB: Deactivate all schedules of the type - ACTIVATE",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse Schedule Params": {
-      "main": [
-        [
-          {
-            "node": "Action Router",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: Set Schedule": {
-      "main": [
-        [
-          {
-            "node": "Format Update Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: Set Active False": {
-      "main": [
-        [
-          {
-            "node": "Format Deactivate Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: SQL Insert Schedule": {
-      "main": [
-        [
-          {
-            "node": "Format Insert Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Deactivate Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 2
-          }
-        ]
-      ]
-    },
-    "Format Update Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Format Insert Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format ListAll Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 3
-          }
-        ]
-      ]
-    },
-    "Format ListActive Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 4
-          }
-        ]
-      ]
-    },
-    "DB: Set Active True": {
-      "main": [
-        [
-          {
-            "node": "Format Activate Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Activate Response": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 5
-          }
-        ]
-      ]
-    },
-    "DB: Deactivate all schedules of the type - ADD": {
-      "main": [
-        [
-          {
-            "node": "DB: SQL Insert Schedule",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DB: Deactivate all schedules of the type - ACTIVATE": {
-      "main": [
-        [
-          {
-            "node": "DB: Set Active True",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "List Active schedule": {
-      "main": [
-        [
-          {
-            "node": "Format ListActive Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": true
-  },
-  "versionId": "af9f2614-da24-4bea-9a4b-3da956f154a4",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
-  },
-  "id": "UqOtVUntzN2Gh75O",
-  "tags": []
+    "active":  true,
+    "settings":  {
+                     "executionOrder":  "v1",
+                     "binaryMode":  "separate",
+                     "availableInMCP":  true
+                 },
+    "versionId":  "af9f2614-da24-4bea-9a4b-3da956f154a4",
+    "meta":  {
+                 "templateCredsSetupCompleted":  true,
+                 "instanceId":  "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
+             },
+    "id":  "UqOtVUntzN2Gh75O",
+    "tags":  [
+
+             ]
 }
