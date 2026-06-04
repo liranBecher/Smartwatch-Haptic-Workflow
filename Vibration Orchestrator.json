@@ -368,7 +368,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2 AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "options":  {
                                                          "queryReplacement":  "={{ [ $json.type, $json.userID ] }}"
                                                      }
@@ -556,7 +556,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nWHERE uc.name = \u0027Pollution\u0027 AND fcr.active = true\nORDER BY fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = {{ $(\u0027Webhook pollution data\u0027).item.json.body.userId }}\n AND uum.active = true\nWHERE uc.name = \u0027Pollution\u0027\n  AND fcr.active = true\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = {{ $(\u0027Webhook pollution data\u0027).item.json.body.userId }} AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "options":  {
 
                                                      }
@@ -789,7 +789,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2 AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "options":  {
                                                          "queryReplacement":  "={{ [ $json.type, $json.userID ] }}"
                                                      }
@@ -1704,7 +1704,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = {{ $(\u0027Webhook heart rate\u0027).item.json.body.UserID }}\nWHERE uc.name = \u0027HeartRate\u0027\n  AND fcr.active = true\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = {{ $(\u0027Webhook heart rate\u0027).item.json.body.UserID }}\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = {{ $(\u0027Webhook heart rate\u0027).item.json.body.UserID }}\n AND uum.active = true\nWHERE uc.name = \u0027HeartRate\u0027\n  AND fcr.active = true\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = {{ $(\u0027Webhook heart rate\u0027).item.json.body.UserID }} AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "additionalFields":  {
 
                                                               }
@@ -2126,7 +2126,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2 AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "options":  {
                                                          "queryReplacement":  "={{ [ $json.type, $json.userID ] }}"
                                                      }
@@ -2450,7 +2450,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2 AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "options":  {
                                                          "queryReplacement":  "={{ [ $json.type, $json.userID ] }}"
                                                      }
@@ -2757,7 +2757,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
+                                         "query":  "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (uum.user_id IS NOT NULL OR NOT EXISTS (\n    SELECT 1 FROM \"User_UC_Mappings\" existing WHERE existing.user_id = $2 AND existing.active = true\n  ))\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END, fcr.minvalue, fcr.maxvalue;",
                                          "options":  {
                                                          "queryReplacement":  "={{ [ $json.type, $json.userID ] }}"
                                                      }

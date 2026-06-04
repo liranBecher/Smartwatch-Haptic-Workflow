@@ -18,7 +18,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT s.*\nFROM user_schedules s\nINNER JOIN \"User_UC_Mappings\" um ON um.user_id = s.user_id\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE f.usecase_id = $1;",
+                                         "query":  "SELECT s.*\nFROM user_schedules s\nINNER JOIN \"User_UC_Mappings\" um ON um.user_id = s.user_id AND um.active = true\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE f.usecase_id = $1;",
                                          "options":  {
                                                          "queryReplacement":  "={{ $json.usecase_id}}"
                                                      }
@@ -246,7 +246,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.schedule_id = {{ $json.schedule_id }}\n  AND s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
+                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.schedule_id = {{ $json.schedule_id }}\n  AND s.user_id = um.user_id\n  AND um.active = true\n  AND f.usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
                                          "options":  {
 
                                                      }
@@ -358,7 +358,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "UPDATE user_schedules s\nSET active = true\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.schedule_id = {{ $json.schedule_id }}\n  AND s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
+                                         "query":  "UPDATE user_schedules s\nSET active = true\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.schedule_id = {{ $json.schedule_id }}\n  AND s.user_id = um.user_id\n  AND um.active = true\n  AND f.usecase_id = {{ $json.usecase_id }}\nRETURNING s.schedule_id;",
                                          "options":  {
 
                                                      }
@@ -394,7 +394,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }};",
+                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.user_id = um.user_id\n  AND um.active = true\n  AND f.usecase_id = {{ $json.usecase_id }};",
                                          "options":  {
 
                                                      }
@@ -417,7 +417,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.user_id = um.user_id\n  AND f.usecase_id = {{ $json.usecase_id }};",
+                                         "query":  "UPDATE user_schedules s\nSET active = false\nFROM \"User_UC_Mappings\" um\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE s.user_id = um.user_id\n  AND um.active = true\n  AND f.usecase_id = {{ $json.usecase_id }};",
                                          "options":  {
 
                                                      }
@@ -440,7 +440,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "SELECT s.*\nFROM user_schedules s\nINNER JOIN \"User_UC_Mappings\" um ON um.user_id = s.user_id\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE f.usecase_id = $1\n  AND s.active = TRUE;",
+                                         "query":  "SELECT s.*\nFROM user_schedules s\nINNER JOIN \"User_UC_Mappings\" um ON um.user_id = s.user_id AND um.active = true\nINNER JOIN feedback_config_rules f ON f.id = um.feedback_config_rule_id\nWHERE f.usecase_id = $1\n  AND s.active = TRUE;",
                                          "options":  {
                                                          "queryReplacement":  "={{ $json.usecase_id }}"
                                                      }

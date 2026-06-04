@@ -189,7 +189,7 @@
                                          "operation":  "executeQuery",
                                          "query":  "SELECT id, minvalue, maxvalue, minpulses, maxpulses,\n       minintensity, maxintensity, minduration, maxduration,\n       mininterval, maxinterval, active\nFROM feedback_config_rules\nWHERE usecase_id = $1 AND active = true\nORDER BY minvalue ASC NULLS FIRST;",
                                          "options":  {
-                                                         "queryReplacement":  "=={{ $json.usecase_name }}"
+                                                         "queryReplacement":  "={{ [$json.usecase_id] }}"
                                                      }
                                      },
                       "id":  "536976b7-f121-40a6-85a6-11936c469f38",
