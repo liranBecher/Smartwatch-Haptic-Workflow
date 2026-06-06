@@ -612,7 +612,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst p = typeof input.params === 'string' \n  ? JSON.parse(input.params) \n  : (input.params ?? {});\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\n\nconst required = ['minvalue','maxvalue','minpulses','maxpulses',\n                  'minintensity','maxintensity','minduration',\n                  'maxduration','mininterval','maxinterval'];\n\nconst missing = required.filter(k => p[k] === undefined || p[k] === null);\n\nif (missing.length > 0) {\n  return [{ json: {\n    valid: false,\n    reply: `I need a few more details to change this mapping. Please provide: ${missing.join(', ')}.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  valid: true,\n  session_id,\n  usecase_name,\n  usecase_id: input.usecase_id,\n  user_id: p.user_id ?? null,\n  minvalue:     p.minvalue,\n  maxvalue:     p.maxvalue,\n  minpulses:    p.minpulses,\n  maxpulses:    p.maxpulses,\n  minintensity: p.minintensity,\n  maxintensity: p.maxintensity,\n  minduration:  p.minduration,\n  maxduration:  p.maxduration,\n  mininterval:  p.mininterval,\n  maxinterval:  p.maxinterval,\n}}];"
+        "jsCode": "const input = $input.first().json;\nlet p = {};\ntry {\n  p = typeof input.params === 'string'\n    ? JSON.parse(input.params)\n    : (input.params ?? {});\n} catch (e) {\n  p = {};\n}\n\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\nconst usecase_id = Number(input.usecase_id);\n\nconst mappingId = parseInt(\n  p.id ?? p.mapping_id ?? p.mappingId ?? p.original_mapping_id ?? input.original_mapping_id\n);\n\nconst userId = parseInt(p.user_id ?? input.user_id);\n\nif (!mappingId || Number.isNaN(mappingId)) {\n  return [{\n    json: {\n      valid: false,\n      reply: `Please specify which mapping ID to change for this user. Use \"list mappings\" to see current IDs.`,\n      session_id\n    }\n  }];\n}\n\nif (!userId || Number.isNaN(userId)) {\n  return [{\n    json: {\n      valid: false,\n      reply: `Please specify which user should receive this mapping change.`,\n      session_id\n    }\n  }];\n}\n\nif (!usecase_id || Number.isNaN(usecase_id)) {\n  return [{\n    json: {\n      valid: false,\n      reply: `I could not resolve the use case ID for this mapping change. Please refresh use cases and try again.`,\n      session_id\n    }\n  }];\n}\n\nconst editable = [\n  'minvalue',\n  'maxvalue',\n  'minpulses',\n  'maxpulses',\n  'minintensity',\n  'maxintensity',\n  'minduration',\n  'maxduration',\n  'mininterval',\n  'maxinterval'\n];\n\nconst updates = editable.filter(k => p[k] !== undefined && p[k] !== null && p[k] !== '');\n\nif (updates.length === 0) {\n  return [{\n    json: {\n      valid: false,\n      reply: `Please specify at least one mapping value to change for mapping ID ${mappingId}.`,\n      session_id\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    session_id,\n    usecase_name,\n    usecase_id,\n    user_id: userId,\n    mapping_id: mappingId,\n    minvalue: p.minvalue ?? null,\n    maxvalue: p.maxvalue ?? null,\n    minpulses: p.minpulses ?? null,\n    maxpulses: p.maxpulses ?? null,\n    minintensity: p.minintensity ?? null,\n    maxintensity: p.maxintensity ?? null,\n    minduration: p.minduration ?? null,\n    maxduration: p.maxduration ?? null,\n    mininterval: p.mininterval ?? null,\n    maxinterval: p.maxinterval ?? null\n  }\n}];"
       },
       "id": "09f9b3ba-eb63-457b-9506-5d9e95b3c927",
       "name": "Validate - duplicate params",
@@ -649,9 +649,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO feedback_config_rules\n  (type, usecase_id, active, minvalue, maxvalue, minpulses, maxpulses,\n   minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval)\nVALUES ($1, $12, true, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\nON CONFLICT ON CONSTRAINT feedback_config_mapped_minpulses_maxpulses_minintensity_max_key\nDO UPDATE SET usecase_id = EXCLUDED.usecase_id\nRETURNING id;",
+        "query": "INSERT INTO feedback_config_rules\n  (type, usecase_id, active, minvalue, maxvalue, minpulses, maxpulses,\n   minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval)\nSELECT\n  fcr.type,\n  fcr.usecase_id,\n  true,\n  COALESCE($1::double precision, fcr.minvalue),\n  COALESCE($2::double precision, fcr.maxvalue),\n  COALESCE($3::double precision, fcr.minpulses),\n  COALESCE($4::double precision, fcr.maxpulses),\n  COALESCE($5::double precision, fcr.minintensity),\n  COALESCE($6::double precision, fcr.maxintensity),\n  COALESCE($7::double precision, fcr.minduration),\n  COALESCE($8::double precision, fcr.maxduration),\n  COALESCE($9::double precision, fcr.mininterval),\n  COALESCE($10::double precision, fcr.maxinterval)\nFROM feedback_config_rules fcr\nWHERE fcr.id = $11\n  AND fcr.usecase_id = $12\n  AND fcr.active = true\nON CONFLICT ON CONSTRAINT feedback_config_mapped_minpulses_maxpulses_minintensity_max_key\nDO UPDATE SET usecase_id = EXCLUDED.usecase_id\nRETURNING id;",
         "options": {
-          "queryReplacement": "={{ [$('Parse incoming').item.json.usecase_name,\n$('Parse incoming').item.json.params.minvalue,\n$('Parse incoming').item.json.params.maxvalue,\n$('Parse incoming').item.json.params.minpulses,\n$('Parse incoming').item.json.params.maxpulses,\n$('Parse incoming').item.json.params.minintensity,\n$('Parse incoming').item.json.params.maxintensity,\n$('Parse incoming').item.json.params.minduration,\n$('Parse incoming').item.json.params.maxduration,\n$('Parse incoming').item.json.params.mininterval,\n$('Parse incoming').item.json.params.maxinterval,\n$('Parse incoming').item.json.usecase_id] }}"
+          "queryReplacement": "={{ [\n$('Parse incoming').item.json.params.minvalue,\n$('Parse incoming').item.json.params.maxvalue,\n$('Parse incoming').item.json.params.minpulses,\n$('Parse incoming').item.json.params.maxpulses,\n$('Parse incoming').item.json.params.minintensity,\n$('Parse incoming').item.json.params.maxintensity,\n$('Parse incoming').item.json.params.minduration,\n$('Parse incoming').item.json.params.maxduration,\n$('Parse incoming').item.json.params.mininterval,\n$('Parse incoming').item.json.params.maxinterval,\n$('Validate - duplicate params').item.json.mapping_id,\n$('Parse incoming').item.json.usecase_id] }}"
         }
       },
       "id": "82b259e0-b484-40cb-8a36-2ead73dddd48",
@@ -706,7 +706,24 @@
       ]
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Execute Workflow Trigger": [
+      {
+        "json": {
+          "action": "duplicate_mapping_for_user",
+          "params": {
+            "id": 140,
+            "user_id": 100,
+            "minpulses": 3
+          },
+          "session_id": "9d874202-9714-4311-9cd3-78ac69ef9e0a",
+          "usecase_id": 1,
+          "usecase_name": "HeartRate",
+          "message": "can you change that mapping only for user 100? set the mimimum pulses to 3"
+        }
+      }
+    ]
+  },
   "connections": {
     "DB - list mappings": {
       "main": [
@@ -1086,7 +1103,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "23ddd3ac-d177-4aa7-a5ee-baf0d5884237",
+  "versionId": "0404cca8-35c7-4066-b31a-8072252d2a1d",
   "meta": {
     "aiBuilderAssisted": true,
     "builderVariant": "mcp",
