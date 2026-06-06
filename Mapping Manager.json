@@ -162,8 +162,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        800,
-        1600
+        528,
+        1616
       ]
     },
     {
@@ -272,8 +272,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1024,
-        1600
+        752,
+        1616
       ]
     },
     {
@@ -393,6 +393,29 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fdac66a1-1ed1-46cb-b0c8-8740b8c04643",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "duplicate_mapping_for_user",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -405,8 +428,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        1248,
-        1552
+        976,
+        1568
       ]
     },
     {
@@ -551,6 +574,135 @@
       "position": [
         1648,
         1792
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fbbcefc6-4bac-4ed1-aa16-6b22715d1554",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f4d8912f-4e17-46b4-8365-910af77c0a79",
+      "name": "If added parameters are valid1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        2448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst p = typeof input.params === 'string' \n  ? JSON.parse(input.params) \n  : (input.params ?? {});\nconst session_id = input.session_id;\nconst usecase_name = input.usecase_name;\n\nconst required = ['minvalue','maxvalue','minpulses','maxpulses',\n                  'minintensity','maxintensity','minduration',\n                  'maxduration','mininterval','maxinterval'];\n\nconst missing = required.filter(k => p[k] === undefined || p[k] === null);\n\nif (missing.length > 0) {\n  return [{ json: {\n    valid: false,\n    reply: `I need a few more details to change this mapping. Please provide: ${missing.join(', ')}.`,\n    session_id\n  }}];\n}\n\nreturn [{ json: {\n  valid: true,\n  session_id,\n  usecase_name,\n  usecase_id: input.usecase_id,\n  user_id: p.user_id ?? null,\n  minvalue:     p.minvalue,\n  maxvalue:     p.maxvalue,\n  minpulses:    p.minpulses,\n  maxpulses:    p.maxpulses,\n  minintensity: p.minintensity,\n  maxintensity: p.maxintensity,\n  minduration:  p.minduration,\n  maxduration:  p.maxduration,\n  mininterval:  p.mininterval,\n  maxinterval:  p.maxinterval,\n}}];"
+      },
+      "id": "09f9b3ba-eb63-457b-9506-5d9e95b3c927",
+      "name": "Validate - duplicate params",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        2448
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"User_UC_Mappings\"\nSET \n    active = false,\n    deactivated_at = NOW()\nWHERE \n    user_id = $1\n    AND active = true;",
+        "options": {
+          "queryReplacement": "={{ $json.user_id }}"
+        }
+      },
+      "id": "889d678a-ab9f-4afa-beb9-154f24c6a106",
+      "name": "DB - Disconnect from mapping",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2000,
+        2432
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO feedback_config_rules\n  (type, usecase_id, active, minvalue, maxvalue, minpulses, maxpulses,\n   minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval)\nVALUES ($1, $12, true, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\nON CONFLICT ON CONSTRAINT feedback_config_mapped_minpulses_maxpulses_minintensity_max_key\nDO UPDATE SET usecase_id = EXCLUDED.usecase_id\nRETURNING id;",
+        "options": {
+          "queryReplacement": "={{ [$('Parse incoming').item.json.usecase_name,\n$('Parse incoming').item.json.params.minvalue,\n$('Parse incoming').item.json.params.maxvalue,\n$('Parse incoming').item.json.params.minpulses,\n$('Parse incoming').item.json.params.maxpulses,\n$('Parse incoming').item.json.params.minintensity,\n$('Parse incoming').item.json.params.maxintensity,\n$('Parse incoming').item.json.params.minduration,\n$('Parse incoming').item.json.params.maxduration,\n$('Parse incoming').item.json.params.mininterval,\n$('Parse incoming').item.json.params.maxinterval,\n$('Parse incoming').item.json.usecase_id] }}"
+        }
+      },
+      "id": "82b259e0-b484-40cb-8a36-2ead73dddd48",
+      "name": "DB - insert Duplicated mapping",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2240,
+        2432
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.\"User_UC_Mappings\" (\n    user_id, \n    feedback_config_rule_id, \n    active, \n    assigned_at\n)\nVALUES (\n    $1, \n    $2, \n    true, \n    NOW()\n);",
+        "options": {
+          "queryReplacement": "={{ [$('Parse incoming').item.json.params.user_id,$json.id] }}"
+        }
+      },
+      "id": "6e14fa53-b42b-402d-aa05-2df2444554b3",
+      "name": "DB - insert into mapping-user table",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2480,
+        2432
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $('Parse incoming').first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\n// Explicitly pull the generated mapping ID from the correct DB insertion node\nconst dbInsertNode = $('DB - insert Duplicated mapping').first().json;\nconst newMappingId = dbInsertNode.id;\n\n// Verify that we successfully got a mapping ID back from that specific step\nif (!newMappingId) {\n  return [{ json: {\n    reply: `I ran into an issue isolating the mapping configuration. Please try again or verify the parameters.`,\n    session_id\n  }}];\n}\n\nconst userId = incoming.user_id;\nconst oldMappingId = incoming.old_mapping_id ?? 'previous';\n\n// Generate a targeted response for the single user override\nconst reply = `Successfully updated configuration for user ${userId}. They have been disconnected from mapping ID ${oldMappingId} and assigned to their own isolated mapping (ID ${newMappingId}).`;\n\nreturn [{ json: { \n  reply, \n  session_id,\n  user_id: userId,\n  mapping_id: newMappingId\n} }];"
+      },
+      "id": "d07c2cb2-40ac-49da-8b63-886036ca736a",
+      "name": "Format - duplicate mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2736,
+        2432
       ]
     }
   ],
@@ -764,6 +916,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Validate - duplicate params",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -846,6 +1005,79 @@
           }
         ]
       ]
+    },
+    "Validate - duplicate params": {
+      "main": [
+        [
+          {
+            "node": "If added parameters are valid1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If added parameters are valid1": {
+      "main": [
+        [
+          {
+            "node": "DB - Disconnect from mapping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "DB - Disconnect from mapping": {
+      "main": [
+        [
+          {
+            "node": "DB - insert Duplicated mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - insert Duplicated mapping": {
+      "main": [
+        [
+          {
+            "node": "DB - insert into mapping-user table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - insert into mapping-user table": {
+      "main": [
+        [
+          {
+            "node": "Format - duplicate mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format - duplicate mapping": {
+      "main": [
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -854,7 +1086,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "b207d135-bfb4-4efc-b0b0-c7188dfec708",
+  "versionId": "23ddd3ac-d177-4aa7-a5ee-baf0d5884237",
   "meta": {
     "aiBuilderAssisted": true,
     "builderVariant": "mcp",
