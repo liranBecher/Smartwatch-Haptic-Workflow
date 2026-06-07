@@ -14,8 +14,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1792,
-        944
+        1680,
+        1136
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -34,8 +34,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2752,
-        944
+        1968,
+        1136
       ]
     },
     {
@@ -47,8 +47,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1760,
-        1200
+        1168,
+        1600
       ]
     },
     {
@@ -64,8 +64,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2432,
-        1184
+        1680,
+        1520
       ],
       "credentials": {
         "postgres": {
@@ -83,8 +83,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2672,
-        1184
+        1968,
+        1520
       ]
     },
     {
@@ -100,8 +100,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1920,
-        1968
+        1168,
+        3376
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -122,8 +122,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        2368,
-        1968
+        1616,
+        3376
       ]
     },
     {
@@ -142,8 +142,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2448,
-        2192
+        1696,
+        3600
       ],
       "credentials": {
         "openAiApi": {
@@ -162,8 +162,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        528,
-        1616
+        -400,
+        2096
       ]
     },
     {
@@ -175,8 +175,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2720,
-        1968
+        1968,
+        3376
       ]
     },
     {
@@ -192,8 +192,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1472,
-        1968
+        720,
+        3376
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -212,8 +212,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1696,
-        1968
+        944,
+        3376
       ]
     },
     {
@@ -225,8 +225,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2144,
-        1968
+        1392,
+        3376
       ]
     },
     {
@@ -259,8 +259,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2000,
-        1200
+        1392,
+        1600
       ]
     },
     {
@@ -272,8 +272,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        752,
-        1616
+        -176,
+        2096
       ]
     },
     {
@@ -297,6 +297,29 @@
                       "operation": "equals"
                     },
                     "id": "835ac3f8-4018-4cc6-bc70-ae6c2568c409"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7479e847-b7dd-49ba-adc0-98a12df4e2bf",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "listAll",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
                   }
                 ],
                 "combinator": "and"
@@ -358,29 +381,6 @@
                 },
                 "conditions": [
                   {
-                    "id": "609e5416-413d-4c76-a513-67c3d8f6a300",
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "brainstorm",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
                     "id": "a269f992-9871-46e0-af82-fdc6a1b209f5",
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "change",
@@ -416,6 +416,75 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3896b569-748b-4c57-9638-7997ec735bc2",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "assign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a09d2b1e-59a1-4fe9-91df-d17d73f9a520",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "unassign",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "609e5416-413d-4c76-a513-67c3d8f6a300",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "brainstorm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -428,8 +497,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        976,
-        1568
+        48,
+        1984
       ]
     },
     {
@@ -441,8 +510,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1696,
-        1440
+        1168,
+        1888
       ]
     },
     {
@@ -475,8 +544,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2032,
-        1440
+        1392,
+        1888
       ]
     },
     {
@@ -492,8 +561,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2288,
-        1584
+        1680,
+        1808
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -512,21 +581,21 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2480,
-        1584
+        1968,
+        1808
       ]
     },
     {
       "parameters": {
-        "numberInputs": 6
+        "numberInputs": 7
       },
       "id": "ce6e1343-f967-41cd-bd51-6948700bb674",
       "name": "Merge all branches",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2944,
-        1456
+        2192,
+        2064
       ]
     },
     {
@@ -559,8 +628,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2064,
-        1792
+        1392,
+        2096
       ]
     },
     {
@@ -572,8 +641,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1648,
-        1792
+        1168,
+        2096
       ]
     },
     {
@@ -606,8 +675,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1552,
-        2448
+        944,
+        2320
       ]
     },
     {
@@ -619,8 +688,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1312,
-        2448
+        720,
+        2320
       ]
     },
     {
@@ -636,8 +705,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2000,
-        2432
+        1168,
+        2320
       ],
       "credentials": {
         "postgres": {
@@ -659,8 +728,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2240,
-        2432
+        1392,
+        2320
       ],
       "credentials": {
         "postgres": {
@@ -682,8 +751,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2480,
-        2432
+        1680,
+        2320
       ],
       "credentials": {
         "postgres": {
@@ -701,25 +770,352 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2736,
-        2432
+        1968,
+        2320
       ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, minvalue, maxvalue, minpulses, maxpulses,\n       minintensity, maxintensity, minduration, maxduration,\n       mininterval, maxinterval, active\nFROM feedback_config_rules\nWHERE usecase_id = $1\nORDER BY minvalue ASC NULLS FIRST;",
+        "options": {
+          "queryReplacement": "={{ $('Parse incoming').item.json.usecase_id }}"
+        }
+      },
+      "id": "ce8b3a24-14fa-49e2-88e2-157e5f49b3d4",
+      "name": "DB - list all mappings",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1680,
+        1328
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r.id != null);\nconst name = $('Execute Workflow Trigger').first().json.usecase_name;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nif (rows.length < 1 || name == null) {\n  return [{ json: {\n    reply: `No mappings found for ${name || 'this use case'}.`,\n    session_id\n  }}];\n}\n\nconst lines = rows.map(r => {\n  const status = r.active ? '**ACTIVE**' : 'inactive';\n\n  return `• ${status} | ID ${r.id}: value ${r.minvalue ?? '-'} to ${r.maxvalue ?? '-'} ➔ ` +\n    `pulses ${r.minpulses ?? '-'}-${r.maxpulses ?? '-'}, ` +\n    `intensity ${r.minintensity ?? '-'}-${r.maxintensity ?? '-'}, ` +\n    `duration ${r.minduration ?? '-'}-${r.maxduration ?? '-'}ms, ` +\n    `interval ${r.mininterval ?? '-'}-${r.maxinterval ?? '-'}ms`;\n}).join('\\n');\n\nreturn [{ json: {\n  reply: `All mappings for ${name} (${rows.length} total):\\n\\n${lines}`,\n  session_id\n}}];"
+      },
+      "id": "adcb4170-59c4-43bd-9c11-f54b28da9e67",
+      "name": "Format - listAll",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1968,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nlet p = {};\ntry {\n  p = typeof input.params === 'string'\n    ? JSON.parse(input.params)\n    : (input.params ?? {});\n} catch (e) {\n  p = {};\n}\n\nconst session_id = input.session_id;\n\n// Extracting User ID from various possible keys\nconst userId = parseInt(p.user_id ?? input.user_id);\n\nif (!userId || Number.isNaN(userId)) {\n  return [{\n    json: {\n      valid: false,\n      reply: `Please specify which user should receive this mapping assignment.`,\n      session_id\n    }\n  }];\n}\n\n// Return the simplified object ready for assignment\nreturn [{\n  json: {\n    valid: true,\n    session_id,\n    user_id: userId\n  }\n}];"
+      },
+      "id": "fe06a81b-d06c-4182-9587-2698b23233c5",
+      "name": "Validate - unassign params",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        3008
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fbbcefc6-4bac-4ed1-aa16-6b22715d1554",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ee6143ff-f535-4381-ba18-5a540459daa1",
+      "name": "If unassign parameters are valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        3008
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH updated_rows AS (\n    UPDATE public.\"User_UC_Mappings\"\n    SET active = FALSE\n    WHERE user_id = $1\n      AND active = TRUE\n    RETURNING id, feedback_config_rule_id\n)\nSELECT id, feedback_config_rule_id\nFROM updated_rows;",
+        "options": {
+          "queryReplacement": "={{ [$('Validate - unassign params').item.json.user_id] }}"
+        }
+      },
+      "id": "e4c948a7-1786-41c5-9295-c5b49064193c",
+      "name": "DB - unassign mapping",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1680,
+        3088
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nlet p = {};\ntry {\n  p = typeof input.params === 'string'\n    ? JSON.parse(input.params)\n    : (input.params ?? {});\n} catch (e) {\n  p = {};\n}\n\nconst session_id = input.session_id;\n\n// Extracting Mapping ID from various possible keys\nconst mappingId = parseInt(\n  p.id ?? p.mapping_id ?? p.mappingId ?? p.original_mapping_id ?? input.original_mapping_id\n);\n\n// Extracting User ID from various possible keys\nconst userId = parseInt(p.user_id ?? input.user_id);\n\n// 1. Validate Mapping ID\nif (!mappingId || Number.isNaN(mappingId)) {\n  return [{\n    json: {\n      valid: false,\n      reply: `Please specify which mapping ID to assign to this user.`,\n      session_id\n    }\n  }];\n}\n\n// 2. Validate User ID\nif (!userId || Number.isNaN(userId)) {\n  return [{\n    json: {\n      valid: false,\n      reply: `Please specify which user should receive this mapping assignment.`,\n      session_id\n    }\n  }];\n}\n\n// Return the simplified object ready for assignment\nreturn [{\n  json: {\n    valid: true,\n    session_id,\n    user_id: userId,\n    mapping_id: mappingId\n  }\n}];"
+      },
+      "id": "56eb48d4-0a9f-41b2-8d84-9eb9e748a250",
+      "name": "Validate - assign params",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        2624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "with updated_rows as (SELECT id\nFROM public.\"User_UC_Mappings\"\nWHERE user_id = $1 and feedback_config_rule_id=$2   \n)\nSELECT COALESCE(\n    (SELECT id FROM updated_rows), \n    NULL\n) AS id;",
+        "options": {
+          "queryReplacement": "={{ [$('Validate - assign params').item.json.user_id,$('Validate - assign params').item.json.mapping_id] }}"
+        }
+      },
+      "id": "d48f19d6-da88-4202-82fe-bdb2942c107e",
+      "name": "DB - Find Mapping",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1168,
+        2704
+      ],
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fbbcefc6-4bac-4ed1-aa16-6b22715d1554",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "82ba35c2-1f34-4ffb-8734-00405bbb03aa",
+      "name": "If assign parameters are valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        2624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"User_UC_Mappings\" \n    SET active = TRUE\n    WHERE id = $1",
+        "options": {
+          "queryReplacement": "={{ [$('DB - Find Mapping').item.json.id] }}"
+        }
+      },
+      "id": "7d7eccca-aab5-40eb-93e6-393f1ccab609",
+      "name": "DB - set mapping true",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1680,
+        2608
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.\"User_UC_Mappings\" (\n    user_id, \n    feedback_config_rule_id, \n    active, \n    assigned_at\n)\nVALUES (\n    $1, \n    $2, \n    true, \n    NOW()\n)\n  returning id;",
+        "options": {
+          "queryReplacement": "={{ [$('Validate - assign params').item.json.user_id,$('Validate - assign params').item.json.mapping_id] }}"
+        }
+      },
+      "id": "35fec0a6-5ea8-4b3d-b927-4c6447c0adf8",
+      "name": "DB - insert into mapping-user table1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1680,
+        2800
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $('Validate - unassign params').first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\n// Pull the returned ID from your Postgres update node\nconst dbUpdateNode = $('DB - unassign mapping').first().json;\nconst unassignedId = dbUpdateNode.id;\n\nconst userId = incoming.user_id;\nconst mappingId = $input.first().json.feedback_config_rule_id;\n\n// Check if the database returned null or if the row didn't exist/was already inactive\nif (unassignedId === null || unassignedId === undefined||mappingId === null) {\n  return [{ json: {\n    reply: `No active assignment was found for user ${userId}. Nothing was changed.`,\n    session_id,\n    success: false\n  }}];\n}\n\n// Generate a targeted response for a successful unassignment\nconst reply = `Successfully unassigned user ${userId} from mapping ID ${mappingId}. The assignment is now inactive.`;\n\nreturn [{ json: { \n  reply, \n  session_id,\n  user_id: userId,\n  mapping_id: mappingId,\n  unassigned_record_id: unassignedId,\n  success: true\n} }];"
+      },
+      "id": "8f3eb94a-0d5b-42b9-8096-d9f2c40281c7",
+      "name": "Format - unassign mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1968,
+        3088
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5095a619-269d-49ba-9798-b800007726b2",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1392,
+        2704
+      ],
+      "id": "e82af07b-70a5-40fc-b27a-dd91eb2e2d3f",
+      "name": "If user-mapping exists in table"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $('Validate - assign params').first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst dbMapping = $('DB - Find Mapping').first().json;\nconst assignedId = (dbMapping && dbMapping.id !== null) \n  ? dbMapping.id \n  : $input.first().json.id;\n\nconst userId = incoming.user_id;\nconst mappingId = incoming.mapping_id;\n\n// Check if the assignment failed to return any valid ID\nif (assignedId === null || assignedId === undefined) {\n  return [{ json: {\n    reply: `Assignment did not work. Could not map user ${userId} to mapping ID ${mappingId}.`,\n    session_id,\n    success: false\n  }}];\n}\n\n// Generate a targeted response for a successful assignment\nconst reply = `Successfully assigned user ${userId} to mapping ID ${mappingId}.`;\n\nreturn [{ json: { \n  reply, \n  session_id,\n  user_id: userId,\n  mapping_id: mappingId,\n  assigned_record_id: assignedId,\n  success: true\n} }];"
+      },
+      "id": "89e74b10-377d-422d-9247-8f8780a47194",
+      "name": "Format - assign mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1968,
+        2704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"User_UC_Mappings\"\nSET \n    active = false,\n    deactivated_at = NOW()\nWHERE \n    user_id = $1\n    AND active = true;",
+        "options": {
+          "queryReplacement": "={{ $json.user_id }}"
+        }
+      },
+      "id": "f92f7629-b4f3-4e38-974a-cd0af89905c4",
+      "name": "DB - Disconnect from mapping1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        720,
+        2704
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.\"feedback_config_rules\" \n    SET active = TRUE\n    WHERE id = $1",
+        "options": {
+          "queryReplacement": "={{[$('Validate - assign params').item.json.mapping_id]}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        944,
+        2704
+      ],
+      "id": "1f5c25bc-30ac-4128-9589-d5105b3793b3",
+      "name": "set mapping true in FCR",
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {
     "Execute Workflow Trigger": [
       {
         "json": {
-          "action": "duplicate_mapping_for_user",
-          "params": {
-            "id": 140,
-            "user_id": 100,
-            "minpulses": 3
-          },
-          "session_id": "9d874202-9714-4311-9cd3-78ac69ef9e0a",
-          "usecase_id": 1,
-          "usecase_name": "HeartRate",
-          "message": "can you change that mapping only for user 100? set the mimimum pulses to 3"
+          "action": "assign",
+          "params": "{\"id\":172,\"user_id\":101}",
+          "session_id": "1a0ad514-2752-40af-9c6a-efc4c02ea329",
+          "usecase_id": "4",
+          "usecase_name": "AirPressure",
+          "message": "please assign mapping 172 to user 101"
         }
       }
     ]
@@ -775,7 +1171,7 @@
           {
             "node": "Merge all branches",
             "type": "main",
-            "index": 1
+            "index": 2
           }
         ]
       ]
@@ -830,7 +1226,7 @@
           {
             "node": "Merge all branches",
             "type": "main",
-            "index": 3
+            "index": 6
           }
         ]
       ]
@@ -908,6 +1304,13 @@
         ],
         [
           {
+            "node": "DB - list all mappings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Validate - add params",
             "type": "main",
             "index": 0
@@ -922,13 +1325,6 @@
         ],
         [
           {
-            "node": "DB - current mappings for brainstorm",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
             "node": "Validate - change params",
             "type": "main",
             "index": 0
@@ -937,6 +1333,27 @@
         [
           {
             "node": "Validate - duplicate params",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate - assign params",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate - unassign params",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB - current mappings for brainstorm",
             "type": "main",
             "index": 0
           }
@@ -960,7 +1377,7 @@
           {
             "node": "Merge all branches",
             "type": "main",
-            "index": 1
+            "index": 4
           }
         ],
         [
@@ -989,7 +1406,7 @@
           {
             "node": "Merge all branches",
             "type": "main",
-            "index": 2
+            "index": 3
           }
         ]
       ]
@@ -1007,7 +1424,7 @@
           {
             "node": "Merge all branches",
             "type": "main",
-            "index": 5
+            "index": 4
           }
         ]
       ]
@@ -1043,13 +1460,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Merge all branches",
-            "type": "main",
-            "index": 4
-          }
-        ]
+        []
       ]
     },
     "DB - Disconnect from mapping": {
@@ -1091,7 +1502,193 @@
           {
             "node": "Merge all branches",
             "type": "main",
-            "index": 2
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "DB - list all mappings": {
+      "main": [
+        [
+          {
+            "node": "Format - listAll",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate - unassign params": {
+      "main": [
+        [
+          {
+            "node": "If unassign parameters are valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If unassign parameters are valid": {
+      "main": [
+        [
+          {
+            "node": "DB - unassign mapping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "DB - unassign mapping": {
+      "main": [
+        [
+          {
+            "node": "Format - unassign mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate - assign params": {
+      "main": [
+        [
+          {
+            "node": "If assign parameters are valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - Find Mapping": {
+      "main": [
+        [
+          {
+            "node": "If user-mapping exists in table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If assign parameters are valid": {
+      "main": [
+        [
+          {
+            "node": "DB - Disconnect from mapping1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "DB - set mapping true": {
+      "main": [
+        [
+          {
+            "node": "Format - assign mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If user-mapping exists in table": {
+      "main": [
+        [
+          {
+            "node": "DB - set mapping true",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB - insert into mapping-user table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - insert into mapping-user table1": {
+      "main": [
+        [
+          {
+            "node": "Format - assign mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format - assign mapping": {
+      "main": [
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Format - unassign mapping": {
+      "main": [
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Format - listAll": {
+      "main": [
+        [
+          {
+            "node": "Merge all branches",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "DB - Disconnect from mapping1": {
+      "main": [
+        [
+          {
+            "node": "set mapping true in FCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set mapping true in FCR": {
+      "main": [
+        [
+          {
+            "node": "DB - Find Mapping",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1103,7 +1700,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "0404cca8-35c7-4066-b31a-8072252d2a1d",
+  "versionId": "a83cb851-54c0-4eb2-976b-c8c12bbb2175",
   "meta": {
     "aiBuilderAssisted": true,
     "builderVariant": "mcp",
