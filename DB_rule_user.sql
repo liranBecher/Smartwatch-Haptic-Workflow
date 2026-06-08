@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict qXcFqlcU3agvaqbeaPkogXWggU1yMowYydSz5RZcyKwCkssZFSWX773dhKKERxW
+\restrict heL635ZnAUImWPpcv3wUMwUlqhU0100uIySAwObsTTHu8XyrHq5TVNdl4K6EA3c
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2026-06-03 19:10:52
+-- Started on 2026-06-08 19:07:58
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 256 (class 1255 OID 27040)
+-- TOC entry 257 (class 1255 OID 18380)
 -- Name: insert_sensor_data(integer, integer, integer, character varying, character varying, double precision, integer, integer, integer, integer, integer, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -98,7 +98,7 @@ $$;
 ALTER FUNCTION public.insert_sensor_data(_userid integer, _watchid integer, _phoneid integer, _sensorname character varying, _alertgiven character varying, _value double precision, _pulses integer, _intensity integer, _duration integer, _interval integer, _fbrangeid integer, _vibration_reason character varying) OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1255 OID 27041)
+-- TOC entry 258 (class 1255 OID 18381)
 -- Name: resolve_fb_range(integer, character varying, double precision); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -147,7 +147,7 @@ $$;
 ALTER FUNCTION public.resolve_fb_range(_userid integer, _sensorname character varying, _value double precision) OWNER TO postgres;
 
 --
--- TOC entry 258 (class 1255 OID 27042)
+-- TOC entry 259 (class 1255 OID 18382)
 -- Name: touch_updated_at(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -168,7 +168,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 219 (class 1259 OID 27043)
+-- TOC entry 219 (class 1259 OID 18383)
 -- Name: Alert; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -189,7 +189,7 @@ CREATE TABLE public."Alert" (
 ALTER TABLE public."Alert" OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 27050)
+-- TOC entry 220 (class 1259 OID 18390)
 -- Name: Alert_alertid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -205,7 +205,7 @@ CREATE SEQUENCE public."Alert_alertid_seq"
 ALTER SEQUENCE public."Alert_alertid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5184 (class 0 OID 0)
+-- TOC entry 5190 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: Alert_alertid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -214,7 +214,7 @@ ALTER SEQUENCE public."Alert_alertid_seq" OWNED BY public."Alert".alertid;
 
 
 --
--- TOC entry 221 (class 1259 OID 27051)
+-- TOC entry 221 (class 1259 OID 18391)
 -- Name: AndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -226,7 +226,7 @@ CREATE TABLE public."AndroidPhone" (
 ALTER TABLE public."AndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 27055)
+-- TOC entry 222 (class 1259 OID 18395)
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -242,7 +242,7 @@ CREATE SEQUENCE public."AndroidPhone_phoneid_seq"
 ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5185 (class 0 OID 0)
+-- TOC entry 5191 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -251,7 +251,7 @@ ALTER SEQUENCE public."AndroidPhone_phoneid_seq" OWNED BY public."AndroidPhone".
 
 
 --
--- TOC entry 223 (class 1259 OID 27056)
+-- TOC entry 223 (class 1259 OID 18396)
 -- Name: DeviceSensor; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -266,7 +266,7 @@ CREATE TABLE public."DeviceSensor" (
 ALTER TABLE public."DeviceSensor" OWNER TO postgres;
 
 --
--- TOC entry 224 (class 1259 OID 27062)
+-- TOC entry 224 (class 1259 OID 18402)
 -- Name: SensorData; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -285,7 +285,7 @@ CREATE TABLE public."SensorData" (
 ALTER TABLE public."SensorData" OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 27067)
+-- TOC entry 225 (class 1259 OID 18407)
 -- Name: SensorData_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -301,7 +301,7 @@ CREATE SEQUENCE public."SensorData_id_seq"
 ALTER SEQUENCE public."SensorData_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5186 (class 0 OID 0)
+-- TOC entry 5192 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: SensorData_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -310,7 +310,7 @@ ALTER SEQUENCE public."SensorData_id_seq" OWNED BY public."SensorData".id;
 
 
 --
--- TOC entry 226 (class 1259 OID 27068)
+-- TOC entry 226 (class 1259 OID 18408)
 -- Name: UseCase; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -325,7 +325,7 @@ CREATE TABLE public."UseCase" (
 ALTER TABLE public."UseCase" OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1259 OID 27075)
+-- TOC entry 227 (class 1259 OID 18415)
 -- Name: UseCaseDictionary; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -344,7 +344,7 @@ CREATE TABLE public."UseCaseDictionary" (
 ALTER TABLE public."UseCaseDictionary" OWNER TO postgres;
 
 --
--- TOC entry 5187 (class 0 OID 0)
+-- TOC entry 5193 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: TABLE "UseCaseDictionary"; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -353,7 +353,7 @@ COMMENT ON TABLE public."UseCaseDictionary" IS 'Dictionary for potential new use
 
 
 --
--- TOC entry 228 (class 1259 OID 27086)
+-- TOC entry 228 (class 1259 OID 18426)
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -369,7 +369,7 @@ CREATE SEQUENCE public."UseCaseDictionary_id_seq"
 ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5188 (class 0 OID 0)
+-- TOC entry 5194 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -378,7 +378,7 @@ ALTER SEQUENCE public."UseCaseDictionary_id_seq" OWNED BY public."UseCaseDiction
 
 
 --
--- TOC entry 229 (class 1259 OID 27087)
+-- TOC entry 229 (class 1259 OID 18427)
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -394,7 +394,7 @@ CREATE SEQUENCE public."UseCase_usecase_id_seq"
 ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNER TO postgres;
 
 --
--- TOC entry 5189 (class 0 OID 0)
+-- TOC entry 5195 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -403,7 +403,7 @@ ALTER SEQUENCE public."UseCase_usecase_id_seq" OWNED BY public."UseCase".usecase
 
 
 --
--- TOC entry 230 (class 1259 OID 27088)
+-- TOC entry 230 (class 1259 OID 18428)
 -- Name: User; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -418,7 +418,7 @@ CREATE TABLE public."User" (
 ALTER TABLE public."User" OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1259 OID 27097)
+-- TOC entry 231 (class 1259 OID 18432)
 -- Name: UserWatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -432,12 +432,12 @@ CREATE TABLE public."UserWatchAndroidPhone" (
 ALTER TABLE public."UserWatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 27092)
+-- TOC entry 233 (class 1259 OID 18439)
 -- Name: User_UC_Mappings; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public."User_UC_Mappings" (
-    id bigint GENERATED BY DEFAULT AS IDENTITY NOT NULL,
+    id bigint NOT NULL,
     user_id integer NOT NULL,
     feedback_config_rule_id bigint NOT NULL,
     active boolean DEFAULT true NOT NULL,
@@ -449,7 +449,22 @@ CREATE TABLE public."User_UC_Mappings" (
 ALTER TABLE public."User_UC_Mappings" OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 27103)
+-- TOC entry 232 (class 1259 OID 18438)
+-- Name: User_UC_Mappings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."User_UC_Mappings" ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public."User_UC_Mappings_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 234 (class 1259 OID 18449)
 -- Name: User_userid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -465,8 +480,8 @@ CREATE SEQUENCE public."User_userid_seq"
 ALTER SEQUENCE public."User_userid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5190 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 5196 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: User_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -474,7 +489,7 @@ ALTER SEQUENCE public."User_userid_seq" OWNED BY public."User".userid;
 
 
 --
--- TOC entry 234 (class 1259 OID 27104)
+-- TOC entry 235 (class 1259 OID 18450)
 -- Name: Watch; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -486,7 +501,7 @@ CREATE TABLE public."Watch" (
 ALTER TABLE public."Watch" OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 27108)
+-- TOC entry 236 (class 1259 OID 18454)
 -- Name: WatchAndroidPhone; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -499,7 +514,7 @@ CREATE TABLE public."WatchAndroidPhone" (
 ALTER TABLE public."WatchAndroidPhone" OWNER TO postgres;
 
 --
--- TOC entry 236 (class 1259 OID 27113)
+-- TOC entry 237 (class 1259 OID 18459)
 -- Name: Watch_watchid_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -515,8 +530,8 @@ CREATE SEQUENCE public."Watch_watchid_seq"
 ALTER SEQUENCE public."Watch_watchid_seq" OWNER TO postgres;
 
 --
--- TOC entry 5191 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5197 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: Watch_watchid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -524,7 +539,7 @@ ALTER SEQUENCE public."Watch_watchid_seq" OWNED BY public."Watch".watchid;
 
 
 --
--- TOC entry 237 (class 1259 OID 27114)
+-- TOC entry 238 (class 1259 OID 18460)
 -- Name: agent_session; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -542,7 +557,7 @@ CREATE TABLE public.agent_session (
 ALTER TABLE public.agent_session OWNER TO postgres;
 
 --
--- TOC entry 238 (class 1259 OID 27127)
+-- TOC entry 239 (class 1259 OID 18473)
 -- Name: api_pool; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -565,7 +580,7 @@ CREATE TABLE public.api_pool (
 ALTER TABLE public.api_pool OWNER TO postgres;
 
 --
--- TOC entry 239 (class 1259 OID 27140)
+-- TOC entry 240 (class 1259 OID 18486)
 -- Name: api_pool_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -581,8 +596,8 @@ CREATE SEQUENCE public.api_pool_id_seq
 ALTER SEQUENCE public.api_pool_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5192 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 5198 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: api_pool_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -590,7 +605,7 @@ ALTER SEQUENCE public.api_pool_id_seq OWNED BY public.api_pool.id;
 
 
 --
--- TOC entry 240 (class 1259 OID 27141)
+-- TOC entry 241 (class 1259 OID 18487)
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -605,7 +620,7 @@ CREATE SEQUENCE public.feedback_config_rules_id_seq
 ALTER SEQUENCE public.feedback_config_rules_id_seq OWNER TO postgres;
 
 --
--- TOC entry 241 (class 1259 OID 27142)
+-- TOC entry 242 (class 1259 OID 18488)
 -- Name: feedback_config_rules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -630,7 +645,7 @@ CREATE TABLE public.feedback_config_rules (
 ALTER TABLE public.feedback_config_rules OWNER TO postgres;
 
 --
--- TOC entry 242 (class 1259 OID 27147)
+-- TOC entry 243 (class 1259 OID 18493)
 -- Name: user_schedules; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -649,7 +664,7 @@ CREATE TABLE public.user_schedules (
 ALTER TABLE public.user_schedules OWNER TO postgres;
 
 --
--- TOC entry 243 (class 1259 OID 27159)
+-- TOC entry 244 (class 1259 OID 18505)
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -664,7 +679,7 @@ ALTER TABLE public.user_schedules ALTER COLUMN schedule_id ADD GENERATED ALWAYS 
 
 
 --
--- TOC entry 244 (class 1259 OID 27160)
+-- TOC entry 245 (class 1259 OID 18506)
 -- Name: v_agent_context; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -687,7 +702,7 @@ CREATE VIEW public.v_agent_context AS
 ALTER VIEW public.v_agent_context OWNER TO postgres;
 
 --
--- TOC entry 4928 (class 2604 OID 27165)
+-- TOC entry 4929 (class 2604 OID 18511)
 -- Name: Alert alertid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -695,7 +710,7 @@ ALTER TABLE ONLY public."Alert" ALTER COLUMN alertid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4929 (class 2604 OID 27166)
+-- TOC entry 4930 (class 2604 OID 18512)
 -- Name: AndroidPhone phoneid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -703,7 +718,7 @@ ALTER TABLE ONLY public."AndroidPhone" ALTER COLUMN phoneid SET DEFAULT nextval(
 
 
 --
--- TOC entry 4930 (class 2604 OID 27167)
+-- TOC entry 4931 (class 2604 OID 18513)
 -- Name: SensorData id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -711,7 +726,7 @@ ALTER TABLE ONLY public."SensorData" ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4932 (class 2604 OID 27168)
+-- TOC entry 4933 (class 2604 OID 18514)
 -- Name: UseCase usecase_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -719,7 +734,7 @@ ALTER TABLE ONLY public."UseCase" ALTER COLUMN usecase_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4933 (class 2604 OID 27169)
+-- TOC entry 4934 (class 2604 OID 18515)
 -- Name: UseCaseDictionary dict_entry; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -727,7 +742,7 @@ ALTER TABLE ONLY public."UseCaseDictionary" ALTER COLUMN dict_entry SET DEFAULT 
 
 
 --
--- TOC entry 4935 (class 2604 OID 27170)
+-- TOC entry 4936 (class 2604 OID 18516)
 -- Name: User userid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -735,7 +750,7 @@ ALTER TABLE ONLY public."User" ALTER COLUMN userid SET DEFAULT nextval('public."
 
 
 --
--- TOC entry 4936 (class 2604 OID 27171)
+-- TOC entry 4939 (class 2604 OID 18517)
 -- Name: Watch watchid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -743,7 +758,7 @@ ALTER TABLE ONLY public."Watch" ALTER COLUMN watchid SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4941 (class 2604 OID 27172)
+-- TOC entry 4944 (class 2604 OID 18518)
 -- Name: api_pool id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -751,7 +766,7 @@ ALTER TABLE ONLY public.api_pool ALTER COLUMN id SET DEFAULT nextval('public.api
 
 
 --
--- TOC entry 5154 (class 0 OID 27043)
+-- TOC entry 5159 (class 0 OID 18383)
 -- Dependencies: 219
 -- Data for Name: Alert; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -68042,7 +68057,7 @@ COPY public."Alert" (alertid, alertgiven, intensity, pulses, duration, "interval
 
 
 --
--- TOC entry 5156 (class 0 OID 27051)
+-- TOC entry 5161 (class 0 OID 18391)
 -- Dependencies: 221
 -- Data for Name: AndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -68054,7 +68069,7 @@ COPY public."AndroidPhone" (phoneid) FROM stdin;
 
 
 --
--- TOC entry 5158 (class 0 OID 27056)
+-- TOC entry 5163 (class 0 OID 18396)
 -- Dependencies: 223
 -- Data for Name: DeviceSensor; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -68072,7 +68087,7 @@ COPY public."DeviceSensor" (watchid, phoneid, userid, usecase_id) FROM stdin;
 
 
 --
--- TOC entry 5159 (class 0 OID 27062)
+-- TOC entry 5164 (class 0 OID 18402)
 -- Dependencies: 224
 -- Data for Name: SensorData; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135368,7 +135383,7 @@ COPY public."SensorData" (id, watchid, phoneid, alertid, userid, value, "time", 
 
 
 --
--- TOC entry 5161 (class 0 OID 27068)
+-- TOC entry 5166 (class 0 OID 18408)
 -- Dependencies: 226
 -- Data for Name: UseCase; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135384,7 +135399,7 @@ COPY public."UseCase" (usecase_id, name, description, log_interval) FROM stdin;
 
 
 --
--- TOC entry 5162 (class 0 OID 27075)
+-- TOC entry 5167 (class 0 OID 18415)
 -- Dependencies: 227
 -- Data for Name: UseCaseDictionary; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135443,7 +135458,7 @@ COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_nam
 
 
 --
--- TOC entry 5165 (class 0 OID 27088)
+-- TOC entry 5170 (class 0 OID 18428)
 -- Dependencies: 230
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135451,14 +135466,14 @@ COPY public."UseCaseDictionary" (dict_entry, usecase_name, usecase_parameter_nam
 COPY public."User" (userid, fname, lname, lastrequest) FROM stdin;
 666	\N	\N	2026-01-19 17:36:19.345682
 102	\N	\N	2026-05-25 17:36:54.538879
-100	\N	\N	2026-06-03 16:56:12.927869
 101	\N	\N	2026-06-03 17:01:21.612823
+100	Tom	Chandler	2026-06-03 16:56:12.927869
 \.
 
 
 --
--- TOC entry 5167 (class 0 OID 27097)
--- Dependencies: 232
+-- TOC entry 5171 (class 0 OID 18432)
+-- Dependencies: 231
 -- Data for Name: UserWatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135472,22 +135487,27 @@ COPY public."UserWatchAndroidPhone" (userid, watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5166 (class 0 OID 27092)
--- Dependencies: 231
+-- TOC entry 5173 (class 0 OID 18439)
+-- Dependencies: 233
 -- Data for Name: User_UC_Mappings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."User_UC_Mappings" (user_id, feedback_config_rule_id) FROM stdin;
-666	140
-102	169
-100	140
-101	173
+COPY public."User_UC_Mappings" (id, user_id, feedback_config_rule_id, active, assigned_at, deactivated_at) FROM stdin;
+1	666	140	t	2026-06-04 20:21:48.089237+03	2026-06-08 16:25:57.280272+03
+5	101	172	f	2026-06-07 16:32:18.531492+03	2026-06-08 15:29:04.911338+03
+6	102	167	f	2026-06-07 17:16:57.8741+03	\N
+7	102	168	f	2026-06-07 17:19:57.529442+03	2026-06-07 17:21:19.172009+03
+8	666	186	f	2026-06-08 15:17:28.765355+03	2026-06-08 16:26:30.033666+03
+9	101	173	f	2026-06-05 21:04:36.335045+03	2026-06-08 16:27:37.188315+03
+4	101	172	t	2026-06-08 16:36:26.288054+03	\N
+3	100	140	t	2026-06-04 20:21:48.089237+03	2026-06-06 18:03:43.21075+03
+2	102	169	t	2026-06-04 20:21:48.089237+03	2026-06-08 14:40:44.838647+03
 \.
 
 
 --
--- TOC entry 5169 (class 0 OID 27104)
--- Dependencies: 234
+-- TOC entry 5175 (class 0 OID 18450)
+-- Dependencies: 235
 -- Data for Name: Watch; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135499,8 +135519,8 @@ COPY public."Watch" (watchid) FROM stdin;
 
 
 --
--- TOC entry 5170 (class 0 OID 27108)
--- Dependencies: 235
+-- TOC entry 5176 (class 0 OID 18454)
+-- Dependencies: 236
 -- Data for Name: WatchAndroidPhone; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135513,8 +135533,8 @@ COPY public."WatchAndroidPhone" (watchid, phoneid) FROM stdin;
 
 
 --
--- TOC entry 5172 (class 0 OID 27114)
--- Dependencies: 237
+-- TOC entry 5178 (class 0 OID 18460)
+-- Dependencies: 238
 -- Data for Name: agent_session; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135531,6 +135551,7 @@ c959c049-6672-41da-ba92-6895be5db31e	\N	1	[{"role": "user", "content": "show me 
 4825c7c0-8a5a-463d-ba11-599a5cf4fed1	\N	1	[{"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "add a new schedule for user 101: 50% over the heartrate mode, the check should be every week"}, {"role": "assistant", "content": "âœ¨ New schedule created with ID undefined for user undefined."}, {"role": "user", "content": "now show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\nâ€¢ ID 3: Every 7 days (Type: mode) - Next run: 2026-04-17T21:00:00.000Z"}]	\N	2026-04-11 20:06:17.86085+03	2026-04-11 20:10:41.041924+03
 118b5b82-728e-4f5a-84f2-e5844427fa77	\N	1	[{"role": "user", "content": "show me all mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\nâ€¢ ID 140: value 30â€“240 â†’ pulses 2â€“20, intensity 150â€“150, duration 210â€“80ms, interval 2000â€“250ms\\nâ€¢ ID 163: value 86â€“106 â†’ pulses 5â€“8, intensity 200â€“255, duration 400â€“600ms, interval 50â€“100ms"}, {"role": "user", "content": "show me all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}]	\N	2026-04-11 19:55:42.197068+03	2026-04-11 19:56:21.58838+03
 2dd204bc-29ff-4835-a4e2-900863d8ca02	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "create a new one for user 102: check every 8 days, 75% over the average"}, {"role": "assistant", "content": "âœ¨ New schedule created with ID 5 for user 102."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\nâ€¢ ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to a median check instead"}, {"role": "assistant", "content": "âœ… Updated schedule 5. New interval: 8 days, new measure: average."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\nâ€¢ ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}]	\N	2026-04-12 15:52:23.986523+03	2026-04-12 15:56:05.119974+03
+087a321a-185a-421f-a1a5-d3da6cf850c6	\N	1	[{"role": "user", "content": "Duplicate mapping ID 140 for user 100 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 20, minintensity 150, maxintensity 150, minduration 64, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 181)."}]	\N	2026-06-06 15:47:08.205248+03	2026-06-06 15:47:11.53079+03
 6a05d4fa-f0f6-47a8-b52b-478eacd2da76	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\nâ€¢ ID 5: Every 8 days (Type: average) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "change schedule with ID 5 to be a median"}, {"role": "assistant", "content": "âœ… Updated schedule 5. New interval: 8 days, new measure: median, new trigger percentage: 0.25."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (2 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z\\nâ€¢ ID 5: Every 8 days (Type: median) - Next run: 2026-04-19T21:00:00.000Z"}, {"role": "user", "content": "deactivate schedule with ID 5"}, {"role": "assistant", "content": "ðŸš« Schedule 5 deactivated."}, {"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "Active schedules for HeartRate (1 total):\\n\\nâ€¢ ID 1: Every 5 days (Type: average) - Next run: 2026-04-29T21:00:00.000Z"}, {"role": "user", "content": "set trigger percentage for schedule ID 1 to be 33%"}, {"role": "assistant", "content": "âœ… Updated schedule 1. New interval: 5 days, new measure: average, new trigger percentage: 0.33."}]	\N	2026-04-12 16:01:25.721421+03	2026-04-12 16:02:55.289458+03
 5f1fc5ea-474f-4816-b7fb-a60d8298e8c7	\N	1	[{"role": "user", "content": "show all schedules"}, {"role": "assistant", "content": "ðŸ“‹ *Active HeartRate Schedules (3):*\\n\\nðŸ†” *ID 1*\\n   ðŸ‘¤ User: 101\\n   ðŸ“Š Type: average (0.33%)\\n   â³ Next Check: in 18 days (Interval: 5 days)\\n\\nðŸ†” *ID 3*\\n   ðŸ‘¤ User: 101\\n   ðŸ“Š Type: mode (50%)\\n   â³ Next Check: in 6 days (Interval: 7 days)\\n\\nðŸ†” *ID 5*\\n   ðŸ‘¤ User: 102\\n   ðŸ“Š Type: median (0.25%)\\n   â³ Next Check: in 8 days (Interval: 8 days)"}]	\N	2026-04-12 16:09:12.860061+03	2026-04-12 16:09:14.223674+03
 a00d25fe-abb7-4e2a-9f7b-455088fc4a60	\N	1	[{"role": "user", "content": "show the schedules"}, {"role": "assistant", "content": "ðŸ“‹ *All HeartRate Schedules (3):*\\n\\nðŸ†” *ID 1*\\n   ðŸ‘¤ User: 101\\n   ðŸ“Š Type: average (0.33%)\\n   â³ Next Check: in 18 days (Interval: 5 days)\\n   âœ… Active: true\\n\\nðŸ†” *ID 3*\\n   ðŸ‘¤ User: 101\\n   ðŸ“Š Type: mode (50%)\\n   â³ Next Check: in 6 days (Interval: 7 days)\\n   âœ… Active: true\\n\\nðŸ†” *ID 5*\\n   ðŸ‘¤ User: 102\\n   ðŸ“Š Type: median (0.25%)\\n   â³ Next Check: in 8 days (Interval: 8 days)\\n   âœ… Active: true"}]	\N	2026-04-12 16:40:13.439015+03	2026-04-12 16:40:31.456021+03
@@ -135557,12 +135578,44 @@ ce8e3712-2a37-468d-88f8-8465087a117e	\N	4	[{"role": "user", "content": "i want t
 6e9414e8-0e42-46bf-a3e0-0f99b584b8f5	\N	1	[{"role": "user", "content": "Give me ideas for new use cases to create"}, {"role": "assistant", "content": "To enhance the current setup for the haptic feedback parameters associated with heart rate, it's crucial to consider both granularity and comprehensive coverage. Given the absence of historical sensor data, I'll base my suggestions on typical heart rate zones and user comfort considerations.\\n\\n### Suggested Mapping 1: Low-Intensity Range\\n- **Target Sensor Value Range:** 30 to 85 bpm\\n- **Pulses:** 1 to 3\\n- **Intensity:** 100 to 150\\n- **Duration:** 500 to 700 ms\\n- **Interval:** 2500 to 3000 ms\\n\\n**Why:** This range addresses the very low heart rates often seen at rest or during low activity. The lower intensity and longer duration make the feedback more subtle, avoiding unnecessary alerts for users in calm states. This fills a gap in the current mappings where there's a lack of coverage below 86 bpm.\\n\\n### Suggested Mapping 2: Moderate Range\\n- **Target Sensor Value Range:** 107 to 140 bpm\\n- **Pulses:** 6 to 10\\n- **Intensity:** 180 to 220\\n- **Duration:** 300 to 450 ms\\n- **Interval:** 150 to 200 ms\\n\\n**Why:** This range focuses on moderate intensity heart rates, typical during regular, non-strenuous physical activity. The pulse count and intensity are designed to provide clear, but comfortable feedback, ensuring users are aware of their moderate activity levels. It bridges the gap between the existing 163 mapping and higher exertion.\\n\\n### Suggested Mapping 3: High-Intensity Range\\n- **Target Sensor Value Range:** 141 to 180 bpm\\n- **Pulses:** 8 to 12\\n- **Intensity:** 220 to 255\\n- **Duration:** 200 to 300 ms\\n- **Interval:** 100 to 150 ms\\n\\n**Why:** This range is for high-intensity activities, where quick, strong feedback is essential for real-time monitoring. The high intensity and shorter intervals ensure that users receive prompt alerts when their heart rate enters more strenuous zones, promoting awareness for potential over-exertion.\\n\\nThese new mappings aim to improve user experience by offering more nuanced feedback across heart rate ranges, allowing for prompt and tailored alerts during varying types of physical activity."}, {"role": "user", "content": "Show me the list of all available APIs"}, {"role": "assistant", "content": "Could you please specify if you want to see the list of APIs for integration into the Vibrator Orchestrator system or if there's another specific API list you're referring to?"}, {"role": "user", "content": "show me the APIs that are saved in the database"}, {"role": "assistant", "content": "I need to confirm if you want to see the list of APIs that are available for use case development or those specifically integrated into the system. Could you please clarify?"}, {"role": "user", "content": "show me the API dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\nðŸ“‚ **IPGeolocation Moon Azimuth**\\n   ID51 apiKey (string) [Required]\\n   ID50 date (date)\\n   ID48 lat (float) [Required]\\n   ID49 long (float) [Required]\\n   ID47 url (string) [Required]\\n\\nðŸ“‚ **IPGeolocation Sun Azimuth**\\n   ID46 apiKey (string) [Required]\\n   ID45 date (date)\\n   ID43 lat (float) [Required]\\n   ID44 long (float) [Required]\\n   ID42 url (string) [Required]\\n\\nðŸ“‚ **Open-Elevation Altitude**\\n   ID25 locations (json) [Required]\\n   ID24 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo Air Pressure**\\n   ID12 current (string) [Required]\\n   ID13 latitude (float) [Required]\\n   ID14 longitude (float) [Required]\\n   ID11 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo Cloud Cover**\\n   ID16 current (string) [Required]\\n   ID17 latitude (float) [Required]\\n   ID18 longitude (float) [Required]\\n   ID15 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo Humidity**\\n   ID27 current (string) [Required]\\n   ID28 latitude (float) [Required]\\n   ID29 longitude (float) [Required]\\n   ID26 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo Precipitation**\\n   ID35 current (string) [Required]\\n   ID36 latitude (float) [Required]\\n   ID37 longitude (float) [Required]\\n   ID34 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo Temperature**\\n   ID31 current (string) [Required]\\n   ID32 latitude (float) [Required]\\n   ID33 longitude (float) [Required]\\n   ID30 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo UV Index**\\n   ID8 current (string) [Required]\\n   ID9 latitude (float) [Required]\\n   ID10 longitude (float) [Required]\\n   ID7 url (string) [Required]\\n\\nðŸ“‚ **Open-Meteo Wind Speed**\\n   ID39 current (string) [Required]\\n   ID40 lat (float) [Required]\\n   ID41 lng (float) [Required]\\n   ID38 url (string) [Required]\\n\\nðŸ“‚ **Sunrise-Sunset API**\\n   ID22 date (string)\\n   ID23 formatted (integer) [Required]\\n   ID20 latitude (float) [Required]\\n   ID21 longitude (float) [Required]\\n   ID19 url (string) [Required]\\n\\nðŸ“‚ **WAQI Air Quality Index**\\n   ID53 lat (float) [Required]\\n   ID54 lon (float) [Required]\\n   ID55 token (string) [Required]\\n   ID52 url (string) [Required]"}, {"role": "user", "content": "show me the list of all APIS in the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\nðŸ“‚ **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\nðŸ“‚ **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\nðŸ“‚ **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\nðŸ“‚ **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\nðŸ“‚ **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\nðŸ“‚ **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\nðŸ“‚ **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\nðŸ“‚ **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\nðŸ“‚ **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\nðŸ“‚ **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\nðŸ“‚ **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\nðŸ“‚ **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "show me the list again"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n**IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n**Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n**Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n**WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-05-25 11:59:21.142993+03	2026-05-25 12:06:30.927379+03
 1e862b9c-b5ae-4945-8d9b-1462ed63fdba	\N	12	[{"role": "user", "content": "what parameters is this usecase using?"}, {"role": "assistant", "content": "Could you please specify the name of the use case you're referring to?"}, {"role": "user", "content": "show me the list of all the APIs in the dictionary"}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n**IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n**Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n**Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n**Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n**Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n**WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}, {"role": "user", "content": "IWant ot build a UV inted use case"}, {"role": "assistant", "content": "Use Case Builder output for **UV Index Monitoring**\\n\\nAdd the UV Index Monitoring use case to the Vibration Orchestrator template using the Open-Meteo UV Index API.\\n\\nFollow these steps in the Vibration Orchestrator template:\\n\\n## 1. Set Use Case Type\\n**Open node:** Set type useCase1\\n**Change:** Values to Set â†’ type\\n\\n```text\\nUV Index Monitoring\\n```\\nSet the use case type to 'UV Index Monitoring', matching the database name.\\n\\n## 2. Construct API Request\\n**Open node:** Construct API Request\\n**Change:** CONFIG section only\\n\\n```text\\nconst API_NAME = \\"UV Index Monitoring\\";\\n\\nconst API_REQUIRES_KEY = false;\\n\\nconst API_KEY = \\"\\";\\n\\nconst BASE_URL = \\"https://api.open-meteo.com/v1/forecast\\";\\n\\nconst REQUIRED_FIELDS = [\\"lat\\", \\"lon\\"];\\n\\nfunction buildUrl({ lat, lon, body, type, apiKey }) {\\n  const params = [\\n    `current=uv_index`,\\n    `latitude=${encodeURIComponent(lat)}`,\\n    `longitude=${encodeURIComponent(lon)}`\\n  ];\\n\\n  return `${BASE_URL}?${params.join(\\"&\\")}`;\\n}\\n```\\nConfigure the API request to call the Open-Meteo endpoint for UV Index data, passing in latitude and longitude.\\n\\n## 3. Extract Data\\n**Open node:** Extract\\n**Change:** CONFIG section only\\n\\n```text\\nconst NORMALIZE_NODE_NAME = 'Normalize';\\n\\nconst VALUE_CONFIG_BY_TYPE = {\\n  UV Index Monitoring: {\\n    valueName: 'uv_index',\\n    paths: ['current.uv_index']\\n  }\\n};\\n```\\nExtract the UV Index value from the API response using the specified response path.\\n\\nThat is all you need to change. The remaining template nodes can stay as they are.\\n"}, {"role": "user", "content": "I want to make a new mapping from 0 to 8"}, {"role": "assistant", "content": "Done. New mapping added with ID 167."}, {"role": "user", "content": "I want the pulses to alwasy be maximum strangth, and give the number of pulses based on the index"}, {"role": "assistant", "content": "Done. New mapping added with ID 168."}, {"role": "user", "content": "I want to change this mapping dso that the interval and duration are consistant"}, {"role": "assistant", "content": "Could you please specify the exact values for the interval and duration that you would like to use?"}, {"role": "user", "content": "you can choose"}, {"role": "assistant", "content": "Would you like both the interval and duration to be at a constant value, or just one of them? Please specify which value or range you'd prefer."}, {"role": "user", "content": "duraation 100, interval 50"}, {"role": "assistant", "content": "Done. New mapping added with ID 169."}, {"role": "user", "content": "I Want the overall duration to stay the same with differnet numebr of pulses"}, {"role": "assistant", "content": "Could you specify the new duration and the range for the number of pulses you'd like, so the overall duration remains the same?"}]	\N	2026-05-25 18:11:18.256676+03	2026-05-25 18:47:26.635967+03
 fdfe91b5-34ac-44a6-b7af-6501e818fdfd	\N	4	[]	\N	2026-06-03 17:30:41.435358+03	2026-06-03 17:30:41.435358+03
+f48495b3-31b9-4c1d-a30d-800414dfafd3	\N	4	[{"role": "user", "content": "Show me the full use case dictionary."}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-06-04 20:25:34.049922+03	2026-06-04 20:25:39.043287+03
+77cf382a-b438-43dc-983b-3f12abaa9252	\N	4	[{"role": "user", "content": "Change mapping ID 173 for AirPressure with minvalue 555, maxvalue 574, minpulses 5, maxpulses 8, minintensity 200, maxintensity 255, minduration 400, maxduration 600, mininterval 50, and maxinterval 100."}, {"role": "assistant", "content": "Mapping ID 173 has been updated."}]	\N	2026-06-06 13:48:42.757158+03	2026-06-06 13:48:46.329598+03
+9305fe0f-5304-4ff9-8e67-76d161c40cc4	\N	1	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change mapping number 140? set the interval minimum to 229"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}]	\N	2026-06-06 15:49:19.576257+03	2026-06-06 15:50:05.363945+03
+38a4150d-aa5a-4f11-8a47-49d99df8eb89	\N	1	[{"role": "user", "content": "can you show me the active mappings?"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\nâ€¢ ID 140: value 30â€“240 â†’ pulses 2â€“20, intensity 150â€“150, duration 210â€“80ms, interval 2000â€“250ms"}, {"role": "user", "content": "can you show me the active mappings?"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\nâ€¢ ID 140: value 30â€“240 â†’ pulses 2â€“20, intensity 150â€“150, duration 210â€“80ms, interval 2000â€“250ms"}, {"role": "user", "content": "show me the active mappings"}, {"role": "assistant", "content": "Active mappings for SunAzimuth (1 total):\\n\\nâ€¢ ID 4: value 0â€“360 â†’ pulses nullâ€“null, intensity nullâ€“null, duration nullâ€“nullms, interval nullâ€“nullms"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 240 ➔ pulses 2-20, intensity 150-150, duration 210-80ms, interval 2000-250ms"}]	\N	2026-06-05 10:31:11.788952+03	2026-06-05 10:49:13.887092+03
+558c4100-c0d9-443a-9b51-57c1a949e2c8	\N	1	[{"role": "user", "content": "Duplicate mapping ID 140 for user 100 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 20, minintensity 150, maxintensity 150, minduration 66, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 179)."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 249-250ms\\n• ID 179: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 66-80ms, interval 249-250ms"}]	\N	2026-06-06 15:20:06.121166+03	2026-06-06 15:22:06.365783+03
+5204873f-5f0d-4e62-a39f-571b99973a08	\N	1	[{"role": "user", "content": "show me the active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 240 ➔ pulses 2-20, intensity 150-150, duration 210-80ms, interval 2000-250ms"}, {"role": "user", "content": "can you show all the mappings?"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 240 ➔ pulses 2-20, intensity 150-150, duration 210-80ms, interval 2000-250ms"}]	\N	2026-06-05 14:28:04.691406+03	2026-06-05 14:28:29.605598+03
+0031e124-2e95-46ab-bb6e-c4f86e9f40ed	\N	2	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 240 ➔ pulses 2-20, intensity 150-150, duration 210-80ms, interval 2000-250ms"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for MoonAzimuth (1 total):\\n\\n• ID 0: value 30 to 240 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms"}]	\N	2026-06-05 14:38:33.936802+03	2026-06-05 14:38:58.542865+03
+31c2a8d6-a75f-4419-917b-37c02417bce7	\N	1	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 240 ➔ pulses 2-20, intensity 150-150, duration 210-80ms, interval 2000-250ms"}]	\N	2026-06-05 18:39:39.875426+03	2026-06-05 18:39:43.311875+03
+da3265df-03a3-48ab-abd1-add2e1633de6	\N	1	[{"role": "user", "content": "Duplicate mapping ID 140 for user 100 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 20, minintensity 150, maxintensity 150, minduration 67, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 180)."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (2 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 249-250ms\\n• ID 180: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 67-80ms, interval 249-250ms"}]	\N	2026-06-06 15:36:08.771388+03	2026-06-06 15:36:47.830117+03
+0af066f2-32ed-4146-a6f2-8acbc64878bc	\N	1	[{"role": "user", "content": "Change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 20, minintensity 150, maxintensity 150, minduration 79, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}]	\N	2026-06-06 13:53:46.6998+03	2026-06-06 14:31:15.414015+03
+c675df85-590b-435c-9078-d1a095c40250	\N	12	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for UVIndex (1 total):\\n\\n• ID 169: value 0 to 8 ➔ pulses 1-8, intensity 100-100, duration 100-100ms, interval 50-50ms"}, {"role": "user", "content": "Show me the full use case dictionary."}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-06-06 10:20:40.298182+03	2026-06-06 10:21:19.89179+03
+fcbcab39-c88e-430a-88bb-d9796ded008c	\N	1	[]	\N	2026-06-06 14:39:19.151793+03	2026-06-06 14:39:19.151793+03
+3fe50998-4e58-41c1-9b25-571cd7143d4a	\N	1	[{"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 20, minintensity 150, maxintensity 150, minduration 69, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}]	\N	2026-06-06 14:43:25.037099+03	2026-06-06 14:57:10.122888+03
+bbcf4e0d-e781-4f86-8045-6996c76e680d	\N	1	[{"role": "user", "content": "Duplicate mapping ID 140 for user 100 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 20, minintensity 150, maxintensity 150, minduration 67, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 178)."}]	\N	2026-06-06 15:16:13.906352+03	2026-06-06 15:16:16.931299+03
+1b607a46-0f23-42a2-bbae-b4ce1dffc42b	\N	1	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 229-250ms"}, {"role": "user", "content": "can you change mapping number 140? set the interval minimum to 229"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 229-250ms"}, {"role": "user", "content": "can you change mapping number 140? set the interval minimum to 249"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}]	\N	2026-06-06 16:03:23.806259+03	2026-06-06 16:09:03.725302+03
+f35d95d4-2be9-49f6-a749-49fab9289667	\N	1	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change mapping number 140? set the interval minimum to 229"}, {"role": "assistant", "content": "Do you want to apply this change to ALL users sharing this mapping, or would you like to duplicate and isolate this change for a single user only?"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for UVIndex (1 total):\\n\\n• ID 169: value 0 to 8 ➔ pulses 1-8, intensity 100-100, duration 100-100ms, interval 50-50ms"}, {"role": "user", "content": "can you please change that mapping? set minimum pulses to 2"}, {"role": "assistant", "content": "Mapping ID 169 has been updated."}, {"role": "user", "content": "can you change it back to minimum pulses 1?"}, {"role": "assistant", "content": "Mapping ID 169 has been updated."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-20, intensity 150-150, duration 69-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change this mapping? set maximum pulses to 21"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}]	\N	2026-06-06 16:18:20.436128+03	2026-06-06 16:21:03.093371+03
+c216c3d5-8677-4bda-a691-ee5bf71044b1	\N	1	[{"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 22, minintensity 150, maxintensity 150, minduration 69, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 22, minintensity 150, maxintensity 150, minduration 63, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "Duplicate mapping ID 140 for user 100 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 2, maxpulses 22, minintensity 150, maxintensity 150, minduration 62, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 182)."}]	\N	2026-06-06 16:22:02.081973+03	2026-06-06 16:27:18.322757+03
+b6c523ad-af53-4d92-b3df-d3038db2b462	\N	1	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you set mapping number 173? change minimum pulses to 4"}, {"role": "assistant", "content": "Mapping ID 173 may be shared across multiple users. Would you like to apply this change to all users, or create a specific mapping for a single user?"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for UVIndex (1 total):\\n\\n• ID 169: value 0 to 8 ➔ pulses 1-8, intensity 100-100, duration 100-100ms, interval 50-50ms"}, {"role": "user", "content": "can you set the minimum pulses to 3?"}, {"role": "assistant", "content": "Which mapping ID would you like to modify?"}, {"role": "user", "content": "169"}, {"role": "assistant", "content": "Mapping ID 169 has been updated."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 2-22, intensity 150-150, duration 63-80ms, interval 249-250ms"}, {"role": "user", "content": "can you please change the mapping ID 140? minimum pulses should be 1"}, {"role": "assistant", "content": "Mapping ID 140 may be shared across multiple users. Would you like to apply this change to all users, or create a specific mapping for a single user?"}, {"role": "user", "content": "all users"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "can you change the maximum pulses to 23?"}, {"role": "assistant", "content": "Mapping ID 140 may be shared across multiple users. Would you like to apply this change to all users, or create a specific mapping for a single user?"}, {"role": "user", "content": "for a single user"}, {"role": "assistant", "content": "I need a few more details to change this mapping. Please provide: minvalue, maxvalue, minpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 1-22, intensity 150-150, duration 63-80ms, interval 249-250ms"}, {"role": "user", "content": "can you please change mapping id 140? set max pulses to 23"}, {"role": "assistant", "content": "Mapping ID 140 may be shared across multiple users. Would you like to apply this change to all users, or create a specific mapping for a single user?"}, {"role": "user", "content": "one user please"}, {"role": "assistant", "content": "I need a few more details to change this mapping. Please provide: minvalue, maxvalue, minpulses, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Please specify at least one haptic value to change"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "Duplicate mapping ID 140 for user 100 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 1, maxpulses 22, minintensity 150, maxintensity 150, minduration 61, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 183)."}]	\N	2026-06-06 16:28:32.176557+03	2026-06-06 16:45:59.008562+03
+8fa3566a-6af8-4614-ad72-77d1fa1f0e8a	\N	1	[{"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 1, maxpulses 22, minintensity 150, maxintensity 150, minduration 60, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Do you want to apply this change globally to ALL users, or duplicate and isolate it for a single user?"}, {"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 1, maxpulses 22, minintensity 150, maxintensity 150, minduration 59, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}]	\N	2026-06-06 16:46:56.154351+03	2026-06-06 16:49:41.586587+03
+1a0ad514-2752-40af-9c6a-efc4c02ea329	\N	4	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please assign mapping 172 to user 101"}, {"role": "assistant", "content": "Successfully assigned user undefined to mapping ID undefined."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you please assign user 101 to mapping 173?"}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 173."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you list all mappings?"}, {"role": "assistant", "content": "All mappings for AirPressure (4 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 166: value 1327 to 1347 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you assign user 101 to mapping 172?"}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 172."}, {"role": "user", "content": "can you assign user 101 to mapping 173?"}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 173."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "assign user 101 to mapping 172"}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 172."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please assign user 101 to mapping 172"}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 172."}]	\N	2026-06-07 16:03:14.007+03	2026-06-07 16:58:49.24827+03
+dedb863d-1a1f-494c-8025-78aff61ed5bc	\N	1	[{"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666. This user should have exactly this one active mapping for the use case."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 186."}, {"role": "user", "content": "Assign mapping ID 140 for HeartRate to user 666. This user should have exactly this one active mapping for the use case."}, {"role": "assistant", "content": "Successfully unassigned user 666 from mapping ID 186. The assignment is now inactive."}, {"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666. This user should have exactly this one active mapping for the use case."}, {"role": "assistant", "content": "User 666 is already unassigned from mapping ID 186. Do you want to unassign user 666 from mapping ID 140 before assigning mapping ID 186?"}, {"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666. This user should have exactly this one active mapping for the use case."}, {"role": "assistant", "content": "Successfully unassigned user 666 from mapping ID 140. The assignment is now inactive."}]	\N	2026-06-08 15:17:26.119467+03	2026-06-08 15:19:58.170953+03
+9d874202-9714-4311-9cd3-78ac69ef9e0a	\N	1	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you change mapping id 173? change mn pulses to 1"}, {"role": "assistant", "content": "Would you like to apply this change to all users sharing mapping ID 173, or would you like to duplicate and isolate this change for a single user only?"}, {"role": "user", "content": "can you change mapping id 173? change mn pulses to 1"}, {"role": "assistant", "content": "Mapping ID 173 has been updated."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 1-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 1, maxpulses 22, minintensity 150, maxintensity 150, minduration 60, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "can you change the mapping ID 140 to all users? set minimum pulses to 60"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 1-22, intensity 150-150, duration 60-80ms, interval 249-250ms"}, {"role": "user", "content": "confirm"}, {"role": "assistant", "content": "Could you specify what you would like me to confirm? Are you asking for confirmation about the mapping details or something else?"}, {"role": "user", "content": "can you change the mapping ID 140 to all users? set minimum duration to 59"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "can you change that mapping only for user 100? set the mimimum pulses to 3"}, {"role": "assistant", "content": "I need a few more details to change this mapping. Please provide: minvalue, maxvalue, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 1-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 1-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change that mapping for all users ? set the mimimum pulses to 3"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 3-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change that mapping only for user 100? set the mimimum pulses to 2"}, {"role": "assistant", "content": "I need a few more details to change this mapping. Please provide: minvalue, maxvalue, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, maxinterval."}, {"role": "user", "content": "can you change that mapping only for user 100? set the mimimum pulses to 2"}, {"role": "assistant", "content": "I need a few more details to change this mapping for user 100. Please provide: minvalue, maxvalue, maxpulses, minintensity, maxintensity, minduration, maxduration, mininterval, and maxinterval."}, {"role": "user", "content": "can you change that mapping only for user 100? set the mimimum pulses to 2"}, {"role": "assistant", "content": "Please specify which mapping ID to change for this user. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "140"}, {"role": "assistant", "content": "Please specify which mapping ID to change for this user. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "mapping id 140"}, {"role": "assistant", "content": "Please specify which mapping ID to change for this user. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "show me the active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 3-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change that mapping only for user 100? set the mimimum pulses to 2"}, {"role": "assistant", "content": "Please specify which mapping ID to change for this user. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "can you change mapping only for all users? set the mimimum pulses to 1"}, {"role": "assistant", "content": "Could you please confirm whether you want to change the mapping for all users or only for user 100?"}, {"role": "user", "content": "show me the active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 3-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change that mapping for all user? set the mimimum pulses to 1"}, {"role": "assistant", "content": "Please specify which mapping ID to change. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "can you change mapping id 140 for all users? set the mimimum pulses to 2"}, {"role": "assistant", "content": "Please specify which mapping ID to change. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "show me all the active mappings"}, {"role": "assistant", "content": "Active mappings for HeartRate (1 total):\\n\\n• ID 140: value 30 to 245 ➔ pulses 3-22, intensity 150-150, duration 59-80ms, interval 249-250ms"}, {"role": "user", "content": "can you change mapping id 140 for all users? set the mimimum pulses to 1"}, {"role": "assistant", "content": "Please specify which mapping ID to change. Use \\"list mappings\\" to see current IDs."}, {"role": "user", "content": "can you change mapping id 140 for all users? set the mimimum pulses to 1"}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "can you change mapping 140 only for user 100? set the mimimum pulses to 2"}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 185)."}, {"role": "user", "content": "show me the active mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 1-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please show me the active mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 1-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you please change mapping ID 173? set the minimum pulses to 2"}, {"role": "assistant", "content": "Mapping ID 173 has been updated."}, {"role": "user", "content": "Apply to all users: change mapping ID 140 for HeartRate with minvalue 30, maxvalue 245, minpulses 1, maxpulses 22, minintensity 150, maxintensity 150, minduration 61, maxduration 80, mininterval 249, and maxinterval 250."}, {"role": "assistant", "content": "Mapping ID 140 has been updated."}, {"role": "user", "content": "Duplicate mapping ID 140 for user 666 only, assign the duplicate to that user, and change the duplicate for HeartRate with minvalue 30, maxvalue 245, minpulses 4, maxpulses 22, minintensity 150, maxintensity 150, minduration 61, maxduration 80, mininterval 249, and maxinterval 250. Leave the original mapping unchanged for all other users."}, {"role": "assistant", "content": "Successfully updated configuration for user undefined. They have been disconnected from mapping ID previous and assigned to their own isolated mapping (ID 186)."}]	\N	2026-06-06 16:59:51.841822+03	2026-06-06 18:19:24.246405+03
+dc482e88-61e2-4078-99da-5167b6d87aea	\N	4	[{"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 186."}, {"role": "user", "content": "Assign mapping ID 140 for HeartRate to user 666."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 140."}, {"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666."}, {"role": "assistant", "content": "User 666 is already assigned to mapping ID 186. Would you like to proceed with a different action, such as changing the mapping for this user?"}, {"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 186."}, {"role": "user", "content": "Assign mapping ID 140 for HeartRate to user 666."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 140."}, {"role": "user", "content": "Assign mapping ID 172 for AirPressure to user 101."}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 172."}, {"role": "user", "content": "Assign mapping ID 173 for AirPressure to user 101."}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 173."}]	\N	2026-06-08 15:27:03.002207+03	2026-06-08 15:29:04.960259+03
+a6d9e0bf-ab93-42de-a86f-ab2bde5c1f87	\N	4	[{"role": "user", "content": "Use the unassign flow: unassign user 101 from mapping ID 173 for AirPressure. Keep the user assigned to the use case and leave the mapping itself active for other users."}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 173. The assignment is now inactive."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "can you please unassign user 101"}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 173. The assignment is now inactive."}]	\N	2026-06-08 14:12:42.599818+03	2026-06-08 14:15:55.296041+03
+4ca5ed15-af08-497b-848b-d29d8607a4ea	\N	4	[{"role": "user", "content": "Unassign mapping ID 173 for AirPressure from user 101. Leave the mapping itself active for other users."}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 173. The assignment is now inactive."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}]	\N	2026-06-08 13:58:15.880609+03	2026-06-08 13:59:11.754601+03
+698473ba-fbcc-49eb-92b8-38d7e70ec30b	\N	12	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please unassign user 101"}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID undefined. The assignment is now inactive."}, {"role": "user", "content": "please unassign user 101"}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 173. The assignment is now inactive."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please show all mappings"}, {"role": "assistant", "content": "All mappings for HeartRate (25 total):\\n\\n• ID 138: value - to - ➔ pulses null-null, intensity null-null, duration null-nullms, interval null-nullms\\n• ID 116: value 1 to 200 ➔ pulses 5-5, intensity 50-80, duration 200-200ms, interval 200-200ms\\n• ID 79: value 20 to 50 ➔ pulses 40-50, intensity 40-50, duration 50-60ms, interval 50-60ms\\n• ID 140: value 30 to 245 ➔ pulses 1-22, intensity 150-150, duration 61-80ms, interval 249-250ms\\n• ID 99: value 30 to 240 ➔ pulses null-null, intensity null-null, duration null-nullms, interval null-nullms\\n• ID 103: value 30 to 240 ➔ pulses null-null, intensity null-null, duration null-nullms, interval null-nullms\\n• ID 186: value 30 to 245 ➔ pulses 4-22, intensity 150-150, duration 61-80ms, interval 249-250ms\\n• ID 132: value 50 to 220 ➔ pulses 3-3, intensity 150-150, duration 200-200ms, interval 100-100ms\\n• ID 141: value 60 to 180 ➔ pulses 3-5, intensity 100-200, duration 100-300ms, interval 50-150ms\\n• ID 65: value 60 to 100 ➔ pulses 1-5, intensity 30-100, duration 100-200ms, interval 200-400ms\\n• ID 129: value 60 to 220 ➔ pulses 3-3, intensity 50-150, duration 100-200ms, interval 100-100ms\\n• ID 125: value 60 to 220 ➔ pulses 3-3, intensity 50-255, duration 100-500ms, interval 100-100ms\\n• ID 120: value 60 to 220 ➔ pulses 3-3, intensity 150-150, duration 200-200ms, interval 100-100ms\\n• ID 137: value 63 to 220 ➔ pulses 3-5, intensity 150-255, duration 200-400ms, interval 100-200ms\\n• ID 134: value 70 to 220 ➔ pulses 3-3, intensity 50-255, duration 100-500ms, interval 100-100ms\\n• ID 156: value 80 to 100 ➔ pulses 3-5, intensity 60-80, duration 200-300ms, interval 100-150ms\\n• ID 158: value 81 to 100 ➔ pulses 3-5, intensity 60-80, duration 200-300ms, interval 100-150ms\\n• ID 163: value 86 to 106 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 67: value 100 to 130 ➔ pulses 6-10, intensity 101-150, duration 150-300ms, interval 100-200ms\\n• ID 70: value 100 to 130 ➔ pulses 1-5, intensity 100-150, duration 150-150ms, interval 1-150ms\\n• ID 161: value 101 to 120 ➔ pulses 5-8, intensity 80-100, duration 300-400ms, interval 150-200ms\\n• ID 74: value 105 to 106 ➔ pulses 5-7, intensity 10-50, duration 30-50ms, interval 40-60ms\\n• ID 135: value 120 to 220 ➔ pulses 3-3, intensity 150-150, duration 200-200ms, interval 100-100ms\\n• ID 115: value 120 to 220 ➔ pulses 3-3, intensity 50-255, duration 100-500ms, interval 100-100ms\\n• ID 133: value 130 to 220 ➔ pulses 3-3, intensity 150-150, duration 200-200ms, interval 100-100ms"}, {"role": "user", "content": "please show all mappings"}, {"role": "assistant", "content": "All mappings for Pollution (13 total):\\n\\n• [INACTIVE] ID 165: value 49 to 69 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• [INACTIVE] ID 144: value 50 to 500 ➔ pulses 3-5, intensity 200-500, duration 300-500ms, interval 150-400ms\\n• [INACTIVE] ID 145: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 146: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 147: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 148: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [ACTIVE] ID 155: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 150: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 151: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 152: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 153: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 154: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• [INACTIVE] ID 149: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms"}, {"role": "user", "content": "please show all mappings"}, {"role": "assistant", "content": "All mappings for Pollution (13 total):\\n\\n• inactive | ID 165: value 49 to 69 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• inactive | ID 144: value 50 to 500 ➔ pulses 3-5, intensity 200-500, duration 300-500ms, interval 150-400ms\\n• inactive | ID 145: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 146: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 147: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 148: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• **ACTIVE** | ID 155: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 150: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 151: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 152: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 153: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 154: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms\\n• inactive | ID 149: value 50 to 500 ➔ pulses 3--, intensity 200--, duration 300--ms, interval 150--ms"}, {"role": "user", "content": "show all mappings"}, {"role": "assistant", "content": "All mappings for UVIndex (3 total):\\n\\n• inactive | ID 168: value 0 to 8 ➔ pulses 1-8, intensity 50-50, duration 100-200ms, interval 50-100ms\\n• inactive | ID 167: value 0 to 8 ➔ pulses 1-3, intensity 10-50, duration 100-200ms, interval 50-100ms\\n• **ACTIVE** | ID 169: value 0 to 8 ➔ pulses 3-8, intensity 100-100, duration 100-100ms, interval 50-50ms"}, {"role": "user", "content": "assign user 102 to mapping 167"}, {"role": "assistant", "content": "Successfully assigned user 102 to mapping ID 167."}, {"role": "user", "content": "unassign user 102"}, {"role": "assistant", "content": "Successfully unassigned user 102 from mapping ID 167. The assignment is now inactive."}, {"role": "user", "content": "show all mappings"}, {"role": "assistant", "content": "All mappings for UVIndex (3 total):\\n\\n• inactive | ID 168: value 0 to 8 ➔ pulses 1-8, intensity 50-50, duration 100-200ms, interval 50-100ms\\n• inactive | ID 167: value 0 to 8 ➔ pulses 1-3, intensity 10-50, duration 100-200ms, interval 50-100ms\\n• **ACTIVE** | ID 169: value 0 to 8 ➔ pulses 3-8, intensity 100-100, duration 100-100ms, interval 50-50ms"}, {"role": "user", "content": "assign user 102 to mapping 168"}, {"role": "assistant", "content": "Successfully assigned user 102 to mapping ID 168."}, {"role": "user", "content": "show all mappings"}, {"role": "assistant", "content": "All mappings for UVIndex (3 total):\\n\\n• inactive | ID 167: value 0 to 8 ➔ pulses 1-3, intensity 10-50, duration 100-200ms, interval 50-100ms\\n• **ACTIVE** | ID 169: value 0 to 8 ➔ pulses 3-8, intensity 100-100, duration 100-100ms, interval 50-50ms\\n• **ACTIVE** | ID 168: value 0 to 8 ➔ pulses 1-8, intensity 50-50, duration 100-200ms, interval 50-100ms"}, {"role": "user", "content": "assign user 102 to mapping 169"}, {"role": "assistant", "content": "Successfully assigned user 102 to mapping ID 169."}]	\N	2026-06-07 17:01:26.785576+03	2026-06-07 17:21:19.252331+03
+acdbac78-bfbb-4c9d-a6a6-b2416ad49e18	\N	1	[{"role": "user", "content": "Show me the full use case dictionary."}, {"role": "assistant", "content": "Here are the available use cases and their parameters:\\n\\n📂 **IPGeolocation Moon Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **IPGeolocation Sun Azimuth**\\n    url (string = https://api.ipgeolocation.io/astronomy [Specific value!]) [Required]\\n    lat (float) [Required]\\n    long (float) [Required]\\n    date (date)\\n    apiKey (string) [Required]\\n\\n📂 **Open-Elevation Altitude**\\n    url (string = https://api.open-elevation.com/api/v1/lookup [Specific value!]) [Required]\\n    locations (json) [Required]\\n\\n📂 **Open-Meteo Air Pressure**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = surface_pressure [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Cloud Cover**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = cloudcover [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Humidity**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = relative_humidity_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Precipitation**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = precipitation [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Temperature**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = temperature_2m [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo UV Index**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = uv_index [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n\\n📂 **Open-Meteo Wind Speed**\\n    url (string = https://api.open-meteo.com/v1/forecast [Specific value!]) [Required]\\n    current (string = wind_speed_10m [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lng (float) [Required]\\n\\n📂 **Sunrise-Sunset API**\\n    url (string = https://api.sunrise-sunset.org/json [Specific value!]) [Required]\\n    latitude (float) [Required]\\n    longitude (float) [Required]\\n    date (string)\\n    formatted (integer) [Required]\\n\\n📂 **WAQI Air Quality Index**\\n    url (string = https://api.waqi.info/feed/geo:{lat};{lon}/ [Specific value!]) [Required]\\n    lat (float) [Required]\\n    lon (float) [Required]\\n    token (string) [Required]"}]	\N	2026-06-07 19:40:08.728319+03	2026-06-07 19:40:13.756018+03
+d3924ef5-dfc6-4233-8153-40b58b7f5dc8	\N	4	[{"role": "user", "content": "Unassign mapping ID 173 for AirPressure from user 101. Leave the mapping itself active for other users."}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 173. The assignment is now inactive."}]	\N	2026-06-08 14:05:07.072945+03	2026-06-08 14:05:08.506727+03
+e16fa55e-dc72-4732-a705-251709a0aae5	\N	4	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please unassign user 101"}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 173. The assignment is now inactive."}]	\N	2026-06-08 14:31:01.790782+03	2026-06-08 14:31:12.660583+03
+436e21f7-93f9-410e-b683-9b1bff62f38b	\N	4	[{"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for AirPressure (3 total):\\n\\n• ID 173: value 555 to 574 ➔ pulses 2-8, intensity 200-255, duration 400-600ms, interval 50-100ms\\n• ID 666: value 900 to 1200 ➔ pulses 3-5, intensity 60-250, duration 100-200ms, interval 50-150ms\\n• ID 172: value 1101 to 1121 ➔ pulses 5-8, intensity 200-255, duration 400-600ms, interval 50-100ms"}, {"role": "user", "content": "please assign user 101 to mapping 172"}, {"role": "assistant", "content": "Successfully assigned user 101 to mapping ID 172."}]	\N	2026-06-08 14:33:38.431847+03	2026-06-08 14:33:53.572287+03
+37a9243f-3369-47d4-8e21-de4892866f02	\N	12	[{"role": "user", "content": "please unassign user 101"}, {"role": "assistant", "content": "Successfully unassigned user 101 from mapping ID 172. The assignment is now inactive."}, {"role": "user", "content": "show me the current feedback mappings"}, {"role": "assistant", "content": "Active mappings for UVIndex (2 total):\\n\\n• ID 168: value 0 to 8 ➔ pulses 1-8, intensity 50-50, duration 100-200ms, interval 50-100ms\\n• ID 169: value 0 to 8 ➔ pulses 3-8, intensity 100-100, duration 100-100ms, interval 50-50ms"}, {"role": "user", "content": "can you assign user 102 to mapping 169?"}, {"role": "assistant", "content": "Successfully assigned user 102 to mapping ID 169."}, {"role": "user", "content": "can you assign user 102 to mapping 168?"}, {"role": "assistant", "content": "Successfully assigned user 102 to mapping ID 168."}]	\N	2026-06-08 14:35:40.514542+03	2026-06-08 14:40:44.887114+03
+3c12e52c-2d90-499e-98ca-06264ff82392	\N	1	[{"role": "user", "content": "Assign mapping ID 186 for HeartRate to user 666."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 186."}, {"role": "user", "content": "Assign mapping ID 140 for HeartRate to user 666."}, {"role": "assistant", "content": "Successfully assigned user 666 to mapping ID 140."}]	\N	2026-06-08 16:25:53.8598+03	2026-06-08 16:26:30.147534+03
 \.
 
 
 --
--- TOC entry 5173 (class 0 OID 27127)
--- Dependencies: 238
+-- TOC entry 5179 (class 0 OID 18473)
+-- Dependencies: 239
 -- Data for Name: api_pool; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135583,8 +135636,8 @@ COPY public.api_pool (id, name, category, description, endpoint_url, method, aut
 
 
 --
--- TOC entry 5176 (class 0 OID 27142)
--- Dependencies: 241
+-- TOC entry 5182 (class 0 OID 18488)
+-- Dependencies: 242
 -- Data for Name: feedback_config_rules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -135628,7 +135681,6 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 138	\N	\N	HeartRate	f	\N	\N	\N	\N	\N	\N	\N	\N	1
 161	101	120	HeartRate	f	5	8	80	100	300	400	150	200	1
 142	150	150	SunAzimuth	f	1	3	50	100	100	300	50	150	3
-140	30	240	HeartRate	t	2	20	150	150	210	80	2000	250	1
 156	80	100	HeartRate	f	3	5	60	80	200	300	100	150	1
 158	81	100	HeartRate	f	3	5	60	80	200	300	100	150	1
 163	86	106	HeartRate	f	5	8	200	255	400	600	50	100	1
@@ -135647,34 +135699,40 @@ COPY public.feedback_config_rules (id, minvalue, maxvalue, type, active, minpuls
 165	49	69	Pollution	f	5	8	200	255	400	600	50	100	7
 666	900	1200	AirPressure	t	3	5	60	250	100	200	50	150	4
 166	1327	1347	AirPressure	f	5	8	200	255	400	600	50	100	4
-169	0	8	UVIndex	t	1	8	100	100	100	100	50	50	12
-168	0	8	UVIndex	f	1	8	50	50	100	200	50	100	12
 167	0	8	UVIndex	f	1	3	10	50	100	200	50	100	12
 9999	0	0	\N	t	\N	\N	\N	\N	\N	\N	\N	\N	\N
 170	\N	\N	\N	t	5	8	200	255	400	600	50	100	\N
 171	\N	\N	\N	t	5	8	200	255	400	600	50	100	\N
+168	0	8	UVIndex	t	1	8	50	50	100	200	50	100	12
+173	555	574	AirPressure	t	2	8	200	255	400	600	50	100	4
+169	0	8	UVIndex	t	3	8	100	100	100	100	50	50	12
 172	1101	1121	AirPressure	t	5	8	200	255	400	600	50	100	4
-173	555	575	AirPressure	t	5	8	200	255	400	600	50	100	4
+140	30	245	HeartRate	t	1	22	150	150	61	80	249	250	1
+186	30	245	HeartRate	t	4	22	150	150	61	80	249	250	1
 \.
 
 
 --
--- TOC entry 5177 (class 0 OID 27147)
--- Dependencies: 242
+-- TOC entry 5183 (class 0 OID 18493)
+-- Dependencies: 243
 -- Data for Name: user_schedules; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.user_schedules (schedule_id, user_id, interval_days, next_run_date, measure_type, trigger_percentage, active) FROM stdin;
 6	102	7	2026-05-14	average	20	f
-7	100	1	2026-06-04	average	20	t
+7	100	1	2026-06-04	average	20	f
+8	100	5	2026-06-11	mode	25	f
+9	100	5	2026-06-11	mode	25	t
 3	101	7	2026-07-03	mode	50	f
-1	101	30	2026-07-03	average	-33	t
+1	101	30	2026-07-03	average	-33	f
 5	101	8	2026-07-03	median	26	f
+10	101	11	2026-06-17	median	37	f
+11	101	19	2026-06-25	mode	43	t
 \.
 
 
 --
--- TOC entry 5193 (class 0 OID 0)
+-- TOC entry 5199 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: Alert_alertid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -135683,7 +135741,7 @@ SELECT pg_catalog.setval('public."Alert_alertid_seq"', 68402, true);
 
 
 --
--- TOC entry 5194 (class 0 OID 0)
+-- TOC entry 5200 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: AndroidPhone_phoneid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -135692,7 +135750,7 @@ SELECT pg_catalog.setval('public."AndroidPhone_phoneid_seq"', 1, false);
 
 
 --
--- TOC entry 5195 (class 0 OID 0)
+-- TOC entry 5201 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: SensorData_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -135701,7 +135759,7 @@ SELECT pg_catalog.setval('public."SensorData_id_seq"', 67670, true);
 
 
 --
--- TOC entry 5196 (class 0 OID 0)
+-- TOC entry 5202 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: UseCaseDictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -135710,7 +135768,7 @@ SELECT pg_catalog.setval('public."UseCaseDictionary_id_seq"', 55, true);
 
 
 --
--- TOC entry 5197 (class 0 OID 0)
+-- TOC entry 5203 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: UseCase_usecase_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -135719,8 +135777,17 @@ SELECT pg_catalog.setval('public."UseCase_usecase_id_seq"', 12, true);
 
 
 --
--- TOC entry 5198 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 5204 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: User_UC_Mappings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."User_UC_Mappings_id_seq"', 10, false);
+
+
+--
+-- TOC entry 5205 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: User_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135728,8 +135795,8 @@ SELECT pg_catalog.setval('public."User_userid_seq"', 1, false);
 
 
 --
--- TOC entry 5199 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5206 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: Watch_watchid_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135737,8 +135804,8 @@ SELECT pg_catalog.setval('public."Watch_watchid_seq"', 1, false);
 
 
 --
--- TOC entry 5200 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 5207 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: api_pool_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -135746,25 +135813,25 @@ SELECT pg_catalog.setval('public.api_pool_id_seq', 13, true);
 
 
 --
--- TOC entry 5201 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 5208 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: feedback_config_rules_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 173, true);
+SELECT pg_catalog.setval('public.feedback_config_rules_id_seq', 186, true);
 
 
 --
--- TOC entry 5202 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5209 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: user_schedules_schedule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 7, true);
+SELECT pg_catalog.setval('public.user_schedules_schedule_id_seq', 11, true);
 
 
 --
--- TOC entry 4953 (class 2606 OID 27179)
+-- TOC entry 4956 (class 2606 OID 18525)
 -- Name: Alert Alert_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135773,7 +135840,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 4955 (class 2606 OID 27181)
+-- TOC entry 4958 (class 2606 OID 18527)
 -- Name: AndroidPhone AndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135782,7 +135849,7 @@ ALTER TABLE ONLY public."AndroidPhone"
 
 
 --
--- TOC entry 4957 (class 2606 OID 27183)
+-- TOC entry 4960 (class 2606 OID 18529)
 -- Name: SensorData SensorData_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135791,7 +135858,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4963 (class 2606 OID 27185)
+-- TOC entry 4966 (class 2606 OID 18531)
 -- Name: UseCaseDictionary UseCaseDictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135800,7 +135867,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4959 (class 2606 OID 27187)
+-- TOC entry 4962 (class 2606 OID 18533)
 -- Name: UseCase UseCase_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135809,7 +135876,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4961 (class 2606 OID 27189)
+-- TOC entry 4964 (class 2606 OID 18535)
 -- Name: UseCase UseCase_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135818,7 +135885,7 @@ ALTER TABLE ONLY public."UseCase"
 
 
 --
--- TOC entry 4971 (class 2606 OID 27191)
+-- TOC entry 4972 (class 2606 OID 18537)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135827,7 +135894,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4969 (class 2606 OID 27209)
+-- TOC entry 4974 (class 2606 OID 18539)
 -- Name: User_UC_Mappings User_UC_Mappings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135836,21 +135903,7 @@ ALTER TABLE ONLY public."User_UC_Mappings"
 
 
 --
--- Name: user_uc_mappings_one_active_per_user; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX user_uc_mappings_one_active_per_user ON public."User_UC_Mappings" USING btree (user_id) WHERE (active = true);
-
-
---
--- Name: user_uc_mappings_restore_lookup; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX user_uc_mappings_restore_lookup ON public."User_UC_Mappings" USING btree (user_id, assigned_at DESC, id DESC);
-
-
---
--- TOC entry 4967 (class 2606 OID 27193)
+-- TOC entry 4970 (class 2606 OID 18543)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135859,7 +135912,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4975 (class 2606 OID 27195)
+-- TOC entry 4980 (class 2606 OID 18545)
 -- Name: WatchAndroidPhone WatchAndroidPhone_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135868,7 +135921,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 4973 (class 2606 OID 27197)
+-- TOC entry 4978 (class 2606 OID 18547)
 -- Name: Watch Watch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135877,7 +135930,7 @@ ALTER TABLE ONLY public."Watch"
 
 
 --
--- TOC entry 4977 (class 2606 OID 27199)
+-- TOC entry 4982 (class 2606 OID 18549)
 -- Name: agent_session agent_session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135886,7 +135939,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4981 (class 2606 OID 27201)
+-- TOC entry 4986 (class 2606 OID 18551)
 -- Name: api_pool api_pool_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135895,7 +135948,7 @@ ALTER TABLE ONLY public.api_pool
 
 
 --
--- TOC entry 4983 (class 2606 OID 27203)
+-- TOC entry 4988 (class 2606 OID 18553)
 -- Name: feedback_config_rules feedback_config_mapped_minpulses_maxpulses_minintensity_max_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135904,7 +135957,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4985 (class 2606 OID 27205)
+-- TOC entry 4990 (class 2606 OID 18555)
 -- Name: feedback_config_rules feedback_config_mapped_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135913,7 +135966,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4965 (class 2606 OID 27207)
+-- TOC entry 4968 (class 2606 OID 18557)
 -- Name: UseCaseDictionary unique_usecase_param; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135922,7 +135975,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 4989 (class 2606 OID 27211)
+-- TOC entry 4994 (class 2606 OID 18559)
 -- Name: user_schedules user_schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135931,7 +135984,7 @@ ALTER TABLE ONLY public.user_schedules
 
 
 --
--- TOC entry 4978 (class 1259 OID 27212)
+-- TOC entry 4983 (class 1259 OID 18560)
 -- Name: idx_agent_session_researcher; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135939,7 +135992,7 @@ CREATE INDEX idx_agent_session_researcher ON public.agent_session USING btree (r
 
 
 --
--- TOC entry 4979 (class 1259 OID 27213)
+-- TOC entry 4984 (class 1259 OID 18561)
 -- Name: idx_agent_session_usecase; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135947,7 +136000,7 @@ CREATE INDEX idx_agent_session_usecase ON public.agent_session USING btree (curr
 
 
 --
--- TOC entry 4986 (class 1259 OID 27214)
+-- TOC entry 4991 (class 1259 OID 18562)
 -- Name: idx_fcr_usecase_active; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135955,7 +136008,7 @@ CREATE INDEX idx_fcr_usecase_active ON public.feedback_config_rules USING btree 
 
 
 --
--- TOC entry 4987 (class 1259 OID 27215)
+-- TOC entry 4992 (class 1259 OID 18563)
 -- Name: idx_next_run_date; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -135963,7 +136016,23 @@ CREATE INDEX idx_next_run_date ON public.user_schedules USING btree (next_run_da
 
 
 --
--- TOC entry 5005 (class 2620 OID 27216)
+-- TOC entry 4975 (class 1259 OID 18540)
+-- Name: user_uc_mappings_one_active_per_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX user_uc_mappings_one_active_per_user ON public."User_UC_Mappings" USING btree (user_id) WHERE (active = true);
+
+
+--
+-- TOC entry 4976 (class 1259 OID 18541)
+-- Name: user_uc_mappings_restore_lookup; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX user_uc_mappings_restore_lookup ON public."User_UC_Mappings" USING btree (user_id, assigned_at DESC, id DESC);
+
+
+--
+-- TOC entry 5010 (class 2620 OID 18564)
 -- Name: agent_session trg_agent_session_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -135971,7 +136040,7 @@ CREATE TRIGGER trg_agent_session_updated_at BEFORE UPDATE ON public.agent_sessio
 
 
 --
--- TOC entry 4991 (class 2606 OID 27217)
+-- TOC entry 4996 (class 2606 OID 18565)
 -- Name: DeviceSensor DeviceSensor_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135980,7 +136049,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4992 (class 2606 OID 27222)
+-- TOC entry 4997 (class 2606 OID 18570)
 -- Name: DeviceSensor DeviceSensor_userid_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135989,7 +136058,7 @@ ALTER TABLE ONLY public."DeviceSensor"
 
 
 --
--- TOC entry 4993 (class 2606 OID 27227)
+-- TOC entry 4998 (class 2606 OID 18575)
 -- Name: SensorData SensorData_alertid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -135998,7 +136067,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4994 (class 2606 OID 27232)
+-- TOC entry 4999 (class 2606 OID 18580)
 -- Name: SensorData SensorData_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136007,7 +136076,7 @@ ALTER TABLE ONLY public."SensorData"
 
 
 --
--- TOC entry 4998 (class 2606 OID 27237)
+-- TOC entry 5001 (class 2606 OID 18585)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136016,7 +136085,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4999 (class 2606 OID 27242)
+-- TOC entry 5002 (class 2606 OID 18590)
 -- Name: UserWatchAndroidPhone UserWatchAndroidPhone_watchid_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136025,7 +136094,7 @@ ALTER TABLE ONLY public."UserWatchAndroidPhone"
 
 
 --
--- TOC entry 4996 (class 2606 OID 27277)
+-- TOC entry 5003 (class 2606 OID 18595)
 -- Name: User_UC_Mappings User_UC_Mappings_feedback_config_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136034,7 +136103,7 @@ ALTER TABLE ONLY public."User_UC_Mappings"
 
 
 --
--- TOC entry 4997 (class 2606 OID 27282)
+-- TOC entry 5004 (class 2606 OID 18600)
 -- Name: User_UC_Mappings User_UC_Mappings_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136043,7 +136112,7 @@ ALTER TABLE ONLY public."User_UC_Mappings"
 
 
 --
--- TOC entry 5000 (class 2606 OID 27247)
+-- TOC entry 5005 (class 2606 OID 18605)
 -- Name: WatchAndroidPhone WatchAndroidPhone_phoneid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136052,7 +136121,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 5001 (class 2606 OID 27252)
+-- TOC entry 5006 (class 2606 OID 18610)
 -- Name: WatchAndroidPhone WatchAndroidPhone_watchid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136061,7 +136130,7 @@ ALTER TABLE ONLY public."WatchAndroidPhone"
 
 
 --
--- TOC entry 5002 (class 2606 OID 27257)
+-- TOC entry 5007 (class 2606 OID 18615)
 -- Name: agent_session agent_session_current_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136070,7 +136139,7 @@ ALTER TABLE ONLY public.agent_session
 
 
 --
--- TOC entry 4995 (class 2606 OID 27262)
+-- TOC entry 5000 (class 2606 OID 18620)
 -- Name: UseCaseDictionary api_pool_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136079,7 +136148,7 @@ ALTER TABLE ONLY public."UseCaseDictionary"
 
 
 --
--- TOC entry 5003 (class 2606 OID 27267)
+-- TOC entry 5008 (class 2606 OID 18625)
 -- Name: feedback_config_rules feedback_config_rules_usecase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136088,7 +136157,7 @@ ALTER TABLE ONLY public.feedback_config_rules
 
 
 --
--- TOC entry 4990 (class 2606 OID 27272)
+-- TOC entry 4995 (class 2606 OID 18630)
 -- Name: Alert fk_fb_range; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136097,7 +136166,7 @@ ALTER TABLE ONLY public."Alert"
 
 
 --
--- TOC entry 5004 (class 2606 OID 27287)
+-- TOC entry 5009 (class 2606 OID 18635)
 -- Name: user_schedules user_schedules_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -136105,10 +136174,11 @@ ALTER TABLE ONLY public.user_schedules
     ADD CONSTRAINT user_schedules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
 
 
--- Completed on 2026-06-03 19:10:53
+-- Completed on 2026-06-08 19:07:59
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict qXcFqlcU3agvaqbeaPkogXWggU1yMowYydSz5RZcyKwCkssZFSWX773dhKKERxW
+\unrestrict heL635ZnAUImWPpcv3wUMwUlqhU0100uIySAwObsTTHu8XyrHq5TVNdl4K6EA3c
+
