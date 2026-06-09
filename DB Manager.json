@@ -33,7 +33,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT\n  fcr.id,\n  fcr.id AS mapping_id,\n  fcr.usecase_id,\n  fcr.type,\n  uc.name AS usecase_name,\n  uc.description AS usecase_description,\n  fcr.active,\n  fcr.minvalue,\n  fcr.maxvalue,\n  fcr.minpulses,\n  fcr.maxpulses,\n  fcr.minintensity,\n  fcr.maxintensity,\n  fcr.minduration,\n  fcr.maxduration,\n  fcr.mininterval,\n  fcr.maxinterval\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nWHERE fcr.active = TRUE\nORDER BY uc.name, fcr.minvalue NULLS LAST, fcr.id;",
+        "query": "SELECT\n  fcr.id,\n  fcr.id AS mapping_id,\n  fcr.usecase_id,\n  fcr.type,\n  uc.name AS usecase_name,\n  uc.description AS usecase_description,\n  fcr.active,\n  fcr.minvalue,\n  fcr.maxvalue,\n  fcr.minpulses,\n  fcr.maxpulses,\n  fcr.minintensity,\n  fcr.maxintensity,\n  fcr.minduration,\n  fcr.maxduration,\n  fcr.mininterval,\n  fcr.maxinterval\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nORDER BY uc.name, fcr.minvalue NULLS LAST, fcr.id;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
