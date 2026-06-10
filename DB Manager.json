@@ -546,7 +546,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body || {};\nconst mappingId = parseInt(body.mappingId);\n\nif (!mappingId || isNaN(mappingId)) {\n  return [{\n    json: {\n      statusCode: 400,\n      error: \"Missing or invalid mappingId\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    mappingId: mappingId\n  }\n}];"
+        "jsCode": "const body = $input.first().json.body || {};\nconst mappingId = parseInt(body.mappingId);\nconst active = body.active;\n\nif (!mappingId || isNaN(mappingId)) {\n  return [{ json: { statusCode: 400, error: \"Missing or invalid mappingId\" } }];\n}\n\nif (typeof active !== \"boolean\") {\n  return [{ json: { statusCode: 400, error: \"Missing or invalid active boolean\" } }];\n}\n\nreturn [{ json: { mappingId, active } }];"
       },
       "id": "6bf901c8-29d5-4109-9353-39152587329a",
       "name": "Extract Mapping ID1",
@@ -560,9 +560,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE feedback_config_rules\nSET active = false\nWHERE id = $1 AND id <> 9999\nRETURNING id, active, type, usecase_id;",
+        "query": "UPDATE feedback_config_rules\nSET active = $2\nWHERE id = $1 AND id <> 9999\nRETURNING id, active, type, usecase_id;",
         "options": {
-          "queryReplacement": "={{ [$json.mappingId] }}"
+          "queryReplacement": "={{ [$json.mappingId, $json.active] }}"
         }
       },
       "id": "4ef465a1-d6cc-4658-ba48-2dbcb150c9ba",
@@ -579,23 +579,6 @@
           "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "deactivate-mapping",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "6ec8e196-b821-4a00-9c6b-e50d88feb5bd",
-      "name": "Deactivate Mapping1",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -2432,
-        -32
-      ],
-      "webhookId": "9c75af57-eec3-458e-8ee5-d541d853e577"
     },
     {
       "parameters": {
@@ -780,7 +763,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"Mapping ID not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: \"Mapping deactivated successfully\",\n    data: {\n      mappingId: result.id,\n      sensor: result.sensorname,\n      active: result.isactive\n    }\n  }\n}];"
+        "jsCode": "const result = $input.first().json;\n\nif (!result || Object.keys(result).length === 0) {\n  return [{\n    json: {\n      statusCode: 404,\n      message: \"Mapping ID not found\"\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    message: result.active\n      ? \"Mapping activated successfully\"\n      : \"Mapping deactivated successfully\",\n    data: {\n      mappingId: result.id,\n      type: result.type,\n      usecaseId: result.usecase_id,\n      active: result.active\n    }\n  }\n}];"
       },
       "id": "c184d977-65c3-460f-9678-81e3ed8f20be",
       "name": "Format Final Response deactivate mapping1",
@@ -1919,6 +1902,23 @@
       "typeVersion": 1,
       "id": "1cfd8726-2c57-46dc-8f21-aecadf201066",
       "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mapping-activation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "6ec8e196-b821-4a00-9c6b-e50d88feb5bd",
+      "name": "mapping activation",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2432,
+        -32
+      ],
+      "webhookId": "9c75af57-eec3-458e-8ee5-d541d853e577"
     }
   ],
   "pinData": {
@@ -2102,17 +2102,6 @@
         [
           {
             "node": "Format Final Response deactivate mapping1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Deactivate Mapping1": {
-      "main": [
-        [
-          {
-            "node": "Extract Mapping ID1",
             "type": "main",
             "index": 0
           }
@@ -2742,6 +2731,17 @@
           }
         ]
       ]
+    },
+    "mapping activation": {
+      "main": [
+        [
+          {
+            "node": "Extract Mapping ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2750,7 +2750,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "c10d3b97-b29f-4142-879b-bc4ea4e02102",
+  "versionId": "7a15316d-6f1c-4801-bfdf-ba652ef79098",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
