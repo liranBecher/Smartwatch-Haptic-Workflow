@@ -1919,6 +1919,166 @@
         -32
       ],
       "webhookId": "9c75af57-eec3-458e-8ee5-d541d853e577"
+    },
+    {
+      "parameters": {
+        "path": "add-user",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2448,
+        1296
+      ],
+      "id": "a664153d-c9c6-4102-9dc7-d10e55d90183",
+      "name": "add user Webhook",
+      "webhookId": "b90ffa29-1d60-4906-b48a-47bf69c40b1a"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(item => item.json);\n\nconst first = rows[0] ?? {};\nlet userId = Number(first.userid);\n\nif (userId === null || userId != Number($('parse add request').first().json.userId)) {\n  userId = Number($('parse add request').first().json.userId)\n  return{\n    code: 500,\n    message: 'Failed to add user '+userId\n  }\n}\n\nreturn{\n  code: 200,\n  message: 'User '+userId+' added'\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1824,
+        1296
+      ],
+      "id": "be3ab350-9819-4f84-a81e-6f1eafcf6368",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.query;\n\nconst userIdRaw = raw.userId;\nconst userFname = raw.firstName ?? \"\";\nconst userLname = raw.lastName ?? \"\";\n\nif (!userIdRaw) {\n  throw new Error(\"Missing required 'userId' parameter.\");\n}\n\nconst userId = Number(userIdRaw);\nif (!Number.isFinite(userId)) {\n  throw new Error(\"'userId' must be a valid numeric identifier.\");\n}\n\nreturn [{\n  json: {\n    statusCode: 200,\n    userId,\n    userFname, \n    userLname\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2240,
+        1296
+      ],
+      "id": "56bc2dc4-d75d-4f9f-a107-cc35ccf30132",
+      "name": "parse add request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -1616,
+        1296
+      ],
+      "id": "5590cac2-4c34-414c-a67a-13959270a440",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "content": "## Add user\nhttp://localhost:5678/webhook-test/add-user?userId=212&firstName=test"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2752,
+        1280
+      ],
+      "typeVersion": 1,
+      "id": "7c94e8ca-35be-49ab-9b9d-3767df819e8f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "User",
+          "mode": "list",
+          "cachedResultName": "User"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "userid": "={{ $json.userId }}",
+            "fname": "={{ $json.userFname }}",
+            "lname": "={{ $json.userLname }}"
+          },
+          "matchingColumns": [
+            "userid"
+          ],
+          "schema": [
+            {
+              "id": "userid",
+              "displayName": "userid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fname",
+              "displayName": "fname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lname",
+              "displayName": "lname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lastrequest",
+              "displayName": "lastrequest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "outputColumns": [
+            "userid"
+          ],
+          "skipOnConflict": false,
+          "replaceEmptyStrings": true
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2032,
+        1296
+      ],
+      "id": "e039942b-17ee-49f5-9677-6c039f869722",
+      "name": "Insert rows in a table",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {
@@ -2742,6 +2902,50 @@
           }
         ]
       ]
+    },
+    "add user Webhook": {
+      "main": [
+        [
+          {
+            "node": "parse add request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse add request": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2750,7 +2954,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "7a15316d-6f1c-4801-bfdf-ba652ef79098",
+  "versionId": "ad41014b-d109-4724-a277-5c244f2a39f5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
