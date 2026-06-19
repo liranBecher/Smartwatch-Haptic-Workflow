@@ -1,0 +1,209 @@
+{
+  "name": "Agent Expert - Project Context",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"session_id\": \"step6-test-session\",\n  \"message\": \"Which workflow owns mapping writes?\",\n  \"usecase_id\": 1,\n  \"usecase_name\": \"HeartRate\",\n  \"user_id\": 100,\n  \"context\": {}\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8f4544b6-a485-48fb-abfe-24861af9249a",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "51be545e-f43c-4b51-a439-fc01f614dd2c",
+              "name": "expert_name",
+              "value": "project_context",
+              "type": "string"
+            },
+            {
+              "id": "058bcd87-f15f-43e7-86e3-37a344982a48",
+              "name": "model",
+              "value": "gpt-4o",
+              "type": "string"
+            },
+            {
+              "id": "c8aa1d46-cfd1-4bc5-bb99-ed86a3544248",
+              "name": "vector_store_id",
+              "value": "vs_6a2d3128f3908191bfcabb99e9c73fce",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9b4a278b-3614-4803-8979-e72e7b7d5faa",
+      "name": "Project Retrieval Config"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "98f413ab-5117-41ba-8161-b55af61ce10f",
+              "leftValue": "={{ typeof $json.vector_store_id === 'string' && $json.vector_store_id.startsWith('vs_') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1fef5da2-e64b-4214-9d1e-0b6001f857ee",
+      "name": "Project Retrieval Configured?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nreturn [{\n  json: {\n    expert: 'project_context',\n    success: false,\n    reply: '',\n    citations: [],\n    warnings: [\n      'Project Context Expert is not configured with a valid vector store ID.'\n    ],\n    proposals: [],\n    recommended_actions: [],\n    session_id: input.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "e5a6f3c3-1b23-4eb9-ae36-00eca4422006",
+      "name": "Return Project Configuration Warning"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json ?? {};\n\nconst originalInput =\n  $('Project Retrieval Config').first().json ?? {};\n\nif (response.error) {\n  const errorMessage =\n    response.error.message ??\n    response.message ??\n    'Project documentation retrieval failed.';\n\n  return [{\n    json: {\n      expert: 'project_context',\n      success: false,\n      reply: '',\n      citations: [],\n      warnings: [String(errorMessage)],\n      proposals: [],\n      recommended_actions: [],\n      session_id: originalInput.session_id\n    }\n  }];\n}\n\nlet reply = '';\nconst citations = [];\n\nconst outputs = Array.isArray(response.output)\n  ? response.output\n  : [];\n\nfor (const outputItem of outputs) {\n  if (outputItem?.type !== 'message') {\n    continue;\n  }\n\n  const contentItems = Array.isArray(outputItem.content)\n    ? outputItem.content\n    : [];\n\n  for (const content of contentItems) {\n    if (content?.type !== 'output_text') {\n      continue;\n    }\n\n    if (content.text) {\n      reply += `${content.text}\\n`;\n    }\n\n    const annotations = Array.isArray(content.annotations)\n      ? content.annotations\n      : [];\n\n    for (const annotation of annotations) {\n      if (annotation?.type !== 'file_citation') {\n        continue;\n      }\n\n      citations.push({\n        type: 'file',\n        file_id: annotation.file_id ?? null,\n        filename: annotation.filename ?? null,\n        expert: 'project_context'\n      });\n    }\n  }\n}\n\nconst uniqueCitations = [\n  ...new Map(\n    citations.map(citation => [\n      `${citation.file_id}:${citation.filename}`,\n      citation\n    ])\n  ).values()\n];\n\nreply = reply.trim();\n\nreturn [{\n  json: {\n    expert: 'project_context',\n    success: Boolean(reply),\n    reply,\n    citations: uniqueCitations,\n    warnings: reply\n      ? []\n      : ['Project documentation retrieval returned no answer.'],\n    proposals: [],\n    recommended_actions: [],\n    session_id: originalInput.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "7aa60477-3e48-46e5-8d99-910fc3d8d2e0",
+      "name": "Format Project Context Result"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    model: $json.model,\n    input:\n      \"You are the Project Context Expert for the Smartwatch Haptic system.\\n\\n\" +\n      \"Answer only from the uploaded project documentation. \" +\n      \"Explain uncertainty clearly. Do not invent workflow names, database tables, \" +\n      \"files, citations, or system behavior. You are read-only and must never claim \" +\n      \"that you changed the database or an n8n workflow.\\n\\n\" +\n      \"Question:\\n\" +\n      $json.message,\n\n    tools: [\n      {\n        type: \"file_search\",\n        vector_store_ids: [$json.vector_store_id],\n        max_num_results: 5\n      }\n    ],\n\n    tool_choice: {\n      type: \"file_search\"\n    },\n\n    include: [\n      \"file_search_call.results\"\n    ]\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "a28b7aec-cad3-4214-9b8e-3256b6c885d5",
+      "name": "Search Project Documentation",
+      "alwaysOutputData": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Project Retrieval Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Project Retrieval Config": {
+      "main": [
+        [
+          {
+            "node": "Project Retrieval Configured?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Project Retrieval Configured?": {
+      "main": [
+        [
+          {
+            "node": "Search Project Documentation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Project Configuration Warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Project Documentation": {
+      "main": [
+        [
+          {
+            "node": "Format Project Context Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "82f0ad2f-44d8-4aa7-b65d-7d5de54703e1",
+  "meta": {
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "HenHDQd9svliW0cZ",
+  "tags": []
+}

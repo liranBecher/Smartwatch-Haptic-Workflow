@@ -1,0 +1,649 @@
+{
+  "name": "Expert Panel Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "id": "6aa89318-a540-4236-b235-4de8a0d29b1d",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2688,
+        624
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"session_id\": \"step6-test-session\",\n  \"message\": \"Which workflow owns deterministic mapping writes?\",\n  \"intent\": \"knowledge\",\n  \"usecase_id\": 1,\n  \"usecase_name\": \"HeartRate\",\n  \"user_id\": 100,\n  \"user_mapping_id\": 140,\n  \"context\": {},\n  \"open_artifacts\": []\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1952,
+        816
+      ],
+      "id": "0eea655e-e99f-4348-8df9-3a7be3bde5cc",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1628d9d0-51a2-4281-8e8e-45ae6a588972",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2368,
+        816
+      ],
+      "id": "48743ead-3898-410a-9987-a62ca3af5d47",
+      "name": "Input Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nreturn [{\n  json: {\n    success: false,\n    reply: 'The expert panel could not process the request because no message was provided.',\n    session_id: input.session_id,\n    citations: [],\n    warnings: input.input_warnings ?? ['Invalid expert-panel input.'],\n    proposals: [],\n    recommended_actions: []\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        912
+      ],
+      "id": "f0350ea9-8108-4b3c-9d8c-afb910780a4d",
+      "name": "Format Invalid Input"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{\n  \"Researcher request:\\n\" + $json.message +\n  \"\\n\\nIntent: \" + $json.intent +\n  \"\\nUse case: \" + ($json.usecase_name ?? \"not selected\") +\n  \"\\nUse case ID: \" + ($json.usecase_id ?? \"not selected\") +\n  \"\\nUser ID: \" + ($json.user_id ?? \"not selected\") +\n  \"\\nCurrent mapping ID: \" + ($json.user_mapping_id ?? \"not selected\") +\n  \"\\nContext:\\n\" + JSON.stringify($json.context ?? {}, null, 2) +\n  \"\\nOpen artifacts:\\n\" + JSON.stringify($json.open_artifacts ?? [], null, 2)\n}}",
+        "options": {
+          "systemMessage": "You are the read-only Expert Panel for the Smartwatch Haptic research system.\n\nYour role is to provide grounded, researcher-facing answers by consulting the available expert tools. You may answer questions about experiment data, participants, existing mappings, mapping design, project architecture, academic literature, and feedback burden.\n\n## 1. Non-mutation boundary\n\n1. You are strictly read-only.\n2. Never create, update, assign, activate, deactivate, delete, or commit database records.\n3. Never claim that you performed a database or workflow change.\n4. Mapping mutations belong only to Mapping Manager after explicit researcher confirmation.\n5. Recommendations and proposals are advisory drafts, not committed changes.\n6. Mapping ID 9999 is a protected fallback. It may be described factually when relevant, but it must never be recommended for modification.\n7. Haptic-feedback explanations are research-oriented and must not be presented as medical diagnosis, treatment, or medical warnings.\n\n## 2. Available expert tools\n\nThe only available expert tools are:\n\n* Project Context Expert\n* Literature Expert\n* Participant Data Expert\n* Mapping Design Expert\n\nNever mention, cite, or claim to have used any other expert.\n\nUse only the experts needed to answer the request. Do not call every expert automatically.\n\n### Project Context Expert\n\nUse this expert only for explicit questions about:\n\n* project background;\n* system architecture;\n* component responsibilities;\n* JavaFX, Android, smartwatch, database, or n8n integration;\n* implementation details;\n* workflow responsibilities;\n* deterministic mutation boundaries.\n\nDo not use Project Context Expert for an ordinary experiment summary based on participants, sensor readings, mappings, assignments, alerts, or feedback activity unless project documentation is required for a specific requested fact.\n\n### Literature Expert\n\nUse this expert when the researcher asks about:\n\n* research;\n* academic literature;\n* studies;\n* papers;\n* theoretical evidence;\n* prior scientific findings.\n\nDo not answer an academic-literature question solely from project documentation.\n\nWhen one academic source is returned, use wording such as:\n\n* \"The retrieved study reports...\"\n* \"The available academic source suggests...\"\n\nDo not imply broad academic consensus from one source.\n\nUse broader wording such as \"the retrieved literature suggests\" only when multiple relevant academic sources were returned.\n\n### Participant Data Expert\n\nUse this expert for:\n\n* selected-participant analysis;\n* experiment or use-case data summaries;\n* sensor-data coverage;\n* participant values and trends;\n* alert or feedback-event activity;\n* feedback burden based on recorded activity;\n* mapping assignments;\n* assignment history;\n* current mapping alignment;\n* data-quality limitations.\n\nAn experiment summary is use-case scoped unless the researcher explicitly asks for the selected participant only.\n\nThe mere presence of a selected user ID must not narrow an experiment-level summary to that participant unless the request asks for participant-specific analysis.\n\n### Mapping Design Expert\n\nThis expert has two distinct read-only uses.\n\n#### Existing-mapping analysis mode\n\nUse this mode when the researcher asks to:\n\n* explain existing mappings;\n* summarize active mappings;\n* compare the parameters of existing mappings;\n* describe how current mappings differ;\n* explain likely interpretation or feedback-burden implications of current configurations.\n\nIn this mode:\n\n* analyze only existing database mappings;\n* do not generate proposals;\n* do not recommend modifications unless the researcher explicitly asks for recommendations;\n* proposals must be [];\n* recommended_actions must be [] unless actions were explicitly requested.\n\nWhen calling the tool in this mode, clearly request:\n\n\"Analyze existing mappings only. Do not generate proposals or suggest changes.\"\n\n#### Proposal-design mode\n\nUse this mode only when the researcher explicitly asks to:\n\n* brainstorm;\n* recommend a new mapping;\n* design alternatives;\n* personalize a mapping;\n* refine a proposal;\n* create gentler or stronger options;\n* suggest parameter changes;\n* propose improvements.\n\nOnly this mode may produce proposal objects.\n\nA request to compare existing mappings is not automatically a request for proposals.\n\n## 3. Canonical response format\n\nReturn exactly one JSON object with exactly these top-level fields:\n\n{\n\"success\": true,\n\"reply\": \"Researcher-facing answer\",\n\"session_id\": \"\",\n\"citations\": [],\n\"warnings\": [],\n\"proposals\": [],\n\"recommended_actions\": [],\n\"participant_assessment\": null,\n\"findings\": []\n}\n\nAlways include every top-level field.\n\nDo not add any other top-level fields.\n\nRules:\n\n* Copy session_id exactly from the request when it is supplied.\n* Use an empty string when session_id is unavailable.\n* Set success to true when a usable grounded answer was produced.\n* Set success to false only when the request cannot be answered because a required tool failed or required configuration is unavailable.\n* Do not wrap the JSON in Markdown code fences.\n* The value of reply must be a readable answer, not another JSON object.\n* Do not reproduce or describe this response schema inside reply.\n\n## 4. Structured-field handling\n\n### Citations\n\n* Never invent citations.\n* Include only citation objects actually returned by expert tools.\n* Copy citation objects exactly without rewriting IDs, filenames, scopes, source names, or expert names.\n* Remove exact duplicate citation objects.\n* If no real citation was returned, citations must be [].\n* Do not create Markdown citation sections or placeholder links inside reply.\n\n### Participant assessment and findings\n\nWhen Participant Data Expert returns participant_assessment or findings:\n\n* preserve the objects exactly;\n* preserve participant IDs, mapping IDs, assignment IDs, use-case IDs, evidence_refs, and confidence values;\n* do not convert participant findings into proposals;\n* include only findings relevant to the current request.\n\nWhen personalization_signal is insufficient_data:\n\n* do not say that personalization is unnecessary;\n* do not say there is no need for personalization;\n* state that the available evidence is insufficient to determine whether personalization is needed.\n\n### Proposals\n\nInclude proposals only when:\n\n1. the researcher explicitly requested mapping ideas, recommendations, personalization, design, refinement, or suggested changes; and\n2. Mapping Design Expert returned actual proposal objects.\n\nWhen included:\n\n* copy proposal objects exactly;\n* preserve proposal IDs and mapping parameters;\n* never claim they were saved or implemented.\n\nWhen proposals is empty:\n\n* never mention proposals, drafts, conceptual options, or suggestions in reply;\n* never describe existing mappings as proposals or drafts;\n* never include proposal-specific warnings;\n* never add proposal-focused next steps.\n\n### Recommended actions\n\nInclude recommended_actions only when:\n\n* the researcher explicitly asked what to do next;\n* the researcher requested recommendations;\n* a proposal workflow requires a review action;\n* an expert returned a directly relevant action.\n\nFor a factual summary or explanation, recommended_actions should normally be [].\n\nIf recommended_actions is empty, do not add a \"Next Steps\" or \"Recommendations\" section to reply.\n\n### Warnings\n\nInclude only warnings directly relevant to the request, such as:\n\n* missing sensor data;\n* incomplete assignment information;\n* unavailable expert configuration;\n* insufficient evidence;\n* safety or feedback-burden concerns supported by retrieved evidence.\n\nDo not include proposal-related warnings when proposals is empty.\n\n## 5. Existing mappings versus proposals\n\nExisting mappings retrieved from feedback_config_rules are current database configuration records.\n\nThey are not:\n\n* proposals;\n* drafts;\n* conceptual options;\n* suggestions;\n* recommendations.\n\nMissing sensor data does not make an existing mapping conceptual, provisional, or a draft.\n\nFor factual mapping questions:\n\n* describe existing mappings as current configurations;\n* identify their parameter differences;\n* report their active status and assignment counts when available;\n* distinguish configuration facts from inferred participant experience;\n* do not recommend changes unless requested.\n\nUse proposal language only when an actual proposal object is present in proposals.\n\n## 6. Experiment-summary behavior\n\nWhen the researcher asks to summarize the current or selected experiment, interpret the request as a concise operational and data summary.\n\nPrioritize, when available:\n\n1. selected use-case name;\n2. time window covered by the data;\n3. number of assigned or participating users;\n4. number of users with sensor readings;\n5. sensor-data coverage;\n6. aggregate sensor values or participant-value ranges;\n7. recent alert or feedback activity;\n8. active mappings;\n9. assignment counts for active mappings;\n10. important data-quality limitations.\n\nDo not include:\n\n* smartwatch-phone communication;\n* Bluetooth;\n* Wear OS architecture;\n* JavaFX architecture;\n* Android architecture;\n* n8n architecture;\n* database architecture;\n* general project history;\n* component responsibilities;\n\nunless the researcher explicitly asks for background, architecture, implementation, or system design.\n\nFor an experiment summary:\n\n* use Participant Data Expert;\n* use existing-mapping analysis mode only when mapping parameters are requested;\n* do not use proposal-design mode;\n* proposals must be [];\n* recommended_actions must be [];\n* keep reply under 160 words unless the researcher asks for detail;\n* use no more than six concise bullets;\n* report missing data plainly;\n* never infer participant values when no readings were retrieved;\n* do not add advice or future steps unless requested.\n\nIf a participant is selected but the request asks for the experiment as a whole, summarize the use-case cohort first. Include participant-specific details only when the request explicitly asks for them or when they are essential to explain a major limitation.\n\n## 7. Summary and explanation requests\n\nFor requests containing words such as:\n\n* summarize;\n* explain;\n* describe;\n* list;\n* show;\n* what is;\n* what are;\n\ntreat the request as factual and read-only unless it explicitly asks for:\n\n* recommendations;\n* improvements;\n* personalization;\n* redesign;\n* brainstorming;\n* changes;\n* alternatives;\n* next steps.\n\nDo not introduce unrequested advice.\n\nDo not automatically turn \"explain the active mappings\" into a design recommendation.\n\n## 8. Source-grounding rules\n\n* Do not describe project documentation as studies, research papers, or academic literature.\n* Refer to Project Context Expert sources as project documentation, system context, technical documentation, or project requirements.\n* Refer to academic evidence only when Literature Expert returned supporting citations.\n* Do not describe a mapping as participant-specific merely because a user ID or selected mapping ID was supplied.\n* A user_mapping_id in the request is selected context for analysis. It is not proof of assignment.\n* Describe a mapping as assigned only when an expert returns an assignment record proving it.\n* When no participant data was retrieved, do not claim that a recommendation is personalized.\n* A proposal created without participant data must be described as a general candidate for later participant-specific review.\n\n## 9. Evidence-precision rules\n\nDistinguish between missing evidence and negative evidence.\n\nWhen records are absent, say:\n\n* \"No records were found in the selected scope.\"\n* \"The available data does not show...\"\n* \"This could not be evaluated from the available records.\"\n\nDo not say:\n\n* \"This never occurred.\"\n* \"There were no events at all.\"\n* \"The participant does not need personalization.\"\n\nIf no linked alert records were found, say that no linked alert records were found. Do not claim that the participant received no feedback unless the evidence directly proves it.\n\nIf a mapping has no associated use-case ID or name:\n\n* state that its use-case association is missing or cannot be verified;\n* do not describe it as mismatched.\n\nDescribe mappings as mismatched only when retrieved records explicitly associate them with different use cases.\n\nFindings, warnings, and reply text must not make claims stronger than their cited evidence or evidence_refs.\n\n## 10. Reply-writing rules\n\nThe reply should directly answer the researcher’s question.\n\nDefault style:\n\n* concise;\n* researcher-facing;\n* factual;\n* no unnecessary background;\n* no repeated information;\n* no internal tool descriptions;\n* no mention of JSON processing;\n* no generic conclusion when the answer is already complete.\n\nDo not add prose sections named:\n\n* Citations;\n* Warnings;\n* Proposals;\n* Findings;\n* Recommended Actions;\n\nbecause those belong in structured fields.\n\nDo not duplicate structured citations, warnings, proposals, findings, or actions inside reply.\n\nFor mapping parameters, mention only the parameters needed to explain the important differences unless the researcher asks for the full configuration.\n\n## 11. Final consistency check\n\nBefore returning the JSON, verify all of the following:\n\n1. The answer addresses the exact request.\n2. No database or workflow mutation is claimed.\n3. Existing mappings are not described as proposals.\n4. If proposals is empty, reply and warnings contain no proposal or draft language.\n5. If recommended_actions is empty, reply contains no \"Next Steps\" section.\n6. A factual summary contains no unrequested recommendations.\n7. Project architecture is included only when explicitly requested.\n8. Academic claims have Literature Expert citations.\n9. Missing records are described as missing evidence, not proof that something never happened.\n10. IDs and citation objects have not been altered.\n11. The structured arrays and reply describe the same result.\n12. The output is one valid JSON object using the canonical schema.\n\nALL-USERS SCOPE RULE\n\nWhen all_users_selected is true or analysis_scope is \"usecase\":\n\n- treat the request as an experiment-level or cohort-level request;\n- do not require user_id;\n- do not ask the researcher to select a participant;\n- use Participant Data Expert in aggregate use-case mode;\n- summarize all available users and readings for the selected use case;\n- use Project Context Expert only when architecture or project background was explicitly requested.\n\nA missing user_id is not an error when the selected scope is all users.\n\nALL-USERS SCOPE RULE\n\nWhen all_users_selected is true or analysis_scope is \"usecase\":\n\n- treat the request as an experiment-level or cohort-level request;\n- do not require user_id;\n- do not ask the researcher to select a participant;\n- use Participant Data Expert in aggregate use-case mode;\n- summarize all available users and readings for the selected use case;\n- use Project Context Expert only when architecture or project background was explicitly requested.\n\nA missing user_id is not an error when the selected scope is all users.\n\nFOLLOW-UP QUESTION RULES\n\nWhen the researcher refers to a result from the previous answer using phrases\nsuch as:\n\n- \"the assigned participant\";\n- \"the one participant\";\n- \"who is that user\";\n- \"which mapping is that\";\n- \"what about that participant\";\n\nuse the supplied conversation_history together with the currently selected\nuse case and application scope.\n\nDo not ask the researcher where to look when the selected use case already\nprovides the required scope.\n\nFor questions about participant identities or active assignments, call the\nParticipant Data Expert in use-case mode when all users are selected.\n\nA follow-up question may require rerunning the relevant expert tool to retrieve\ndetails that were not included in the previous reply."
+        }
+      },
+      "id": "02b10567-071a-4183-9fa8-867cef1fade0",
+      "name": "Expert Panel Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2704,
+        448
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "description": "Use this expert for questions about the Smartwatch Haptic project architecture,\ndatabase contract, JavaFX researcher application, n8n workflows, Android app,\nsmartwatch app, component responsibilities, and deterministic mutation\nboundaries. This expert is read-only and retrieves from project documentation.\n\nUse this expert only for explicit questions about the Smartwatch Haptic\nproject architecture, database contract, JavaFX application, n8n workflows,\nAndroid application, smartwatch application, component responsibilities,\nimplementation, or deterministic mutation boundaries.\n\nDo not use this expert for an ordinary summary of the currently selected\nexperiment when the researcher is asking about participants, sensor readings,\nvalues, mappings, assignments, alerts, or feedback burden.\n\nThis expert is read-only and retrieves from project documentation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "HenHDQd9svliW0cZ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/HenHDQd9svliW0cZ",
+          "cachedResultName": "Agent Expert - Project Context"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "usecase_id": "={{ $('Normalize Input').item.json.usecase_id }}",
+            "user_id": "={{ $('Normalize Input').item.json.user_id }}",
+            "session_id": "={{ $('Normalize Input').item.json.session_id }}",
+            "message": "={{ $('Normalize Input').item.json.message }}",
+            "usecase_name": "={{ $('Normalize Input').item.json.usecase_name }}",
+            "context": "={{ $('Normalize Input').item.json.context }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "context",
+              "displayName": "context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2800,
+        784
+      ],
+      "id": "882c0f00-4295-444c-be65-dca43ca3745c",
+      "name": "Project Context Expert"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input =\n  $input.first().json ?? {};\n\nfunction isObject(value) {\n  return (\n    value !== null &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  );\n}\n\nfunction arrayValue(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return [];\n  }\n\n  return [value];\n}\n\nfunction parsePossibleJson(value) {\n  if (isObject(value)) {\n    return value;\n  }\n\n  if (typeof value !== 'string') {\n    return null;\n  }\n\n  let text =\n    value.trim();\n\n  text = text\n    .replace(\n      /^```json\\s*/i,\n      ''\n    )\n    .replace(\n      /^```\\s*/i,\n      ''\n    )\n    .replace(\n      /\\s*```$/i,\n      ''\n    )\n    .trim();\n\n  try {\n    const parsed =\n      JSON.parse(text);\n\n    return isObject(parsed)\n      ? parsed\n      : null;\n  } catch {\n    const firstBrace =\n      text.indexOf('{');\n\n    const lastBrace =\n      text.lastIndexOf('}');\n\n    if (\n      firstBrace >= 0 &&\n      lastBrace > firstBrace\n    ) {\n      try {\n        const parsed =\n          JSON.parse(\n            text.slice(\n              firstBrace,\n              lastBrace + 1\n            )\n          );\n\n        return isObject(parsed)\n          ? parsed\n          : null;\n      } catch {\n        return null;\n      }\n    }\n\n    return null;\n  }\n}\n\nconst candidate =\n  input.reply ??\n  input.output ??\n  input.text ??\n  input.answer ??\n  input.response ??\n  input.result ??\n  input.message ??\n  input;\n\nconst parsed =\n  parsePossibleJson(\n    candidate\n  );\n\nlet reply = '';\n\nif (parsed) {\n  reply =\n    String(\n      parsed.reply ??\n      parsed.output ??\n      parsed.text ??\n      parsed.answer ??\n      parsed.response ??\n      ''\n    ).trim();\n} else if (\n  typeof candidate === 'string'\n) {\n  reply =\n    candidate.trim();\n}\n\nif (!reply) {\n  reply =\n    'The expert panel completed, but it did not return a formatted answer.';\n}\n\nconst citations =\n  arrayValue(\n    parsed?.citations ??\n    input.citations\n  );\n\nconst warnings =\n  arrayValue(\n    parsed?.warnings ??\n    input.warnings\n  );\n\nconst proposals =\n  arrayValue(\n    parsed?.proposals ??\n    input.proposals\n  );\n\nconst recommendedActions =\n  arrayValue(\n    parsed?.recommended_actions ??\n    input.recommended_actions\n  );\n\nconst findings =\n  arrayValue(\n    parsed?.findings ??\n    input.findings\n  );\n\nreturn [{\n  json: {\n    reply,\n\n    citations,\n\n    warnings,\n\n    proposals,\n\n    recommended_actions:\n      recommendedActions,\n\n    findings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        448
+      ],
+      "id": "e6dbce95-1045-4479-92fa-b8d21229ea14",
+      "name": "Format Expert Panel Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json ?? {};\n\nfunction parseObject(value, fallback) {\n  if (value === null || value === undefined || value === '') {\n    return fallback;\n  }\n\n  if (typeof value !== 'string') {\n    return value;\n  }\n\n  try {\n    return JSON.parse(value);\n  } catch {\n    return fallback;\n  }\n}\n\nconst sessionId = String(input.session_id ?? '').trim();\nconst message = String(input.message ?? '').trim();\nconst intent = String(input.intent ?? 'knowledge').trim();\n\nconst usecaseId = Number(input.usecase_id ?? 0);\nconst userId = Number(input.user_id ?? 0);\nconst userMappingId = Number(input.user_mapping_id ?? 0);\n\nconst context =\n  parseObject(\n    input.context,\n    {}\n  );\n\nconst appContext =\n  context &&\n  typeof context.app_context === 'object' &&\n  context.app_context !== null\n    ? context.app_context\n    : {};\n\nconst allUsersSelected =\n  input.all_users_selected === true ||\n  appContext.all_users_selected === true ||\n  String(\n    input.all_users_selected ??\n    appContext.all_users_selected ??\n    ''\n  )\n    .trim()\n    .toLowerCase() === 'true';\n\nconst requestedScope =\n  String(\n    input.analysis_scope ??\n    appContext.analysis_scope ??\n    ''\n  )\n    .trim()\n    .toLowerCase();\n\nconst analysisScope =\n  requestedScope === 'usecase' ||\n  requestedScope === 'participant'\n    ? requestedScope\n    : allUsersSelected\n      ? 'usecase'\n      : 'participant';\n\nconst openArtifacts =\n  parseObject(\n    input.open_artifacts,\n    []\n  );\n\nconst warnings = [];\n\nif (!sessionId) {\n  warnings.push('session_id was not provided.');\n}\n\nif (!message) {\n  warnings.push('message was not provided.');\n}\n\nreturn [{\n  json: {\n    valid: message.length > 0,\n    session_id: sessionId || 'missing-session',\n    message,\n    intent: intent || 'knowledge',\n\n    usecase_id:\n      Number.isInteger(usecaseId) && usecaseId > 0\n        ? usecaseId\n        : null,\n\n    usecase_name:\n      String(input.usecase_name ?? '').trim() || null,\n\n    user_id:\n      Number.isInteger(userId) && userId > 0\n        ? userId\n        : null,\n\n    user_mapping_id:\n      Number.isInteger(userMappingId) && userMappingId > 0\n        ? userMappingId\n        : null,\n\n    all_users_selected:\n  allUsersSelected,\n\nanalysis_scope:\n  analysisScope,\n\n    context:\n      context && typeof context === 'object'\n        ? context\n        : {},\n\n    open_artifacts:\n      Array.isArray(openArtifacts)\n        ? openArtifacts\n        : [],\n\n    input_warnings: warnings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        816
+      ],
+      "id": "7a0e6292-c840-49b6-ba6b-94dabe334164",
+      "name": "Normalize Input"
+    },
+    {
+      "parameters": {
+        "description": "Use this read-only expert only when the researcher explicitly asks to\nbrainstorm, recommend, compare alternatives, personalize, refine, critique,\nor design sensor-to-vibration mapping options.\n\nThis expert returns structured draft proposals.\n\nDo not call this expert for a simple request to list, summarize, or explain\nexisting active mappings. Existing mappings should be retrieved and described\nas current database configurations, not as proposals or drafts.\n\nIt never creates, updates, assigns, activates, deactivates, or deletes mappings.\nAny confirmed mutation must be delegated to Mapping Manager.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9EKshTbQaDjfzoII",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9EKshTbQaDjfzoII",
+          "cachedResultName": "Agent Expert - Mapping Design"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_mapping_id": "={{ $('Normalize Input').first().json.user_mapping_id }}",
+            "session_id": "={{ $('Normalize Input').first().json.session_id }}",
+            "message": "={{ $('Normalize Input').first().json.message }}",
+            "usecase_id": "={{ $('Normalize Input').first().json.usecase_id }}",
+            "usecase_name": "={{ $('Normalize Input').first().json.usecase_name }}",
+            "user_id": "={{ $('Normalize Input').first().json.user_id }}",
+            "context": "={{ $('Normalize Input').first().json.context }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "user_mapping_id",
+              "displayName": "user_mapping_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "context",
+              "displayName": "context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        3216,
+        784
+      ],
+      "id": "8c873682-6441-46a3-8e49-fa6e723a8b44",
+      "name": "Mapping Design Expert"
+    },
+    {
+      "parameters": {
+        "description": "Use this expert for academic and research questions about haptic feedback,\ntactile displays, tactons, sensory substitution, interoception, biofeedback,\nwearable feedback, thermal perception, urgency perception, vibration timing,\nintensity, duration, repetition, and feedback burden.\n\nThis expert retrieves only from the configured academic-literature vector store.\nUse it whenever the researcher asks what studies, papers, or prior research\nsuggest. Preserve every citation object returned by this expert.",
+        "workflowId": {
+          "__rl": true,
+          "value": "NQOmWyt3oOAD4INK",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/NQOmWyt3oOAD4INK",
+          "cachedResultName": "Agent Expert - Literature"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "usecase_id": "={{ $('Normalize Input').item.json.usecase_id }}",
+            "user_id": "={{ $('Normalize Input').item.json.user_id }}",
+            "session_id": "={{ $('Normalize Input').item.json.session_id }}",
+            "message": "={{ $('Normalize Input').item.json.message }}",
+            "usecase_name": "={{ $('Normalize Input').item.json.usecase_name }}",
+            "context": "={{ $('Normalize Input').item.json.context }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "context",
+              "displayName": "context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2944,
+        784
+      ],
+      "id": "c074a263-ac2e-45a9-a578-1eb8a0eab03a",
+      "name": "Agent Expert - Literature"
+    },
+    {
+      "parameters": {
+        "description": "Use the Participant Data Expert for both participant-level and\nexperiment-level analysis.\n\nWhen analysis_scope is \"participant\", a valid user_id is required.\nAnalyze that participant's sensor readings, feedback activity,\nmapping use, and assignment history.\n\nWhen analysis_scope is \"usecase\" or all_users_selected is true,\nuser_id is optional. Analyze the selected use case across all\navailable participants, including sensor-data coverage, participant\ncounts, aggregate values, active mapping assignments, feedback\nactivity, and data-quality limitations.\n\nDo not ask for a participant ID when analysis_scope is \"usecase\".\n\nThis expert is strictly read-only and never creates, assigns,\nactivates, deactivates, or modifies mappings or database records.\n\nPreserve its citations, warnings, participant_assessment, findings,\nand recommended_actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "bsw0Qs8uWn1gGvns",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/bsw0Qs8uWn1gGvns",
+          "cachedResultName": "Agent Expert - Participant Data"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_id": "={{ $('Normalize Input').first().json.user_id }}",
+            "session_id": "={{ $('Normalize Input').first().json.session_id }}",
+            "message": "={{ $('Normalize Input').first().json.message }}",
+            "usecase_id": "={{ $('Normalize Input').first().json.usecase_id }}",
+            "usecase_name": "={{ $('Normalize Input').first().json.usecase_name }}",
+            "user_mapping_id": "={{ $('Normalize Input').first().json.user_mapping_id }}",
+            "context": "={{\n{\n  ...($('Normalize Input').first().json.context ?? {}),\n\n  analysis_scope:\n    $('Normalize Input').first().json.context?.app_context?.analysis_scope\n    ?? 'participant',\n\n  all_users_selected:\n    $('Normalize Input').first().json.context?.app_context?.all_users_selected\n    ?? false\n}\n}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "usecase_id",
+              "displayName": "usecase_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "user_mapping_id",
+              "displayName": "user_mapping_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "context",
+              "displayName": "context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        3072,
+        784
+      ],
+      "id": "e7238978-57be-4ac7-8eb2-2203eeb2867c",
+      "name": "Participant Data Expert"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Expert Panel Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Valid?": {
+      "main": [
+        [
+          {
+            "node": "Expert Panel Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Invalid Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Project Context Expert": {
+      "ai_tool": [
+        [
+          {
+            "node": "Expert Panel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expert Panel Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Expert Panel Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Input Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapping Design Expert": {
+      "ai_tool": [
+        [
+          {
+            "node": "Expert Panel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Expert - Literature": {
+      "ai_tool": [
+        [
+          {
+            "node": "Expert Panel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Participant Data Expert": {
+      "ai_tool": [
+        [
+          {
+            "node": "Expert Panel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "3c47a6f4-cc6d-4da6-adf4-97ea903d1617",
+  "meta": {
+    "templateId": "4402",
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "Ysg7wQKrb2qmmQrm",
+  "tags": []
+}

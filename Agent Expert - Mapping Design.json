@@ -1,0 +1,297 @@
+{
+  "name": "Agent Expert - Mapping Design",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "session_id"
+            },
+            {
+              "name": "message"
+            },
+            {
+              "name": "usecase_id",
+              "type": "number"
+            },
+            {
+              "name": "usecase_name"
+            },
+            {
+              "name": "user_id",
+              "type": "number"
+            },
+            {
+              "name": "user_mapping_id",
+              "type": "number"
+            },
+            {
+              "name": "context",
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dfaf39b9-3454-4dc7-aaf6-a49bd03ff704",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json ?? {};\n\nfunction optionalPositiveInteger(value) {\n  if (value === null || value === undefined || value === '') {\n    return null;\n  }\n\n  const number = Number(value);\n\n  return Number.isInteger(number) && number > 0\n    ? number\n    : null;\n}\n\nfunction parseObject(value) {\n  if (!value) {\n    return {};\n  }\n\n  if (typeof value === 'object') {\n    return value;\n  }\n\n  try {\n    return JSON.parse(value);\n  } catch {\n    return {};\n  }\n}\n\nconst usecaseId = optionalPositiveInteger(input.usecase_id);\nconst userId = optionalPositiveInteger(input.user_id);\nconst mappingId = optionalPositiveInteger(input.user_mapping_id);\n\nconst message = String(input.message ?? '').trim();\nconst warnings = [];\n\nif (!message) {\n  warnings.push('No mapping-design request was provided.');\n}\n\nif (!usecaseId) {\n  warnings.push('No valid use case ID was provided.');\n}\n\nreturn [{\n  json: {\n    valid: Boolean(message && usecaseId),\n\n    session_id:\n      String(input.session_id ?? '').trim() ||\n      'missing-session',\n\n    message,\n\n    usecase_id: usecaseId,\n\n    usecase_name:\n      String(input.usecase_name ?? '').trim() ||\n      null,\n\n    user_id: userId,\n    user_mapping_id: mappingId,\n\n    context: parseObject(input.context),\n\n    input_warnings: warnings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "04083075-feaa-48e7-89f9-439f931ceef3",
+      "name": "Normalize Mapping Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3c1a38bb-454f-458d-924f-dac5122d390c",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0c931fb4-78d1-4f02-bec7-0ee333ad518a",
+      "name": "Mapping Request Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nreturn [{\n  json: {\n    expert: 'mapping_design',\n    success: false,\n    reply:\n      'The Mapping Design Expert needs a request and a selected use case before it can prepare proposals.',\n\n    session_id: input.session_id,\n    citations: [],\n    warnings: input.input_warnings ?? [],\n    proposals: [],\n    recommended_actions: []\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "a3c87da5-30ee-4b8f-9201-05ca903820ba",
+      "name": "Return Mapping Input Warning"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH active_mappings AS (\n    SELECT COALESCE(\n        jsonb_agg(\n            jsonb_build_object(\n                'id', fcr.id,\n                'type', fcr.type,\n                'usecase_id', fcr.usecase_id,\n                'minvalue', fcr.minvalue,\n                'maxvalue', fcr.maxvalue,\n                'minpulses', fcr.minpulses,\n                'maxpulses', fcr.maxpulses,\n                'minintensity', fcr.minintensity,\n                'maxintensity', fcr.maxintensity,\n                'minduration', fcr.minduration,\n                'maxduration', fcr.maxduration,\n                'mininterval', fcr.mininterval,\n                'maxinterval', fcr.maxinterval,\n                'active', fcr.active,\n\n                'historical_assignment_count', (\n                    SELECT COUNT(*)\n                    FROM public.\"User_UC_Mappings\" history\n                    WHERE history.feedback_config_rule_id = fcr.id\n                ),\n\n                'active_assignment_count', (\n                    SELECT COUNT(*)\n                    FROM public.\"User_UC_Mappings\" current_assignment\n                    WHERE current_assignment.feedback_config_rule_id = fcr.id\n                      AND current_assignment.active = true\n                )\n            )\n            ORDER BY\n                fcr.minvalue NULLS FIRST,\n                fcr.id\n        ),\n        '[]'::jsonb\n    ) AS mappings\n    FROM public.feedback_config_rules fcr\n    WHERE fcr.usecase_id = $1\n      AND fcr.active = true\n      AND fcr.id <> 9999\n),\n\nsensor_statistics AS (\n    SELECT\n        ROUND(MIN(sd.value)::numeric, 2) AS min_seen,\n        ROUND(MAX(sd.value)::numeric, 2) AS max_seen,\n        ROUND(AVG(sd.value)::numeric, 2) AS avg_seen,\n        ROUND(STDDEV_POP(sd.value)::numeric, 2) AS stddev_seen,\n        COUNT(*) AS total_readings,\n        MIN(sd.time) AS first_reading_at,\n        MAX(sd.time) AS last_reading_at\n    FROM public.\"SensorData\" sd\n    WHERE sd.usecase_id = $1\n      AND sd.time > NOW() - INTERVAL '30 days'\n      AND (\n          $2::integer IS NULL\n          OR sd.userid = $2::integer\n      )\n),\n\nselected_user_mapping AS (\n    SELECT\n        jsonb_build_object(\n            'assignment_id', uum.id,\n            'user_id', uum.user_id,\n            'mapping_id', uum.feedback_config_rule_id,\n            'active', uum.active,\n            'assigned_at', uum.assigned_at,\n            'deactivated_at', uum.deactivated_at,\n\n            'mapping', jsonb_build_object(\n                'id', fcr.id,\n                'type', fcr.type,\n                'usecase_id', fcr.usecase_id,\n                'minvalue', fcr.minvalue,\n                'maxvalue', fcr.maxvalue,\n                'minpulses', fcr.minpulses,\n                'maxpulses', fcr.maxpulses,\n                'minintensity', fcr.minintensity,\n                'maxintensity', fcr.maxintensity,\n                'minduration', fcr.minduration,\n                'maxduration', fcr.maxduration,\n                'mininterval', fcr.mininterval,\n                'maxinterval', fcr.maxinterval,\n                'active', fcr.active\n            )\n        ) AS assignment\n\n    FROM public.\"User_UC_Mappings\" uum\n\n    JOIN public.feedback_config_rules fcr\n      ON fcr.id = uum.feedback_config_rule_id\n\n    WHERE $2::integer IS NOT NULL\n      AND uum.user_id = $2::integer\n      AND uum.active = true\n      AND fcr.usecase_id = $1\n      AND fcr.id <> 9999\n\n    ORDER BY\n        uum.assigned_at DESC NULLS LAST,\n        uum.id DESC\n\n    LIMIT 1\n)\n\nSELECT\n    uc.usecase_id,\n    uc.name AS usecase_name,\n\n    active_mappings.mappings AS current_mappings,\n\n    jsonb_build_object(\n        'window_days', 30,\n\n        'scope',\n            CASE\n                WHEN $2::integer IS NULL\n                    THEN 'all participants'\n                ELSE 'selected participant'\n            END,\n\n        'user_id', $2::integer,\n        'min_seen', sensor_statistics.min_seen,\n        'max_seen', sensor_statistics.max_seen,\n        'avg_seen', sensor_statistics.avg_seen,\n        'stddev_seen', sensor_statistics.stddev_seen,\n        'total_readings', sensor_statistics.total_readings,\n        'first_reading_at', sensor_statistics.first_reading_at,\n        'last_reading_at', sensor_statistics.last_reading_at\n    ) AS sensor_statistics,\n\n    COALESCE(\n        (\n            SELECT assignment\n            FROM selected_user_mapping\n        ),\n        'null'::jsonb\n    ) AS selected_user_mapping\n\nFROM public.\"UseCase\" uc\n\nCROSS JOIN active_mappings\nCROSS JOIN sensor_statistics\n\nWHERE uc.usecase_id = $1;",
+        "options": {
+          "queryReplacement": "={{ [   $('Normalize Mapping Request').item.json.usecase_id,   $('Normalize Mapping Request').item.json.user_id ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "c52b5be7-51d8-44eb-8fe0-8d3ff48d0919",
+      "name": "DB - Load Mapping Design Context",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $input.first().json ?? {};\nconst request =\n  $('Normalize Mapping Request').first().json ?? {};\n\nfunction parseJsonValue(value, fallback) {\n  if (value === null || value === undefined) {\n    return fallback;\n  }\n\n  if (typeof value === 'object') {\n    return value;\n  }\n\n  try {\n    return JSON.parse(value);\n  } catch {\n    return fallback;\n  }\n}\n\nconst currentMappings = parseJsonValue(\n  row.current_mappings,\n  []\n);\n\nconst sensorStatistics = parseJsonValue(\n  row.sensor_statistics,\n  {}\n);\n\nconst selectedUserMapping = parseJsonValue(\n  row.selected_user_mapping,\n  null\n);\n\nconst warnings = [\n  ...(request.input_warnings ?? [])\n];\n\nif (!row.usecase_id) {\n  warnings.push(\n    `Use case ${request.usecase_id} was not found.`\n  );\n}\n\nif (!Array.isArray(currentMappings) || currentMappings.length === 0) {\n  warnings.push(\n    'No active mappings were found for the selected use case.'\n  );\n}\n\nconst totalReadings = Number(\n  sensorStatistics?.total_readings ?? 0\n);\n\nif (totalReadings === 0) {\n  warnings.push(\n    'No recent sensor readings were found for the selected scope. Proposals must therefore be treated as conceptual drafts.'\n  );\n}\n\nreturn [{\n  json: {\n    session_id: request.session_id,\n    message: request.message,\n\n    usecase_id:\n      Number(row.usecase_id ?? request.usecase_id),\n\n    usecase_name:\n      row.usecase_name ??\n      request.usecase_name ??\n      null,\n\n    user_id: request.user_id,\n    user_mapping_id: request.user_mapping_id,\n\n    context: request.context ?? {},\n\n    current_mappings:\n      Array.isArray(currentMappings)\n        ? currentMappings\n        : [],\n\n    sensor_statistics: sensorStatistics ?? {},\n\n    selected_user_mapping:\n      selectedUserMapping &&\n      typeof selectedUserMapping === 'object'\n        ? selectedUserMapping\n        : null,\n\n    context_warnings: warnings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "16f09b0e-17d2-4e69-b1ce-c006b189dae9",
+      "name": "Package Mapping Design Context"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{\n\"You are the read-only Mapping Design Expert for the Smartwatch Haptic research system.\\n\\n\" +\n\n\"Your role is to propose and critique draft sensor-to-vibration mappings. \" +\n\"You must never claim to create, save, assign, activate, deactivate, delete, \" +\n\"or modify a mapping. All proposals are drafts that require explicit researcher \" +\n\"confirmation and later deterministic processing by Mapping Manager.\\n\\n\" +\n\n\"Important design rules:\\n\" +\n\"1. Mapping ID 9999 is a protected fallback and must never be proposed for modification.\\n\" +\n\"2. Do not make medical, diagnostic, or clinical claims.\\n\" +\n\"3. Do not describe mappings as alerts for danger, health concerns, medical events, \" +\n\"or situations requiring immediate attention.\\n\" +\n\"4. Describe differences using noticeability, interruption level, feedback strength, \" +\n\"interpretability, and possible feedback burden.\\n\" +\n\"5. Use only the supplied database context. Do not invent existing mappings, \" +\n\"sensor statistics, assignments, or database records.\\n\" +\n\"6. Every proposal must include all ten mapping parameters.\\n\" +\n\"7. The sensor range must satisfy minvalue < maxvalue.\\n\" +\n\"8. Pulse, intensity, duration, and interval values must be numeric and non-negative.\\n\" +\n\"9. Do not automatically reorder min/max haptic parameters. Duration or interval \" +\n\"may intentionally decrease as sensor values increase.\\n\" +\n\"10. Explain overlaps, gaps, noticeability differences, burden risks, and tradeoffs.\\n\" +\n\"11. When recent sensor data is absent, state that proposals are conceptual and \" +\n\"must not be presented as data-derived personalization.\\n\" +\n\"12. Produce between one and three proposals depending on the request.\\n\" +\n\"13. Do not include Markdown code fences.\\n\\n\" +\n\n\"Return exactly one valid JSON object using this structure:\\n\" +\nJSON.stringify({\n  reply:\n    \"Plain-language summary that explicitly states nothing was saved or assigned.\",\n  warnings: [],\n  proposals: [\n    {\n      proposal_id: \"p1\",\n      label: \"Short descriptive label\",\n      params: {\n        minvalue: 0,\n        maxvalue: 0,\n        minpulses: 0,\n        maxpulses: 0,\n        minintensity: 0,\n        maxintensity: 0,\n        minduration: 0,\n        maxduration: 0,\n        mininterval: 0,\n        maxinterval: 0\n      },\n      rationale:\n        \"Why this draft fits the researcher request and supplied context.\",\n      tradeoffs: [\n        \"A concrete noticeability, interruption, interpretability, or burden tradeoff\"\n      ],\n      warnings: [],\n      source_refs: []\n    }\n  ],\n  recommended_actions: [\n    {\n      action: \"review_proposal\",\n      proposal_id: \"p1\",\n      label: \"Review this draft\"\n    }\n  ]\n}, null, 2) +\n\n\"\\n\\nResearcher request:\\n\" +\n$json.message +\n\n\"\\n\\nSelected use case:\\n\" +\nJSON.stringify({\n  usecase_id: $json.usecase_id,\n  usecase_name: $json.usecase_name\n}, null, 2) +\n\n\"\\n\\nSelected participant context:\\n\" +\nJSON.stringify({\n  user_id: $json.user_id,\n  current_assignment: $json.selected_user_mapping\n}, null, 2) +\n\n\"\\n\\nCurrent active mappings:\\n\" +\nJSON.stringify(\n  $json.current_mappings ?? [],\n  null,\n  2\n) +\n\n\"\\n\\nRecent sensor statistics:\\n\" +\nJSON.stringify(\n  $json.sensor_statistics ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nAdditional application context:\\n\" +\nJSON.stringify(\n  $json.context ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nExisting context warnings:\\n\" +\nJSON.stringify(\n  $json.context_warnings ?? [],\n  null,\n  2\n)\n}}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1008,
+        -96
+      ],
+      "id": "50d28a2c-3d0c-4ae0-b470-850aaea6ad54",
+      "name": "Generate Mapping Proposals"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        80
+      ],
+      "id": "43a54062-5771-4ee1-a56e-5d230b0a7626",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json ?? {};\n\nconst context =\n  $('Package Mapping Design Context').first().json ?? {};\n\n/**\n * Helpers\n */\nfunction parseJsonValue(value, fallback) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return fallback;\n  }\n\n  if (typeof value === 'object') {\n    return value;\n  }\n\n  try {\n    return JSON.parse(value);\n  } catch {\n    return fallback;\n  }\n}\n\nfunction parseModelResponse(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  let text = String(value ?? '').trim();\n\n  text = text\n    .replace(/^```json\\s*/i, '')\n    .replace(/^```\\s*/i, '')\n    .replace(/\\s*```$/i, '')\n    .trim();\n\n  try {\n    return JSON.parse(text);\n  } catch {\n    return {\n      reply: text,\n      warnings: [\n        'The Mapping Design Expert did not return valid structured JSON.'\n      ],\n      proposals: [],\n      recommended_actions: []\n    };\n  }\n}\n\nfunction arrayValue(value) {\n  const parsed = parseJsonValue(value, []);\n\n  return Array.isArray(parsed)\n    ? parsed\n    : [];\n}\n\nfunction objectValue(value) {\n  const parsed = parseJsonValue(value, {});\n\n  return (\n    parsed &&\n    typeof parsed === 'object' &&\n    !Array.isArray(parsed)\n  )\n    ? parsed\n    : {};\n}\n\nfunction objectArray(value) {\n  return arrayValue(value).filter(\n    item =>\n      item &&\n      typeof item === 'object' &&\n      !Array.isArray(item)\n  );\n}\n\nfunction stringArray(value) {\n  return arrayValue(value)\n    .filter(\n      item =>\n        item !== null &&\n        item !== undefined &&\n        String(item).trim() !== ''\n    )\n    .map(item => String(item).trim());\n}\n\nfunction numberOrNull(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number = Number(value);\n\n  return Number.isFinite(number)\n    ? number\n    : null;\n}\n\n/**\n * Parse the Basic LLM Chain result.\n */\nconst candidate =\n  raw.text ??\n  raw.output ??\n  raw.response ??\n  raw.answer ??\n  raw.result ??\n  raw.reply ??\n  raw;\n\nconst parsed =\n  parseModelResponse(candidate);\n\n/**\n * Read deterministic context produced before the LLM.\n */\nconst currentMappings =\n  arrayValue(context.current_mappings);\n\nconst sensorStatistics =\n  objectValue(context.sensor_statistics);\n\nconst selectedUserMapping =\n  context.selected_user_mapping &&\n  typeof context.selected_user_mapping === 'object' &&\n  !Array.isArray(context.selected_user_mapping)\n    ? context.selected_user_mapping\n    : null;\n\nconst selectedMapping =\n  selectedUserMapping?.mapping &&\n  typeof selectedUserMapping.mapping === 'object' &&\n  !Array.isArray(selectedUserMapping.mapping)\n    ? selectedUserMapping.mapping\n    : null;\n\n/**\n * Extract database identifiers.\n */\nconst currentMappingIds = [\n  ...new Set(\n    currentMappings\n      .map(mapping =>\n        numberOrNull(mapping?.id)\n      )\n      .filter(id => id !== null)\n  )\n];\n\nconst selectedMappingId =\n  numberOrNull(\n    selectedMapping?.id ??\n    selectedUserMapping?.mapping_id\n  );\n\nconst selectedAssignmentId =\n  numberOrNull(\n    selectedUserMapping?.assignment_id\n  );\n\nconst usecaseId =\n  numberOrNull(context.usecase_id);\n\nconst userId =\n  numberOrNull(context.user_id);\n\nconst totalReadings =\n  Number(\n    sensorStatistics.total_readings ?? 0\n  );\n\n/**\n * Build trustworthy database references.\n *\n * Model-generated source_refs are intentionally ignored.\n */\nconst evidenceRefs = [];\n\nif (currentMappingIds.length > 0) {\n  evidenceRefs.push({\n    type: 'database_context',\n    source: 'feedback_config_rules',\n    reference:\n      `Active use-case mapping IDs used for comparison: ${currentMappingIds.join(', ')}`\n  });\n}\n\nif (selectedMappingId !== null) {\n  evidenceRefs.push({\n    type: 'database_context',\n    source: 'User_UC_Mappings',\n    reference:\n      `Selected participant's current mapping ID: ${selectedMappingId}` +\n      (\n        selectedAssignmentId !== null\n          ? `; assignment ID: ${selectedAssignmentId}`\n          : ''\n      )\n  });\n}\n\nif (totalReadings > 0) {\n  evidenceRefs.push({\n    type: 'database_context',\n    source: 'SensorData',\n    reference:\n      `Recent ${Number(sensorStatistics.window_days ?? 30)}-day sample: ` +\n      `${totalReadings} readings; observed range ` +\n      `${sensorStatistics.min_seen ?? 'unknown'}–` +\n      `${sensorStatistics.max_seen ?? 'unknown'}`\n  });\n}\n\n/**\n * Build top-level deterministic citations.\n */\nconst citations = [];\n\nconst allMappingIds = [\n  ...new Set([\n    ...currentMappingIds,\n    ...(\n      selectedMappingId !== null\n        ? [selectedMappingId]\n        : []\n    )\n  ])\n];\n\nif (allMappingIds.length > 0) {\n  citations.push({\n    type: 'database',\n    source: 'feedback_config_rules',\n    record_ids: allMappingIds,\n    usecase_id: usecaseId,\n    expert: 'mapping_design'\n  });\n}\n\nif (\n  selectedAssignmentId !== null ||\n  selectedMappingId !== null\n) {\n  citations.push({\n    type: 'database',\n    source: 'User_UC_Mappings',\n    assignment_id: selectedAssignmentId,\n    user_id: userId,\n    mapping_id: selectedMappingId,\n    usecase_id: usecaseId,\n    expert: 'mapping_design'\n  });\n}\n\nif (totalReadings > 0) {\n  citations.push({\n    type: 'database',\n    source: 'SensorData',\n    usecase_id: usecaseId,\n    user_id: userId,\n    window_days:\n      Number(\n        sensorStatistics.window_days ?? 30\n      ),\n    total_readings: totalReadings,\n    expert: 'mapping_design'\n  });\n}\n\n/**\n * Validate proposals.\n */\nconst requiredParamNames = [\n  'minvalue',\n  'maxvalue',\n  'minpulses',\n  'maxpulses',\n  'minintensity',\n  'maxintensity',\n  'minduration',\n  'maxduration',\n  'mininterval',\n  'maxinterval'\n];\n\nconst hapticParamNames = [\n  'minpulses',\n  'maxpulses',\n  'minintensity',\n  'maxintensity',\n  'minduration',\n  'maxduration',\n  'mininterval',\n  'maxinterval'\n];\n\nconst validationWarnings = [];\n\nconst proposals =\n  objectArray(parsed.proposals)\n    .slice(0, 3)\n    .map((proposal, index) => {\n      const proposalId =\n        `p${index + 1}`;\n\n      const rawParams =\n        proposal?.params &&\n        typeof proposal.params === 'object' &&\n        !Array.isArray(proposal.params)\n          ? proposal.params\n          : {};\n\n      const params = {};\n\n      for (const name of requiredParamNames) {\n        params[name] =\n          numberOrNull(rawParams[name]);\n      }\n\n      const proposalWarnings =\n        stringArray(proposal?.warnings);\n\n      const missingParams =\n        requiredParamNames.filter(\n          name => params[name] === null\n        );\n\n      if (missingParams.length > 0) {\n        const warning =\n          `${proposalId} is missing numeric parameters: ` +\n          `${missingParams.join(', ')}.`;\n\n        proposalWarnings.push(warning);\n        validationWarnings.push(warning);\n      }\n\n      if (\n        params.minvalue !== null &&\n        params.maxvalue !== null &&\n        params.minvalue >= params.maxvalue\n      ) {\n        const warning =\n          `${proposalId} has an invalid sensor range: ` +\n          'minvalue must be lower than maxvalue.';\n\n        proposalWarnings.push(warning);\n        validationWarnings.push(warning);\n      }\n\n      const negativeParams =\n        hapticParamNames.filter(\n          name =>\n            params[name] !== null &&\n            params[name] < 0\n        );\n\n      if (negativeParams.length > 0) {\n        const warning =\n          `${proposalId} contains negative haptic parameters: ` +\n          `${negativeParams.join(', ')}.`;\n\n        proposalWarnings.push(warning);\n        validationWarnings.push(warning);\n      }\n\n      return {\n        proposal_id: proposalId,\n\n        label:\n          String(\n            proposal?.label ??\n            `Mapping option ${index + 1}`\n          ).trim(),\n\n        params,\n\n        rationale:\n          String(\n            proposal?.rationale ?? ''\n          ).trim(),\n\n        tradeoffs:\n          stringArray(proposal?.tradeoffs),\n\n        warnings: [\n          ...new Set(proposalWarnings)\n        ],\n\n        /**\n         * Always use deterministic references,\n         * not the model-generated references.\n         */\n        source_refs:\n          evidenceRefs.map(\n            reference => ({ ...reference })\n          )\n      };\n    });\n\n/**\n * Normalize recommended actions.\n */\nconst validProposalIds =\n  new Set(\n    proposals.map(\n      proposal => proposal.proposal_id\n    )\n  );\n\nconst modelActions =\n  objectArray(\n    parsed.recommended_actions ??\n    parsed.recommendedActions ??\n    parsed.actions\n  );\n\nconst actionsByProposal =\n  new Map();\n\nfor (const action of modelActions) {\n  const proposalId =\n    String(\n      action?.proposal_id ?? ''\n    ).trim();\n\n  if (\n    !proposalId ||\n    !validProposalIds.has(proposalId) ||\n    actionsByProposal.has(proposalId)\n  ) {\n    continue;\n  }\n\n  actionsByProposal.set(\n    proposalId,\n    {\n      action:\n        String(\n          action.action ??\n          'review_proposal'\n        ).trim(),\n\n      proposal_id: proposalId,\n\n      label:\n        String(\n          action.label ??\n          'Review this draft'\n        ).trim()\n    }\n  );\n}\n\n/**\n * Guarantee one action for every proposal.\n */\nfor (const proposal of proposals) {\n  if (!actionsByProposal.has(proposal.proposal_id)) {\n    actionsByProposal.set(\n      proposal.proposal_id,\n      {\n        action: 'review_proposal',\n        proposal_id: proposal.proposal_id,\n        label: 'Review this draft'\n      }\n    );\n  }\n}\n\nconst recommendedActions =\n  [...actionsByProposal.values()];\n\n/**\n * Normalize warnings.\n */\nconst allWarnings = [\n  ...stringArray(context.context_warnings),\n  ...stringArray(parsed.warnings),\n  ...validationWarnings\n];\n\n/**\n * Warn when the current participant mapping has\n * an incomplete sensor range.\n */\nif (\n  selectedMapping &&\n  (\n    selectedMapping.minvalue === null ||\n    selectedMapping.minvalue === undefined ||\n    selectedMapping.maxvalue === null ||\n    selectedMapping.maxvalue === undefined\n  )\n) {\n  allWarnings.push(\n    `The selected participant's mapping ${selectedMappingId ?? ''} ` +\n    'does not define a complete sensor-value range.'\n  );\n}\n\nconst hasMissingSensorWarning =\n  totalReadings === 0 ||\n  allWarnings.some(warning =>\n    /no recent sensor readings/i.test(warning)\n  );\n\nconst warnings = [\n  ...new Set(\n    allWarnings\n      .filter(Boolean)\n      .map(String)\n      .filter(\n        warning =>\n          !/no recent sensor readings/i.test(warning)\n      )\n  )\n];\n\nif (hasMissingSensorWarning) {\n  warnings.unshift(\n    'No recent sensor readings were found for the selected scope. ' +\n    'These proposals are conceptual drafts and are not based on ' +\n    'recent participant sensor data.'\n  );\n}\n\n/**\n * Construct the reply.\n */\nlet reply =\n  String(\n    parsed.reply ??\n    parsed.answer ??\n    parsed.message ??\n    ''\n  ).trim();\n\nif (!reply) {\n  reply =\n    proposals.length > 0\n      ? `I prepared ${proposals.length} read-only mapping draft proposals.`\n      : 'The Mapping Design Expert could not prepare valid mapping proposals.';\n}\n\n/**\n * Avoid language that implies database persistence.\n */\nreply = reply\n  .replace(\n    /\\b(?:have|has)\\s+been\\s+created\\b/gi,\n    'are presented'\n  )\n  .replace(\n    /\\bwere\\s+created\\b/gi,\n    'are presented'\n  )\n  .replace(\n    /\\bcreated\\s+for\\s+review\\b/gi,\n    'presented for review'\n  );\n\nconst statesNoMutation =\n  /nothing was saved|not saved|nothing was assigned|not assigned|nothing was changed|no changes were made|read-only/i\n    .test(reply);\n\nif (!statesNoMutation) {\n  reply +=\n    '\\n\\nNothing was saved, assigned, activated, or changed.';\n}\n\nconst success =\n  parsed.success !== false &&\n  proposals.length > 0 &&\n  validationWarnings.length === 0;\n\nreturn [{\n  json: {\n    expert: 'mapping_design',\n    success,\n    reply,\n\n    session_id:\n      context.session_id ?? null,\n\n    citations,\n    warnings,\n    proposals,\n\n    recommended_actions:\n      recommendedActions\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        -96
+      ],
+      "id": "91881a28-f1b9-4135-8e99-79ed24a6c67d",
+      "name": "Format Mapping Design Result"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Normalize Mapping Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Mapping Request": {
+      "main": [
+        [
+          {
+            "node": "Mapping Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapping Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "DB - Load Mapping Design Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Mapping Input Warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - Load Mapping Design Context": {
+      "main": [
+        [
+          {
+            "node": "Package Mapping Design Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Package Mapping Design Context": {
+      "main": [
+        [
+          {
+            "node": "Generate Mapping Proposals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Mapping Proposals",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Mapping Proposals": {
+      "main": [
+        [
+          {
+            "node": "Format Mapping Design Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "2b505d44-89d6-4d4f-9b41-fca2a92474e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "9EKshTbQaDjfzoII",
+  "tags": []
+}

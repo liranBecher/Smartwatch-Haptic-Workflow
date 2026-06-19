@@ -1,0 +1,424 @@
+{
+  "name": "Agent Expert - Participant Data",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "session_id"
+            },
+            {
+              "name": "message"
+            },
+            {
+              "name": "usecase_id",
+              "type": "number"
+            },
+            {
+              "name": "usecase_name"
+            },
+            {
+              "name": "user_id",
+              "type": "number"
+            },
+            {
+              "name": "user_mapping_id",
+              "type": "number"
+            },
+            {
+              "name": "context",
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        128
+      ],
+      "id": "8ca018d4-196d-439f-af20-debb183b15b0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1216,
+        320
+      ],
+      "id": "d6c05d96-f638-4c50-95ef-6588c9c65369",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json ?? {};\n\nfunction optionalPositiveInteger(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number = Number(value);\n\n  return Number.isInteger(number) && number > 0\n    ? number\n    : null;\n}\n\nfunction parseObject(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed = JSON.parse(value);\n\n      return (\n        parsed &&\n        typeof parsed === 'object' &&\n        !Array.isArray(parsed)\n      )\n        ? parsed\n        : {};\n    } catch {\n      return {};\n    }\n  }\n\n  return {};\n}\n\nfunction parseBoolean(value) {\n  if (value === true) {\n    return true;\n  }\n\n  if (value === false) {\n    return false;\n  }\n\n  const normalized = String(value ?? '')\n    .trim()\n    .toLowerCase();\n\n  return (\n    normalized === 'true' ||\n    normalized === '1' ||\n    normalized === 'yes'\n  );\n}\n\n/*\n * Basic request fields\n */\nconst sessionId =\n  String(input.session_id ?? '').trim() ||\n  'missing-session';\n\nconst message =\n  String(input.message ?? '').trim();\n\nconst usecaseId =\n  optionalPositiveInteger(input.usecase_id);\n\nconst userId =\n  optionalPositiveInteger(input.user_id);\n\nconst userMappingId =\n  optionalPositiveInteger(input.user_mapping_id);\n\nconst usecaseName =\n  String(input.usecase_name ?? '').trim() ||\n  null;\n\n/*\n * Read deterministic application context.\n *\n * The scope may exist:\n * 1. directly on the workflow input;\n * 2. inside context;\n * 3. inside context.app_context.\n */\nconst originalContext =\n  parseObject(input.context);\n\nconst appContext =\n  parseObject(originalContext.app_context);\n\nconst allUsersSelected =\n  parseBoolean(input.all_users_selected) ||\n  parseBoolean(originalContext.all_users_selected) ||\n  parseBoolean(appContext.all_users_selected);\n\nconst requestedScope =\n  String(\n    input.analysis_scope ??\n    originalContext.analysis_scope ??\n    appContext.analysis_scope ??\n    ''\n  )\n    .trim()\n    .toLowerCase();\n\n/*\n * Scope is deterministic.\n *\n * usecase:\n *   analyze the selected experiment across all users.\n *\n * participant:\n *   analyze one selected participant.\n */\nconst analysisScope =\n  requestedScope === 'usecase' ||\n  requestedScope === 'participant'\n    ? requestedScope\n    : allUsersSelected\n      ? 'usecase'\n      : 'participant';\n\n/*\n * In use-case scope, ignore any accidental participant ID.\n * This prevents an All Users request from being narrowed to one user.\n */\nconst normalizedUserId =\n  analysisScope === 'participant'\n    ? userId\n    : null;\n\n/*\n * Preserve the original context while making the resolved\n * scope easy for downstream nodes to access.\n */\nconst normalizedContext = {\n  ...originalContext,\n\n  analysis_scope:\n    analysisScope,\n\n  all_users_selected:\n    allUsersSelected,\n\n  app_context: {\n    ...appContext,\n\n    selected_usecase_id:\n      appContext.selected_usecase_id ??\n      usecaseId,\n\n    selected_usecase_name:\n      appContext.selected_usecase_name ??\n      usecaseName,\n\n    selected_user_id:\n      analysisScope === 'participant'\n        ? (\n            appContext.selected_user_id ??\n            normalizedUserId\n          )\n        : null,\n\n    selected_user_mapping_id:\n      appContext.selected_user_mapping_id ??\n      userMappingId,\n\n    analysis_scope:\n      analysisScope,\n\n    all_users_selected:\n      allUsersSelected\n  }\n};\n\n/*\n * Validate according to the resolved scope.\n */\nconst warnings = [];\n\nif (!message) {\n  warnings.push(\n    'No participant or experiment analysis request was provided.'\n  );\n}\n\nif (!usecaseId) {\n  warnings.push(\n    'No valid use case ID was provided.'\n  );\n}\n\nif (\n  analysisScope === 'participant' &&\n  !normalizedUserId\n) {\n  warnings.push(\n    'No valid participant user ID was provided for participant-level analysis.'\n  );\n}\n\n/*\n * A user ID is required only in participant mode.\n * It is intentionally optional in use-case mode.\n */\nconst valid =\n  Boolean(\n    message &&\n    usecaseId &&\n    (\n      analysisScope === 'usecase' ||\n      normalizedUserId\n    )\n  );\n\nreturn [{\n  json: {\n    valid,\n\n    session_id:\n      sessionId,\n\n    message,\n\n    usecase_id:\n      usecaseId,\n\n    usecase_name:\n      usecaseName,\n\n    user_id:\n      normalizedUserId,\n\n    user_mapping_id:\n      userMappingId,\n\n    analysis_scope:\n      analysisScope,\n\n    all_users_selected:\n      allUsersSelected,\n\n    context:\n      normalizedContext,\n\n    input_warnings:\n      warnings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        128
+      ],
+      "id": "6dc56b7f-2b91-450d-ab4c-696727cf4dbc",
+      "name": "Normalize Participant Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3c1a38bb-454f-458d-924f-dac5122d390c",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        128
+      ],
+      "id": "6a172c10-0e0f-472d-9cd4-d87f84738189",
+      "name": "Participant Request Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json ?? {};\n\nreturn [{\n  json: {\n    expert: 'participant_data',\n    success: false,\n\n    reply:\n      'The Participant Data Expert needs a participant, a selected use case, and a request before it can perform an analysis.',\n\n    session_id:\n      input.session_id ?? null,\n\n    citations: [],\n\n    warnings:\n      input.input_warnings ?? [],\n\n    proposals: [],\n    recommended_actions: [],\n\n    participant_assessment: null,\n    findings: []\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        368
+      ],
+      "id": "3dc8cfe2-e87e-4b53-9e41-7306a7b6e553",
+      "name": "Return Participant Input Warning"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH selected_user AS (\n    SELECT\n        u.userid,\n        u.fname,\n        u.lname,\n        u.lastrequest\n    FROM public.\"User\" u\n    WHERE u.userid = $2\n),\n\nselected_usecase AS (\n    SELECT\n        uc.usecase_id,\n        uc.name,\n        uc.description\n    FROM public.\"UseCase\" uc\n    WHERE uc.usecase_id = $1\n),\n\nparticipant_events AS (\n    SELECT\n        sd.id AS sensor_data_id,\n        sd.userid,\n        sd.usecase_id,\n        sd.value,\n        sd.time,\n        sd.alertid,\n\n        a.alertgiven,\n        a.intensity,\n        a.pulses,\n        a.duration,\n        a.\"interval\" AS vibration_interval,\n        a.type AS alert_type,\n        a.fbrangeid,\n        a.vibration_reason\n\n    FROM public.\"SensorData\" sd\n\n    LEFT JOIN public.\"Alert\" a\n      ON a.alertid = sd.alertid\n\n    WHERE sd.userid = $2\n      AND sd.usecase_id = $1\n      AND sd.time >= NOW() - INTERVAL '30 days'\n),\n\nparticipant_stats AS (\n    SELECT\n        COUNT(*)::integer AS total_readings,\n\n        ROUND(\n            MIN(pe.value)::numeric,\n            2\n        ) AS min_seen,\n\n        ROUND(\n            MAX(pe.value)::numeric,\n            2\n        ) AS max_seen,\n\n        ROUND(\n            AVG(pe.value)::numeric,\n            2\n        ) AS avg_seen,\n\n        ROUND(\n            STDDEV_POP(pe.value)::numeric,\n            2\n        ) AS stddev_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.10)\n            WITHIN GROUP (ORDER BY pe.value)::numeric,\n            2\n        ) AS p10_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.50)\n            WITHIN GROUP (ORDER BY pe.value)::numeric,\n            2\n        ) AS median_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.90)\n            WITHIN GROUP (ORDER BY pe.value)::numeric,\n            2\n        ) AS p90_seen,\n\n        MIN(pe.time) AS first_reading_at,\n        MAX(pe.time) AS last_reading_at,\n\n        COUNT(\n            DISTINCT pe.time::date\n        )::integer AS active_days\n\n    FROM participant_events pe\n),\n\nrecent_7d_stats AS (\n    SELECT\n        COUNT(*)::integer AS total_readings,\n\n        ROUND(\n            MIN(pe.value)::numeric,\n            2\n        ) AS min_seen,\n\n        ROUND(\n            MAX(pe.value)::numeric,\n            2\n        ) AS max_seen,\n\n        ROUND(\n            AVG(pe.value)::numeric,\n            2\n        ) AS avg_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.50)\n            WITHIN GROUP (ORDER BY pe.value)::numeric,\n            2\n        ) AS median_seen,\n\n        COUNT(\n            DISTINCT pe.time::date\n        )::integer AS active_days\n\n    FROM participant_events pe\n\n    WHERE pe.time >=\n          NOW() - INTERVAL '7 days'\n),\n\ndaily_feedback AS (\n    SELECT\n        pe.time::date AS event_date,\n\n        COUNT(*)::integer AS readings,\n\n        COUNT(*) FILTER (\n            WHERE pe.alertgiven = 'yes'\n        )::integer AS feedback_events,\n\n        COUNT(*) FILTER (\n            WHERE pe.fbrangeid = 9999\n        )::integer AS fallback_events\n\n    FROM participant_events pe\n\n    GROUP BY pe.time::date\n),\n\nfeedback_summary AS (\n    SELECT\n        COUNT(*)::integer AS sensor_event_rows,\n\n        COUNT(pe.alertid)::integer AS alert_records,\n\n        COUNT(*) FILTER (\n            WHERE pe.alertgiven = 'yes'\n        )::integer AS feedback_events,\n\n        COUNT(*) FILTER (\n            WHERE pe.alertgiven = 'no'\n        )::integer AS no_feedback_events,\n\n        ROUND(\n            (\n                100.0 *\n                COUNT(*) FILTER (\n                    WHERE pe.alertgiven = 'yes'\n                ) /\n                NULLIF(COUNT(*), 0)\n            )::numeric,\n            2\n        ) AS feedback_event_rate_percent,\n\n        ROUND(\n            (\n                COUNT(*) FILTER (\n                    WHERE pe.alertgiven = 'yes'\n                )::numeric /\n                NULLIF(\n                    COUNT(DISTINCT pe.time::date),\n                    0\n                )\n            ),\n            2\n        ) AS feedback_events_per_active_day,\n\n        COALESCE(\n            (\n                SELECT MAX(df.feedback_events)\n                FROM daily_feedback df\n            ),\n            0\n        )::integer AS max_feedback_events_in_day,\n\n        COUNT(*) FILTER (\n            WHERE pe.fbrangeid = 9999\n        )::integer AS fallback_event_count,\n\n        COUNT(*) FILTER (\n            WHERE pe.vibration_reason = 'rate_limited'\n        )::integer AS rate_limited_count,\n\n        COUNT(DISTINCT pe.fbrangeid) FILTER (\n            WHERE pe.fbrangeid IS NOT NULL\n        )::integer AS distinct_mapping_ids_used,\n\n        ROUND(\n            (\n                AVG(pe.pulses) FILTER (\n                    WHERE pe.alertgiven = 'yes'\n                )\n            )::numeric,\n            2\n        ) AS avg_pulses,\n\n        ROUND(\n            (\n                AVG(pe.intensity) FILTER (\n                    WHERE pe.alertgiven = 'yes'\n                )\n            )::numeric,\n            2\n        ) AS avg_intensity,\n\n        ROUND(\n            (\n                AVG(pe.duration) FILTER (\n                    WHERE pe.alertgiven = 'yes'\n                )\n            )::numeric,\n            2\n        ) AS avg_duration,\n\n        ROUND(\n            (\n                AVG(pe.vibration_interval) FILTER (\n                    WHERE pe.alertgiven = 'yes'\n                )\n            )::numeric,\n            2\n        ) AS avg_interval\n\n    FROM participant_events pe\n),\n\ncohort_events AS (\n    SELECT\n        sd.userid,\n        sd.value,\n        sd.time,\n        a.alertgiven\n\n    FROM public.\"SensorData\" sd\n\n    LEFT JOIN public.\"Alert\" a\n      ON a.alertid = sd.alertid\n\n    WHERE sd.usecase_id = $1\n      AND sd.time >= NOW() - INTERVAL '30 days'\n),\n\ncohort_summary AS (\n    SELECT\n        COUNT(*)::integer AS total_readings,\n\n        COUNT(\n            DISTINCT ce.userid\n        )::integer AS participant_count,\n\n        ROUND(\n            AVG(ce.value)::numeric,\n            2\n        ) AS avg_seen,\n\n        ROUND(\n            STDDEV_POP(ce.value)::numeric,\n            2\n        ) AS stddev_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.10)\n            WITHIN GROUP (ORDER BY ce.value)::numeric,\n            2\n        ) AS p10_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.50)\n            WITHIN GROUP (ORDER BY ce.value)::numeric,\n            2\n        ) AS median_seen,\n\n        ROUND(\n            PERCENTILE_CONT(0.90)\n            WITHIN GROUP (ORDER BY ce.value)::numeric,\n            2\n        ) AS p90_seen,\n\n        ROUND(\n            (\n                100.0 *\n                COUNT(*) FILTER (\n                    WHERE ce.alertgiven = 'yes'\n                ) /\n                NULLIF(COUNT(*), 0)\n            )::numeric,\n            2\n        ) AS feedback_event_rate_percent\n\n    FROM cohort_events ce\n),\n\nglobal_active_assignment AS (\n    SELECT\n        jsonb_build_object(\n            'assignment_id', uum.id,\n            'user_id', uum.user_id,\n            'mapping_id',\n                uum.feedback_config_rule_id,\n            'active', uum.active,\n            'assigned_at', uum.assigned_at,\n            'deactivated_at',\n                uum.deactivated_at,\n\n            'mapping', jsonb_build_object(\n                'id', fcr.id,\n                'type', fcr.type,\n                'usecase_id', fcr.usecase_id,\n                'usecase_name', mapping_uc.name,\n\n                'minvalue', fcr.minvalue,\n                'maxvalue', fcr.maxvalue,\n                'minpulses', fcr.minpulses,\n                'maxpulses', fcr.maxpulses,\n                'minintensity', fcr.minintensity,\n                'maxintensity', fcr.maxintensity,\n                'minduration', fcr.minduration,\n                'maxduration', fcr.maxduration,\n                'mininterval', fcr.mininterval,\n                'maxinterval', fcr.maxinterval\n            )\n        ) AS assignment\n\n    FROM public.\"User_UC_Mappings\" uum\n\n    JOIN public.feedback_config_rules fcr\n      ON fcr.id =\n         uum.feedback_config_rule_id\n\n    LEFT JOIN public.\"UseCase\" mapping_uc\n      ON mapping_uc.usecase_id =\n         fcr.usecase_id\n\n    WHERE uum.user_id = $2\n      AND uum.active = true\n\n    ORDER BY\n        uum.assigned_at DESC NULLS LAST,\n        uum.id DESC\n\n    LIMIT 1\n),\n\nassignment_history_rows AS (\n    SELECT\n        uum.id AS assignment_id,\n        uum.user_id,\n        uum.feedback_config_rule_id\n            AS mapping_id,\n        uum.active,\n        uum.assigned_at,\n        uum.deactivated_at,\n\n        fcr.type AS mapping_type,\n        fcr.usecase_id,\n        history_uc.name AS usecase_name,\n\n        fcr.minvalue,\n        fcr.maxvalue,\n        fcr.minpulses,\n        fcr.maxpulses,\n        fcr.minintensity,\n        fcr.maxintensity,\n        fcr.minduration,\n        fcr.maxduration,\n        fcr.mininterval,\n        fcr.maxinterval\n\n    FROM public.\"User_UC_Mappings\" uum\n\n    JOIN public.feedback_config_rules fcr\n      ON fcr.id =\n         uum.feedback_config_rule_id\n\n    LEFT JOIN public.\"UseCase\" history_uc\n      ON history_uc.usecase_id =\n         fcr.usecase_id\n\n    WHERE uum.user_id = $2\n      AND fcr.usecase_id = $1\n),\n\nassignment_history AS (\n    SELECT\n        COUNT(*)::integer AS history_count,\n\n        COALESCE(\n            jsonb_agg(\n                jsonb_build_object(\n                    'assignment_id',\n                        ahr.assignment_id,\n                    'mapping_id',\n                        ahr.mapping_id,\n                    'active',\n                        ahr.active,\n                    'assigned_at',\n                        ahr.assigned_at,\n                    'deactivated_at',\n                        ahr.deactivated_at,\n\n                    'mapping', jsonb_build_object(\n                        'id',\n                            ahr.mapping_id,\n                        'type',\n                            ahr.mapping_type,\n                        'usecase_id',\n                            ahr.usecase_id,\n                        'usecase_name',\n                            ahr.usecase_name,\n                        'minvalue',\n                            ahr.minvalue,\n                        'maxvalue',\n                            ahr.maxvalue,\n                        'minpulses',\n                            ahr.minpulses,\n                        'maxpulses',\n                            ahr.maxpulses,\n                        'minintensity',\n                            ahr.minintensity,\n                        'maxintensity',\n                            ahr.maxintensity,\n                        'minduration',\n                            ahr.minduration,\n                        'maxduration',\n                            ahr.maxduration,\n                        'mininterval',\n                            ahr.mininterval,\n                        'maxinterval',\n                            ahr.maxinterval\n                    )\n                )\n\n                ORDER BY\n                    ahr.assigned_at DESC NULLS LAST,\n                    ahr.assignment_id DESC\n            ),\n            '[]'::jsonb\n        ) AS items\n\n    FROM assignment_history_rows ahr\n),\n\nmapping_usage_rows AS (\n    SELECT\n        pe.fbrangeid AS mapping_id,\n\n        COUNT(*)::integer AS event_rows,\n\n        COUNT(*) FILTER (\n            WHERE pe.alertgiven = 'yes'\n        )::integer AS feedback_events,\n\n        COUNT(*) FILTER (\n            WHERE pe.alertgiven = 'no'\n        )::integer AS no_feedback_events,\n\n        MIN(pe.time) AS first_used_at,\n        MAX(pe.time) AS last_used_at\n\n    FROM participant_events pe\n\n    WHERE pe.fbrangeid IS NOT NULL\n\n    GROUP BY pe.fbrangeid\n),\n\nmapping_usage AS (\n    SELECT\n        COALESCE(\n            jsonb_agg(\n                jsonb_build_object(\n                    'mapping_id',\n                        mur.mapping_id,\n                    'event_rows',\n                        mur.event_rows,\n                    'feedback_events',\n                        mur.feedback_events,\n                    'no_feedback_events',\n                        mur.no_feedback_events,\n                    'first_used_at',\n                        mur.first_used_at,\n                    'last_used_at',\n                        mur.last_used_at,\n\n                    'mapping', jsonb_build_object(\n                        'id',\n                            fcr.id,\n                        'type',\n                            fcr.type,\n                        'usecase_id',\n                            fcr.usecase_id,\n                        'minvalue',\n                            fcr.minvalue,\n                        'maxvalue',\n                            fcr.maxvalue,\n                        'minpulses',\n                            fcr.minpulses,\n                        'maxpulses',\n                            fcr.maxpulses,\n                        'minintensity',\n                            fcr.minintensity,\n                        'maxintensity',\n                            fcr.maxintensity,\n                        'minduration',\n                            fcr.minduration,\n                        'maxduration',\n                            fcr.maxduration,\n                        'mininterval',\n                            fcr.mininterval,\n                        'maxinterval',\n                            fcr.maxinterval\n                    )\n                )\n\n                ORDER BY\n                    mur.event_rows DESC,\n                    mur.mapping_id\n            ),\n            '[]'::jsonb\n        ) AS items\n\n    FROM mapping_usage_rows mur\n\n    LEFT JOIN public.feedback_config_rules fcr\n      ON fcr.id = mur.mapping_id\n)\n\nSELECT\n    su.userid AS user_id,\n    su.fname,\n    su.lname,\n    su.lastrequest,\n\n    uc.usecase_id,\n    uc.name AS usecase_name,\n    uc.description AS usecase_description,\n\n    jsonb_build_object(\n        'window_days', 30,\n        'total_readings',\n            ps.total_readings,\n        'active_days',\n            ps.active_days,\n        'min_seen',\n            ps.min_seen,\n        'max_seen',\n            ps.max_seen,\n        'avg_seen',\n            ps.avg_seen,\n        'stddev_seen',\n            ps.stddev_seen,\n        'p10_seen',\n            ps.p10_seen,\n        'median_seen',\n            ps.median_seen,\n        'p90_seen',\n            ps.p90_seen,\n        'first_reading_at',\n            ps.first_reading_at,\n        'last_reading_at',\n            ps.last_reading_at\n    ) AS participant_stats,\n\n    jsonb_build_object(\n        'window_days', 7,\n        'total_readings',\n            r7.total_readings,\n        'active_days',\n            r7.active_days,\n        'min_seen',\n            r7.min_seen,\n        'max_seen',\n            r7.max_seen,\n        'avg_seen',\n            r7.avg_seen,\n        'median_seen',\n            r7.median_seen\n    ) AS recent_7d_stats,\n\n    jsonb_build_object(\n        'sensor_event_rows',\n            fs.sensor_event_rows,\n        'alert_records',\n            fs.alert_records,\n        'feedback_events',\n            fs.feedback_events,\n        'no_feedback_events',\n            fs.no_feedback_events,\n        'feedback_event_rate_percent',\n            fs.feedback_event_rate_percent,\n        'feedback_events_per_active_day',\n            fs.feedback_events_per_active_day,\n        'max_feedback_events_in_day',\n            fs.max_feedback_events_in_day,\n        'fallback_event_count',\n            fs.fallback_event_count,\n        'rate_limited_count',\n            fs.rate_limited_count,\n        'distinct_mapping_ids_used',\n            fs.distinct_mapping_ids_used,\n        'avg_pulses',\n            fs.avg_pulses,\n        'avg_intensity',\n            fs.avg_intensity,\n        'avg_duration',\n            fs.avg_duration,\n        'avg_interval',\n            fs.avg_interval\n    ) AS feedback_summary,\n\n    jsonb_build_object(\n        'window_days', 30,\n        'participant_count',\n            cs.participant_count,\n        'total_readings',\n            cs.total_readings,\n        'avg_seen',\n            cs.avg_seen,\n        'stddev_seen',\n            cs.stddev_seen,\n        'p10_seen',\n            cs.p10_seen,\n        'median_seen',\n            cs.median_seen,\n        'p90_seen',\n            cs.p90_seen,\n        'feedback_event_rate_percent',\n            cs.feedback_event_rate_percent\n    ) AS cohort_summary,\n\n    COALESCE(\n        (\n            SELECT assignment\n            FROM global_active_assignment\n        ),\n        'null'::jsonb\n    ) AS global_active_assignment,\n\n    ah.history_count\n        AS assignment_history_count,\n\n    ah.items\n        AS assignment_history,\n\n    mu.items\n        AS mapping_usage\n\nFROM selected_user su\n\nCROSS JOIN selected_usecase uc\nCROSS JOIN participant_stats ps\nCROSS JOIN recent_7d_stats r7\nCROSS JOIN feedback_summary fs\nCROSS JOIN cohort_summary cs\nCROSS JOIN assignment_history ah\nCROSS JOIN mapping_usage mu;",
+        "options": {
+          "queryReplacement": "={{ [\n  $('Normalize Participant Request').first().json.usecase_id,\n  $('Normalize Participant Request').first().json.user_id\n] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        832,
+        144
+      ],
+      "id": "8fb9cf1b-c086-45aa-b2de-d4ea1da02a08",
+      "name": "DB - Load Participant Context",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $input.first().json ?? {};\n\nconst request =\n  $('Normalize Participant Request').first().json ?? {};\n\nfunction parseJsonValue(value, fallback) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return fallback;\n  }\n\n  if (typeof value === 'object') {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      return JSON.parse(value);\n    } catch {\n      return fallback;\n    }\n  }\n\n  return fallback;\n}\n\nfunction objectValue(value) {\n  const parsed =\n    parseJsonValue(value, {});\n\n  return (\n    parsed &&\n    typeof parsed === 'object' &&\n    !Array.isArray(parsed)\n  )\n    ? parsed\n    : {};\n}\n\nfunction nullableObject(value) {\n  const parsed =\n    parseJsonValue(value, null);\n\n  return (\n    parsed &&\n    typeof parsed === 'object' &&\n    !Array.isArray(parsed)\n  )\n    ? parsed\n    : null;\n}\n\nfunction arrayValue(value) {\n  const parsed =\n    parseJsonValue(value, []);\n\n  return Array.isArray(parsed)\n    ? parsed\n    : [];\n}\n\nfunction numberOrNull(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number =\n    Number(value);\n\n  return Number.isFinite(number)\n    ? number\n    : null;\n}\n\nconst participantStats =\n  objectValue(\n    row.participant_stats\n  );\n\nconst recent7dStats =\n  objectValue(\n    row.recent_7d_stats\n  );\n\nconst feedbackSummary =\n  objectValue(\n    row.feedback_summary\n  );\n\nconst cohortSummary =\n  objectValue(\n    row.cohort_summary\n  );\n\nconst globalActiveAssignment =\n  nullableObject(\n    row.global_active_assignment\n  );\n\nconst assignmentHistory =\n  arrayValue(\n    row.assignment_history\n  );\n\nconst mappingUsage =\n  arrayValue(\n    row.mapping_usage\n  );\n\nconst warnings = [\n  ...(Array.isArray(request.input_warnings)\n    ? request.input_warnings\n    : [])\n];\n\nconst resolvedUserId =\n  numberOrNull(\n    row.user_id ??\n    request.user_id\n  );\n\nconst resolvedUsecaseId =\n  numberOrNull(\n    row.usecase_id ??\n    request.usecase_id\n  );\n\nif (resolvedUserId === null) {\n  warnings.push(\n    `Participant ${request.user_id ?? 'unknown'} was not found.`\n  );\n}\n\nif (resolvedUsecaseId === null) {\n  warnings.push(\n    `Use case ${request.usecase_id ?? 'unknown'} was not found.`\n  );\n}\n\nconst totalReadings =\n  Number(\n    participantStats.total_readings ?? 0\n  );\n\nconst activeDays =\n  Number(\n    participantStats.active_days ?? 0\n  );\n\nconst alertRecords =\n  Number(\n    feedbackSummary.alert_records ?? 0\n  );\n\nif (totalReadings === 0) {\n  warnings.push(\n    'No participant sensor readings were found for the selected use case during the last 30 days.'\n  );\n} else if (\n  totalReadings < 20 ||\n  activeDays < 3\n) {\n  warnings.push(\n    'The recent participant dataset is limited. Personalization conclusions should be treated as tentative.'\n  );\n}\n\nif (alertRecords === 0) {\n  warnings.push(\n    'No linked Alert records were found, so recent feedback burden cannot be estimated reliably.'\n  );\n}\n\nif (!globalActiveAssignment) {\n  warnings.push(\n    'The participant does not currently have an active mapping assignment.'\n  );\n} else {\n  const activeMappingId =\n    numberOrNull(\n      globalActiveAssignment?.mapping_id ??\n      globalActiveAssignment?.mapping?.id\n    );\n\n  const activeMappingUsecaseId =\n    numberOrNull(\n      globalActiveAssignment?.mapping?.usecase_id\n    );\n\n  const activeMappingUsecaseName =\n    globalActiveAssignment?.mapping?.usecase_name ??\n    null;\n\n  if (activeMappingUsecaseId === null) {\n    warnings.push(\n      `The participant's globally active mapping ` +\n      `${activeMappingId ?? 'unknown'} does not have an associated use case.`\n    );\n  } else if (\n    resolvedUsecaseId !== null &&\n    activeMappingUsecaseId !== resolvedUsecaseId\n  ) {\n    warnings.push(\n      `The participant's globally active mapping belongs to use case ` +\n      `${activeMappingUsecaseName ?? activeMappingUsecaseId}, ` +\n      `not the selected use case.`\n    );\n  }\n\n  const selectedMappingId =\n    numberOrNull(\n      request.user_mapping_id\n    );\n\n  if (\n    selectedMappingId !== null &&\n    activeMappingId !== null &&\n    activeMappingId !== selectedMappingId\n  ) {\n    warnings.push(\n      `The selected mapping ID ${selectedMappingId} does not match ` +\n      `the participant's current active mapping ID ${activeMappingId}.`\n    );\n  }\n}\n\nif (assignmentHistory.length === 0) {\n  warnings.push(\n    'No mapping-assignment history was found for this participant and use case.'\n  );\n}\n\nreturn [{\n  json: {\n    session_id:\n      request.session_id ?? null,\n\n    message:\n      request.message ?? '',\n\n    user_id:\n      resolvedUserId,\n\n    participant_name:\n      [row.fname, row.lname]\n        .filter(Boolean)\n        .join(' ')\n        .trim() || null,\n\n    last_request_at:\n      row.lastrequest ?? null,\n\n    usecase_id:\n      resolvedUsecaseId,\n\n    usecase_name:\n      row.usecase_name ??\n      request.usecase_name ??\n      null,\n\n    usecase_description:\n      row.usecase_description ?? null,\n\n    selected_user_mapping_id:\n      numberOrNull(\n        request.user_mapping_id\n      ),\n\n    context:\n      request.context ?? {},\n\n    participant_stats:\n      participantStats,\n\n    recent_7d_stats:\n      recent7dStats,\n\n    feedback_summary:\n      feedbackSummary,\n\n    cohort_summary:\n      cohortSummary,\n\n    global_active_assignment:\n      globalActiveAssignment,\n\n    assignment_history_count:\n      Number(\n        row.assignment_history_count ??\n        assignmentHistory.length\n      ),\n\n    assignment_history:\n      assignmentHistory,\n\n    mapping_usage:\n      mappingUsage,\n\n    context_warnings: [\n      ...new Set(warnings)\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        144
+      ],
+      "id": "01d1d3ae-00e2-4685-95e2-0334da627aa7",
+      "name": "Package Participant Context"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw =\n  $input.first().json ?? {};\n\nconst context =\n  $('Package Participant Context').first().json ?? {};\n\nfunction parseJsonValue(value, fallback) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return fallback;\n  }\n\n  if (typeof value === 'object') {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      return JSON.parse(value);\n    } catch {\n      return fallback;\n    }\n  }\n\n  return fallback;\n}\n\nfunction parseResponse(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  let text =\n    String(value ?? '').trim();\n\n  text = text\n    .replace(/^```json\\s*/i, '')\n    .replace(/^```\\s*/i, '')\n    .replace(/\\s*```$/i, '')\n    .trim();\n\n  try {\n    return JSON.parse(text);\n  } catch {\n    return {\n      reply: text,\n\n      warnings: [\n        'The Participant Data Expert did not return valid structured JSON.'\n      ],\n\n      participant_assessment: null,\n      findings: [],\n      recommended_actions: []\n    };\n  }\n}\n\nfunction arrayValue(value) {\n  const parsed =\n    parseJsonValue(value, []);\n\n  return Array.isArray(parsed)\n    ? parsed\n    : [];\n}\n\nfunction objectValue(value) {\n  const parsed =\n    parseJsonValue(value, {});\n\n  return (\n    parsed &&\n    typeof parsed === 'object' &&\n    !Array.isArray(parsed)\n  )\n    ? parsed\n    : {};\n}\n\nfunction nullableObject(value) {\n  const parsed =\n    parseJsonValue(value, null);\n\n  return (\n    parsed &&\n    typeof parsed === 'object' &&\n    !Array.isArray(parsed)\n  )\n    ? parsed\n    : null;\n}\n\nfunction stringArray(value) {\n  return arrayValue(value)\n    .filter(\n      item =>\n        item !== null &&\n        item !== undefined &&\n        String(item).trim() !== ''\n    )\n    .map(item =>\n      String(item).trim()\n    );\n}\n\nfunction numberOrNull(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number =\n    Number(value);\n\n  return Number.isFinite(number)\n    ? number\n    : null;\n}\n\n/**\n * Parse model output.\n */\nconst candidate =\n  raw.text ??\n  raw.output ??\n  raw.response ??\n  raw.answer ??\n  raw.result ??\n  raw.reply ??\n  raw;\n\nconst parsed =\n  parseResponse(candidate);\n\n/**\n * Read deterministic database context.\n */\nconst participantStats =\n  objectValue(\n    context.participant_stats\n  );\n\nconst recent7dStats =\n  objectValue(\n    context.recent_7d_stats\n  );\n\nconst feedbackSummary =\n  objectValue(\n    context.feedback_summary\n  );\n\nconst cohortSummary =\n  objectValue(\n    context.cohort_summary\n  );\n\nconst assignmentHistory =\n  arrayValue(\n    context.assignment_history\n  );\n\nconst mappingUsage =\n  arrayValue(\n    context.mapping_usage\n  );\n\nconst globalAssignment =\n  nullableObject(\n    context.global_active_assignment\n  );\n\nconst userId =\n  numberOrNull(\n    context.user_id\n  );\n\nconst selectedUsecaseId =\n  numberOrNull(\n    context.usecase_id\n  );\n\nconst totalReadings =\n  Number(\n    participantStats.total_readings ?? 0\n  );\n\nconst alertRecords =\n  Number(\n    feedbackSummary.alert_records ?? 0\n  );\n\nconst feedbackEvents =\n  Number(\n    feedbackSummary.feedback_events ?? 0\n  );\n\n/**\n * Selected-use-case assignment evidence.\n */\nconst selectedUsecaseAssignmentIds = [\n  ...new Set(\n    assignmentHistory\n      .map(item =>\n        numberOrNull(\n          item?.assignment_id\n        )\n      )\n      .filter(id => id !== null)\n  )\n];\n\nconst selectedUsecaseMappingIds = [\n  ...new Set([\n    ...assignmentHistory\n      .map(item =>\n        numberOrNull(\n          item?.mapping_id ??\n          item?.mapping?.id\n        )\n      )\n      .filter(id => id !== null),\n\n    ...mappingUsage\n      .map(item =>\n        numberOrNull(\n          item?.mapping_id ??\n          item?.mapping?.id\n        )\n      )\n      .filter(id => id !== null)\n  ])\n];\n\n/**\n * Global active assignment evidence.\n */\nconst globalAssignmentId =\n  numberOrNull(\n    globalAssignment?.assignment_id\n  );\n\nconst globalMappingId =\n  numberOrNull(\n    globalAssignment?.mapping_id ??\n    globalAssignment?.mapping?.id\n  );\n\nconst globalMappingUsecaseId =\n  numberOrNull(\n    globalAssignment?.mapping?.usecase_id\n  );\n\nconst globalMappingUsecaseName =\n  globalAssignment?.mapping?.usecase_name ??\n  null;\n\n/**\n * Construct deterministic database citations.\n */\nconst citations = [];\n\nif (totalReadings > 0) {\n  citations.push({\n    type: 'database',\n    source: 'SensorData',\n    scope:\n      'selected_participant_usecase',\n\n    user_id:\n      userId,\n\n    usecase_id:\n      selectedUsecaseId,\n\n    window_days:\n      Number(\n        participantStats.window_days ?? 30\n      ),\n\n    total_readings:\n      totalReadings,\n\n    expert:\n      'participant_data'\n  });\n}\n\nif (alertRecords > 0) {\n  citations.push({\n    type: 'database',\n    source: 'Alert',\n    scope:\n      'selected_participant_usecase',\n\n    user_id:\n      userId,\n\n    usecase_id:\n      selectedUsecaseId,\n\n    window_days:\n      30,\n\n    alert_records:\n      alertRecords,\n\n    feedback_events:\n      feedbackEvents,\n\n    expert:\n      'participant_data'\n  });\n}\n\nif (\n  selectedUsecaseAssignmentIds.length > 0\n) {\n  citations.push({\n    type: 'database',\n    source: 'User_UC_Mappings',\n    scope:\n      'selected_usecase_history',\n\n    user_id:\n      userId,\n\n    usecase_id:\n      selectedUsecaseId,\n\n    assignment_ids:\n      selectedUsecaseAssignmentIds,\n\n    expert:\n      'participant_data'\n  });\n}\n\nif (\n  selectedUsecaseMappingIds.length > 0\n) {\n  citations.push({\n    type: 'database',\n    source: 'feedback_config_rules',\n    scope:\n      'selected_usecase_context',\n\n    record_ids:\n      selectedUsecaseMappingIds,\n\n    usecase_id:\n      selectedUsecaseId,\n\n    expert:\n      'participant_data'\n  });\n}\n\nif (\n  globalAssignmentId !== null ||\n  globalMappingId !== null\n) {\n  citations.push({\n    type: 'database',\n    source: 'User_UC_Mappings',\n    scope:\n      'global_active_assignment',\n\n    assignment_id:\n      globalAssignmentId,\n\n    user_id:\n      userId,\n\n    mapping_id:\n      globalMappingId,\n\n    mapping_usecase_id:\n      globalMappingUsecaseId,\n\n    mapping_usecase_name:\n      globalMappingUsecaseName,\n\n    expert:\n      'participant_data'\n  });\n}\n\nif (\n  globalMappingId !== null &&\n  !selectedUsecaseMappingIds.includes(\n    globalMappingId\n  )\n) {\n  citations.push({\n    type: 'database',\n    source: 'feedback_config_rules',\n    scope:\n      'global_active_mapping',\n\n    record_ids: [\n      globalMappingId\n    ],\n\n    usecase_id:\n      globalMappingUsecaseId,\n\n    usecase_name:\n      globalMappingUsecaseName,\n\n    expert:\n      'participant_data'\n  });\n}\n\n/**\n * Normalize participant assessment.\n */\nconst assessmentRaw =\n  objectValue(\n    parsed.participant_assessment\n  );\n\nconst allowedDataSufficiency =\n  new Set([\n    'insufficient',\n    'limited',\n    'adequate'\n  ]);\n\nconst allowedPersonalizationSignals =\n  new Set([\n    'insufficient_data',\n    'no_clear_signal',\n    'consider_review'\n  ]);\n\nconst allowedBurdenSignals =\n  new Set([\n    'unknown',\n    'no_clear_signal',\n    'consider_review'\n  ]);\n\nconst participantAssessment = {\n  data_sufficiency:\n    allowedDataSufficiency.has(\n      assessmentRaw.data_sufficiency\n    )\n      ? assessmentRaw.data_sufficiency\n      : (\n          totalReadings === 0\n            ? 'insufficient'\n            : 'limited'\n        ),\n\n  personalization_signal:\n    allowedPersonalizationSignals.has(\n      assessmentRaw.personalization_signal\n    )\n      ? assessmentRaw.personalization_signal\n      : (\n          totalReadings === 0\n            ? 'insufficient_data'\n            : 'no_clear_signal'\n        ),\n\n  feedback_burden_signal:\n    allowedBurdenSignals.has(\n      assessmentRaw.feedback_burden_signal\n    )\n      ? assessmentRaw.feedback_burden_signal\n      : (\n          alertRecords === 0\n            ? 'unknown'\n            : 'no_clear_signal'\n        ),\n\n  rationale:\n    stringArray(\n      assessmentRaw.rationale\n    )\n};\n\n/**\n * Validate evidence references.\n */\nconst allowedEvidencePrefixes = [\n  'participant_stats',\n  'recent_7d_stats',\n  'feedback_summary',\n  'cohort_summary',\n  'global_active_assignment',\n  'assignment_history',\n  'mapping_usage'\n];\n\nfunction normalizeEvidenceReference(value) {\n  let reference =\n    String(value ?? '').trim();\n\n  if (!reference) {\n    return null;\n  }\n\n  reference = reference\n    .replace(\n      /^recent_feedback_summary\\./,\n      'feedback_summary.'\n    )\n    .replace(\n      /^current_globally_active_assignment\\./,\n      'global_active_assignment.'\n    )\n    .replace(\n      /^current_global_assignment\\./,\n      'global_active_assignment.'\n    );\n\n  const valid =\n    allowedEvidencePrefixes.some(\n      prefix =>\n        reference === prefix ||\n        reference.startsWith(\n          `${prefix}.`\n        ) ||\n        reference.startsWith(\n          `${prefix}[`\n        )\n    );\n\n  return valid\n    ? reference\n    : null;\n}\n\nlet droppedEvidenceReferenceCount = 0;\n\nconst findings =\n  arrayValue(\n    parsed.findings\n  )\n    .slice(0, 8)\n    .filter(\n      finding =>\n        finding &&\n        typeof finding === 'object' &&\n        !Array.isArray(finding)\n    )\n    .map((finding, index) => {\n      const originalEvidenceRefs =\n        stringArray(\n          finding.evidence_refs\n        );\n\n      const normalizedEvidenceRefs = [\n        ...new Set(\n          originalEvidenceRefs\n            .map(\n              normalizeEvidenceReference\n            )\n            .filter(Boolean)\n        )\n      ];\n\n      droppedEvidenceReferenceCount +=\n        originalEvidenceRefs.length -\n        normalizedEvidenceRefs.length;\n\n      const requestedConfidence =\n        String(\n          finding.confidence ?? ''\n        ).trim();\n\n      const confidence =\n        ['low', 'moderate', 'high']\n          .includes(requestedConfidence)\n            ? requestedConfidence\n            : 'low';\n\n      return {\n        finding_id:\n          `f${index + 1}`,\n\n        category:\n          String(\n            finding.category ??\n            'data_coverage'\n          ).trim(),\n\n        statement:\n          String(\n            finding.statement ?? ''\n          ).trim(),\n\n        evidence_refs:\n          normalizedEvidenceRefs,\n\n        confidence:\n          normalizedEvidenceRefs.length > 0\n            ? confidence\n            : 'low'\n      };\n    })\n    .filter(\n      finding =>\n        finding.statement\n    );\n\n/**\n * Normalize recommended actions.\n */\nconst allowedActions =\n  new Set([\n    'collect_more_data',\n    'review_personalization',\n    'review_feedback_burden',\n    'compare_mapping_options'\n  ]);\n\nlet recommendedActions =\n  arrayValue(\n    parsed.recommended_actions\n  )\n    .filter(\n      action =>\n        action &&\n        typeof action === 'object' &&\n        !Array.isArray(action)\n    )\n    .map(action => ({\n      action:\n        allowedActions.has(\n          action.action\n        )\n          ? action.action\n          : 'collect_more_data',\n\n      label:\n        String(\n          action.label ??\n          'Review participant data'\n        ).trim(),\n\n      reason:\n        String(\n          action.reason ?? ''\n        ).trim()\n    }));\n\nif (\n  recommendedActions.length === 0\n) {\n  recommendedActions = [\n    totalReadings === 0\n      ? {\n          action:\n            'collect_more_data',\n\n          label:\n            'Collect more participant data',\n\n          reason:\n            'No recent participant readings were available for a grounded personalization assessment.'\n        }\n      : {\n          action:\n            'review_personalization',\n\n          label:\n            'Review personalization evidence',\n\n          reason:\n            'Review the participant summary before deciding whether a custom mapping is appropriate.'\n        }\n  ];\n}\n\n/**\n * Combine warnings.\n */\nconst warnings = [\n  ...new Set([\n    ...stringArray(\n      context.context_warnings\n    ),\n    ...stringArray(\n      parsed.warnings\n    )\n  ])\n];\n\nif (\n  droppedEvidenceReferenceCount > 0\n) {\n  warnings.push(\n    `${droppedEvidenceReferenceCount} unsupported finding evidence reference` +\n    `${droppedEvidenceReferenceCount === 1 ? ' was' : 's were'} removed.`\n  );\n}\n\n/**\n * Construct the final reply.\n */\nlet reply =\n  String(\n    parsed.reply ??\n    parsed.answer ??\n    parsed.message ??\n    ''\n  ).trim();\n\nconst isPlaceholderReply =\n  /a grounded participant summary written for the researcher/i\n    .test(reply) ||\n  /explicitly state that the analysis was read-only/i\n    .test(reply) ||\n  /write an actual concise summary/i\n    .test(reply) ||\n  /actual participant-specific summary/i\n    .test(reply);\n\nif (\n  !reply ||\n  isPlaceholderReply\n) {\n  const participantLabel =\n    context.participant_name\n      ? `${context.participant_name} (participant ${userId})`\n      : `participant ${userId ?? 'unknown'}`;\n\n  const usecaseLabel =\n    context.usecase_name ??\n    `use case ${selectedUsecaseId ?? 'unknown'}`;\n\n  if (totalReadings === 0) {\n    reply =\n      `No recent ${usecaseLabel} sensor readings were found for ` +\n      `${participantLabel} during the 30-day analysis window. ` +\n      'There is not enough evidence to assess personalization needs or recent feedback burden.';\n  } else {\n    reply =\n      `${participantLabel} has ${totalReadings} recorded sensor readings ` +\n      `for ${usecaseLabel} during the 30-day analysis window. ` +\n      'The available evidence should be reviewed before deciding whether personalization is appropriate.';\n  }\n\n  if (\n    globalMappingId !== null &&\n    globalMappingUsecaseId === null\n  ) {\n    reply +=\n      ` The participant's globally active mapping ${globalMappingId} ` +\n      'does not have an associated use case.';\n  } else if (\n    globalMappingId !== null &&\n    globalMappingUsecaseId !== null &&\n    selectedUsecaseId !== null &&\n    globalMappingUsecaseId !==\n      selectedUsecaseId\n  ) {\n    reply +=\n      ` The participant's globally active mapping ${globalMappingId} belongs to ` +\n      `${globalMappingUsecaseName ?? `use case ${globalMappingUsecaseId}`}, ` +\n      `not ${usecaseLabel}.`;\n  }\n}\n\n/**\n * Guarantee the read-only statement.\n */\nconst statesReadOnly =\n  /nothing was saved|no records were changed|nothing was assigned|read-only/i\n    .test(reply);\n\nif (!statesReadOnly) {\n  reply +=\n    '\\n\\nThis was a read-only analysis. ' +\n    'No records were changed and no mapping was assigned.';\n}\n\nconst success =\n  Boolean(\n    userId !== null &&\n    selectedUsecaseId !== null\n  );\n\nreturn [{\n  json: {\n    expert:\n      'participant_data',\n\n    success,\n\n    reply,\n\n    session_id:\n      context.session_id ?? null,\n\n    citations,\n\n    warnings,\n\n    proposals: [],\n\n    recommended_actions:\n      recommendedActions,\n\n    participant_assessment:\n      participantAssessment,\n\n    findings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        144
+      ],
+      "id": "5157e023-1df3-4d89-81c6-c57afa68c60c",
+      "name": "Format Participant Data Result"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{\n\"You are the read-only Participant Data Expert for the Smartwatch Haptic research system.\\n\\n\" +\n\n\"Your role is to summarize participant-specific sensor data, mapping-assignment history, \" +\n\"and recent vibration-feedback burden. You may identify evidence suggesting that a mapping \" +\n\"should be reviewed, but you must never save, assign, activate, deactivate, create, delete, \" +\n\"or modify a mapping.\\n\\n\" +\n\n\"Rules:\\n\" +\n\"1. Use only the supplied database context.\\n\" +\n\"2. Do not invent readings, feedback events, assignment history, mappings, or participant behavior.\\n\" +\n\"3. Do not make medical, diagnostic, clinical, or health-risk claims.\\n\" +\n\"4. Heart-rate values must be described only as recorded sensor values, not as evidence of a condition.\\n\" +\n\"5. Clearly distinguish direct database observations from interpretation.\\n\" +\n\"6. A difference from the cohort does not automatically mean personalization is required.\\n\" +\n\"7. When participant data is absent, return data_sufficiency=insufficient and personalization_signal=insufficient_data.\\n\" +\n\"8. When participant data is limited, make tentative observations and use low or moderate confidence.\\n\" +\n\"9. Feedback burden may be discussed using feedback-event frequency, events per active day, \" +\n\"rate-limiting, fallback use, vibration intensity, pulses, duration, and interval.\\n\" +\n\"10. Do not use fixed medical thresholds.\\n\" +\n\"11. The system currently supports one globally active mapping per participant. \" +\n\"If that mapping belongs to another use case, describe it as a configuration observation.\\n\" +\n\"12. Do not recommend saving or assigning a mapping. Recommend researcher review only.\\n\" +\n\"13. Do not include Markdown code fences.\\n\" +\n\"14. The reply field must contain an actual summary of the supplied participant context.\\n\" +\n\"15. Never copy instructions, placeholder wording, schema descriptions, or example text into the reply.\\n\" +\n\"16. The reply must explicitly state that the analysis was read-only and that no records were changed.\\n\\n\" +\n\n\"Evidence-reference rules:\\n\" +\n\"Use only evidence paths that exist in the supplied context.\\n\" +\n\"Valid top-level evidence-path prefixes are:\\n\" +\n\"- participant_stats\\n\" +\n\"- recent_7d_stats\\n\" +\n\"- feedback_summary\\n\" +\n\"- cohort_summary\\n\" +\n\"- global_active_assignment\\n\" +\n\"- assignment_history\\n\" +\n\"- mapping_usage\\n\\n\" +\n\n\"Examples of valid evidence references:\\n\" +\n\"- participant_stats.total_readings\\n\" +\n\"- participant_stats.active_days\\n\" +\n\"- participant_stats.avg_seen\\n\" +\n\"- participant_stats.min_seen\\n\" +\n\"- participant_stats.max_seen\\n\" +\n\"- recent_7d_stats.total_readings\\n\" +\n\"- recent_7d_stats.avg_seen\\n\" +\n\"- feedback_summary.alert_records\\n\" +\n\"- feedback_summary.feedback_events\\n\" +\n\"- feedback_summary.feedback_events_per_active_day\\n\" +\n\"- feedback_summary.fallback_event_count\\n\" +\n\"- feedback_summary.rate_limited_count\\n\" +\n\"- cohort_summary.participant_count\\n\" +\n\"- cohort_summary.avg_seen\\n\" +\n\"- global_active_assignment.mapping.usecase_id\\n\" +\n\"- global_active_assignment.mapping.id\\n\" +\n\"- assignment_history\\n\" +\n\"- mapping_usage\\n\\n\" +\n\n\"Do not rename context objects. For example:\\n\" +\n\"- use feedback_summary, not recent_feedback_summary\\n\" +\n\"- use global_active_assignment, not current_globally_active_assignment\\n\\n\" +\n\n\"Return exactly one valid JSON object using this structure:\\n\" +\nJSON.stringify({\n  reply: \"\",\n\n  warnings: [],\n\n  participant_assessment: {\n    data_sufficiency:\n      \"insufficient | limited | adequate\",\n\n    personalization_signal:\n      \"insufficient_data | no_clear_signal | consider_review\",\n\n    feedback_burden_signal:\n      \"unknown | no_clear_signal | consider_review\",\n\n    rationale: [\n      \"A short reason grounded in the supplied database context\"\n    ]\n  },\n\n  findings: [\n    {\n      finding_id: \"f1\",\n\n      category:\n        \"data_coverage | sensor_pattern | feedback_burden | assignment_history | personalization\",\n\n      statement:\n        \"A concise observation grounded in the supplied context.\",\n\n      evidence_refs: [\n        \"participant_stats.total_readings\"\n      ],\n\n      confidence:\n        \"low | moderate | high\"\n    }\n  ],\n\n  recommended_actions: [\n    {\n      action:\n        \"collect_more_data | review_personalization | review_feedback_burden | compare_mapping_options\",\n\n      label:\n        \"Researcher-facing action label\",\n\n      reason:\n        \"Why this action follows from the available evidence\"\n    }\n  ]\n}, null, 2) +\n\n\"\\n\\nThe reply field above is intentionally empty. \" +\n\"You must replace it with an actual participant-specific summary.\\n\" +\n\n\"\\n\\nResearcher request:\\n\" +\n$json.message +\n\n\"\\n\\nParticipant and use case:\\n\" +\nJSON.stringify({\n  user_id:\n    $json.user_id,\n\n  participant_name:\n    $json.participant_name,\n\n  usecase_id:\n    $json.usecase_id,\n\n  usecase_name:\n    $json.usecase_name,\n\n  selected_user_mapping_id:\n    $json.selected_user_mapping_id\n}, null, 2) +\n\n\"\\n\\nParticipant sensor summary, last 30 days:\\n\" +\nJSON.stringify(\n  $json.participant_stats ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nParticipant sensor summary, last 7 days:\\n\" +\nJSON.stringify(\n  $json.recent_7d_stats ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nRecent feedback summary:\\n\" +\nJSON.stringify(\n  $json.feedback_summary ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nCohort summary for the same use case and 30-day window:\\n\" +\nJSON.stringify(\n  $json.cohort_summary ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nCurrent globally active assignment:\\n\" +\nJSON.stringify(\n  $json.global_active_assignment ?? null,\n  null,\n  2\n) +\n\n\"\\n\\nAssignment history for the selected participant and use case:\\n\" +\nJSON.stringify(\n  $json.assignment_history ?? [],\n  null,\n  2\n) +\n\n\"\\n\\nMapping IDs observed in recent selected-use-case events:\\n\" +\nJSON.stringify(\n  $json.mapping_usage ?? [],\n  null,\n  2\n) +\n\n\"\\n\\nAdditional application context:\\n\" +\nJSON.stringify(\n  $json.context ?? {},\n  null,\n  2\n) +\n\n\"\\n\\nExisting context warnings:\\n\" +\nJSON.stringify(\n  $json.context_warnings ?? [],\n  null,\n  2\n)\n}}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1216,
+        144
+      ],
+      "id": "932670b9-c91a-45a4-aacb-3f0a1cec9fbd",
+      "name": "Generate Participant Assessment"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.analysis_scope }}",
+                    "rightValue": "usecase",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "01067b96-e09a-4f28-9059-6cadc55c6875"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "aec0c701-64de-4a22-9c21-3ca9dbe06278",
+                    "leftValue": "={{ $json.analysis_scope }}",
+                    "rightValue": "participant",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        128
+      ],
+      "id": "5e2464c1-04f5-4608-a828-213f982c819e",
+      "name": "Analysis Scope"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH request AS (\n    SELECT $1::integer AS usecase_id\n),\n\nselected_usecase AS (\n    SELECT\n        r.usecase_id,\n        uc.name,\n        uc.description\n    FROM request r\n    LEFT JOIN public.\"UseCase\" uc\n        ON uc.usecase_id = r.usecase_id\n),\n\nactive_mapping_rows AS (\n    SELECT\n        fcr.id AS mapping_id,\n        fcr.type,\n        fcr.minvalue,\n        fcr.maxvalue,\n        fcr.minpulses,\n        fcr.maxpulses,\n        fcr.minintensity,\n        fcr.maxintensity,\n        fcr.minduration,\n        fcr.maxduration,\n        fcr.mininterval,\n        fcr.maxinterval,\n        COUNT(DISTINCT uum.user_id)::integer\n            AS assigned_user_count\n    FROM public.feedback_config_rules fcr\n    JOIN public.\"User_UC_Mappings\" uum\n        ON uum.feedback_config_rule_id = fcr.id\n       AND uum.active = true\n    WHERE fcr.usecase_id = (\n        SELECT usecase_id\n        FROM request\n    )\n    GROUP BY\n        fcr.id,\n        fcr.type,\n        fcr.minvalue,\n        fcr.maxvalue,\n        fcr.minpulses,\n        fcr.maxpulses,\n        fcr.minintensity,\n        fcr.maxintensity,\n        fcr.minduration,\n        fcr.maxduration,\n        fcr.mininterval,\n        fcr.maxinterval\n),\n\nmapping_summary AS (\n    SELECT\n        COUNT(*)::integer AS active_mapping_count,\n\n        COALESCE(\n            jsonb_agg(\n                jsonb_build_object(\n                    'mapping_id',\n                    mapping_id,\n\n                    'type',\n                    type,\n\n                    'minvalue',\n                    minvalue,\n\n                    'maxvalue',\n                    maxvalue,\n\n                    'minpulses',\n                    minpulses,\n\n                    'maxpulses',\n                    maxpulses,\n\n                    'minintensity',\n                    minintensity,\n\n                    'maxintensity',\n                    maxintensity,\n\n                    'minduration',\n                    minduration,\n\n                    'maxduration',\n                    maxduration,\n\n                    'mininterval',\n                    mininterval,\n\n                    'maxinterval',\n                    maxinterval,\n\n                    'assigned_user_count',\n                    assigned_user_count\n                )\n                ORDER BY\n                    minvalue NULLS LAST,\n                    mapping_id\n            ),\n            '[]'::jsonb\n        ) AS active_mappings\n    FROM active_mapping_rows\n),\n\nassigned_participant_rows AS (\n    SELECT DISTINCT\n        u.userid AS user_id,\n\n        NULLIF(\n            BTRIM(\n                CONCAT_WS(\n                    ' ',\n                    u.fname,\n                    u.lname\n                )\n            ),\n            ''\n        ) AS user_name,\n\n        uum.id AS user_mapping_id,\n\n        fcr.id AS mapping_id\n\n    FROM public.\"User_UC_Mappings\" uum\n\n    JOIN public.feedback_config_rules fcr\n        ON fcr.id = uum.feedback_config_rule_id\n\n    JOIN public.\"User\" u\n        ON u.userid = uum.user_id\n\n    WHERE uum.active = true\n      AND fcr.usecase_id = (\n          SELECT usecase_id\n          FROM request\n      )\n),\n\nparticipant_summary AS (\n    SELECT\n        COUNT(*)::integer\n            AS assigned_participant_count,\n\n        COALESCE(\n            jsonb_agg(\n                jsonb_build_object(\n                    'user_id',\n                    user_id,\n\n                    'user_name',\n                    user_name,\n\n                    'user_mapping_id',\n                    user_mapping_id,\n\n                    'mapping_id',\n                    mapping_id\n                )\n                ORDER BY user_id\n            ),\n            '[]'::jsonb\n        ) AS assigned_participants\n\n    FROM assigned_participant_rows\n),\n\nsensor_summary AS (\n    SELECT\n        COUNT(*)::integer\n            AS total_readings,\n\n        COUNT(\n            DISTINCT sd.userid\n        )::integer\n            AS participants_with_readings,\n\n        MIN(sd.value)::numeric\n            AS min_sensor_value,\n\n        MAX(sd.value)::numeric\n            AS max_sensor_value,\n\n        ROUND(\n            AVG(sd.value)::numeric,\n            2\n        ) AS avg_sensor_value,\n\n        MIN(sd.time)\n            AS first_reading_at,\n\n        MAX(sd.time)\n            AS latest_reading_at\n    FROM public.\"SensorData\" sd\n    WHERE sd.usecase_id = (\n        SELECT usecase_id\n        FROM request\n    )\n      AND sd.time >=\n          NOW() - INTERVAL '30 days'\n),\n\nfeedback_summary AS (\n    SELECT\n        (\n            COUNT(*)\n            FILTER (\n                WHERE sd.alertid IS NOT NULL\n            )\n        )::integer\n            AS feedback_event_count,\n\n        (\n            COUNT(\n                DISTINCT sd.userid\n            )\n            FILTER (\n                WHERE sd.alertid IS NOT NULL\n            )\n        )::integer\n            AS participants_with_feedback\n    FROM public.\"SensorData\" sd\n    WHERE sd.usecase_id = (\n        SELECT usecase_id\n        FROM request\n    )\n      AND sd.time >=\n          NOW() - INTERVAL '30 days'\n)\n\nSELECT\n    uc.usecase_id,\n    uc.name AS usecase_name,\n    uc.description AS usecase_description,\n\n    30::integer AS period_days,\n\n    ps.assigned_participant_count,\n  ps.assigned_participants,\n\n    ss.participants_with_readings,\n    ss.total_readings,\n    ss.min_sensor_value,\n    ss.max_sensor_value,\n    ss.avg_sensor_value,\n    ss.first_reading_at,\n    ss.latest_reading_at,\n\n    fs.feedback_event_count,\n    fs.participants_with_feedback,\n\n    ms.active_mapping_count,\n    ms.active_mappings\n\nFROM selected_usecase uc\nCROSS JOIN participant_summary ps\nCROSS JOIN sensor_summary ss\nCROSS JOIN feedback_summary fs\nCROSS JOIN mapping_summary ms;",
+        "options": {
+          "queryReplacement": "={{ [$json.usecase_id] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "0c1ed444-a260-40b7-817e-c28ca74942d5",
+      "name": "DB - Aggregate Experiment Snapshot",
+      "credentials": {
+        "postgres": {
+          "id": "PGGVkGCzTaoS4R2q",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const row =\n  $input.first()?.json ?? {};\n\nfunction integerValue(value) {\n  const number =\n    Number(value);\n\n  return Number.isFinite(number)\n    ? Math.trunc(number)\n    : 0;\n}\n\nfunction numericValue(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number =\n    Number(value);\n\n  return Number.isFinite(number)\n    ? number\n    : null;\n}\n\nfunction parseArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return Array.isArray(parsed)\n        ? parsed\n        : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\n\nfunction formatRange(\n  minimum,\n  maximum,\n  suffix = ''\n) {\n  const min =\n    numericValue(minimum);\n\n  const max =\n    numericValue(maximum);\n\n  if (\n    min === null &&\n    max === null\n  ) {\n    return 'not specified';\n  }\n\n  if (\n    min !== null &&\n    max !== null &&\n    min === max\n  ) {\n    return `${min}${suffix}`;\n  }\n\n  if (\n    min !== null &&\n    max !== null\n  ) {\n    return `${min}â€“${max}${suffix}`;\n  }\n\n  if (min !== null) {\n    return `from ${min}${suffix}`;\n  }\n\n  return `up to ${max}${suffix}`;\n}\n\nfunction plural(\n  amount,\n  singular,\n  pluralForm\n) {\n  return amount === 1\n    ? singular\n    : pluralForm;\n}\n\nconst usecaseId =\n  integerValue(\n    row.usecase_id\n  );\n\nconst usecaseName =\n  String(\n    row.usecase_name ?? ''\n  ).trim();\n\nconst description =\n  String(\n    row.usecase_description ?? ''\n  ).trim();\n\nconst periodDays =\n  integerValue(\n    row.period_days\n  ) || 30;\n\nconst assignedParticipants =\n  integerValue(\n    row.assigned_participant_count\n  );\n\nconst participantsWithReadings =\n  integerValue(\n    row.participants_with_readings\n  );\n\nconst totalReadings =\n  integerValue(\n    row.total_readings\n  );\n\nconst minimumValue =\n  numericValue(\n    row.min_sensor_value\n  );\n\nconst maximumValue =\n  numericValue(\n    row.max_sensor_value\n  );\n\nconst averageValue =\n  numericValue(\n    row.avg_sensor_value\n  );\n\nconst feedbackEvents =\n  integerValue(\n    row.feedback_event_count\n  );\n\nconst participantsWithFeedback =\n  integerValue(\n    row.participants_with_feedback\n  );\n\nconst activeMappingCount =\n  integerValue(\n    row.active_mapping_count\n  );\n\nconst mappings =\n  parseArray(\n    row.active_mappings\n  );\n\n\n\nconst warnings = [];\n\nif (!usecaseName) {\n  warnings.push(\n    `No use case record was found for usecase_id ${usecaseId}.`\n  );\n}\n\nif (totalReadings === 0) {\n  warnings.push(\n    `No sensor readings were found for the selected use case during the last ${periodDays} days.`\n  );\n}\n\nif (activeMappingCount === 0) {\n  warnings.push(\n    'No active mappings were found for the selected use case.'\n  );\n}\n\n/*\n * Build one concise mapping bullet.\n */\nconst mappingDescriptions =\n  mappings.map(mapping => {\n    const mappingId =\n      integerValue(\n        mapping.mapping_id\n      );\n\n    const assignedUsers =\n      integerValue(\n        mapping.assigned_user_count\n      );\n\n    const valueRange =\n      formatRange(\n        mapping.minvalue,\n        mapping.maxvalue,\n        ' BPM'\n      );\n\n    const pulseRange =\n      formatRange(\n        mapping.minpulses,\n        mapping.maxpulses\n      );\n\n    const intensityRange =\n      formatRange(\n        mapping.minintensity,\n        mapping.maxintensity\n      );\n\n    return (\n      `${mappingId}: ${valueRange}, ` +\n      `${pulseRange} pulses, ` +\n      `intensity ${intensityRange}, ` +\n      `${assignedUsers} assigned ` +\n      plural(\n        assignedUsers,\n        'user',\n        'users'\n      )\n    );\n  });\n\nconst bullets = [];\n\nif (description) {\n  bullets.push(\n    `Purpose: ${description}`\n  );\n}\n\nbullets.push(\n  `Participants: ${assignedParticipants} assigned ` +\n  plural(\n    assignedParticipants,\n    'participant',\n    'participants'\n  ) +\n  '.'\n);\n\nif (totalReadings > 0) {\n  bullets.push(\n    `Recent data: ${totalReadings} readings from ` +\n    `${participantsWithReadings} ` +\n    plural(\n      participantsWithReadings,\n      'participant',\n      'participants'\n    ) +\n    ` during the last ${periodDays} days; ` +\n    `observed values ranged from ` +\n    `${minimumValue} to ${maximumValue} BPM` +\n    (\n      averageValue !== null\n        ? `, with an average of ${averageValue} BPM.`\n        : '.'\n    )\n  );\n} else {\n  bullets.push(\n    `Recent data: No sensor readings were found during the last ${periodDays} days.`\n  );\n}\n\nif (mappingDescriptions.length > 0) {\n  bullets.push(\n    `Active mappings: ${mappingDescriptions.join('; ')}.`\n  );\n} else {\n  bullets.push(\n    'Active mappings: None were found.'\n  );\n}\n\nbullets.push(\n  `Recorded feedback activity: ${feedbackEvents} ` +\n  plural(\n    feedbackEvents,\n    'event',\n    'events'\n  ) +\n  ` involving ${participantsWithFeedback} ` +\n  plural(\n    participantsWithFeedback,\n    'participant',\n    'participants'\n  ) +\n  ` during the same period.`\n);\n\nconst title =\n  usecaseName\n    ? `${usecaseName} experiment summary`\n    : 'Experiment summary';\n\nconst reply =\n  [\n    title,\n    '',\n    ...bullets.map(\n      bullet => `- ${bullet}`\n    )\n  ].join('\\n');\n\nconst findings = [\n  {\n    finding_type:\n      'experiment_population',\n\n    summary:\n      `${assignedParticipants} assigned participant(s); ` +\n      `${participantsWithReadings} participant(s) with readings.`,\n\n    confidence:\n      'high',\n\n    evidence_refs: [\n      'public.User_UC_Mappings',\n      'public.feedback_config_rules',\n      'public.SensorData'\n    ]\n  },\n\n  {\n    finding_type:\n      'sensor_coverage',\n\n    summary:\n      totalReadings > 0\n        ? (\n            `${totalReadings} readings during the last ` +\n            `${periodDays} days, ranging from ` +\n            `${minimumValue} to ${maximumValue}.`\n          )\n        : (\n            `No readings were found during the last ` +\n            `${periodDays} days.`\n          ),\n\n    confidence:\n      'high',\n\n    evidence_refs: [\n      'public.SensorData'\n    ]\n  },\n\n  {\n    finding_type:\n      'active_mapping_overview',\n\n    summary:\n      `${activeMappingCount} active mapping(s) were found.`,\n\n    confidence:\n      'high',\n\n    evidence_refs: [\n      'public.feedback_config_rules',\n      'public.User_UC_Mappings'\n    ]\n  }\n];\n\nreturn [{\n  json: {\n    success:\n      Boolean(usecaseName),\n\n    reply,\n\n    session_id:\n  String(\n    $('Normalize Participant Request')\n      .first()\n      .json\n      .session_id ?? ''\n  ),\n\n    citations:\n      [],\n\n    warnings,\n\n    proposals:\n      [],\n\n    recommended_actions:\n      [],\n\n    participant_assessment:\n      null,\n\n    findings\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "cef2cf22-3b15-4090-aab4-bbbc9969a1bd",
+      "name": "Format Aggregate Experiment Summary"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Normalize Participant Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Participant Assessment",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Participant Request": {
+      "main": [
+        [
+          {
+            "node": "Participant Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Participant Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "Analysis Scope",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Participant Input Warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - Load Participant Context": {
+      "main": [
+        [
+          {
+            "node": "Package Participant Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Package Participant Context": {
+      "main": [
+        [
+          {
+            "node": "Generate Participant Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Participant Assessment": {
+      "main": [
+        [
+          {
+            "node": "Format Participant Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analysis Scope": {
+      "main": [
+        [
+          {
+            "node": "DB - Aggregate Experiment Snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB - Load Participant Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB - Aggregate Experiment Snapshot": {
+      "main": [
+        [
+          {
+            "node": "Format Aggregate Experiment Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "b5afce8e-6003-4efa-8448-0c93da4a544f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "bsw0Qs8uWn1gGvns",
+  "tags": []
+}

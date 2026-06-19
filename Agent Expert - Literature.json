@@ -1,0 +1,207 @@
+{
+  "name": "Agent Expert - Literature",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"session_id\": \"literature-test-001\",\n  \"message\": \"What does the literature say about using vibration timing and repetition to communicate urgency?\",\n  \"usecase_id\": 1,\n  \"usecase_name\": \"HeartRate\",\n  \"user_id\": 100,\n  \"context\": {}\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1d0689b7-bde5-4b84-80cc-85b91b054035",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f7250d31-dd3f-490a-aee4-1c6966986add",
+              "name": "expert_name",
+              "value": "literature",
+              "type": "string"
+            },
+            {
+              "id": "f760dfc8-90bd-4eaa-adbf-16e1306912b2",
+              "name": "model",
+              "value": "gpt-4o",
+              "type": "string"
+            },
+            {
+              "id": "866a8272-03b6-4139-b178-8f0600c82652",
+              "name": "vector_store_id",
+              "value": "vs_6a2d3137c91c8191bdd89eadb64e9d36",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "40125286-a310-420c-aa32-052806f5e62e",
+      "name": "Literature Retrieval Config"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3c1a38bb-454f-458d-924f-dac5122d390c",
+              "leftValue": "={{ typeof $json.vector_store_id === 'string' && $json.vector_store_id.startsWith('vs_') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "2f89b4b8-b48e-4196-85e5-407dad03891e",
+      "name": "Literature Retrieval Configured?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nreturn [{\n  json: {\n    expert: 'literature',\n    success: false,\n    reply: '',\n    citations: [],\n    warnings: [\n      'Literature retrieval is not configured with a valid vector store ID.'\n    ],\n    proposals: [],\n    recommended_actions: [],\n    session_id: input.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "b7148172-6cb4-4e15-858b-ceb5f61b1ecb",
+      "name": "Return Literature Configuration Warning"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    model: $json.model,\n\n    input:\n      \"You are the Literature Expert for a research system involving \" +\n      \"smartwatch haptic feedback.\\n\\n\" +\n\n      \"You MUST search the configured literature vector store before answering. \" +\n      \"Use only evidence retrieved from the uploaded academic sources. \" +\n      \"Do not invent papers, authors, publication years, findings, or citations. \" +\n      \"Clearly distinguish direct evidence from design interpretation. \" +\n      \"Do not claim that a recommended haptic configuration is universally safe \" +\n      \"or clinically validated unless the retrieved literature explicitly supports it.\\n\\n\" +\n\n      \"Relevant areas include haptic feedback, tactile displays, tactons, \" +\n      \"sensory substitution, interoception, biofeedback, wearable feedback, \" +\n      \"thermal perception, urgency perception, vibration timing, intensity, \" +\n      \"duration, repetition, and feedback burden.\\n\\n\" +\n\n      \"Researcher question:\\n\" +\n      $json.message +\n\n      \"\\n\\nSelected use case: \" +\n      ($json.usecase_name ?? \"not selected\") +\n\n      \"\\nAdditional context:\\n\" +\n      JSON.stringify($json.context ?? {}, null, 2),\n\n    tools: [\n      {\n        type: \"file_search\",\n        vector_store_ids: [$json.vector_store_id],\n        max_num_results: 8\n      }\n    ],\n\n    tool_choice: {\n      type: \"file_search\"\n    },\n\n    include: [\n      \"file_search_call.results\"\n    ]\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "bf79465c-da34-44cf-9a0f-e1aeba37b27d",
+      "name": "Search Literature",
+      "credentials": {
+        "openAiApi": {
+          "id": "PZrrVTzGmheg0FUW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json ?? {};\n\nconst originalInput =\n  $('Literature Retrieval Config').first().json ?? {};\n\nif (response.error) {\n  const errorMessage =\n    response.error.message ??\n    response.message ??\n    'Literature retrieval failed.';\n\n  return [{\n    json: {\n      expert: 'literature',\n      success: false,\n      reply: '',\n      citations: [],\n      warnings: [String(errorMessage)],\n      proposals: [],\n      recommended_actions: [],\n      session_id: originalInput.session_id\n    }\n  }];\n}\n\nconst outputs = Array.isArray(response.output)\n  ? response.output\n  : [];\n\nconst searchCall = outputs.find(\n  item => item?.type === 'file_search_call'\n);\n\nconst warnings = [];\nconst citations = [];\nlet reply = '';\n\nif (!searchCall) {\n  warnings.push(\n    'OpenAI returned no file_search_call for the literature request.'\n  );\n} else if (searchCall.status !== 'completed') {\n  warnings.push(\n    `Literature file search status was ${\n      searchCall.status ?? 'unknown'\n    }.`\n  );\n}\n\nconst searchResults =\n  searchCall?.results ??\n  searchCall?.search_results ??\n  [];\n\nif (Array.isArray(searchResults) && searchResults.length === 0) {\n  warnings.push(\n    'Literature search completed but returned no matching source chunks.'\n  );\n}\n\nfor (const outputItem of outputs) {\n  if (outputItem?.type !== 'message') {\n    continue;\n  }\n\n  const contentItems = Array.isArray(outputItem.content)\n    ? outputItem.content\n    : [];\n\n  for (const content of contentItems) {\n    if (content?.type !== 'output_text') {\n      continue;\n    }\n\n    if (content.text) {\n      reply += `${content.text}\\n`;\n    }\n\n    const annotations = Array.isArray(content.annotations)\n      ? content.annotations\n      : [];\n\n    for (const annotation of annotations) {\n      if (annotation?.type !== 'file_citation') {\n        continue;\n      }\n\n      citations.push({\n        type: 'file',\n        file_id: annotation.file_id ?? null,\n        filename: annotation.filename ?? null,\n        expert: 'literature'\n      });\n    }\n  }\n}\n\nreply = reply.trim();\n\nconst uniqueCitations = [\n  ...new Map(\n    citations.map(citation => [\n      `${citation.file_id}:${citation.filename}`,\n      citation\n    ])\n  ).values()\n];\n\nif (!reply) {\n  warnings.push(\n    'Literature retrieval produced no answer text.'\n  );\n}\n\nif (reply && uniqueCitations.length === 0) {\n  warnings.push(\n    'A literature answer was generated, but no source citations were returned.'\n  );\n}\n\nreturn [{\n  json: {\n    expert: 'literature',\n\n    success:\n      Boolean(reply) &&\n      Boolean(searchCall) &&\n      searchCall.status === 'completed' &&\n      uniqueCitations.length > 0,\n\n    reply,\n    citations: uniqueCitations,\n    warnings,\n    proposals: [],\n    recommended_actions: [],\n    session_id: originalInput.session_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "9fe92620-4969-41b6-8f69-900c9c62828c",
+      "name": "Format Literature Result"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Literature Retrieval Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Literature Retrieval Config": {
+      "main": [
+        [
+          {
+            "node": "Literature Retrieval Configured?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Literature Retrieval Configured?": {
+      "main": [
+        [
+          {
+            "node": "Search Literature",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Literature Configuration Warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Literature": {
+      "main": [
+        [
+          {
+            "node": "Format Literature Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "70e307e9-0b8a-4635-aaaf-23cd99d4cc04",
+  "meta": {
+    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+  },
+  "id": "NQOmWyt3oOAD4INK",
+  "tags": []
+}
