@@ -2079,6 +2079,77 @@
           "name": "Postgres account"
         }
       }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stopped-monitoring-alert",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -736,
+        544
+      ],
+      "id": "466042cf-9353-4a5d-87f0-581516dd0ea8",
+      "name": "stopped-monitoring-alert Webhook",
+      "webhookId": "a1632d78-eb66-4552-9ba6-5f35ee683ec5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? {};\n\nconst userId = body.userId;\nconst smartWatchId = body.smartWatchId;\nconst androidId = body.androidId;\nconst monitoringType = body.monitoringType;\nconst timestamp = body.timestamp;\nconst reasonHead = body.reason;\nconst bluetoothStatus = body.bluetoothStatus;\nconst n8nStatus = body.n8nStatus;\nconst locationStatus = body.locationStatus;\n\n\nlet reasonBody;\n\nswitch (reasonHead) {\n  case \"user_stopped\":\n    reasonBody = \"notification stop button pressed\";\n    break;\n\n  case \"service_destroyed\":\n    reasonBody = \"Android/app killed the service\";\n    break;\n\n  case \"max_n8n_retries\":\n    reasonBody = \"n8n config connection failed too many times\";\n    break;\n\n  default:\n    reasonBody = `Unknown reason: ${reasonHead}`;\n    break;\n}\n  \n\nreturn [{\n  JSON: {\n    userId,\n    smartWatchId,\n    androidId,\n    monitoringType,\n    timestamp,\n    reasonHead,\n    reasonBody,\n    bluetoothStatus,\n    n8nStatus,\n    locationStatus\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        544
+      ],
+      "id": "40be917f-1385-4fd9-a766-384e2cbfa50a",
+      "name": "parse crash response",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "bliran2@gmail.com",
+        "toEmail": "bliran2@gmail.com, talir9400@gmail.com",
+        "subject": "=Smartwatch Haptic: User {{ $json.JSON.userId }} Has Stopped Monitoring",
+        "html": "=<div style=\"font-family: Arial, sans-serif; background-color: #f4f7f8; padding: 24px;\">\n  <div style=\"max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #d6ecee;\">\n    \n    <div style=\"background-color: #006d77; color: #ffffff; padding: 18px 24px;\">\n      <h2 style=\"margin: 0; font-size: 22px;\">Monitoring Service Stopped</h2>\n    </div>\n\n    <div style=\"padding: 24px; color: #263238; font-size: 15px; line-height: 1.6;\">\n      <p>\n        User <strong>{{ $json.JSON.userId }}</strong>, with watch \n        <strong>{{ $json.JSON.smartWatchId }}</strong> and Android device \n        <strong>{{ $json.JSON.androidId }}</strong>, stopped the monitoring service because:\n      </p>\n\n      <div style=\"background-color: #d6ecee; border-left: 5px solid #006d77; padding: 14px 16px; margin: 18px 0; border-radius: 6px;\">\n    <strong>{{ $json.JSON.reasonHead }}</strong> - {{ $json.JSON.reasonBody }}      </div>\n\n      <h3 style=\"color: #3a5075; margin-top: 24px;\">Service Details</h3>\n\n      <table style=\"width: 100%; border-collapse: collapse; margin-top: 10px;\">\n        <tr>\n          <td style=\"padding: 8px 0; color: #607d8b;\">Monitoring Type:</td>\n          <td style=\"padding: 8px 0;\"><strong>{{ $json.JSON.monitoringType }}</strong></td>\n        </tr>\n        <tr>\n          <td style=\"padding: 8px 0; color: #607d8b;\">Timestamp:</td>\n          <td style=\"padding: 8px 0;\"><strong>{{ $json.JSON.timestamp }}</strong></td>\n        </tr>\n        <tr>\n          <td style=\"padding: 8px 0; color: #607d8b;\">Bluetooth Status:</td>\n          <td style=\"padding: 8px 0;\"><strong>{{ $json.JSON.bluetoothStatus }}</strong></td>\n        </tr>\n        <tr>\n          <td style=\"padding: 8px 0; color: #607d8b;\">n8n Status:</td>\n          <td style=\"padding: 8px 0;\"><strong>{{ $json.JSON.n8nStatus }}</strong></td>\n        </tr>\n        <tr>\n          <td style=\"padding: 8px 0; color: #607d8b;\">Location Status:</td>\n          <td style=\"padding: 8px 0;\"><strong>{{ $json.JSON.locationStatus }}</strong></td>\n        </tr>\n      </table>\n\n      <p style=\"margin-top: 24px;\">\n        Please check whether the stop was expected or caused by a service/network issue.\n      </p>\n    </div>\n\n    <div style=\"background-color: #f0f4f5; padding: 14px 24px; font-size: 12px; color: #607d8b;\">\n      Smartwatch Haptic Monitoring System\n    </div>\n\n  </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        544
+      ],
+      "id": "96e74c50-8f4e-484c-a78f-a109a2e1c7cf",
+      "name": "Send an Email",
+      "webhookId": "f0a23503-a30b-4760-ad4a-4e40a7838c53",
+      "credentials": {
+        "smtp": {
+          "id": "hx5JTF6MZ0TXJlnK",
+          "name": "SMTP account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -112,
+        544
+      ],
+      "id": "5276474f-64dc-4655-945f-d402377d354d",
+      "name": "Respond to Webhook2",
+      "disabled": true
     }
   ],
   "pinData": {
@@ -2087,6 +2158,37 @@
         "json": {
           "reply": "ðŸ“‹ *Active HeartRate Schedules (1):*\n\nðŸ†” *ID 1*\n   ðŸ‘¤ User: 101\n   ðŸ“Š Type: average (33%)\n   â³ Next Check: today (Interval: 5 days)",
           "session_id": "researcher-ui"
+        }
+      }
+    ],
+    "stopped-monitoring-alert Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "localhost:5678",
+            "user-agent": "curl/8.19.0",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "content-length": "238"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "userId": "123",
+            "smartWatchId": "456",
+            "androidId": "50",
+            "monitoringType": "HeartRate",
+            "timestamp": "2026-06-20T10:34:56Z",
+            "reason": "user_stopped",
+            "bluetoothStatus": "Connected to Galaxy Watch",
+            "n8nStatus": "Connected",
+            "locationStatus": "Active"
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/stopped-monitoring-alert",
+          "executionMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
         }
       }
     ]
@@ -2946,6 +3048,39 @@
           }
         ]
       ]
+    },
+    "stopped-monitoring-alert Webhook": {
+      "main": [
+        [
+          {
+            "node": "parse crash response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse crash response": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -2954,7 +3089,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "ad41014b-d109-4724-a277-5c244f2a39f5",
+  "versionId": "8b9ffba4-324e-4eb1-899e-85d89bf6b640",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
