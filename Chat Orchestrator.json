@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "b8fb72fb-8d89-4796-ba12-1c5284431853",
+      "id": "2c691ee2-f608-45f3-8bca-0539c5417a83",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3968,
-        5088
+        -1120,
+        1680
       ],
       "webhookId": "a27f20a5-1919-4ecf-b450-3bd049a8ab40"
     },
@@ -22,13 +22,13 @@
       "parameters": {
         "jsCode": "const incoming =\n  $input.first().json ?? {};\n\nconst body =\n  incoming.body &&\n  typeof incoming.body === 'object' &&\n  !Array.isArray(incoming.body)\n    ? incoming.body\n    : incoming;\n\nfunction requiredString(\n  value,\n  fieldName\n) {\n  const normalized =\n    String(value ?? '').trim();\n\n  if (!normalized) {\n    throw new Error(\n      `Missing ${fieldName}`\n    );\n  }\n\n  return normalized;\n}\n\nfunction optionalString(value) {\n  const normalized =\n    String(value ?? '').trim();\n\n  return normalized || null;\n}\n\nfunction requiredPositiveInteger(\n  value,\n  fieldName\n) {\n  const number =\n    Number(value);\n\n  if (\n    !Number.isInteger(number) ||\n    number <= 0\n  ) {\n    throw new Error(\n      `Missing or invalid ${fieldName}`\n    );\n  }\n\n  return number;\n}\n\nfunction optionalPositiveInteger(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number =\n    Number(value);\n\n  return (\n    Number.isInteger(number) &&\n    number > 0\n  )\n    ? number\n    : null;\n}\n\nfunction objectValue(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return (\n        parsed &&\n        typeof parsed === 'object' &&\n        !Array.isArray(parsed)\n      )\n        ? parsed\n        : {};\n    } catch {\n      return {};\n    }\n  }\n\n  return {};\n}\n\nfunction arrayValue(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return Array.isArray(parsed)\n        ? parsed\n        : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\n\nconst sessionId =\n  requiredString(\n    body.session_id,\n    'session_id'\n  );\n\nconst usecaseId =\n  requiredPositiveInteger(\n    body.usecase_id,\n    'usecase_id'\n  );\n\nconst message =\n  requiredString(\n    body.message,\n    'message'\n  );\n\nconst usecaseName =\n  optionalString(\n    body.usecase_name\n  );\n\nconst userId =\n  optionalPositiveInteger(\n    body.user_id\n  );\n\nconst userMappingId =\n  optionalPositiveInteger(\n    body.user_mapping_id\n  );\n\nconst userUsecaseId =\n  optionalPositiveInteger(\n    body.user_usecase_id\n  );\n\n/*\n * Distinguish an intentional All Users scope\n * from an accidentally missing user ID.\n */\nconst allUsersSelected =\n  body.all_users_selected === true ||\n  String(\n    body.all_users_selected ?? ''\n  )\n    .trim()\n    .toLowerCase() === 'true';\n\nconst requestedScope =\n  String(\n    body.analysis_scope ?? ''\n  )\n    .trim()\n    .toLowerCase();\n\nconst analysisScope =\n  requestedScope === 'participant' ||\n  requestedScope === 'usecase'\n    ? requestedScope\n    : allUsersSelected\n      ? 'usecase'\n      : 'participant';\n\nconst context =\n  objectValue(\n    body.context\n  );\n\nconst openArtifacts =\n  arrayValue(\n    body.open_artifacts\n  );\n\nreturn [{\n  json: {\n    session_id:\n      sessionId,\n\n    message,\n\n    usecase_id:\n      usecaseId,\n\n    usecase_name:\n      usecaseName,\n\n    user_id:\n      userId,\n\n    user_name:\n      optionalString(\n        body.user_name\n      ),\n\n    user_mapping_id:\n      userMappingId,\n\n    user_usecase_id:\n      userUsecaseId,\n\n    user_usecase_name:\n      optionalString(\n        body.user_usecase_name\n      ),\n\n    all_users_selected:\n      allUsersSelected,\n\n    analysis_scope:\n      analysisScope,\n\n    context,\n\n    open_artifacts:\n      openArtifacts,\n\n    app_context: {\n      selected_usecase_id:\n        usecaseId,\n\n      selected_usecase_name:\n        usecaseName,\n\n      selected_user_id:\n        userId,\n\n      selected_user_name:\n        optionalString(\n          body.user_name\n        ),\n\n      selected_user_mapping_id:\n        userMappingId,\n\n      selected_user_usecase_id:\n        userUsecaseId,\n\n      selected_user_usecase_name:\n        optionalString(\n          body.user_usecase_name\n        ),\n\n      all_users_selected:\n        allUsersSelected,\n\n      analysis_scope:\n        analysisScope\n    }\n  }\n}];"
       },
-      "id": "4c9e67a5-3d69-4727-9eef-3e5321113d38",
+      "id": "68a265f4-a379-42cf-8a52-3038f1589247",
       "name": "Validate input",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4192,
-        5088
+        -896,
+        1680
       ]
     },
     {
@@ -39,18 +39,18 @@
           "queryReplacement": "={{ [\n  $json.session_id,\n  $json.usecase_id\n] }}"
         }
       },
-      "id": "0079aa63-d511-4e10-87e7-7626900f0337",
+      "id": "617ff42f-406b-4e8e-91f9-16e084db1f5d",
       "name": "Session Upsert",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4416,
-        5088
+        -672,
+        1680
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
@@ -62,32 +62,32 @@
           "queryReplacement": "={{ [$json.session_id] }}"
         }
       },
-      "id": "baccae06-793f-415e-ada3-c36374cf5cb9",
+      "id": "8d8e5d3d-e16c-4e7a-b318-8fce7fff4f8c",
       "name": "Load Context",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4640,
-        5088
+        -448,
+        1680
       ],
       "credentials": {
         "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const ctx =\n  $input.first().json ?? {};\n\nconst input =\n  $('Validate input')\n    .first()\n    .json ?? {};\n\nfunction parseArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return [];\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return Array.isArray(parsed)\n        ? parsed\n        : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\n\nfunction parseObject(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return (\n        parsed &&\n        typeof parsed === 'object' &&\n        !Array.isArray(parsed)\n      )\n        ? parsed\n        : {};\n    } catch {\n      return {};\n    }\n  }\n\n  return {};\n}\n\nconst message =\n  input.message ?? '';\n\nconst sessionId =\n  input.session_id ?? null;\n\nconst selectedUserId =\n  input.user_id ?? null;\n\nconst selectedUserName =\n  input.user_name ?? null;\n\nconst selectedUserMappingId =\n  input.user_mapping_id ?? null;\n\nconst selectedUserUsecaseId =\n  input.user_usecase_id ?? null;\n\nconst selectedUserUsecaseName =\n  input.user_usecase_name ?? null;\n\nconst appContext =\n  parseObject(\n    input.app_context\n  );\n\nconst additionalContext =\n  parseObject(\n    input.context\n  );\n\nconst openArtifacts =\n  parseArray(\n    input.open_artifacts\n  );\n\nconst history =\n  parseArray(\n    ctx.conversation_history\n  );\n\nconst globalMappings =\n  parseArray(\n    ctx.global_mappings\n  );\n\nconst plannerSchema = {\n  intent:\n    'mapping | knowledge | dictionary | scheduling | usecase_builder | clarify',\n\n  action:\n    '',\n\n  target_workflow:\n    'mapping_manager | expert_panel | dictionary_manager | schedule_manager | use_case_builder | clarify',\n\n  read_only:\n    true,\n\n  requires_confirmation:\n    false,\n\n  reply:\n    '',\n\n  payload: {\n    action:\n      '',\n\n    params:\n      {}\n  }\n};\n\nconst systemPrompt = `\nYou are the planning and routing layer of a research assistant embedded in a haptic-feedback research application.\n\nYour task is to interpret the researcher's message and choose exactly one target workflow.\n\nYou do not execute database operations yourself.\n\nCURRENT EXPERIMENT\n\nUse-case ID:\n${ctx.usecase_id ?? input.usecase_id ?? 'unknown'}\n\nUse-case name:\n${ctx.usecase_name ?? input.usecase_name ?? 'unknown'}\n\nUse-case description:\n${ctx.usecase_description ?? 'No description available'}\n\nACTIVE FEEDBACK MAPPINGS\n\n${JSON.stringify(globalMappings, null, 2)}\n\nSELECTED APPLICATION CONTEXT\n\n${JSON.stringify({\n  selected_user_id:\n    selectedUserId,\n\n  selected_user_name:\n    selectedUserName,\n\n  selected_user_mapping_id:\n    selectedUserMappingId,\n\n  selected_user_usecase_id:\n    selectedUserUsecaseId,\n\n  selected_user_usecase_name:\n    selectedUserUsecaseName\n}, null, 2)}\n\nADDITIONAL REQUEST CONTEXT\n\n${JSON.stringify(additionalContext, null, 2)}\n\nOPEN ARTIFACTS PROVIDED BY THE APP\n\n${JSON.stringify(openArtifacts, null, 2)}\n\nIMPORTANT SYSTEM RULE\n\nRelease 1 supports one active mapping per user globally.\n\nDo not claim that the system supports a separate active mapping for every user/use-case combination unless the database and runtime are changed together.\n\nTARGET WORKFLOWS\n\n1. mapping_manager\n\nUse this for deterministic feedback-mapping operations:\n\n- list active mappings;\n- list all mappings;\n- add a mapping;\n- remove a mapping;\n- change a global mapping;\n- duplicate and change a mapping only for a specific participant;\n- assign an existing mapping to a participant;\n\n2. expert_panel\n\nUse this for every read-only knowledge, explanation, analysis, research, or recommendation request.\n\nExamples:\n\n- explain one current mapping;\n- explain a vibration parameter;\n- explain the selected use case;\n- explain the purpose or architecture of the project;\n- answer literature or research questions;\n- compare mapping approaches;\n- analyze participant data;\n- assess participant-specific adaptation;\n- discuss personalization strategies;\n- analyze feedback burden;\n- analyze safety considerations;\n- provide evidence, citations, trade-offs, or recommendations;\n- combine project context, literature, mapping design, or participant data.\n- suggest an brainstorm new mappings based on user data\n\nThe expert panel is read-only.\n\nIt must never be used to perform a database mutation.\n\nFor a simple question, the expert panel may call only one relevant expert.\n\nFor a broad question, it may call several experts.\n\n3. dictionary_manager\n\nUse this for deterministic UseCaseDictionary operations:\n\n- list dictionary entries;\n- retrieve a use case's parameters;\n- add a parameter;\n- edit a parameter;\n- remove a parameter;\n- remove a use case's dictionary entries.\n\n4. schedule_manager\n\nUse this for deterministic schedule operations:\n\n- add a schedule;\n- change a schedule;\n- activate a schedule;\n- deactivate a schedule;\n- list active schedules;\n- list all schedules.\n\n5. use_case_builder\n\nUse this when the researcher asks for implementation instructions or generated template configuration for adding an external API-based use case.\n\n6. clarify\n\nUse this when required information is missing or the request is ambiguous.\n\nOUTPUT CONTRACT\n\nReturn only one valid JSON object matching this structure:\n\n${JSON.stringify(\n  plannerSchema,\n  null,\n  2\n)}\n\nGENERAL ROUTING RULES\n\n- Never return text outside the JSON object.\n- Never invent numeric IDs.\n- Preserve explicit IDs supplied by the researcher or selected application context.\n- Do not route a read-only question to a mutation workflow.\n- Do not route an explicit mutation request to the expert panel.\n- Every read-only knowledge, explanation, analysis, comparison, research, evidence, or recommendation request must use expert_panel.\n- There is no separate knowledge_agent workflow.\n- If the researcher explicitly asks not to change anything, read_only must be true.\n- If a request is ambiguous, choose clarify instead of guessing.\n- requires_confirmation should normally be false in the current release.\n- For an ambiguous mutation, use clarify rather than setting requires_confirmation to true.\n\nMAPPING RULES\n\nFor mapping operations:\n\n- intent must be mapping.\n- target_workflow must be mapping_manager.\n- payload.action must contain the Mapping Manager action.\n- action must match payload.action.\n\nSupported mapping actions:\n\n- list\n- listAll\n- add\n- remove\n- change\n- duplicate_mapping_for_user\n- assign\n- brainstorm\n\nMapping list:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"list\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"list\",\n    \"params\": {}\n  }\n}\n\nMapping listAll:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"listAll\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"listAll\",\n    \"params\": {}\n  }\n}\n\nMapping add:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"add\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"add\",\n    \"params\": {\n      \"minvalue\": 80,\n      \"maxvalue\": 100,\n      \"minpulses\": 3,\n      \"maxpulses\": 5,\n      \"minintensity\": 60,\n      \"maxintensity\": 80,\n      \"minduration\": 200,\n      \"maxduration\": 300,\n      \"mininterval\": 100,\n      \"maxinterval\": 150\n    }\n  }\n}\n\nAdding a new range is always add, even when a similar range may already exist.\n\nMapping remove:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"remove\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"remove\",\n    \"params\": {\n      \"id\": 123\n    }\n  }\n}\n\nRemoval requires an explicit numeric mapping ID.\n\nMapping global change:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"change\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"change\",\n    \"params\": {\n      \"id\": 123,\n      \"minpulses\": 3\n    }\n  }\n}\n\nUse change only for a global update affecting all participants assigned to the mapping.\n\nMapping participant-only change:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"duplicate_mapping_for_user\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"duplicate_mapping_for_user\",\n    \"params\": {\n      \"id\": 123,\n      \"user_id\": 456,\n      \"minpulses\": 3\n    }\n  }\n}\n\nAlways use duplicate_mapping_for_user when the researcher explicitly asks to change a mapping only for one participant.\n\nInclude only fields explicitly requested for change. Mapping Manager copies unchanged fields.\n\nMapping assignment:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"assign\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"assign\",\n    \"params\": {\n      \"id\": 123,\n      \"user_id\": 456\n    }\n  }\n}\n\nUse assign when an existing mapping should be assigned without changing its values.\n\nMapping brainstorm:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"brainstorm\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"brainstorm\",\n    \"params\": {}\n  }\n}\n\nUse brainstorm only for basic mapping suggestions that the Mapping Manager can handle directly.\n\nUse expert_panel instead when the request asks for evidence, literature, participant data, safety, burden, comparison, trade-offs, or multi-expert analysis.\n\nWhen the researcher says \"that mapping\", \"this mapping\", or \"the selected mapping\":\n\n- use selected_user_mapping_id when it exists;\n- if the immediately previous assistant reply listed or discussed more than one mapping ID, use clarify unless the researcher supplies an explicit mapping ID;\n- when it does not exist and exactly one active mapping exists, use that mapping's ID;\n- otherwise use clarify.\n\nWhen the researcher targets a specific participant:\n\n- use the explicit participant ID when provided;\n- otherwise use selected_user_id when available;\n- otherwise use clarify.\n\nIf a global mapping is shared by multiple participants and the researcher asks to modify it without saying whether the change is global or participant-only, use clarify.\n\nEXPERT PANEL RULES\n\nAll knowledge requests use this structure:\n\n{\n  \"intent\": \"knowledge\",\n  \"action\": \"analyze\",\n  \"target_workflow\": \"expert_panel\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"analyze\",\n    \"params\": {}\n  }\n}\n\nUse expert_panel for both simple explanations and broad analysis.\n\nThe expert panel decides internally which expert or experts are needed.\n\nNever send a mutation request to expert_panel.\n\nDICTIONARY RULES\n\nSupported actions:\n\n- list\n- add\n- remove_usecase\n- remove_parameter\n- edit\n- get\n\nDictionary list:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"list\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"list\",\n    \"params\": {}\n  }\n}\n\nDictionary get:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"get\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"get\",\n    \"params\": {\n      \"usecase_name\": \"\"\n    }\n  }\n}\n\nDictionary add example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"add\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"add\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"parameter_name\": \"\",\n      \"parameter_value\": \"\"\n    }\n  }\n}\n\nDictionary edit example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"edit\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"edit\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"parameter_name\": \"\",\n      \"parameter_value\": \"\"\n    }\n  }\n}\n\nDictionary remove parameter example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"remove_parameter\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"remove_parameter\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"parameter_name\": \"\"\n    }\n  }\n}\n\nDictionary remove use case example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"remove_usecase\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"remove_usecase\",\n    \"params\": {\n      \"usecase_name\": \"\"\n    }\n  }\n}\n\nSCHEDULING RULES\n\nSupported actions:\n\n- add\n- change\n- deactivate\n- activate\n- listActive\n- listAll\n\nSchedule list active:\n\n{\n  \"intent\": \"scheduling\",\n  \"action\": \"listActive\",\n  \"target_workflow\": \"schedule_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"listActive\",\n    \"params\": {}\n  }\n}\n\nSchedule list all:\n\n{\n  \"intent\": \"scheduling\",\n  \"action\": \"listAll\",\n  \"target_workflow\": \"schedule_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"listAll\",\n    \"params\": {}\n  }\n}\n\nSchedule add, change, deactivate, and activate are not read-only.\n\nUSE CASE BUILDER RULES\n\nUse this structure:\n\n{\n  \"intent\": \"usecase_builder\",\n  \"action\": \"generate_template_code\",\n  \"target_workflow\": \"use_case_builder\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"generate_template_code\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"api_name\": \"\",\n      \"api_id\": null,\n      \"measurement_name\": \"\",\n      \"response_value_path\": \"\",\n      \"endpoint_url\": \"\",\n      \"context\": \"\"\n    }\n  }\n}\n\nWhen a use-case or API name is supplied, copy it into usecase_name and api_name unless the researcher clearly gives different names.\n\nWhen a measured value is supplied, copy it into measurement_name.\n\nWhen a JSON response path is supplied, copy it into response_value_path.\n\nLeave missing string values empty and missing api_id as null.\n\nCLARIFY RULES\n\nUse clarify when:\n\n- a required mapping ID is missing;\n- a required participant ID is missing;\n- a mutation target is ambiguous;\n- the researcher refers to a mapping that cannot be identified safely;\n- the desired workflow cannot be selected reliably.\n\nFor clarify:\n\n{\n  \"intent\": \"clarify\",\n  \"action\": \"clarify\",\n  \"target_workflow\": \"clarify\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"Ask one concise follow-up question.\",\n  \"payload\": {\n    \"action\": \"clarify\",\n    \"params\": {}\n  }\n}\n`;\n\nconst messages = [\n  {\n    role:\n      'system',\n\n    content:\n      systemPrompt\n  },\n\n  ...history,\n\n  {\n    role:\n      'user',\n\n    content:\n      message\n  }\n];\n\nconst messagesAsText =\n  messages\n    .map(item => {\n      const role =\n        item.role === 'system'\n          ? 'SYSTEM'\n          : item.role === 'assistant'\n            ? 'ASSISTANT'\n            : 'USER';\n\n      return `${role}: ${item.content}`;\n    })\n    .join(\n      String.fromCharCode(\n        10,\n        10\n      )\n    );\n\nreturn [{\n  json: {\n    session_id:\n      sessionId,\n\n    message,\n\n    messages,\n\n    messages_as_text:\n      messagesAsText,\n\n    usecase_id:\n      ctx.usecase_id ??\n      input.usecase_id ??\n      null,\n\n    usecase_name:\n      ctx.usecase_name ??\n      input.usecase_name ??\n      null,\n\n    global_mappings:\n      globalMappings,\n\n    history,\n\n    selected_user_id:\n      selectedUserId,\n\n    selected_user_name:\n      selectedUserName,\n\n    selected_user_mapping_id:\n      selectedUserMappingId,\n\n    selected_user_usecase_id:\n      selectedUserUsecaseId,\n\n    selected_user_usecase_name:\n      selectedUserUsecaseName,\n\n    app_context:\n      appContext,\n\n    context:\n      additionalContext,\n\n    open_artifacts:\n      openArtifacts\n  }\n}];"
+        "jsCode": "const ctx =\n  $input.first().json ?? {};\n\nconst input =\n  $('Validate input')\n    .first()\n    .json ?? {};\n\nfunction parseArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return [];\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return Array.isArray(parsed)\n        ? parsed\n        : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\n\nfunction parseObject(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return (\n        parsed &&\n        typeof parsed === 'object' &&\n        !Array.isArray(parsed)\n      )\n        ? parsed\n        : {};\n    } catch {\n      return {};\n    }\n  }\n\n  return {};\n}\n\nconst message =\n  input.message ?? '';\n\nconst sessionId =\n  input.session_id ?? null;\n\nconst selectedUserId =\n  input.user_id ?? null;\n\nconst selectedUserName =\n  input.user_name ?? null;\n\nconst selectedUserMappingId =\n  input.user_mapping_id ?? null;\n\nconst selectedUserUsecaseId =\n  input.user_usecase_id ?? null;\n\nconst selectedUserUsecaseName =\n  input.user_usecase_name ?? null;\n\nconst appContext =\n  parseObject(\n    input.app_context\n  );\n\nconst additionalContext =\n  parseObject(\n    input.context\n  );\n\nconst openArtifacts =\n  parseArray(\n    input.open_artifacts\n  );\n\nconst history =\n  parseArray(\n    ctx.conversation_history\n  );\n\nconst globalMappings =\n  parseArray(\n    ctx.global_mappings\n  );\n\nconst plannerSchema = {\n  intent:\n    'mapping | knowledge | dictionary | scheduling | usecase_builder | clarify',\n\n  action:\n    '',\n\n  target_workflow:\n    'mapping_manager | expert_panel | dictionary_manager | schedule_manager | use_case_builder | clarify',\n\n  read_only:\n    true,\n\n  requires_confirmation:\n    false,\n\n  reply:\n    '',\n\n  payload: {\n    action:\n      '',\n\n    params:\n      {}\n  }\n};\n\nconst systemPrompt = `\nYou are the planning and routing layer of a research assistant embedded in a haptic-feedback research application.\n\nYour task is to interpret the researcher's message and choose exactly one target workflow.\n\nYou do not execute database operations yourself.\n\nCURRENT EXPERIMENT\n\nUse-case ID:\n${ctx.usecase_id ?? input.usecase_id ?? 'unknown'}\n\nUse-case name:\n${ctx.usecase_name ?? input.usecase_name ?? 'unknown'}\n\nUse-case description:\n${ctx.usecase_description ?? 'No description available'}\n\nACTIVE FEEDBACK MAPPINGS\n\n${JSON.stringify(globalMappings, null, 2)}\n\nSELECTED APPLICATION CONTEXT\n\n${JSON.stringify({\n  selected_user_id:\n    selectedUserId,\n\n  selected_user_name:\n    selectedUserName,\n\n  selected_user_mapping_id:\n    selectedUserMappingId,\n\n  selected_user_usecase_id:\n    selectedUserUsecaseId,\n\n  selected_user_usecase_name:\n    selectedUserUsecaseName\n}, null, 2)}\n\nADDITIONAL REQUEST CONTEXT\n\n${JSON.stringify(additionalContext, null, 2)}\n\nOPEN ARTIFACTS PROVIDED BY THE APP\n\n${JSON.stringify(openArtifacts, null, 2)}\n\nIMPORTANT SYSTEM RULE\n\nRelease 1 supports one active mapping per user globally.\n\nDo not claim that the system supports a separate active mapping for every user/use-case combination unless the database and runtime are changed together.\n\nTARGET WORKFLOWS\n\n1. mapping_manager\n\nUse this for deterministic feedback-mapping operations:\n\n- list active mappings;\n- list all mappings;\n- add a mapping;\n- remove a mapping;\n- change a global mapping;\n- duplicate and change a mapping only for a specific participant;\n- assign an existing mapping to a participant;\n\n2. expert_panel\n\nUse this for every read-only knowledge, explanation, analysis, research, or recommendation request.\n\nExamples:\n\n- explain one current mapping;\n- explain a vibration parameter;\n- explain the selected use case;\n- explain the purpose or architecture of the project;\n- answer literature or research questions;\n- compare mapping approaches;\n- analyze participant data;\n- assess participant-specific adaptation;\n- discuss personalization strategies;\n- analyze feedback burden;\n- analyze safety considerations;\n- provide evidence, citations, trade-offs, or recommendations;\n- combine project context, literature, mapping design, or participant data.\n- suggest an brainstorm new mappings based on user data\n\nThe expert panel is read-only.\n\nIt must never be used to perform a database mutation.\n\nFor a simple question, the expert panel may call only one relevant expert.\n\nFor a broad question, it may call several experts.\n\n3. dictionary_manager\n\nUse this for deterministic UseCaseDictionary operations:\n\n- list dictionary entries;\n- retrieve a use case's parameters;\n- add a parameter;\n- edit a parameter;\n- remove a parameter;\n- remove a use case's dictionary entries.\n\n4. schedule_manager\n\nUse this for deterministic schedule operations:\n\n- add a schedule;\n- change a schedule;\n- activate a schedule;\n- deactivate a schedule;\n- list active schedules;\n- list all schedules.\n\n5. use_case_builder\n\nUse this when the researcher asks for implementation instructions or generated template configuration for adding an external API-based use case.\n\n6. clarify\n\nUse this when required information is missing or the request is ambiguous.\n\nOUTPUT CONTRACT\n\nReturn only one valid JSON object matching this structure:\n\n${JSON.stringify(\n  plannerSchema,\n  null,\n  2\n)}\n\nGENERAL ROUTING RULES\n\n- Never return text outside the JSON object.\n- Never invent numeric IDs.\n- Preserve explicit IDs supplied by the researcher or selected application context.\n- Do not route a read-only question to a mutation workflow.\n- Do not route an explicit mutation request to the expert panel.\n- Every read-only knowledge, explanation, analysis, comparison, research, evidence, or recommendation request must use expert_panel.\n- There is no separate knowledge_agent workflow.\n- If the researcher explicitly asks not to change anything, read_only must be true.\n- If a request is ambiguous, choose clarify instead of guessing.\n- requires_confirmation should normally be false in the current release.\n- For an ambiguous mutation, use clarify rather than setting requires_confirmation to true.\n\nMAPPING RULES\n\nFor mapping operations:\n\n- intent must be mapping.\n- target_workflow must be mapping_manager.\n- payload.action must contain the Mapping Manager action.\n- action must match payload.action.\n\nSupported mapping actions:\n\n- list\n- listAll\n- add\n- remove\n- change\n- duplicate_mapping_for_user\n- assign\n- brainstorm\n\nMapping list:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"list\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"list\",\n    \"params\": {}\n  }\n}\n\nMapping listAll:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"listAll\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"listAll\",\n    \"params\": {}\n  }\n}\n\nMapping add:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"add\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"add\",\n    \"params\": {\n      \"minvalue\": 80,\n      \"maxvalue\": 100,\n      \"minpulses\": 3,\n      \"maxpulses\": 5,\n      \"minintensity\": 60,\n      \"maxintensity\": 80,\n      \"minduration\": 200,\n      \"maxduration\": 300,\n      \"mininterval\": 100,\n      \"maxinterval\": 150\n    }\n  }\n}\n\nAdding a new range is always add, even when a similar range may already exist.\n\nMapping remove:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"remove\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"remove\",\n    \"params\": {\n      \"id\": 123\n    }\n  }\n}\n\nRemoval requires an explicit numeric mapping ID.\n\nMapping global change:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"change\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"change\",\n    \"params\": {\n      \"id\": 123,\n      \"minpulses\": 3\n    }\n  }\n}\n\nUse change only for a global update affecting all participants assigned to the mapping.\n\nMapping participant-only change:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"duplicate_mapping_for_user\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"duplicate_mapping_for_user\",\n    \"params\": {\n      \"id\": 123,\n      \"user_id\": 456,\n      \"minpulses\": 3\n    }\n  }\n}\n\nAlways use duplicate_mapping_for_user when the researcher explicitly asks to change a mapping only for one participant.\n\nInclude only fields explicitly requested for change. Mapping Manager copies unchanged fields.\n\nMapping assignment:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"assign\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"assign\",\n    \"params\": {\n      \"id\": 123,\n      \"user_id\": 456\n    }\n  }\n}\n\nUse assign when an existing mapping should be assigned without changing its values.\n\nMapping brainstorm:\n\n{\n  \"intent\": \"mapping\",\n  \"action\": \"brainstorm\",\n  \"target_workflow\": \"mapping_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"brainstorm\",\n    \"params\": {}\n  }\n}\n\nUse brainstorm only for basic mapping suggestions that the Mapping Manager can handle directly.\n\nUse expert_panel instead when the request asks for evidence, literature, participant data, safety, burden, comparison, trade-offs, or multi-expert analysis.\n\nWhen the researcher says \"that mapping\", \"this mapping\", or \"the selected mapping\":\n\n- use selected_user_mapping_id when it exists;\n- if the immediately previous assistant reply listed or discussed more than one mapping ID, use clarify unless the researcher supplies an explicit mapping ID;\n- when it does not exist and exactly one active mapping exists, use that mapping's ID;\n- otherwise use clarify.\n\nWhen the researcher targets a specific participant:\n\n- use the explicit participant ID when provided;\n- otherwise use selected_user_id when available;\n- otherwise use clarify.\n\nIf a global mapping is shared by multiple participants and the researcher asks to modify it without saying whether the change is global or participant-only, use clarify.\n\nEXPERT PANEL RULES\n\nAll knowledge requests use this structure:\n\n{\n  \"intent\": \"knowledge\",\n  \"action\": \"analyze\",\n  \"target_workflow\": \"expert_panel\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"analyze\",\n    \"params\": {}\n  }\n}\n\nUse expert_panel for both simple explanations and broad analysis.\n\nThe expert panel decides internally which expert or experts are needed.\n\nNever send a mutation request to expert_panel.\n\nDICTIONARY RULES\n\nSupported actions:\n\n- list\n- add\n- remove_usecase\n- remove_parameter\n- edit\n- get\n\nDictionary list:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"list\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"list\",\n    \"params\": {}\n  }\n}\n\nDictionary get:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"get\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"get\",\n    \"params\": {\n      \"usecase_name\": \"\"\n    }\n  }\n}\n\nDictionary add example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"add\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"add\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"parameter_name\": \"\",\n      \"parameter_value\": \"\"\n    }\n  }\n}\n\nDictionary edit example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"edit\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"edit\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"parameter_name\": \"\",\n      \"parameter_value\": \"\"\n    }\n  }\n}\n\nDictionary remove parameter example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"remove_parameter\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"remove_parameter\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"parameter_name\": \"\"\n    }\n  }\n}\n\nDictionary remove use case example:\n\n{\n  \"intent\": \"dictionary\",\n  \"action\": \"remove_usecase\",\n  \"target_workflow\": \"dictionary_manager\",\n  \"read_only\": false,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"remove_usecase\",\n    \"params\": {\n      \"usecase_name\": \"\"\n    }\n  }\n}\n\nSCHEDULING RULES\n\nSupported actions:\n\n- add\n- change\n- deactivate\n- activate\n- listActive\n- listAll\n\nSchedule list active:\n\n{\n  \"intent\": \"scheduling\",\n  \"action\": \"listActive\",\n  \"target_workflow\": \"schedule_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"listActive\",\n    \"params\": {}\n  }\n}\n\nSchedule list all:\n\n{\n  \"intent\": \"scheduling\",\n  \"action\": \"listAll\",\n  \"target_workflow\": \"schedule_manager\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"listAll\",\n    \"params\": {}\n  }\n}\n\nSchedule add, change, deactivate, and activate are not read-only.\n\nUSE CASE BUILDER RULES\n\nUse this structure:\n\n{\n  \"intent\": \"usecase_builder\",\n  \"action\": \"generate_template_code\",\n  \"target_workflow\": \"use_case_builder\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"\",\n  \"payload\": {\n    \"action\": \"generate_template_code\",\n    \"params\": {\n      \"usecase_name\": \"\",\n      \"api_name\": \"\",\n      \"api_id\": null,\n      \"measurement_name\": \"\",\n      \"response_value_path\": \"\",\n      \"endpoint_url\": \"\",\n      \"context\": \"\"\n    }\n  }\n}\n\nWhen a use-case or API name is supplied, copy it into usecase_name and api_name unless the researcher clearly gives different names.\n\nWhen a measured value is supplied, copy it into measurement_name.\n\nWhen a JSON response path is supplied, copy it into response_value_path.\n\nLeave missing string values empty and missing api_id as null.\n\nCLARIFY RULES\n\n- Use clarify when:\n  - a required mapping ID is missing;\n  - a required participant ID is missing;\n  - a mutation target is ambiguous;\n  - the researcher refers to a mapping that cannot be identified safely;\n  - the desired workflow cannot be selected reliably;\n  - the researcher asks an off-topic or general knowledge question (e.g., history, math, trivia) unrelated to the haptic research system.\n  \nFor clarify:\n{\n  \"intent\": \"clarify\",\n  \"action\": \"clarify\",\n  \"target_workflow\": \"clarify\",\n  \"read_only\": true,\n  \"requires_confirmation\": false,\n  \"reply\": \"I can only assist with questions related to the smartwatch haptic research system, experiment data, literature, and mapping configurations. Please ask a research-related question.\",\n  \"payload\": {\n    \"action\": \"clarify\",\n    \"params\": {}\n  }\n}\n`;\n\nconst messages = [\n  {\n    role:\n      'system',\n\n    content:\n      systemPrompt\n  },\n\n  ...history,\n\n  {\n    role:\n      'user',\n\n    content:\n      message\n  }\n];\n\nconst messagesAsText =\n  messages\n    .map(item => {\n      const role =\n        item.role === 'system'\n          ? 'SYSTEM'\n          : item.role === 'assistant'\n            ? 'ASSISTANT'\n            : 'USER';\n\n      return `${role}: ${item.content}`;\n    })\n    .join(\n      String.fromCharCode(\n        10,\n        10\n      )\n    );\n\nreturn [{\n  json: {\n    session_id:\n      sessionId,\n\n    message,\n\n    messages,\n\n    messages_as_text:\n      messagesAsText,\n\n    usecase_id:\n      ctx.usecase_id ??\n      input.usecase_id ??\n      null,\n\n    usecase_name:\n      ctx.usecase_name ??\n      input.usecase_name ??\n      null,\n\n    global_mappings:\n      globalMappings,\n\n    history,\n\n    selected_user_id:\n      selectedUserId,\n\n    selected_user_name:\n      selectedUserName,\n\n    selected_user_mapping_id:\n      selectedUserMappingId,\n\n    selected_user_usecase_id:\n      selectedUserUsecaseId,\n\n    selected_user_usecase_name:\n      selectedUserUsecaseName,\n\n    app_context:\n      appContext,\n\n    context:\n      additionalContext,\n\n    open_artifacts:\n      openArtifacts\n  }\n}];"
       },
-      "id": "b34fc7aa-c06a-4a31-b98a-7b4ffaee12a9",
+      "id": "3e0ed4d5-4c4c-41fd-badb-5742c2b58846",
       "name": "Build prompt",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4864,
-        5088
+        -224,
+        1680
       ]
     },
     {
@@ -96,13 +96,13 @@
         "text": "={{ $json.messages_as_text }}",
         "batching": {}
       },
-      "id": "28a6c25e-6fdb-4106-b248-f19cd55bcec3",
+      "id": "b4975914-c9ed-4930-857f-9d2d73ccc4dc",
       "name": "Basic LLM Chain",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        5088,
-        5088
+        0,
+        1680
       ]
     },
     {
@@ -116,17 +116,17 @@
         "builtInTools": {},
         "options": {}
       },
-      "id": "a02893ff-3ea0-4245-b7e4-beebae665fc1",
+      "id": "9e0c518b-3191-4887-b110-3b9e1fb20253",
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        5088,
-        5312
+        0,
+        1904
       ],
       "credentials": {
         "openAiApi": {
-          "id": "PZrrVTzGmheg0FUW",
+          "id": "C6PPGVshBukmGMJ7",
           "name": "OpenAi account"
         }
       }
@@ -135,13 +135,13 @@
       "parameters": {
         "jsCode": "const input =\n  $input.first().json ?? {};\n\nconst buildPrompt =\n  $('Build prompt')\n    .first()\n    .json ?? {};\n\nfunction isObject(value) {\n  return (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  );\n}\n\nfunction objectValue(value) {\n  if (isObject(value)) {\n    return value;\n  }\n\n  return {};\n}\n\nfunction booleanValue(\n  value,\n  fallback\n) {\n  if (\n    value === true ||\n    value === false\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    const normalized =\n      value\n        .trim()\n        .toLowerCase();\n\n    if (normalized === 'true') {\n      return true;\n    }\n\n    if (normalized === 'false') {\n      return false;\n    }\n  }\n\n  return fallback;\n}\n\nfunction parseModelOutput(value) {\n  if (isObject(value)) {\n    return value;\n  }\n\n  let text =\n    String(value ?? '')\n      .trim();\n\n  text = text\n    .replace(\n      /^```json\\s*/i,\n      ''\n    )\n    .replace(\n      /^```\\s*/i,\n      ''\n    )\n    .replace(\n      /\\s*```$/i,\n      ''\n    )\n    .trim();\n\n  try {\n    return JSON.parse(text);\n  } catch {\n    const firstBrace =\n      text.indexOf('{');\n\n    const lastBrace =\n      text.lastIndexOf('}');\n\n    if (\n      firstBrace >= 0 &&\n      lastBrace > firstBrace\n    ) {\n      try {\n        return JSON.parse(\n          text.slice(\n            firstBrace,\n            lastBrace + 1\n          )\n        );\n      } catch {\n        return {};\n      }\n    }\n\n    return {};\n  }\n}\n\nconst candidate =\n  input.text ??\n  input.output ??\n  input.response ??\n  input.result ??\n  input.answer ??\n  input;\n\nconst parsed =\n  parseModelOutput(\n    candidate\n  );\n\nconst validIntents =\n  new Set([\n    'mapping',\n    'knowledge',\n    'dictionary',\n    'scheduling',\n    'usecase_builder',\n    'clarify'\n  ]);\n\nconst validTargets =\n  new Set([\n    'mapping_manager',\n    'expert_panel',\n    'dictionary_manager',\n    'schedule_manager',\n    'use_case_builder',\n    'clarify'\n  ]);\n\nlet intent =\n  String(\n    parsed.intent ?? ''\n  ).trim();\n\nif (\n  !validIntents.has(intent)\n) {\n  intent =\n    'clarify';\n}\n\nconst defaultTargetByIntent = {\n  mapping:\n    'mapping_manager',\n\n  knowledge:\n    'expert_panel',\n\n  dictionary:\n    'dictionary_manager',\n\n  scheduling:\n    'schedule_manager',\n\n  usecase_builder:\n    'use_case_builder',\n\n  clarify:\n    'clarify'\n};\n\nlet targetWorkflow =\n  String(\n    parsed.target_workflow ?? ''\n  ).trim();\n\nif (\n  !validTargets.has(\n    targetWorkflow\n  )\n) {\n  targetWorkflow =\n    defaultTargetByIntent[\n      intent\n    ];\n}\n\n/*\n * Force every semantic intent to its permitted workflow.\n *\n * This prevents the model from returning an unsupported or\n * disconnected workflow.\n */\nif (\n  intent === 'mapping'\n) {\n  targetWorkflow =\n    'mapping_manager';\n}\n\nif (\n  intent === 'knowledge'\n) {\n  targetWorkflow =\n    'expert_panel';\n}\n\nif (\n  intent === 'dictionary'\n) {\n  targetWorkflow =\n    'dictionary_manager';\n}\n\nif (\n  intent === 'scheduling'\n) {\n  targetWorkflow =\n    'schedule_manager';\n}\n\nif (\n  intent ===\n  'usecase_builder'\n) {\n  targetWorkflow =\n    'use_case_builder';\n}\n\nif (\n  intent === 'clarify'\n) {\n  targetWorkflow =\n    'clarify';\n}\n\nconst rawPayload =\n  objectValue(\n    parsed.payload\n  );\n\nconst rawParams =\n  objectValue(\n    rawPayload.params\n  );\n\nlet action =\n  String(\n    parsed.action ??\n    rawPayload.action ??\n    ''\n  ).trim();\n\n/*\n * All knowledge requests use the GraphRAG Expert Panel.\n */\nif (\n  intent === 'knowledge'\n) {\n  action =\n    'analyze';\n}\n\nif (\n  intent === 'clarify'\n) {\n  action =\n    'clarify';\n}\n\nconst payload = {\n  action,\n\n  params:\n    rawParams\n};\n\nfunction arrayValue(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed = JSON.parse(value);\n      return Array.isArray(parsed) ? parsed : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\n\nfunction stringValue(value) {\n  return String(value ?? '').trim();\n}\n\nfunction recentConversationItems() {\n  const context = objectValue(buildPrompt.context);\n  const sessionMemory = objectValue(context.session_memory);\n\n  const combined = [\n    ...arrayValue(buildPrompt.history),\n    ...arrayValue(context.recent_conversation),\n    ...arrayValue(sessionMemory.recent_conversation)\n  ];\n\n  return combined\n    .filter(item => isObject(item))\n    .map(item => ({\n      role: stringValue(item.role).toLowerCase(),\n      content: stringValue(item.content)\n    }))\n    .filter(item => item.role && item.content);\n}\n\nfunction latestConversationContent(role) {\n  const requestedRole = stringValue(role).toLowerCase();\n  const items = recentConversationItems();\n\n  for (let index = items.length - 1; index >= 0; index--) {\n    if (items[index].role === requestedRole) {\n      return items[index].content;\n    }\n  }\n\n  const context = objectValue(buildPrompt.context);\n  const sessionMemory = objectValue(context.session_memory);\n\n  if (requestedRole === 'user') {\n    return stringValue(sessionMemory.previous_user_request);\n  }\n\n  if (requestedRole === 'assistant') {\n    return stringValue(sessionMemory.previous_assistant_reply);\n  }\n\n  return '';\n}\n\nfunction mappingIdsFromText(text) {\n  const ids = new Set();\n  const source = stringValue(text);\n  const patterns = [\n    /\\bID\\s+(\\d+)\\b/gi,\n    /\\bmapping\\s*(?:ID\\s*)?(\\d+)\\b/gi,\n    /\\bmapping_id\\s*[:=]?\\s*(\\d+)\\b/gi\n  ];\n\n  for (const pattern of patterns) {\n    let match;\n    while ((match = pattern.exec(source)) !== null) {\n      ids.add(Number(match[1]));\n    }\n  }\n\n  return [...ids].filter(Number.isFinite);\n}\n\nfunction currentMessageHasExplicitMappingId(text) {\n  const source = stringValue(text);\n  return /\\bmapping\\s*(?:ID\\s*)?\\d+\\b/i.test(source) ||\n    /\\bID\\s+\\d+\\b/i.test(source) ||\n    /\\bmapping_id\\s*[:=]?\\s*\\d+\\b/i.test(source);\n}\n\nfunction asksAboutPreviousRequest(text) {\n  const source = stringValue(text).toLowerCase();\n  return /\\bwhat\\s+did\\s+i\\s+(just\\s+)?ask\\b/.test(source) ||\n    /\\bwhat\\s+did\\s+i\\s+ask\\s+about\\s+earlier\\b/.test(source) ||\n    /\\bwhat\\s+was\\s+my\\s+(last|previous)\\s+(question|request)\\b/.test(source) ||\n    /\\bremind\\s+me\\s+what\\s+i\\s+(just\\s+)?asked\\b/.test(source);\n}\n\nfunction isMappingPronounMutation(text) {\n  const source = stringValue(text).toLowerCase();\n  const refersToMapping = /\\b(that|this|selected)\\s+mapping\\b/.test(source);\n  const mutates = /\\b(change|update|modify|edit|remove|delete|deactivate|assign|set)\\b/.test(source);\n  return refersToMapping && mutates;\n}\n\nfunction forceClarifyWithReply(message) {\n  intent = 'clarify';\n  targetWorkflow = 'clarify';\n  action = 'clarify';\n  payload.action = 'clarify';\n  payload.params = {};\n  readOnly = true;\n  requiresConfirmation = false;\n  reply = message;\n}\n\nconst readOnlyMappingActions =\n  new Set([\n    'list',\n    'listAll',\n    'brainstorm'\n  ]);\n\nconst readOnlyDictionaryActions =\n  new Set([\n    'list',\n    'get'\n  ]);\n\nconst readOnlyScheduleActions =\n  new Set([\n    'listActive',\n    'listAll'\n  ]);\n\nlet readOnly =\n  booleanValue(\n    parsed.read_only,\n    true\n  );\n\n/*\n * Read-only workflow guarantees.\n */\nif (\n  targetWorkflow ===\n    'expert_panel' ||\n  targetWorkflow ===\n    'use_case_builder' ||\n  targetWorkflow ===\n    'clarify'\n) {\n  readOnly =\n    true;\n}\n\nif (\n  targetWorkflow ===\n    'mapping_manager'\n) {\n  readOnly =\n    readOnlyMappingActions.has(\n      action\n    );\n}\n\nif (\n  targetWorkflow ===\n    'dictionary_manager'\n) {\n  readOnly =\n    readOnlyDictionaryActions.has(\n      action\n    );\n}\n\nif (\n  targetWorkflow ===\n    'schedule_manager'\n) {\n  readOnly =\n    readOnlyScheduleActions.has(\n      action\n    );\n}\n\nlet requiresConfirmation =\n  booleanValue(\n    parsed.requires_confirmation,\n    false\n  );\n\nlet reply =\n  String(\n    parsed.reply ?? ''\n  ).trim();\n\nconst currentMessage =\n  stringValue(buildPrompt.message);\n\nif (asksAboutPreviousRequest(currentMessage)) {\n  const previousUserRequest =\n    latestConversationContent('user');\n\n  const previousAssistantReply =\n    latestConversationContent('assistant');\n\n  if (previousUserRequest) {\n    const assistantContext = previousAssistantReply\n      ? ` The assistant response was about: ${previousAssistantReply}`\n      : '';\n\n    forceClarifyWithReply(\n      `You just asked: \"${previousUserRequest}\".` + assistantContext\n    );\n  } else {\n    forceClarifyWithReply(\n      'I do not have an earlier user request in this use-case session yet.'\n    );\n  }\n} else if (\n  isMappingPronounMutation(currentMessage) &&\n  !currentMessageHasExplicitMappingId(currentMessage)\n) {\n  const previousAssistantReply =\n    latestConversationContent('assistant');\n\n  const previousMappingIds =\n    mappingIdsFromText(previousAssistantReply);\n\n  if (previousMappingIds.length > 1) {\n    forceClarifyWithReply(\n      `Which mapping ID do you want to change? I can see multiple mapping IDs from the previous response: ${previousMappingIds.join(', ')}.`\n    );\n  }\n}\n\n/*\n * The current release does not use a separate confirmation\n * workflow. Convert model-generated confirmation requests into\n * clarification.\n */\nif (\n  requiresConfirmation\n) {\n  intent =\n    'clarify';\n\n  targetWorkflow =\n    'clarify';\n\n  action =\n    'clarify';\n\n  payload.action =\n    'clarify';\n\n  payload.params =\n    {};\n\n  readOnly =\n    true;\n\n  requiresConfirmation =\n    false;\n\n  if (!reply) {\n    reply =\n      'Please clarify the exact change you want to make before I continue.';\n  }\n}\n\nif (\n  targetWorkflow ===\n    'clarify' &&\n  !reply\n) {\n  reply =\n    'Could you clarify what you would like me to do?';\n}\n\n/*\n * Correct missing actions after workflow validation.\n */\nif (\n  targetWorkflow ===\n    'expert_panel'\n) {\n  intent =\n    'knowledge';\n\n  action =\n    'analyze';\n\n  payload.action =\n    'analyze';\n\n  readOnly =\n    true;\n}\n\nif (\n  targetWorkflow ===\n    'clarify'\n) {\n  intent =\n    'clarify';\n\n  action =\n    'clarify';\n\n  payload.action =\n    'clarify';\n\n  readOnly =\n    true;\n}\n\nreturn [{\n  json: {\n    intent,\n\n    action,\n\n    target_workflow:\n      targetWorkflow,\n\n    read_only:\n      readOnly,\n\n    requires_confirmation:\n      requiresConfirmation,\n\n    reply,\n\n    payload,\n\n    session_id:\n      buildPrompt.session_id ??\n      null,\n\n    message:\n      buildPrompt.message ??\n      '',\n\n    history:\n      buildPrompt.history ??\n      [],\n\n    usecase_id:\n      buildPrompt.usecase_id ??\n      null,\n\n    usecase_name:\n      buildPrompt.usecase_name ??\n      null,\n\n    global_mappings:\n      buildPrompt.global_mappings ??\n      [],\n\n    selected_user_id:\n      buildPrompt.selected_user_id ??\n      null,\n\n    selected_user_name:\n      buildPrompt.selected_user_name ??\n      null,\n\n    selected_user_mapping_id:\n      buildPrompt.selected_user_mapping_id ??\n      null,\n\n    selected_user_usecase_id:\n      buildPrompt.selected_user_usecase_id ??\n      null,\n\n    selected_user_usecase_name:\n      buildPrompt.selected_user_usecase_name ??\n      null,\n\n    app_context:\n      buildPrompt.app_context ??\n      {},\n\n    context:\n      buildPrompt.context ??\n      {},\n\n    open_artifacts:\n      buildPrompt.open_artifacts ??\n      []\n  }\n}];"
       },
-      "id": "0361683a-4035-41f7-a3d3-4a8275d2fa92",
+      "id": "2d67035f-55ca-46b5-a183-4fc7f9ad6642",
       "name": "Parse GPT Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5440,
-        5088
+        352,
+        1680
       ]
     },
     {
@@ -268,22 +268,22 @@
           "fallbackOutput": "extra"
         }
       },
-      "id": "878af32c-3534-434d-8e4c-da4c29370b26",
+      "id": "8d96f573-934d-4064-9d95-77fc224bdbdb",
       "name": "Intent Router",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        5664,
-        5024
+        576,
+        1616
       ]
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "6mbZSpha6phxwD1v",
+          "value": "pBa7G9TGnaWdUxoj",
           "mode": "list",
-          "cachedResultUrl": "/workflow/6mbZSpha6phxwD1v",
+          "cachedResultUrl": "/workflow/pBa7G9TGnaWdUxoj",
           "cachedResultName": "Mapping Manager"
         },
         "workflowInputs": {
@@ -360,35 +360,35 @@
           "waitForSubWorkflow": true
         }
       },
-      "id": "7cc38196-ad65-4a4b-b6b7-81f96d2aeff2",
+      "id": "3a1cba0e-34b9-40bf-a3c9-7b8cd3cf0189",
       "name": "Call 'Mapping Manager'",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        5888,
-        4608
+        800,
+        1200
       ]
     },
     {
       "parameters": {
         "jsCode": "const input =\n  $input.first().json ?? {};\n\nconst route =\n  $('Parse GPT Response')\n    .first()\n    .json ?? {};\n\nfunction copyWhenPresent(\n  target,\n  source,\n  field\n) {\n  if (\n    source[field] !== undefined\n  ) {\n    target[field] =\n      source[field];\n  }\n}\n\nfunction firstText(...values) {\n  for (const value of values) {\n    if (\n      value !== null &&\n      value !== undefined &&\n      String(value).trim() !== ''\n    ) {\n      return String(value).trim();\n    }\n  }\n\n  return '';\n}\n\nconst reply =\n  firstText(\n    input.reply,\n    input.output,\n    input.text,\n    input.answer,\n    input.response,\n    input.result,\n    route.reply\n  );\n\nconst output = {\n  reply,\n\n  session_id:\n    input.session_id ??\n    route.session_id ??\n    null,\n\n  intent:\n    route.intent ??\n    null,\n\n  target_workflow:\n    route.target_workflow ??\n    null,\n\n  read_only:\n    route.read_only ??\n    true,\n\n  requires_confirmation:\n    route.requires_confirmation ??\n    false\n};\n\nconst additiveFields = [\n  'success',\n  'expert',\n  'citations',\n  'warnings',\n  'proposals',\n  'recommended_actions',\n  'findings',\n  'dictionaryEntries',\n  'participant_assessment',\n  'mapping_assessment',\n  'workflow_assessment',\n  'affected_components',\n  'safety_assessment',\n  'burden_assessment',\n  'affected_parameters'\n];\n\nfor (\n  const field of\n  additiveFields\n) {\n  copyWhenPresent(\n    output,\n    input,\n    field\n  );\n}\n\nreturn [{\n  json:\n    output\n}];"
       },
-      "id": "b3b203c1-e939-4c10-96cb-5651e8b10f6f",
+      "id": "9b82aa75-61a7-40e3-b080-7b69df4c5c69",
       "name": "Edit Fields",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        6112,
-        5088
+        1024,
+        1680
       ]
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "NBGENe1uYYpTnN5l",
+          "value": "VPk5BFlcigtZlDON",
           "mode": "list",
-          "cachedResultUrl": "/workflow/NBGENe1uYYpTnN5l",
+          "cachedResultUrl": "/workflow/VPk5BFlcigtZlDON",
           "cachedResultName": "Knowledge Agent"
         },
         "workflowInputs": {
@@ -407,22 +407,22 @@
           "waitForSubWorkflow": true
         }
       },
-      "id": "400b0b29-4f19-4539-9fa9-89caa5e6716b",
+      "id": "8f22d290-cba8-4767-8b7e-7c906dcf2e72",
       "name": "Call 'Knowledge Agent'",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        5888,
-        4800
+        800,
+        1392
       ]
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "uqv2x7unjvI0y4nt",
+          "value": "YDFXGzvKMDZJev5h",
           "mode": "list",
-          "cachedResultUrl": "/workflow/uqv2x7unjvI0y4nt",
+          "cachedResultUrl": "/workflow/YDFXGzvKMDZJev5h",
           "cachedResultName": "Dictionary Manager"
         },
         "workflowInputs": {
@@ -477,14 +477,85 @@
         },
         "options": {}
       },
-      "id": "a560b003-1d4e-4786-b016-2d550ef83d88",
+      "id": "1e699b5b-bd83-4869-a327-e3f80e40cd4f",
       "name": "Call 'Dictionary Manager'",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        5888,
-        4992
+        800,
+        1584
       ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "etHuVAcop6I3erbd",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/etHuVAcop6I3erbd",
+          "cachedResultName": "Use Case Builder"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "action": "={{ $json.payload.action }}",
+            "params": "={{ $json.payload.params }}",
+            "session_id": "={{ $json.session_id }}",
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "e67d6843-a39a-4410-bfb8-a63274a5847f",
+      "name": "Call 'Use Case Builder'",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        1968
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "35a5c89a-3cac-414e-a30b-8feace7d343c",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1248,
+        1680
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE agent_session\nSET conversation_history = conversation_history || $2::jsonb,\n    updated_at           = now()\nWHERE session_id = $1;",
+        "options": {
+          "queryReplacement": "={{\n[\n  $json.session_id,\n\n  JSON.stringify([\n    {\n      role:\n        'user',\n\n      content:\n        $('Build prompt')\n          .first()\n          .json\n          .message\n    },\n    {\n      role:\n        'assistant',\n\n      content:\n        $json.reply ?? ''\n    }\n  ])\n]\n}}"
+        }
+      },
+      "id": "ecd99a3c-2027-458d-93ce-b5d251748b39",
+      "name": "Save History",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1472,
+        1680
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SxQ8vRANzWTnEuGI",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -567,94 +638,23 @@
         },
         "options": {}
       },
-      "id": "a807d142-6afb-4948-9d50-6a0585628a4c",
-      "name": "Call 'Schedule Manager'",
+      "id": "92b6f4fd-b28e-4b67-bd1e-caadbfeda764",
+      "name": "Call 'Mapping Manager'1",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        5888,
-        5184
+        800,
+        1776
       ]
     },
     {
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "Z41Dn3edCcUEwQCO",
+          "value": "Y0oEcJ5KxEZAlybT",
           "mode": "list",
-          "cachedResultUrl": "/workflow/Z41Dn3edCcUEwQCO",
-          "cachedResultName": "Use Case Builder"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "action": "={{ $json.payload.action }}",
-            "params": "={{ $json.payload.params }}",
-            "session_id": "={{ $json.session_id }}",
-            "message": "={{ $json.message }}"
-          },
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true
-        },
-        "options": {
-          "waitForSubWorkflow": true
-        }
-      },
-      "id": "22fd2bc9-7b28-4fea-be96-42fd1e8165b7",
-      "name": "Call 'Use Case Builder'",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.3,
-      "position": [
-        5888,
-        5376
-      ]
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "fc6730e3-107f-4413-a9e6-2ffbd9136d84",
-      "name": "Respond to Webhook",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        6336,
-        5088
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE agent_session\nSET conversation_history = conversation_history || $2::jsonb,\n    updated_at           = now()\nWHERE session_id = $1;",
-        "options": {
-          "queryReplacement": "={{\n[\n  $json.session_id,\n\n  JSON.stringify([\n    {\n      role:\n        'user',\n\n      content:\n        $('Build prompt')\n          .first()\n          .json\n          .message\n    },\n    {\n      role:\n        'assistant',\n\n      content:\n        $json.reply ?? ''\n    }\n  ])\n]\n}}"
-        }
-      },
-      "id": "50183a86-5a74-4233-8a23-9cad9d689960",
-      "name": "Save History",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        6560,
-        5088
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "PGGVkGCzTaoS4R2q",
-          "name": "Postgres account 2"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "Ysg7wQKrb2qmmQrm",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/Ysg7wQKrb2qmmQrm",
-          "cachedResultName": "GraphRAG Expert Panel Agent"
+          "cachedResultUrl": "/workflow/Y0oEcJ5KxEZAlybT",
+          "cachedResultName": "Expert Panel Agent"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -770,11 +770,11 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        5888,
-        5552
+        800,
+        2144
       ],
-      "id": "bdd16074-bd5e-462b-b0a5-9c6715aabd62",
-      "name": "Call 'GraphRAG Expert Panel Agent'"
+      "id": "ab09b290-a36f-45d6-af44-a93def37a5cd",
+      "name": "Call 'Expert Panel Agent'"
     }
   ],
   "pinData": {},
@@ -878,7 +878,7 @@
         ],
         [
           {
-            "node": "Call 'GraphRAG Expert Panel Agent'",
+            "node": "Call 'Expert Panel Agent'",
             "type": "main",
             "index": 0
           }
@@ -892,7 +892,7 @@
         ],
         [
           {
-            "node": "Call 'Schedule Manager'",
+            "node": "Call 'Mapping Manager'1",
             "type": "main",
             "index": 0
           }
@@ -935,23 +935,7 @@
         ]
       ]
     },
-    "Call 'Knowledge Agent'": {
-      "main": [
-        []
-      ]
-    },
     "Call 'Dictionary Manager'": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call 'Schedule Manager'": {
       "main": [
         [
           {
@@ -984,7 +968,18 @@
         ]
       ]
     },
-    "Call 'GraphRAG Expert Panel Agent'": {
+    "Call 'Mapping Manager'1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Expert Panel Agent'": {
       "main": [
         [
           {
@@ -1002,11 +997,13 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "0bdaded5-244d-4e2a-b219-775db9fdb134",
+  "versionId": "4e1850ca-b5d2-4fc4-8714-aa77749d7511",
   "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
     "templateCredsSetupCompleted": true,
-    "instanceId": "35deaaf0bfcff41c6d38c8f1cf7aef7296e31320802b08f997dd7e67dae1606a"
+    "instanceId": "bb0aad79dd248c2481ecedc24aee38491247ebd354850a1c5b87cae205699cce"
   },
-  "id": "6HLjUnFkjKxhDhsb",
+  "id": "rua5bDoahkpNyxTq",
   "tags": []
 }
