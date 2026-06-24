@@ -2150,6 +2150,143 @@
       "id": "5276474f-64dc-4655-945f-d402377d354d",
       "name": "Respond to Webhook2",
       "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mapping-commands",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1fdb4984-3b69-4b1e-a147-d45d8087db7e",
+      "name": "mapping-commands webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -720,
+        928
+      ],
+      "webhookId": "c64949eb-e112-453b-b105-6801dae8fa4e"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? {};\nconst allowed = new Set(['assign_mapping_to_user', 'change', 'duplicate_mapping_for_user']);\nconst action = String(body.action ?? '').trim();\n\nif (!allowed.has(action)) {\n  return [{ json: { valid: false, statusCode: 400, success: false, message: 'Unsupported mapping command action.' } }];\n}\n\nconst params = typeof body.params === 'string'\n  ? JSON.parse(body.params)\n  : { ...(body.params ?? {}) };\n\nif (action === 'assign_mapping_to_user') {\n  params.id = Number(body.mapping_id ?? body.feedback_config_rule_id ?? params.id ?? params.mapping_id);\n  params.mapping_id = params.id;\n  params.user_id = Number(body.user_id ?? params.user_id);\n} else if (action === 'duplicate_mapping_for_user') {\n  params.id = Number(body.original_mapping_id ?? params.id ?? params.mapping_id);\n  params.mapping_id = params.id;\n  params.user_id = Number(body.user_id ?? params.user_id);\n}\n\nconst missing = [];\nif (!Number(body.usecase_id)) missing.push('usecase_id');\nif (!String(body.usecase_name ?? '').trim()) missing.push('usecase_name');\nif (action === 'assign_mapping_to_user' && (!params.id || !params.user_id)) missing.push('mapping_id/user_id');\nif (action === 'duplicate_mapping_for_user' && (!params.id || !params.user_id)) missing.push('original_mapping_id/user_id');\n\nif (missing.length > 0) {\n  return [{ json: { valid: false, statusCode: 400, success: false, message: 'Missing required field(s): ' + missing.join(', ') } }];\n}\n\nreturn [{\n  json: {\n    valid: true,\n    statusCode: 200,\n    success: true,\n    action: action === 'assign_mapping_to_user' ? 'assign' : action,\n    params,\n    usecase_id: Number(body.usecase_id),\n    usecase_name: String(body.usecase_name).trim(),\n    session_id: body.session_id ?? 'mapping-commands',\n    message: body.message ?? ''\n  }\n}];"
+      },
+      "id": "c663b7ed-ac96-41c0-9bc5-2289bfbcc6ba",
+      "name": "Normalize mapping command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "097ddb61-c23f-4715-8b66-60110e8a4c6d",
+      "name": "Is valid mapping command",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -192,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "cjGudY6xf8DXuMMH",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "ba03cc4d-e2b6-4690-9512-b33eab70d1f8",
+      "name": "Call Mapping Manager",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json ?? {};\nconst reply = result.reply ?? result.message ?? '';\nconst failed = result.success === false || /could not|did not work|issue|missing|invalid/i.test(reply);\n\nreturn [{\n  json: {\n    statusCode: failed ? 500 : 200,\n    success: !failed,\n    message: reply || (failed ? 'Mapping command failed.' : 'Mapping command completed.'),\n    data: result\n  }\n}];"
+      },
+      "id": "f947e453-9bc5-471a-8f3d-b758a52a1a58",
+      "name": "Format Mapping Manager response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: $json.success, message: $json.message, data: $json.data } }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode || 200 }}"
+        }
+      },
+      "id": "ddefc8aa-8bad-4d8e-b013-432224df1332",
+      "name": "Respond mapping command",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        592,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Send email when connection fais\ncurrently deactivated until we think of when to send the email"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1072,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "e253c0eb-d02f-4a5d-9607-12f6ee2288d6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## mapping CRUD commands"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1056,
+        912
+      ],
+      "typeVersion": 1,
+      "id": "d86c6a99-daf9-4728-bc66-12c1f836505e",
+      "name": "Sticky Note3"
     }
   ],
   "pinData": {
@@ -3081,6 +3218,68 @@
           }
         ]
       ]
+    },
+    "mapping-commands webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize mapping command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize mapping command": {
+      "main": [
+        [
+          {
+            "node": "Is valid mapping command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is valid mapping command": {
+      "main": [
+        [
+          {
+            "node": "Call Mapping Manager",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond mapping command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Mapping Manager": {
+      "main": [
+        [
+          {
+            "node": "Format Mapping Manager response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Mapping Manager response": {
+      "main": [
+        [
+          {
+            "node": "Respond mapping command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -3089,7 +3288,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "9a73b028-413c-49f2-8b36-43101d98db4f",
+  "versionId": "de18652d-c3d5-4cb4-a2ff-558396c7422e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
