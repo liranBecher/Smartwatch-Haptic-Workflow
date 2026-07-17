@@ -1,0 +1,767 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Initial Installation - Phone &amp; Watch</title><meta name="data-notion-page-icon" content="🧑‍🔧"/><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%A7%91%E2%80%8D%F0%9F%94%A7%3C%2Ftext%3E%3C%2Fsvg%3E"/><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="3806a244-173d-8002-838c-f8561aaffafd" class="page sans" data-notion-page-icon="🧑‍🔧"><header><div class="page-header-icon undefined"><span class="icon" data-emoji="🧑‍🔧"></span></div><h1 class="page-title" dir="auto">Initial Installation - Phone &amp; Watch</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><blockquote id="c8878a32-30ca-417f-be5d-583c9851410c" class="" dir="auto">Follow these steps to create a user, install the watch app, install the phone app, connect the devices, and start monitoring.<br/>Consider watching the  as a follow-up video guide.</blockquote><hr id="1d1a369e-f2cc-447d-b5ab-92021f7a6b3a" dir="auto"/><h2 id="6313a600-d543-4e05-9b77-0b30c54d858a" class="" dir="auto">1. Create a New User</h2><ol type="1" id="2bc66781-d45d-4e19-ba5f-bfa53e39c75a" class="numbered-list" start="1" dir="auto"><li>Open the <strong>ResearcherSide</strong> app on the server.</li></ol><ol type="1" id="35690ab5-36b1-4837-baf6-846fdacc40ab" class="numbered-list" start="2" dir="auto"><li>In the left tab, go to <strong>Users</strong> and click the <strong>+</strong> button.</li></ol><ol type="1" id="1250e6e7-b2ad-46a3-8027-26219d216d44" class="numbered-list" start="3" dir="auto"><li>Give the user a <strong>unique ID</strong>; naming is optional.</li></ol><hr id="29eb4f61-5cff-4a73-adec-40e3b874a2a6" dir="auto"/><h2 id="b035b652-ff8d-40b7-98af-044b980d8615" class="" dir="auto">2. Reset the Watch</h2><p id="cc296471-7318-41da-a23b-677dedcdb6c9" class="" dir="auto">Make sure the watch is reset, has no prior connections to a phone, and has no app installed.</p><p id="7daedc67-0b33-4776-9d8e-181fc9079253" class="" dir="auto">Go to:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="98fdf964-0f19-409e-b5fe-4b09252e7785" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">General management &gt; Reset</code></pre><ol type="1" id="3836a244-173d-806e-ba23-c5f18fa31bd1" class="numbered-list" start="1" dir="auto"><li>On your phone open the Wear App and follow the instructions on your phone and watch <a href="https://www.samsung.com/us/support/answer/ANS10002899/">[Support]</a>.</li></ol><ol type="1" id="3836a244-173d-8058-8093-e011f0b74341" class="numbered-list" start="2" dir="auto"><li>Open the watch, start the <strong>Wear</strong> app on the phone. The app should recognize your watch.</li></ol><ol type="1" id="3836a244-173d-8018-a804-da55ed3ec3b6" class="numbered-list" start="3" dir="auto"><li>Continue as instructed on the <strong>Wear</strong> app and watch.</li></ol><hr id="11cdc75f-d60c-4069-8b13-4d6909a65f23" dir="auto"/><h2 id="e859d7d8-be10-4e63-bad9-21b4cda05aee" class="" dir="auto">3. Download the App to the Watch</h2><ol type="1" id="7000646b-66d2-4a79-b627-7ea52391770b" class="numbered-list" start="1" dir="auto"><li>Download the <code>watch.apk</code> file to your computer.</li></ol><ol type="1" id="5e6e534b-1077-4be7-90ef-5b34c5ee17b2" class="numbered-list" start="2" dir="auto"><li>On the watch, go to:</li></ol><pre id="27838e2f-feb3-4f2d-b6fb-6131a536c7ca" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Settings &gt; About watch &gt; Software info</code></pre><ol type="1" id="d24417e4-fc09-40e8-8c19-5e52a6033c04" class="numbered-list" start="1" dir="auto"><li>Repeatedly tap <strong>Software version</strong> 5 to 7 times.</li></ol><ol type="1" id="59d16d86-efa8-40bb-a6b2-3e0275575b97" class="numbered-list" start="2" dir="auto"><li>Go back to:</li></ol><pre id="d269dcd6-8136-4cc4-b057-ad2697af7fbd" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Settings → Developer options</code></pre><ol type="1" id="a5425269-a5aa-4b3e-bb3e-3da1199e837c" class="numbered-list" start="1" dir="auto"><li>Enable <strong>Wireless Debugging</strong>.</li></ol><blockquote id="7b0da082-a867-4816-8280-9f1e8cbd86ad" class="" dir="auto">Make sure your watch and computer are connected to the same network.</blockquote><ol type="1" id="3a2c3057-0c47-4adc-ae9b-2eb8fc39cb6d" class="numbered-list" start="1" dir="auto"><li>In CMD, navigate to the platform-tools folder by typing:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" integrity="sha512-whYhDwtTmlC/NpZlCr6PSsAaLOrfjVg/iXAnC4H/dtiHawpShhT2SlIMbpIhT/IL/NrpdMm+Hq2C13+VKpHTYw==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="15e1e142-3e07-4dc4-8c86-a7de6ee8f61a" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">cd %LOCALAPPDATA%\Android\Sdk\platform-tools</code></pre><hr id="42340e04-aaae-4cbd-aab0-c018844d6322" dir="auto"/><h2 id="abc6d746-1701-4eae-b8e9-19f5d11fc1e3" class="" dir="auto">4. Pair the Watch with ADB</h2><p id="b4c8d300-bc8b-4a4d-8caf-a469dc639c04" class="" dir="auto">On the watch, tap:</p><pre id="8ebea436-449e-439f-928c-5d6d801d6e3a" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Wireless debugging → Pair new device with pairing code</code></pre><p id="6a41841b-2be4-4218-9823-de307e754a2a" class="" dir="auto">You will see:</p><pre id="40a9bd00-2613-4087-955f-dd3fce262605" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">IP &amp; Pairing Port</code></pre><p id="72bd747d-e78c-447e-9daa-7bb22ae21b99" class="" dir="auto">Example:</p><pre id="02326af9-0e7a-47f1-9b58-d672d0328c65" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">192.168.0.123:37015</code></pre><p id="5722eb8d-6cd5-4b96-bd5f-2a86acfbed77" class="" dir="auto">You will also see a <strong>6-digit Pairing Code</strong>.</p><hr id="02934305-65ca-427e-81ab-7ea7d1dcdbe9" dir="auto"/><h2 id="bc3bd7d2-02b7-4786-abe6-c465b33ca2a1" class="" dir="auto">5. Pair from CMD</h2><p id="2563544d-c426-45d0-8269-4dd622a6c7cd" class="" dir="auto">On CMD write:</p><pre id="67b44499-54c9-4fba-9dda-0b874b1a5ce3" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">adb pair 192.168.0.123:37015</code></pre><p id="64fade95-f880-4c40-83b9-28cbbf15f5fb" class="" dir="auto">Then enter the pairing code.</p><hr id="14a574e3-9dbc-4a12-a32a-3039292b999e" dir="auto"/><h2 id="afbf5532-db04-4023-a4d4-65c4029a1ce7" class="" dir="auto">6. Find the ADB Connection Port</h2><p id="a327ce23-eef9-4464-8e43-5fe9abb78d90" class="" dir="auto">Still on the pairing screen, you’ll see the <strong>ADB connection port</strong>.</p><p id="a230f649-2392-4960-9a11-9f1d7185556f" class="" dir="auto">It usually looks something like:</p><pre id="b3895fd1-0074-4594-a09d-1dba2cd3c3d9" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">192.168.0.123:5555</code></pre><hr id="23aeeb40-bf51-44e7-b74d-6751f8383638" dir="auto"/><h2 id="bdefcbf6-e3dc-44a5-b463-dc42d95ba8b2" class="" dir="auto">7. Connect to the Watch</h2><p id="2c52aaa7-f6c7-4e68-89c2-41d514eac145" class="" dir="auto">On CMD write:</p><pre id="73f07480-483c-48ba-8ceb-f96f020373c3" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">adb connect 192.168.0.123:5555</code></pre><p id="4e9eb306-5709-4930-b473-040eea0bdc75" class="" dir="auto">You should see:</p><pre id="35d6396a-4bde-4037-830c-ad14dcad5b64" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">connected to 192.168.0.123:5555</code></pre><hr id="7c21a40d-d745-4456-a601-a46149c2cf0d" dir="auto"/><h2 id="38d6d19b-a1b4-481d-a0a9-82e2352d5b41" class="" dir="auto">8. Install the Watch App</h2><p id="5e1b2df0-9d9b-45f3-a430-142244d7f3a3" class="" dir="auto">On CMD run:</p><pre id="c66086f4-0f79-433f-93d6-127850b0d06d" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">adb -s WATCH_IP:ADB_PORT install -r path\to\watch-app.apk</code></pre><p id="35d3bc2f-45a2-4d59-b52a-9f9cc426b7e5" class="" dir="auto">Replace <code>WATCH_IP:ADB_PORT</code> with those you used in 3.8, and replace <code>path\to\watch-app.apk</code> with the path of the APK on your computer.</p><p id="68b234f3-2bbb-4b8c-afa2-b02dec8387ba" class="" dir="auto">Example:</p><pre id="4c9cccb5-872c-48f2-9692-d897d216221b" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">adb -s 192.168.0.123:5555 install -r C:\Users\YourName\Downloads\watch.apk</code></pre><hr id="d0d284aa-84fb-44ad-a032-bf49f68c7a56" dir="auto"/><h2 id="db3117dd-462d-486f-9d87-bf2161b2c436" class="" dir="auto">9. Download the Phone App</h2><p id="72bd0626-5b21-4374-8f26-2d2ecd3b73b0" class="" dir="auto">Download the <code>phone.apk</code> to your phone, open the file and download it.</p><blockquote id="895bc3e3-991d-4619-a489-a94fbb65cd35" class="" dir="auto">If asked, do not let the phone run a security check on the app.</blockquote><hr id="0e7e0a38-5473-4b23-a059-132af3db4a09" dir="auto"/><h2 id="2eb3e1da-7ca4-477e-87e1-41f0d66ad8b7" class="" dir="auto">10. Connect the Watch to the Phone</h2><ol type="1" id="8cf38694-47e4-440b-80cd-0d0476a39276" class="numbered-list" start="1" dir="auto"><li>In the Wear app, go to:</li></ol><pre id="66b991d5-90e0-4c8e-84ab-73b6f0a75d73" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Watch settings &gt; About watch &gt; Change name</code></pre><ol type="1" id="7b39bc8f-c4a6-4eb8-8a0a-7830773b1e63" class="numbered-list" start="1" dir="auto"><li>Change the name to:</li></ol><pre id="7b36a569-9336-4610-b021-b64bd12674ae" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">UserID-xxx-SmartWatchID-xxx</code></pre><p id="7cb71072-6197-4188-bcec-e18206e8be73" class="" dir="auto">Example:</p><pre id="c3f3c64e-bfd5-4950-9d7a-1634d7af93e2" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">UserID-333-SmartWatchID-334</code></pre><p id="adda5eb8-23d7-4b8d-ab0b-203e07c9133c" class="" dir="auto">For the user ID, use the same one you choose in <strong>1.3</strong>.</p><hr id="a6c7d4ea-66ba-4ba0-887e-2fbadc9c85cf" dir="auto"/><h2 id="a13717eb-76b7-47ab-8918-22dd01d4f23b" class="" dir="auto">11. Start Monitoring</h2><p id="eb89c85a-ebcc-445f-8d7c-37ea0c04f303" class="" dir="auto">To start monitoring, make sure the phone is connected to the watch via Bluetooth.</p><p id="0cd4d577-5b1c-4db4-932b-93264d23187c" class="" dir="auto">Then open the apps on the watch and phone.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
