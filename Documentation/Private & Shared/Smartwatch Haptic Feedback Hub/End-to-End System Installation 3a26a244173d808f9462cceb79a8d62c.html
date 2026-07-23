@@ -1,0 +1,803 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>End-to-End System Installation</title><meta name="data-notion-page-icon" content="🔚"/><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%94%9A%3C%2Ftext%3E%3C%2Fsvg%3E"/><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="3a26a244-173d-808f-9462-cceb79a8d62c" class="page sans" data-notion-page-icon="🔚"><header><div class="page-header-icon undefined"><span class="icon" data-emoji="🔚"></span></div><h1 class="page-title" dir="auto">End-to-End System Installation</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><p id="c5510c60-b1f2-49be-84c6-e0fac51485db" class="" dir="auto">This guide explains how to install the complete Smartwatch Haptic Feedback System on a clean environment and verify the full flow:</p><p id="422d0024-92c2-4800-9500-d60055fa1ba4" class="" dir="auto"><strong>Smartwatch sensor → Android phone → n8n backend → PostgreSQL → haptic mapping → phone → smartwatch vibration → ResearcherSideApp</strong></p><p id="b1967520-dd06-49af-8b9a-b4cc179a28a1" class="" dir="auto">Use this page for a complete installation. The linked component pages provide screenshots, detailed UI instructions, and component-specific troubleshooting.</p><details id="3a26a244-173d-80a8-a6a7-f96a22de07fe" open="" class="toggle" dir="auto"><summary><span style="border-bottom:0.05em solid">Table of Contents</span></summary><div class="indented"><nav id="3a26a244-173d-800c-a37f-c35e35a91697" class="block-color-gray table_of_contents" data-notion-highlight="gray" data-notion-toc="" dir="ltr"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#19bb2a61-a49d-470c-aa76-ec8669807a8a">1. System components</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#457ade86-9c0d-4b43-98e9-9f3e6ebd08b0">Related documentation</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#71f04e51-2a34-40d0-b8d2-a6a01b86fb29">2. Choose the installation type</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c0e022ee-f4d9-4058-ba11-97bc2e133f28">Recommended handover installation</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#10f24393-19df-403c-9e61-934707e570d6">Developer installation</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#9517ee04-dc39-461e-99d4-b48c880cef07">3. Prerequisites</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ad8db1c9-5aa9-45fb-a43b-b8dbf0f5e7b4">Server computer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#68f76220-af62-47da-95b9-6f1310c79134">Devices</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ffd0a9ab-854b-4111-aba7-4df193ff2a64">Accounts and credentials</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#b5edb508-ac5a-45e7-af8a-4bc077dcfbfd">4. Collect the required installation files</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#7c8df794-d065-428f-a482-8eb619e79ceb">5. Install and restore PostgreSQL</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3a26a244-173d-8089-a0be-c2b9c485c8eb">More information</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#f51994b4-68ca-4584-a648-bc4dc03c1fde">5.1 Install PostgreSQL</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#87579f3e-2793-47bb-8c7d-5e180d0fdd1f">5.2 Create the database</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3f900218-013f-462e-84f4-20faae79cf87">Command-line option</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3a26a244-173d-80a1-a471-dc10ca244311">pgAdmin option</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#64e52b10-8916-4407-b442-43a98516ca32">5.3 Restore the database dump</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3a26a244-173d-8038-af2a-cdfdb5038b1e">Command-line option</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3a26a244-173d-80a0-8ca4-d44810d72fec">pgAdmin option</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#edc70fc0-2996-42fe-a55e-40a15f7bf6c7">5.4 Verify the database</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c5fd6f3f-d90a-49bf-9c48-cbc11aaf0209">6. Install and configure n8n</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#e3800f5b-a04b-482e-bbd4-4d818d4cd55d">6.1 Install n8n</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#808fa720-843b-407e-ba08-e81494789e9d">6.2 Import the workflows</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#6c7903d1-1851-4563-8b6e-86d198927443">6.3 Configure credentials</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#48db2a94-ddbd-4433-87d6-30bd19dbcbd3">PostgreSQL</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#2804e329-5f06-447e-9304-ec93ac5e11b1">OpenAI</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#af4db6e6-4efa-4b4e-bf72-8b4bfbf434e2">SMTP/email</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#79337e34-43a9-4d94-8bfd-35aa0620d49d">Other AI or external APIs</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#77b99c1e-3138-4b7a-8df2-22e1348237bc">6.4 Reconnect workflow references</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5b1aec17-98ad-45d9-bc15-aa8cd0d4af0a">6.5 Test database access</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3747f911-91d4-45b5-8df4-7e2651eab389">6.6 Activate the workflows</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c9b3d357-0804-4d3b-b447-28cfbc08c6da">7. Configure backend network access</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#f5c8eaab-858e-49df-b9ad-e2a5cbc93e35">Option A: Everything on the server computer</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3a26a244-173d-80b0-aad9-d75e0c47ba0a">Option B: Set up Ngrok</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#5ca9abb5-eb47-4757-9696-690182aa8ee8">ResearcherSide and the phone may use:</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#9c0d4118-8692-4dcb-a329-d6110cdd3799">Test the URL</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#4542ef0f-cfb6-4de0-8616-2c39a8eed14e">8. Install ResearcherSideApp</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#56c9b9f7-9c11-4bd4-b8dc-d7f6ef73f4ca">Option A: Use the prepared executable</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#67b9c765-8bf9-4809-af84-7ede2294215e">Option B: Run from source</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3de6e1a5-a7df-43c4-b952-bfa21ce96373">Verify ResearcherSide</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#8b16b7da-2c22-43dd-9350-af7abde8a317">Detailed guide</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5c7de61d-8940-456e-af90-32b16171bf30">9. Initial Installation - Phone &amp; Watch</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#72993590-bf52-40fa-9dbe-8dd1e84d77b9">10. Configure the participant in ResearcherSide</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#85ea5645-784b-4664-8bf6-8fb987660651">11. Run the complete end-to-end test</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#cb287e3c-2c1c-4d50-ba71-c39777916102">11.1 Start the services</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ca08013e-30f1-4945-bc55-d1f9052f3c1d">11.2 Check the watch</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#7a11e17a-f92a-4f7a-91b5-9fb256cdecdf">11.3 Check the phone</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0a35558b-70b0-4fa0-864e-8c215730fd3c">11.4 Check ResearcherSide</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#967bc205-9f8b-49dc-bfb1-c214badbd0b8">11.5 Produce one sensor reading</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#02512576-ee17-4a93-9790-deb92c7e51b5">11.6 Verify each layer</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#a65dd78e-1c05-4c9e-8d42-f58548a77caa">Watch</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#3efa4c32-4525-489c-9412-1fe300672ba5">Phone</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#e1795723-6697-49e6-a176-6b7e05e1d4f0">n8n</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#1420ac0b-af9c-43b1-bb6c-f01fccf8c764">PostgreSQL</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#995b8fec-940f-4df9-8fc7-4a58fb7e1597">ResearcherSide</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#a3533c37-a909-483b-9860-725acbe604be">12. Test optional features</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#2b64274e-5d4c-4c57-bb6b-d9cf7eb2b1ee">AI researcher assistant</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#43e12af9-9e6e-4430-a244-1622e6698531">Monitoring-stop alerts</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#8b6c5dac-0558-41b7-9d56-e3b8053e893b">Data export</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3708423e-5240-4308-be1a-beadb9b47d7c">External API use cases</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c0dd116a-f494-43e5-ab00-40537a90ece6">13. Common installation problems</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b8d36e48-12d5-428a-971f-76a3acf068b6">ResearcherSide does not load</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#24fef40f-871c-4890-bdcd-82ade28d121a">Imported workflows fail to call each other</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#89f16cd2-f7ee-427d-a966-385df90111a2">PostgreSQL nodes fail</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c7ea2f5f-6b17-45d0-a253-e5fb06f9e395">Phone cannot reach n8n</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c059cab2-8251-495d-9367-613b177be257">Phone cannot find the watch</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3d7241b5-db6e-491a-9ef1-0cebf93437aa">Readings reach n8n but no vibration is returned</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#daa0b5ae-6755-4745-ae05-dea4b6be7951">A haptic command is returned but the watch does not vibrate</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#8152f94a-36a3-4944-bb3c-9bea91bc805c">Participant disappeared from an active view</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#95d0b2ab-83e5-490c-8056-bdb9b485d32e">AI assistant fails</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#e8160ccb-d569-43f7-8ea1-75ba33cb80c3">Monitoring-stop email is not received</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#440c7b29-6da8-4f49-8b78-7e8b63387155">14. Maintenance rules</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e58d29c4-ad7f-4d71-ad0f-31f657df1c25">15. Source repositories and detailed guides</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e257801-5cf5-4763-b215-654151037ca9">Source repositories</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#db98b694-a8af-447f-bcb7-55a8cfb59492">Notion documentation</a></div></nav></div></details><hr id="3a26a244-173d-80a1-84d5-e0e46b211c38" dir="auto"/><h1 id="19bb2a61-a49d-470c-aa76-ec8669807a8a" class="" dir="auto">1. System components</h1><p id="7525313b-c99d-4882-9d45-9d6080ab8fa5" class="" dir="auto">The system contains five main components:</p><ol type="1" id="b3443e09-b803-4e52-a574-60b8df37d88e" class="numbered-list" start="1" dir="auto"><li><strong>PostgreSQL database: </strong>Stores participants, devices, use cases, mappings, schedules, sensor readings, alerts, and AI session information.</li></ol><ol type="1" id="7a035aab-2d29-4b30-a86e-83ff3a3fc5fc" class="numbered-list" start="2" dir="auto"><li><strong>n8n backend: </strong>Receives sensor readings, queries the database, evaluates feedback mappings, stores results, returns haptic commands, and serves the ResearcherSide application.</li></ol><ol type="1" id="c0987d69-9beb-454c-829c-1aaa8bfc826c" class="numbered-list" start="3" dir="auto"><li><strong>ResearcherSideApp: </strong>Used to manage participants, use cases, mappings, schedules, monitoring, graphs, exports, and the AI researcher assistant.</li></ol><ol type="1" id="e3191e96-7848-4c8c-b187-73bf865aa6f8" class="numbered-list" start="4" dir="auto"><li><strong>Android phone application: </strong>Connects the smartwatch to n8n. It receives readings through Bluetooth, sends them to the backend, and returns vibration commands to the watch.</li></ol><ol type="1" id="7d236ae4-024e-4ea9-aed5-60106d9c2527" class="numbered-list" start="5" dir="auto"><li><strong>Wear OS smartwatch application: </strong>Collects sensor readings and performs the haptic feedback.</li></ol><h3 id="457ade86-9c0d-4b43-98e9-9f3e6ebd08b0" class="" dir="auto">Related documentation</h3><ul id="4a115c71-0f75-4c41-9ceb-faf50a40455d" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="../Smartwatch%20Haptic%20Feedback%20Hub%206a46a244173d829c88ff81e199649cfe.html">Smartwatch Haptic Feedback Hub</a></li></ul><ul id="a0f0d08a-1dd9-4548-a82b-0981d869af9d" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="ResearcherSideApp%2037a6a244173d80af8e1be324e20c3ae8.html">ResearcherSideApp Documentation</a></li></ul><ul id="dd05368d-aaac-4c87-b161-959fd6a054d3" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Initial%20Installation%20-%20Phone%20&amp;%20Watch%203806a244173d8002838cf8561aaffafd.html">Initial Installation – Phone &amp; Watch</a></li></ul><ul id="9b50f0b2-1fab-47fe-889d-9ddbc3929797" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Setting%20Credentials%20On%20n8n%203876a244173d80a696ede0db3852d899.html">Setting Credentials on n8n</a></li></ul><h1 id="71f04e51-2a34-40d0-b8d2-a6a01b86fb29" class="" dir="auto">2. Choose the installation type</h1><h2 id="c0e022ee-f4d9-4058-ba11-97bc2e133f28" class="" dir="auto">Recommended handover installation</h2><p id="96cc5cfb-d915-409e-ba6b-664d515515a6" class="" dir="auto">Use the prepared release files:</p><ul id="c2d044b3-02be-482e-8b21-5684def0651b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Current PostgreSQL dump</li></ul><ul id="852f15d3-1de2-4e04-884f-3df249c76da7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Exported n8n workflows</li></ul><ul id="f50488e2-a1d6-4d50-bfdc-0581d60beae2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">ResearcherSide executable</li></ul><ul id="2d079388-5fe5-43ca-9c6b-9bb208028b0e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Android phone APK</li></ul><ul id="99febdb2-c0c5-4b44-b04a-20231fa70f7a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Wear OS watch APK</li></ul><p id="f217b507-92de-490b-a4fc-0f2d17d0bd33" class="" dir="auto">This is the recommended option for researchers and system operators.</p><h2 id="10f24393-19df-403c-9e61-934707e570d6" class="" dir="auto">Developer installation</h2><p id="ab6adf19-cf5a-4b89-85d2-76d77250b494" class="" dir="auto">Build the applications from their source repositories:</p><ul id="2526ed19-40e2-4790-b7ec-156a4cd7873e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/liranBecher/Smartwatch-Haptic-Workflow">Backend and database</a></li></ul><ul id="c82f847a-8848-44a0-80d5-1fd59facca1e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/TTaliR/ResearcherSideApp-FULL">ResearcherSideApp</a></li></ul><ul id="e5714938-218f-4a98-86f8-341a17d42423" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/TTaliR/AndroidPhoneHapticFeedBackApp">Android phone application</a></li></ul><ul id="886824d4-c74b-445e-a2eb-5af41fd4fc4c" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/TTaliR/SmartWatchHapticFeedBackApp1">Wear OS application</a></li></ul><p id="225e34ae-b0be-40e3-80f7-bb27170acb38" class="" dir="auto">Use the developer installation when changing URLs, phone IDs, application logic, sensors, or haptic behavior.</p><h1 id="9517ee04-dc39-461e-99d4-b48c880cef07" class="" dir="auto">3. Prerequisites</h1><h2 id="ad8db1c9-5aa9-45fb-a43b-b8dbf0f5e7b4" class="" dir="auto">Server computer</h2><p id="8e831f03-9f75-4235-8961-f90d34856c0e" class="" dir="auto">Install or prepare:</p><ul id="59e01670-1c96-456b-b991-3f99859b4037" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Windows computer with administrator access</li></ul><ul id="15e35eb5-667b-45ee-a860-d46f64339bad" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL 18</li></ul><ul id="32d48e99-96a6-420f-a16f-4952c7683f9a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">pgAdmin or PostgreSQL command-line tools</li></ul><ul id="19ab1202-5828-442b-a19f-3a1c1d6a18e1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Self-hosted n8n</li></ul><ul id="35dec5c9-f07b-4368-8100-e82a3611e95e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Java/JDK 17 or newer</li></ul><ul id="2967a86f-5da2-420f-aa5c-0686aa09b253" class="bulleted-list" dir="auto"><li style="list-style-type:disc">IntelliJ IDEA when building ResearcherSide from source</li></ul><ul id="4037648e-f37f-444b-a7f6-302ebae8badb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Android Studio when building either Android application</li></ul><ul id="cfdb0eca-e589-47fc-84cc-3054b44daeb4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Android SDK 34</li></ul><ul id="47ab63af-a6f7-4c1b-85b7-d34f8d1e5344" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Git, when cloning the repositories</li></ul><ul id="c151bf88-bdc4-45f5-926f-b8c16188c860" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A stable network connection</li></ul><ul id="a1faef89-f572-4340-870e-ccc31ea4355c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A reachable n8n webhook URL</li></ul><h2 id="68f76220-af62-47da-95b9-6f1310c79134" class="" dir="auto">Devices</h2><p id="54e9a943-ef26-4914-91aa-8527843e1b65" class="" dir="auto">Prepare:</p><ul id="2c66ec2d-5112-4693-8563-2e044d369d62" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Android 11 or newer phone</li></ul><ul id="1245e3c0-f72c-41ac-98b2-d0aa22bbe0da" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Wear OS watch running Android API 30 or newer</li></ul><ul id="8ec85231-6575-45f5-8a16-e1b619048e26" class="bulleted-list" dir="auto"><li style="list-style-type:disc">USB data cable for the phone</li></ul><ul id="979f04d5-3273-43b0-a0c2-18f0a6885aa4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Watch charger</li></ul><ul id="caaef6fc-6225-4adf-897c-e9e982612358" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Phone and watch Bluetooth pairing</li></ul><ul id="8b7f39be-b06b-4771-b4b4-ae81362f26e2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Wi-Fi access for the phone and server</li></ul><ul id="334c9fdb-876e-45cb-950c-2e5382aba3db" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Developer mode and debugging access when installing APKs manually</li></ul><h2 id="ffd0a9ab-854b-4111-aba7-4df193ff2a64" class="" dir="auto">Accounts and credentials</h2><p id="9791a754-94dd-487a-ab7a-85423ebb0dd4" class="" dir="auto">Prepare access to:</p><ul id="2f1d3274-4457-4269-ac3b-ecf9fa9f9447" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL administrator account</li></ul><ul id="d92448d7-51c6-472e-9919-d6d272f86e38" class="bulleted-list" dir="auto"><li style="list-style-type:disc">n8n administrator account</li></ul><ul id="12c775b6-bff6-4b62-a7cb-b584860c199e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI API account</li></ul><ul id="8d41cb7d-55b7-4b25-93e2-f8b501904dea" class="bulleted-list" dir="auto"><li style="list-style-type:disc">SMTP/email account for monitoring-stop alerts</li></ul><ul id="ba808519-a62c-4764-b94d-887e3573008c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Any external APIs used by enabled use cases</li></ul><ul id="29298ec2-2576-4ea1-a7e6-e80dd7b620cb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Public tunnel, domain, or server configuration when operating outside the local network</li></ul><blockquote id="342c5dc1-d184-45c8-89b7-1661872a6ad0" class="" dir="auto">🔐 Never store database passwords, OpenAI keys, SMTP passwords, or private API keys in GitHub, exported workflow JSON files, screenshots, or this Notion page.</blockquote><h1 id="b5edb508-ac5a-45e7-af8a-4bc077dcfbfd" class="" dir="auto">4. Collect the required installation files</h1><p id="d7471b56-4798-4396-b088-fbe890f10915" class="" dir="auto">Before beginning, create one installation folder containing:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a43e49bb-a0fe-4ad2-850a-efa91a216a4f" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Smartwatch-Haptic-Installation/
+├── Database/
+│   └── DB-18072026.sql
+├── n8n-Workflows/
+│   ├── DB Manager.json
+│   ├── Vibration Orchestrator.json
+│   ├── Chat Orchestrator.json
+│   ├── Mapping Manager.json
+│   ├── Schedule Manager.json
+│   ├── Dictionary Manager.json
+│   ├── Use Case Builder.json
+│   ├── Knowledge Agent.json
+│   ├── Expert Panel Agent.json
+│   └── Agent Expert - [...].json
+└─ Applications/
+   ├── ResearcherSideApp.exe
+   ├── PhoneApp.apk
+   └── WatchApp.apk</code></pre><p id="302b7df0-de6e-4948-8b17-e0a20df218e0" class="" dir="auto">The workflow repository may contain additional root-level JSON files. Import <strong>all current root-level workflow files</strong>, not only the three public entrypoints.</p><hr id="3a26a244-173d-80b8-81b8-ef00c7bc8aec" dir="auto"/><h1 id="7c8df794-d065-428f-a482-8eb619e79ceb" class="" dir="auto">5. Install and restore PostgreSQL</h1><h3 id="3a26a244-173d-8089-a0be-c2b9c485c8eb" class="" dir="auto">More information</h3><p id="3a26a244-173d-8033-9621-ddd23fcd1ceb" class="" dir="auto">See the database setup and operations section in the <a href="Database%20eea6a244173d8244b9628156609b73eb.html">Database</a>.</p><h2 id="f51994b4-68ca-4584-a648-bc4dc03c1fde" class="" dir="auto">5.1 Install PostgreSQL</h2><p id="5d2cd4a6-206e-4c28-a5dc-3f1eb49642b3" class="" dir="auto">Install <strong>PostgreSQL 18</strong>, including:</p><ul id="b6723cf7-25df-4833-ab24-9a900eb97b9a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL Server</li></ul><ul id="eb5d92f4-3a1d-46ea-87b1-fcc6eee5850f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">pgAdmin</li></ul><ul id="d0560f7d-9d73-4814-a11a-9b4c1f945fc1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Command Line Tools</li></ul><p id="1847738d-4795-4941-87e8-6e5791c345c5" class="" dir="auto">Record the following securely:</p><ul id="c85917c2-9789-41c6-b5a1-8942278f8078" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Host</li></ul><ul id="666da439-a1b0-4d72-b319-5791ac64f3c0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Port</li></ul><ul id="cee5b67f-84ca-4dfa-b343-4ea14129a5ba" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Administrator username</li></ul><ul id="5cb5c268-a450-47b9-8848-4e34c9df371a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Administrator password</li></ul><p id="b33ebf7f-9858-4169-90f7-059bd50613c0" class="" dir="auto">The default local values are usually:</p><pre id="27855327-8d13-40b6-95fa-183a18c9d588" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Host: localhost
+Port: 5432
+Username: postgres</code></pre><h2 id="87579f3e-2793-47bb-8c7d-5e180d0fdd1f" class="" dir="auto">5.2 Create the database</h2><p id="95d473d0-8f68-461c-8647-dd0e3d86df83" class="" dir="auto">Create a database named:</p><pre id="52b78e1f-de3d-4bb5-91dd-c618ebbfbea3" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">smartwatchsys_db</code></pre><div id="3a26a244-173d-805d-ac7f-cf97262a6ac2" class="column-list" data-notion-column-list="" dir="auto"><div id="3a26a244-173d-8035-89a0-cc9afc664435" style="width:100%" class="column" data-notion-column-ratio="1" dir="auto"><h3 id="3f900218-013f-462e-84f4-20faae79cf87" class="" dir="auto">Command-line option</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" integrity="sha512-whYhDwtTmlC/NpZlCr6PSsAaLOrfjVg/iXAnC4H/dtiHawpShhT2SlIMbpIhT/IL/NrpdMm+Hq2C13+VKpHTYw==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="3a26a244-173d-8049-b9b1-db398a02ea75" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">createdb -U postgres smartwatchsys_db</code></pre></div><div id="3a26a244-173d-80fe-ae5d-c87a8f0b2c3b" style="width:100%" class="column" data-notion-column-ratio="1" dir="auto"><h3 id="3a26a244-173d-80a1-a471-dc10ca244311" class="" dir="auto">pgAdmin option</h3><ol type="1" id="3a26a244-173d-8075-a09c-fd3880a35690" class="numbered-list" start="1" dir="auto"><li>Open pgAdmin.</li></ol><ol type="1" id="3a26a244-173d-80ca-8bde-d888571e7bc8" class="numbered-list" start="2" dir="auto"><li>Connect to the PostgreSQL server.</li></ol><ol type="1" id="3a26a244-173d-8013-8e3f-c8389787db80" class="numbered-list" start="3" dir="auto"><li>Right-click <strong>Databases</strong>.</li></ol><ol type="1" id="3a26a244-173d-803f-8398-f606f2824820" class="numbered-list" start="4" dir="auto"><li>Select <strong>Create → Database</strong>.</li></ol><ol type="1" id="3a26a244-173d-806b-8f93-f94f39501748" class="numbered-list" start="5" dir="auto"><li>Enter <code>smartwatchsys_db</code>.</li></ol><ol type="1" id="3a26a244-173d-801f-a7e9-e3e66413c66d" class="numbered-list" start="6" dir="auto"><li>Save.</li></ol></div></div><h2 id="64e52b10-8916-4407-b442-43a98516ca32" class="" dir="auto">5.3 Restore the database dump</h2><div id="3a26a244-173d-806a-97de-e3f12205f1e6" class="column-list" data-notion-column-list="" dir="auto"><div id="3a26a244-173d-8012-abad-cb67ad9d59cc" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><h3 id="3a26a244-173d-8038-af2a-cdfdb5038b1e" class="" dir="auto">Command-line option</h3><p id="3a26a244-173d-80ba-bd58-e66e918e6ab3" class="" dir="auto">Run the command from the folder containing the SQL file:</p><pre id="3a26a244-173d-806d-8c02-cf1d0ee54ee5" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">psql -U postgres -d smartwatchsys_db -f DB-18072026.sql</code></pre></div><div id="3a26a244-173d-80d8-9b58-c13dd16f3b42" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><h3 id="3a26a244-173d-80a0-8ca4-d44810d72fec" class="" dir="auto">pgAdmin option</h3><ol type="1" id="3a26a244-173d-8033-91cc-fedf111eb327" class="numbered-list" start="1" dir="auto"><li>Select <code>smartwatchsys_db</code>.</li></ol><ol type="1" id="3a26a244-173d-80a0-b706-ec059f221d66" class="numbered-list" start="2" dir="auto"><li>Open <strong>Query Tool</strong>.</li></ol><ol type="1" id="3a26a244-173d-8057-9e27-eb4ec7655e46" class="numbered-list" start="3" dir="auto"><li>Load <code>DB-18072026.sql</code>.</li></ol><ol type="1" id="3a26a244-173d-80d8-9046-e42ff9c144a3" class="numbered-list" start="4" dir="auto"><li>Execute the file.</li></ol><ol type="1" id="3a26a244-173d-80f7-b3d9-d98143d3ca50" class="numbered-list" start="5" dir="auto"><li>Wait for completion.</li></ol><ol type="1" id="3a26a244-173d-8099-b110-cc861f3ea58f" class="numbered-list" start="6" dir="auto"><li>Review the Messages panel for errors.</li></ol></div></div><h2 id="edc70fc0-2996-42fe-a55e-40a15f7bf6c7" class="" dir="auto">5.4 Verify the database</h2><p id="38086f12-efad-47d0-9ff5-c5e36634475d" class="" dir="auto">Confirm that the database contains tables including:</p><ul id="59e142a3-8fcf-4560-bee4-bd93b8041e97" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>User</code></li></ul><ul id="26e00395-556f-4430-9448-ea68663b8c5d" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Watch</code></li></ul><ul id="6ef21441-b7b5-4d09-84e3-1b1145f5a532" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>AndroidPhone</code></li></ul><ul id="d7b25c33-5dd8-415b-855c-a8844346ae16" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>UseCase</code></li></ul><ul id="56b99ed8-520b-4233-9ec7-2199db31d281" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>UseCaseDictionary</code></li></ul><ul id="cd64536c-2a49-40ae-bb9e-59b6200a88db" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>feedback_config_rules</code></li></ul><ul id="014532a4-9cc8-4494-a6f9-c8bc51e3f587" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>User_UC_Mappings</code></li></ul><ul id="b0ab8900-f94e-4117-8b02-e0a6f97be1f4" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>SensorData</code></li></ul><ul id="6f207365-6dd4-4174-9750-74e953275cb9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Alert</code></li></ul><ul id="61a2e9d3-f7f8-431a-b42f-cb888f23d0a0" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>user_schedules</code></li></ul><ul id="a5772534-1e21-4604-966e-b69df7a3a2b2" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>agent_session</code></li></ul><p id="ea3b4a68-25d8-4d60-88bc-0aa434836838" class="" dir="auto">Also verify that database functions such as the ‘<em>resolve_fb_range</em>’ and ‘<em>insert_sensor_data</em>’ functions were created.</p><blockquote id="5f0a2a1a-8cd4-45b4-9ece-4a97b2e21efe" class="" dir="auto">✅ <strong>Verification gate:</strong> The schema is visible, existing use cases can be queried, and no critical errors appeared during restoration.</blockquote><hr id="3a26a244-173d-80f2-863c-f863c0e0f339" dir="auto"/><h1 id="c5fd6f3f-d90a-49bf-9c48-cbc11aaf0209" class="" dir="auto">6. Install and configure n8n</h1><h2 id="e3800f5b-a04b-482e-bbd4-4d818d4cd55d" class="" dir="auto">6.1 Install n8n</h2><p id="d009e78e-e3e4-43c0-a349-fcc0d09e386f" class="" dir="auto">Install the validated n8n version listed at the top of this page. <a href="https://docs.n8n.io/deploy/host-n8n/install-options/install-with-npm">https://docs.n8n.io/deploy/host-n8n/install-options/install-with-npm</a></p><p id="ed75eef8-fcbd-4ac9-8b45-e82dea64aaf9" class="" dir="auto">After installation:</p><ol type="1" id="3a38fee9-bba0-4805-9b15-35aab367c5c5" class="numbered-list" start="1" dir="auto"><li>Start n8n.</li></ol><ol type="1" id="774eda21-fc53-43e8-a6a1-39e9e845b410" class="numbered-list" start="2" dir="auto"><li>Open the n8n editor.</li></ol><ol type="1" id="9e0e3562-b625-484f-81f3-94f8b49d03db" class="numbered-list" start="3" dir="auto"><li>Create or sign in to the administrator account.</li></ol><ol type="1" id="0eba61e0-c745-4bc9-ae50-e3dd03451a80" class="numbered-list" start="4" dir="auto"><li>Confirm that the editor loads correctly.</li></ol><p id="4eea4f00-b23d-4c55-b7df-e29c36b3cb76" class="" dir="auto">The default local address is generally:</p><pre id="bc60fdbf-a28f-4e72-b2f7-73f9eee4fb38" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">http://localhost:5678</code></pre><h2 id="808fa720-843b-407e-ba08-e81494789e9d" class="" dir="auto">6.2 Import the workflows</h2><p id="16d80c0d-4d79-4e9e-8604-5102484f0e70" class="" dir="auto">Import every current root-level <code>.json</code> workflow from the backend repository or installation package. Read more about workflows <a href="n8n/n8n%20Workflows%20Breakdown%2037a6a244173d80cd8c82cb7916e6ffa3.html" data-notion-page-id="37a6a244-173d-80cd-8c82-cb7916e6ffa3" data-notion-space-id="11e6a244-173d-81e2-91b8-00033177d267"><span class="icon" data-emoji="💼"></span>n8n Workflows Breakdown</a> </p><p id="e6ab35df-bee7-4d22-b6b5-4244ada905c8" class="" dir="auto">The main public workflows are:</p><ul id="cc6c2060-6359-4572-ac37-6b38c029afd5" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>DB Manager</code></li></ul><ul id="953f3a84-3521-414a-9b60-d9a3b71f760e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Vibration Orchestrator</code></li></ul><ul id="c2989c01-468b-4281-8635-c8880da7cfeb" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Chat Orchestrator</code></li></ul><p id="83841691-d08d-4267-a7f7-d994d0210c0c" class="" dir="auto">Supporting workflows include:</p><ul id="280c70ec-80e2-4a39-ac38-8a3a59bd0280" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Mapping Manager</code></li></ul><ul id="6c0471da-3fa4-4d9b-8aaf-69e4583a1a15" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Schedule Manager</code></li></ul><ul id="9b4eba28-6969-477f-9561-7af2b9a0a941" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Dictionary Manager</code></li></ul><ul id="aa6d69a4-1174-4f49-b5af-5165b0f2ca37" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Use Case Builder</code></li></ul><ul id="b3b3de66-e3f2-4c09-8ffc-ceb4745de384" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Expert Panel Agent</code></li></ul><ul id="88bf8a07-03c9-4b08-a6b8-53a97a10d09d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The <code>Agent Expert</code> workflows</li></ul><ul id="084e5c9a-8f9a-4fa9-a3ab-8f86690f074e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Knowledge Agent</code>  [DEPRECATED]</li></ul><aside class="block-color-gray_background callout" data-notion-callout="" data-notion-callout-icon="💡" data-notion-callout-background="gray_background" style="white-space:pre-wrap;display:flex" id="3a36a244-173d-80bd-b486-c828679a23dd" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="💡"></span></div><div style="width:100%"><p id="06c47173-5841-4364-92f6-afa09c2ac06d" class="" dir="auto">Do not activate them yet.</p></div></aside><h2 id="6c7903d1-1851-4563-8b6e-86d198927443" class="" dir="auto">6.3 Configure credentials</h2><p id="032956be-7850-42cb-8d95-7cd333904ebc" class="" dir="auto">Configure every credential referenced by the imported workflows.</p><p id="3a26a244-173d-806a-801e-d80ee485c216" class="" dir="auto">For detailed credential instructions, open:</p><ul id="3a26a244-173d-8082-8504-c3a6d8007dce" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Setting%20Credentials%20On%20n8n%203876a244173d80a696ede0db3852d899.html">Setting Credentials on n8n</a></li></ul><ul id="3a26a244-173d-8029-a217-d41061441d9f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.postgres/">n8n PostgreSQL documentation</a></li></ul><ul id="3a26a244-173d-80f8-8eab-fe9aa2630cab" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://docs.n8n.io/integrations/builtin/credentials/openai/">n8n OpenAI credentials</a></li></ul><ul id="3a26a244-173d-8066-9230-cb4b6d935614" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://docs.n8n.io/integrations/builtin/credentials/googleai/">n8n Google AI credentials</a></li></ul><ul id="3a26a244-173d-8076-9fcb-f8f9887ca627" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://docs.n8n.io/integrations/builtin/credentials/sendemail/">n8n Send Email credentials</a></li></ul><h3 id="48db2a94-ddbd-4433-87d6-30bd19dbcbd3" class="" dir="auto">PostgreSQL</h3><p id="1c5a6833-ebc5-497f-aeca-052aaefc763f" class="" dir="auto">Point all PostgreSQL credential references to:</p><pre id="8948fa47-7b70-4f16-9f93-be99ca0244d0" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Host: localhost
+Port: 5432
+Database: smartwatchsys_db
+User: [PostgreSQL user]
+Password: [PostgreSQL password]</code></pre><h3 id="2804e329-5f06-447e-9304-ec93ac5e11b1" class="" dir="auto">OpenAI</h3><p id="fd65a92e-e205-49f6-b862-c0468f081f02" class="" dir="auto">Configure the OpenAI credential used by the chat and AI-agent workflows.</p><h3 id="af4db6e6-4efa-4b4e-bf72-8b4bfbf434e2" class="" dir="auto">SMTP/email</h3><p id="160e31de-2421-4080-8fb2-2b3f560e8da0" class="" dir="auto">Configure SMTP credentials when monitoring-stop email alerts are enabled.</p><h3 id="79337e34-43a9-4d94-8bfd-35aa0620d49d" class="" dir="auto">Other AI or external APIs</h3><p id="ca9199a4-d5ea-47bf-906a-2b091011579e" class="" dir="auto">Configure Google AI or additional API credentials only when they are referenced by the imported workflow version.</p><h2 id="77b99c1e-3138-4b7a-8df2-22e1348237bc" class="" dir="auto">6.4 Reconnect workflow references</h2><blockquote id="3f921ec3-19e7-4d59-99f9-c7f1699a4b8b" class="" dir="auto">⚠️ <strong>Do not skip this step.</strong></blockquote><p id="3909e6d9-73cd-42dc-b5c2-d38144b4514d" class="" dir="auto">Imported workflow IDs can differ from the IDs stored in exported files.</p><p id="485515a1-d107-4888-9340-b448af5429ad" class="" dir="auto">Open every node of the following types:</p><ul id="ae83d120-2652-4d4d-8cbf-57067392a06e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Execute Workflow</strong></li></ul><ul id="0a8d2a07-b02b-4e4d-8b21-09b4630b92ce" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Workflow tools used by AI agents</li></ul><ul id="2303e5a8-ab8e-4913-88a6-e3fcf2dc2554" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Any node that selects another workflow by ID</li></ul><p id="aeff3cc8-f3d8-475f-a910-4987e2f31cd2" class="" dir="auto">Re-select the intended target workflow from the dropdown, even when a workflow name already appears.</p><p id="808d4371-80b0-4c22-92ce-29e3dd3a5523" class="" dir="auto">Pay particular attention to links between:</p><ul id="2f8e2e47-31fe-457b-a5e5-b01234e8a7ba" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Orchestrators and manager workflows</li></ul><ul id="aae186cd-76d7-478b-8a23-0142f1a3cb80" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Chat Orchestrator and AI workflows</li></ul><ul id="90f41a1b-39a1-4c85-a02b-b9c74599833a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Knowledge and expert-panel workflows</li></ul><ul id="13b86130-6582-4ba5-b5b7-ae49d21bff4c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Use Case Builder and dictionary/mapping workflows</li></ul><p id="b5eb5cd2-f39a-44b2-8598-729a1c58fb9b" class="" dir="auto">A workflow may import successfully but still fail at runtime when these references are not reconnected.</p><h2 id="5b1aec17-98ad-45d9-bc15-aa8cd0d4af0a" class="" dir="auto">6.5 Test database access</h2><p id="daa88890-8362-45cd-ac90-789dce18f45d" class="" dir="auto">Run a safe database-reading node or connection-check endpoint.</p><p id="c1e0ebaa-3bbe-4666-bbf7-24fcbea76608" class="" dir="auto">Confirm:</p><ul id="8daa60dd-200f-420f-8974-041a7bb561d0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL credentials authenticate successfully.</li></ul><ul id="e77cb94c-1654-4fc4-8c5b-d4206f390a49" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>smartwatchsys_db</code> is selected.</li></ul><ul id="3ad0ea40-d362-4f39-b8bc-44f79a2cd24f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Existing participants or use cases are returned.</li></ul><ul id="5789e328-f75f-4762-9feb-17b98b9c2b39" class="bulleted-list" dir="auto"><li style="list-style-type:disc">No credential or SQL errors appear.</li></ul><h2 id="3747f911-91d4-45b5-8df4-7e2651eab389" class="" dir="auto">6.6 Activate the workflows</h2><p id="61929d12-0189-4b82-b4d4-88582c9b2dcf" class="" dir="auto">At minimum, activate:</p><ul id="ed331c78-97f2-4d5e-9258-6fba1265ea23" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>DB Manager</code></li></ul><ul id="3b7427d2-3cc4-4190-bc82-664c0a032360" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Vibration Orchestrator</code></li></ul><ul id="68f9816a-3efd-46d3-a120-be08e6496409" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Chat Orchestrator</code></li></ul><p id="66d6c7a8-0ac2-4cf4-94fe-9556b31ccfcd" class="" dir="auto">Activate the supporting workflows required by the current workflow design.</p><blockquote id="d71f9704-7789-40d6-8829-871760b9b803" class="" dir="auto">✅ <strong>Verification gate:</strong> The production webhooks are registered, PostgreSQL queries succeed, and all Execute Workflow nodes point to valid workflows.</blockquote><hr id="3a26a244-173d-8065-99fc-e2e0719882d5" dir="auto"/><h1 id="c9b3d357-0804-4d3b-b447-28cfbc08c6da" class="" dir="auto">7. Configure backend network access</h1><p id="ad150bb0-66bf-4a58-b3f4-ed7d93e90810" class="" dir="auto">The correct URL depends on where the clients are running.</p><h2 id="f5c8eaab-858e-49df-b9ad-e2a5cbc93e35" class="" dir="auto">Option A: Everything on the server computer</h2><p id="bdce8fe8-028a-4618-80ae-6a0d06a6b8d4" class="" dir="auto">ResearcherSide may use:</p><pre id="e5ef2471-3b33-4f18-b2ae-a97438ea7cab" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">http://localhost:5678/webhook</code></pre><p id="8db4c55e-2719-4737-8d91-c1942ca473d4" class="" dir="auto">The phone cannot use <code>localhost</code>, because <code>localhost</code> on the phone refers to the phone itself.</p><h2 id="3a26a244-173d-80b0-aad9-d75e0c47ba0a" class="" dir="auto">Option B: Set up Ngrok</h2><p id="48051768-f6a3-4ac1-9b1f-b7a2ef5f7b5a" class="" dir="auto">Expose your local n8n server to the internet so that both the phone app and the researcher dashboard can communicate with it from outside the local network.</p><ol type="1" id="18803971-99a6-4c9a-bd92-1e229f353df8" class="numbered-list" start="1" dir="auto"><li>Install <a href="https://ngrok.com/download">Ngrok</a> and sign up for a free account to get an authentication token.</li></ol><ol type="1" id="bee70c48-c0ee-41be-a668-545486612271" class="numbered-list" start="2" dir="auto"><li>Authenticate your Ngrok CLI in your terminal:<pre id="cd1121c5-51bf-4805-8d68-34ad64176a8c" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">ngrok config add-authtoken &lt;your_auth_token&gt;</code></pre></li></ol><ol type="1" id="9f4294a0-e2ff-4692-a3e0-74f82387fb5b" class="numbered-list" start="3" dir="auto"><li>Start the tunnel to forward traffic to the local n8n instance (port <code>5678</code>):<pre id="6ca257b9-1db5-4f7d-b45f-ecb2a76ac9ce" class="code code-wrap" data-notion-code-syntax="bash"><code class="language-bash" style="white-space:pre-wrap;word-break:break-all">ngrok http 5678</code></pre></li></ol><ol type="1" id="d6f8f31e-d6e3-49a8-83bb-be53b5342a41" class="numbered-list" start="4" dir="auto"><li>Copy the generated public <code>https</code> URL from the terminal output (e.g., <code>https://abcd-1234.ngrok-free.app</code>).</li></ol><p id="6f2f75fd-e2cd-4073-a6b8-dd4cdaabcee7" class="" dir="auto">Both the phone app and the researcher dashboard must use this address:</p><h4 id="5ca9abb5-eb47-4757-9696-690182aa8ee8" class="" dir="auto">ResearcherSide and the phone may use:</h4><pre id="fbde492e-ec70-4b09-aebc-841ae497f4e0" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">https://&lt;your-subdomain&gt;.ngrok-free.app/webhook</code></pre><h2 id="9c0d4118-8692-4dcb-a329-d6110cdd3799" class="" dir="auto">Test the URL</h2><p id="ddc2703e-f9ec-45cf-99eb-d73c77d13f3c" class="" dir="auto">From another device on the intended network, call a safe connection-check endpoint.</p><p id="f24963a6-1399-41e0-8e39-d3fc87c214e0" class="" dir="auto">Confirm that:</p><ul id="418e9cce-c1a2-472c-b63e-0ab2ad2cef0e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The host resolves.</li></ul><ul id="454db6fa-0402-4e2c-a2a5-799b21a0c478" class="bulleted-list" dir="auto"><li style="list-style-type:disc">HTTPS certificates are accepted when using HTTPS.</li></ul><ul id="088398e3-976b-492d-af76-a3cd5b9ec19c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The request reaches n8n.</li></ul><ul id="57fbe1d0-7f64-44a1-b3aa-5b04dea8f295" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The expected workflow executes.</li></ul><ul id="af7a987c-6d98-4edc-93f6-b647166ba114" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The response is not an n8n editor page or tunnel warning page.</li></ul><p id="aaae4353-c390-4bd1-9878-d096295b4cd3" class="" dir="auto">Record the final base URL at the top of this document.</p><hr id="3a26a244-173d-800f-9f08-c8dfbc57879f" dir="auto"/><h1 id="4542ef0f-cfb6-4de0-8616-2c39a8eed14e" class="" dir="auto">8. Install ResearcherSideApp</h1><h2 id="56c9b9f7-9c11-4bd4-b8dc-d7f6ef73f4ca" class="" dir="auto">Option A: Use the prepared executable</h2><ol type="1" id="5bd908e6-224f-4811-9314-6d42315a984a" class="numbered-list" start="1" dir="auto"><li>Copy the current ResearcherSide release folder to the server computer.</li></ol><ol type="1" id="174d7f25-6ba8-4211-b4c1-86eec46d2a2a" class="numbered-list" start="2" dir="auto"><li>Keep any included libraries or configuration files beside the executable.</li></ol><ol type="1" id="84ff374b-abcd-45d9-bb84-7a33cc5dd6ca" class="numbered-list" start="3" dir="auto"><li>Confirm that the application is configured for the correct n8n production URL.</li></ol><ol type="1" id="4909310b-d47b-49f6-89f4-7f3121df4577" class="numbered-list" start="4" dir="auto"><li>Start the application.</li></ol><ol type="1" id="5df7f1a4-57ee-4fc1-8e22-40a6c20f1075" class="numbered-list" start="5" dir="auto"><li>Allow it through Windows Firewall if prompted.</li></ol><p id="169d7888-c4a1-477f-b726-4770930f935c" class="" dir="auto">The recommended setup is to run ResearcherSide on the same computer as n8n, using:</p><pre id="6cc085a5-7c08-4ba5-978e-7ebb73a7222a" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">http://localhost:5678/webhook</code></pre><h2 id="67b9c765-8bf9-4809-af84-7ede2294215e" class="" dir="auto">Option B: Run from source</h2><ol type="1" id="a0dec5f5-ab6e-44a6-958b-2f476e55c8fc" class="numbered-list" start="1" dir="auto"><li>Clone or download the <a href="https://github.com/TTaliR/ResearcherSideApp-FULL">ResearcherSide repository</a>.</li></ol><ol type="1" id="82e90aff-8241-4d41-9a55-c8d3498a11f3" class="numbered-list" start="2" dir="auto"><li>Install JDK 17 or newer with JavaFX support.</li></ol><ol type="1" id="151a8aa7-a69e-49b2-8a3c-e38f03ee7a42" class="numbered-list" start="3" dir="auto"><li>Open the project in IntelliJ IDEA.</li></ol><ol type="1" id="a5353300-9c87-462a-9ac9-053e1c7ef8e1" class="numbered-list" start="4" dir="auto"><li>Add the bundled root-level JAR files to the module classpath.</li></ol><ol type="1" id="f350075a-d6e4-4023-ba7a-b5a3625a185c" class="numbered-list" start="5" dir="auto"><li>Open:</li></ol><pre id="43cf62b9-74af-4f2a-9e21-a7cdac0fb229" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">com/example/demo/service/ApiService.java</code></pre><ol type="1" id="f1caf5bc-9b50-4c7b-b963-17e03fb2be6d" class="numbered-list" start="1" dir="auto"><li>Set the n8n production webhook URL.</li></ol><ol type="1" id="677c068c-a148-41dd-9d90-078309e5482e" class="numbered-list" start="2" dir="auto"><li>Run:</li></ol><pre id="1e19eba7-4d4c-4acc-8860-b1525e73ef23" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">com.example.demo.SmartWatchHapticSystemApplication</code></pre><h2 id="3de6e1a5-a7df-43c4-b952-bfa21ce96373" class="" dir="auto">Verify ResearcherSide</h2><p id="f4dc9969-ed34-45b3-b398-845a4c0b1165" class="" dir="auto">Confirm that:</p><ul id="7e42ba1a-b4ef-49fd-8439-cb5e82682a96" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The initial n8n connection check succeeds.</li></ul><ul id="2cc199ec-f20c-460c-814a-39f6f219e09f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The dashboard loads.</li></ul><ul id="b132a1ad-19f4-4d74-b356-f1e7bbb87da4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Participants and use cases are visible.</li></ul><ul id="ec6273eb-ec05-4efa-80c6-bb0ee75ff90e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping and schedule pages load.</li></ul><ul id="bcab90eb-41f3-4fea-a5d0-50da27960c1e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">No database credentials are requested by the desktop application.</li></ul><p id="fa820257-534d-4db4-9232-6e1d91258df7" class="" dir="auto">ResearcherSide communicates with n8n and does not connect directly to PostgreSQL.</p><h3 id="8b16b7da-2c22-43dd-9350-af7abde8a317" class="" dir="auto">Detailed guide</h3><p id="8bdc370a-8149-4ced-a444-cfadc1fdcb56" class="" dir="auto">Open the <a href="ResearcherSideApp%2037a6a244173d80af8e1be324e20c3ae8.html">ResearcherSideApp Documentation</a>.</p><blockquote id="782e5cda-6c8a-4d29-95f0-722c5eee291f" class="" dir="auto">✅ <strong>Verification gate:</strong> ResearcherSide opens, passes its backend connection check, and loads database-backed information.</blockquote><hr id="3a26a244-173d-801c-a58c-e3edccb2a7ef" dir="auto"/><h1 id="5c7de61d-8940-456e-af90-32b16171bf30" class="" dir="auto">9. Initial Installation - Phone &amp; Watch</h1><p id="d1cbcc63-3147-47e3-b401-3ce5358a6a1b" class="" dir="auto">Before configuring the applications, determine:</p><ul id="4c1a6d51-9d11-489f-9495-7070de7073cf" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Participant/user ID</li></ul><ul id="f6a51144-2adc-462a-9c8a-fb64a9d211ed" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Smartwatch ID</li></ul><ul id="428c40cf-3324-4368-bdc8-104d363d5868" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Android phone ID</li></ul><ul id="01d0f5ab-f6d6-49e6-9a4d-4376a1bde6eb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Assigned use case</li></ul><ul id="bb396f00-06ac-4fa3-90e0-0afee56465b8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active feedback mapping</li></ul><p id="b472b04e-f6e5-4cf1-ab4d-e1adfe22b77b" class="" dir="auto">Example:</p><pre id="e615c99b-c1cf-4fca-88f8-3ba1a99a7ad7" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">User ID: 1
+Smartwatch ID: 1
+Android Phone ID: 50</code></pre><p id="3b2ed75c-b916-4010-bf5d-d521bafa9de7" class="" dir="auto">The identifiers used by the watch name, phone application, database, and ResearcherSide must refer to the same participant-device assignment.</p><p id="3a26a244-173d-80f2-9693-ec8969029553" class="" dir="auto">For the full detailed guide: <a href="Initial%20Installation%20-%20Phone%20&amp;%20Watch%203806a244173d8002838cf8561aaffafd.html" data-notion-page-id="3806a244-173d-8002-838c-f8561aaffafd" data-notion-space-id="11e6a244-173d-81e2-91b8-00033177d267"><span class="icon" data-emoji="🧑‍🔧"></span>Initial Installation - Phone &amp; Watch</a> </p><hr id="3a26a244-173d-80c6-8be2-dc426586ee4b" dir="auto"/><h1 id="72993590-bf52-40fa-9dbe-8dd1e84d77b9" class="" dir="auto">10. Configure the participant in ResearcherSide</h1><p id="01db5e24-ae1e-450e-b03e-515be645cbbe" class="" dir="auto">After the applications and backend are available:</p><ol type="1" id="6c10c3c2-6552-4b4a-8755-fdc950450dbf" class="numbered-list" start="1" dir="auto"><li>Open ResearcherSide.</li></ol><ol type="1" id="3c996415-ea12-4433-ad5e-e22992803011" class="numbered-list" start="2" dir="auto"><li>Create or select the intended participant.</li></ol><ol type="1" id="8ef04370-cc3c-458a-ba39-763ee8cfa0d0" class="numbered-list" start="3" dir="auto"><li>Confirm that the participant ID matches the watch Bluetooth name.</li></ol><ol type="1" id="a8e25b88-1d29-4530-afb3-27b68e8ea0d0" class="numbered-list" start="4" dir="auto"><li>Confirm that the Android phone and smartwatch IDs match the configured devices.</li></ol><ol type="1" id="ac11b6fe-7fb7-4f90-90f9-587caa6e63cc" class="numbered-list" start="5" dir="auto"><li>Assign the required use case.</li></ol><ol type="1" id="cebc749e-cfdb-4d52-820b-9cae3c1a3b0c" class="numbered-list" start="6" dir="auto"><li>Assign an active feedback mapping.</li></ol><ol type="1" id="0af38a19-427e-4948-a357-cb5408a71244" class="numbered-list" start="7" dir="auto"><li>Review the mapping ranges and haptic parameters.</li></ol><ol type="1" id="b1f5a0f9-0329-478b-8da8-0543d6ab4f83" class="numbered-list" start="8" dir="auto"><li>Configure a schedule when the use case requires one.</li></ol><ol type="1" id="1afbd305-afc6-4822-8325-2c9b80b20114" class="numbered-list" start="9" dir="auto"><li>Confirm that the participant has an active monitoring configuration.</li></ol><p id="61a53cb2-72c7-4901-af99-4b002c4fc36b" class="" dir="auto">The active mapping must define the appropriate values for:</p><ul id="b5673a74-c329-4578-86f7-e38fca385aa7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Minimum and maximum sensor values</li></ul><ul id="5ccfe27d-b55e-4561-bee0-35807d80a1b0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Pulses</li></ul><ul id="445b46ce-19eb-4840-88ac-1e0bf3c27f3f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Intensity</li></ul><ul id="c934759e-f1fa-4293-adc3-980154097fcf" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Duration</li></ul><ul id="62c832e4-da79-43db-8bd2-b7a6e956c7c7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Interval</li></ul><blockquote id="52ce8467-f6e5-4fd1-8a2a-d4c1bbcd1a76" class="" dir="auto">⚠️ Confirm that the assigned mapping is active. A participant assigned only to an inactive mapping may not appear correctly in active views and will not receive the expected feedback.</blockquote><p id="ef619d20-240e-489d-9005-703b3cbcd5ff" class="" dir="auto">For exact interface instructions, use the mapping, monitoring, scheduling, and participant sections of the <a href="ResearcherSideApp%2037a6a244173d80af8e1be324e20c3ae8.html">ResearcherSideApp Documentation</a>.</p><hr id="3a26a244-173d-805f-9bfc-c481f3ad214e" dir="auto"/><h1 id="85ea5645-784b-4664-8bf6-8fb987660651" class="" dir="auto">11. Run the complete end-to-end test</h1><p id="1ead3beb-477e-465e-8368-5368a536ab65" class="" dir="auto">Use test IDs or a designated test participant rather than an active research participant.</p><h2 id="cb287e3c-2c1c-4d50-ba71-c39777916102" class="" dir="auto">11.1 Start the services</h2><p id="b94896b2-10bd-460f-9ee7-30aba80bdb1c" class="" dir="auto">Start in this order:</p><ol type="1" id="dd84f5ab-513b-4021-bcf9-c0452f61e9e0" class="numbered-list" start="1" dir="auto"><li>PostgreSQL</li></ol><ol type="1" id="c1444927-eeea-4790-8795-d50a4f5f97d2" class="numbered-list" start="2" dir="auto"><li>n8n</li></ol><ol type="1" id="ccf4f580-41e5-44d8-b7cc-4d3c2f645bf9" class="numbered-list" start="3" dir="auto"><li>Required active n8n workflows</li></ol><ol type="1" id="57308a95-e2f0-4a54-946c-df38cd68a0b1" class="numbered-list" start="4" dir="auto"><li>ResearcherSide</li></ol><ol type="1" id="9bacd822-ded8-4756-b215-b7878256b4fa" class="numbered-list" start="5" dir="auto"><li>Wear OS application</li></ol><ol type="1" id="e1ea8079-1b4d-4b71-b7de-bb48c2a7aa57" class="numbered-list" start="6" dir="auto"><li>Android phone application</li></ol><h2 id="ca08013e-30f1-4945-bc55-d1f9052f3c1d" class="" dir="auto">11.2 Check the watch</h2><p id="92d999b8-ad05-4582-8a13-77710f916c76" class="" dir="auto">Confirm:</p><ul id="35ec7ab1-d906-487c-afda-4863aacdae6f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Correct Bluetooth name</li></ul><ul id="97e3eee7-7b7d-41b9-b300-73038c6eefa7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Body-sensor permission granted</li></ul><ul id="f6ea242e-679c-4d42-ae6d-3e79faeb6950" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Bluetooth permission granted</li></ul><ul id="a33dfd64-a38e-4b0b-a46d-22d3d41f6f6f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Application running</li></ul><ul id="3c296589-800e-4632-93c0-743ca43482f8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Foreground notification visible</li></ul><ul id="d18db03d-ac16-4700-a785-c58e66ffa07f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Battery sufficient</li></ul><h2 id="7a11e17a-f92a-4f7a-91b5-9fb256cdecdf" class="" dir="auto">11.3 Check the phone</h2><p id="17b9695c-faca-4b50-ba09-b1de5a695a54" class="" dir="auto">Confirm that the diagnostics show:</p><ul id="c220a139-19aa-4d03-a420-b7c7bd74fc7e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Bluetooth connected</li></ul><ul id="a87eb63a-0cf3-417f-b810-0725d1dd506b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">n8n connected</li></ul><ul id="9f09e353-ec10-49dd-bf36-f7ad9f4ada68" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Location available when required</li></ul><ul id="523fc93e-7cce-49c0-886e-c2ca46984769" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Correct monitoring type</li></ul><ul id="e29c6bde-130e-4eaa-b2a2-f194305e549f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Foreground monitoring service active</li></ul><h2 id="0a35558b-70b0-4fa0-864e-8c215730fd3c" class="" dir="auto">11.4 Check ResearcherSide</h2><p id="ad91de4d-2dd2-470c-8900-05fcdaf3ff48" class="" dir="auto">Confirm:</p><ul id="4bc915b3-f019-4825-a446-91b5a0cb6d11" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Correct participant selected</li></ul><ul id="c883c91f-b5fa-40ba-9b38-29e655fd680c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Correct use case selected</li></ul><ul id="acb63ca4-71f2-4151-ae0e-a405a2d575c2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active mapping assigned</li></ul><ul id="03e5ab39-f056-454a-852e-2ee870a2641d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Monitoring enabled</li></ul><ul id="61103968-36c8-4a2c-9abf-e8a5b744d8da" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Expected schedules visible</li></ul><h2 id="967bc205-9f8b-49dc-bfb1-c214badbd0b8" class="" dir="auto">11.5 Produce one sensor reading</h2><p id="30f9cc78-7da4-478e-a2f4-a6a03f1eb7c5" class="" dir="auto">Start monitoring and wait for one reading.</p><p id="0966db0a-e4da-4e54-8493-ad631da9c90b" class="" dir="auto">The expected route is:</p><pre id="dfadf58b-a33f-4e3a-bb3c-a5b3af48fc99" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Watch
+→ Bluetooth sensor message
+→ Android phone
+→ POST /webhook/usecase-routing
+→ Vibration Orchestrator
+→ Database lookup and mapping evaluation
+→ SensorData and Alert records
+→ Haptic response
+→ Android phone
+→ Vibrate command
+→ Watch vibration</code></pre><h2 id="02512576-ee17-4a93-9790-deb92c7e51b5" class="" dir="auto">11.6 Verify each layer</h2><h3 id="a65dd78e-1c05-4c9e-8d42-f58548a77caa" class="" dir="auto">Watch</h3><ul id="b625ba89-4213-4cb9-a169-cbd8c15b93fb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A sensor reading was produced.</li></ul><ul id="18cc6c43-b126-4751-8f0a-46f68ed02905" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A vibration was received.</li></ul><h3 id="3efa4c32-4525-489c-9412-1fe300672ba5" class="" dir="auto">Phone</h3><ul id="59ea4e6b-8e30-4f3d-9062-9e6252444f8d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The sensor message contains the expected IDs.</li></ul><ul id="a288c562-198a-4ec8-b4b3-80877f96f7f3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The n8n request succeeded.</li></ul><ul id="af8f7b34-ad0a-44f8-988f-d9347407990f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A haptic response was received.</li></ul><ul id="a2a5d7f4-1340-485c-9eea-35b5f9178967" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The vibration command was sent to the watch.</li></ul><h3 id="e1795723-6697-49e6-a176-6b7e05e1d4f0" class="" dir="auto">n8n</h3><ul id="1c06eca7-5bce-40a3-b107-41b4ec6b819a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The correct production workflow executed.</li></ul><ul id="a8432a45-002c-4726-a7d9-76c44704daba" class="bulleted-list" dir="auto"><li style="list-style-type:disc">No node failed.</li></ul><ul id="c9cf1962-4977-484f-a101-5d971f5c8d46" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The correct use-case branch was selected.</li></ul><ul id="ad0e0025-b4ba-4179-86bc-ccc759a9be00" class="bulleted-list" dir="auto"><li style="list-style-type:disc">An active mapping was found.</li></ul><ul id="e2d8ec95-15b1-4bed-88f8-a7bdcdaa8ee8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A haptic result was generated.</li></ul><h3 id="1420ac0b-af9c-43b1-bb6c-f01fccf8c764" class="" dir="auto">PostgreSQL</h3><p id="947ad1cb-b89f-438f-90da-6d35563f6f9f" class="" dir="auto">Verify that the test created or updated the expected records in:</p><ul id="b05e99f4-16f2-4af3-a996-6300d46bc330" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>SensorData</code></li></ul><ul id="b2517cb7-0e98-48ab-a32c-d6bc82e5e5d8" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Alert</code></li></ul><h3 id="995b8fec-940f-4df9-8fc7-4a58fb7e1597" class="" dir="auto">ResearcherSide</h3><ul id="1c42e6f3-893e-403a-95ab-f39381fcaef6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The new reading appears.</li></ul><ul id="c01630ba-9a3f-4dac-9339-0abb88fcf6fc" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The feedback event appears.</li></ul><ul id="1f857d90-2cb2-4a7e-932f-5a1cfba7884c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The graph updates.</li></ul><ul id="213a69ce-75a0-46df-aa3a-c81496c43bd0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The participant remains connected.</li></ul><blockquote id="917682f9-423c-40c7-bd1a-75a280ace36b" class="" dir="auto">✅ <strong>Installation success:</strong> The test sensor value reaches the backend and database, appears in ResearcherSide, and causes the expected watch vibration.</blockquote><hr id="3a26a244-173d-80e9-a25b-e5d24020f8d0" dir="auto"/><h1 id="a3533c37-a909-483b-9860-725acbe604be" class="" dir="auto">12. Test optional features</h1><p id="ad3d8704-0ca2-415c-ab44-e56b524b3086" class="" dir="auto">After the main sensor-to-vibration flow succeeds, test each enabled optional feature separately.</p><h2 id="2b64274e-5d4c-4c57-bb6b-d9cf7eb2b1ee" class="" dir="auto">AI researcher assistant</h2><p id="8d3edaf5-be50-4c9d-9c01-899ab123ea4b" class="" dir="auto">Confirm:</p><ul id="575f3fb6-fca1-4d8b-9c6a-2eae64a3da43" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Chat Orchestrator</code> is active.</li></ul><ul id="03f1216c-2660-4a02-b541-3e93c32115c9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI credentials are valid.</li></ul><ul id="755b693b-ba7b-460d-8589-54797cf5a943" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Supporting agent workflows are connected.</li></ul><ul id="6f5a3f65-2115-4420-b3aa-df6d6b734220" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A basic participant or mapping question returns an answer.</li></ul><ul id="812ac2fb-5975-45ab-9b26-d448716e14a2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A write action is tested only with safe test data.</li></ul><h2 id="43e12af9-9e6e-4430-a244-1622e6698531" class="" dir="auto">Monitoring-stop alerts</h2><p id="d8e509ca-5dad-4db1-94df-424a86cb6786" class="" dir="auto">Confirm:</p><ul id="e0304dac-32b1-43fc-a7dd-032118bafb68" class="bulleted-list" dir="auto"><li style="list-style-type:disc">SMTP credentials are configured.</li></ul><ul id="ad58205a-1e24-4cef-9e10-4fe09ecec23a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The stopped-monitoring webhook is active.</li></ul><ul id="fcd55a5c-f199-45a9-9829-572146628f2b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A test stop event reaches <code>DB Manager</code>.</li></ul><ul id="5bbef6d3-ab52-446a-9412-d5bb1be205af" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The expected email is received.</li></ul><h2 id="8b6c5dac-0558-41b7-9d56-e3b8053e893b" class="" dir="auto">Data export</h2><p id="6d2a5b7e-97a2-4da5-9018-8d9c36a9822c" class="" dir="auto">Confirm that ResearcherSide can export:</p><ul id="74df83c9-b239-4b35-a6cf-4bdfd098623e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">CSV</li></ul><ul id="92073590-3cf1-430c-b8e5-d0d2946df1d3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PDF</li></ul><p id="f2683135-ac52-4919-b7b7-2574e403b33d" class="" dir="auto">Open the exported files and verify that the participant, timestamps, readings, and feedback information are correct.</p><h2 id="3708423e-5240-4308-be1a-beadb9b47d7c" class="" dir="auto">External API use cases</h2><p id="3b1e50f8-9a07-4054-9f03-323bdddbc183" class="" dir="auto">For each enabled API-based use case:</p><ul id="be0e6fbb-ed19-4d8b-a339-5e5439c14d71" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Verify the API credential or token.</li></ul><ul id="8b10bee6-055a-4e96-ba9a-5ceefae54804" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Verify required parameters such as coordinates.</li></ul><ul id="73301e76-db8c-4fef-94ab-639b301622a9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Run one test request.</li></ul><ul id="09413b60-c026-4d98-930c-a704286f68b8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Confirm a numeric value reaches the mapping stage.</li></ul><ul id="0bed8aa3-9b94-42b2-805e-1af3d32b18b1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Confirm the corresponding feedback is stored and returned.</li></ul><hr id="3a26a244-173d-80fb-a5e1-e92ca81f6b0c" dir="auto"/><h1 id="c0dd116a-f494-43e5-ab00-40537a90ece6" class="" dir="auto">13. Common installation problems</h1><h2 id="b8d36e48-12d5-428a-971f-76a3acf068b6" class="" dir="auto">ResearcherSide does not load</h2><p id="b99e8241-7726-408f-a2e7-7d83903322a7" class="" dir="auto">Check:</p><ul id="1cc3fc26-e411-455f-88d6-2c43cc69901b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL is running.</li></ul><ul id="39166e1f-c137-4e5f-958b-740588588969" class="bulleted-list" dir="auto"><li style="list-style-type:disc">n8n is running.</li></ul><ul id="d0af92ad-1fec-4d40-b79f-91b36c6cd611" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>DB Manager</code> is active.</li></ul><ul id="4d7dad4f-f55b-47cb-81ef-3bd961efd78f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>ApiService.java</code> or the packaged application points to the correct URL.</li></ul><ul id="a090f7c5-ca4d-4092-8b77-1dbd4e29168b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The URL ends with <code>/webhook</code>.</li></ul><ul id="75f8e288-f6c9-452a-9e67-5ca430b0f28d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The connection-check endpoint responds.</li></ul><h2 id="24fef40f-871c-4890-bdcd-82ade28d121a" class="" dir="auto">Imported workflows fail to call each other</h2><p id="ade3072a-e2ce-4df8-ace7-6ff7f11159bd" class="" dir="auto">Likely cause:</p><ul id="202a6ac7-d3c4-40e4-a0e0-b7585ebb48e8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Exported workflow IDs no longer match the imported workflow IDs.</li></ul><p id="7e4fb4fc-423d-42e9-ac6e-8767cd9b93f3" class="" dir="auto">Fix:</p><ul id="5d4ca903-eabc-459b-8174-1330bdf077d7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Open every Execute Workflow or workflow-tool node.</li></ul><ul id="33436ddb-8699-4003-8b08-eb8f60581c54" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Re-select the target workflow.</li></ul><ul id="1cf38d7b-df06-4d5d-937d-a0ece894f7f5" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Save the workflow.</li></ul><ul id="6e3cc6fc-6dc0-4410-b302-6d914a35d67b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Test it again.</li></ul><h2 id="89f16cd2-f7ee-427d-a966-385df90111a2" class="" dir="auto">PostgreSQL nodes fail</h2><p id="8ff69ca1-c752-4dc8-934d-32b3050aed52" class="" dir="auto">Check:</p><ul id="c0c985db-93e5-470c-aaf2-e119b72a7ce6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Database name is <code>smartwatchsys_db</code>.</li></ul><ul id="beee74e6-9a3e-4d0c-aed4-f4bbb8530b83" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL service is running.</li></ul><ul id="dacfacd2-ab97-4596-bf15-53abdef3664e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Host and port are correct.</li></ul><ul id="c072f1cf-f62d-438f-a009-a196a111c872" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Username and password are correct.</li></ul><ul id="187b23cb-5ee4-4a7d-b789-1cca7c7401a6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Both imported PostgreSQL credentials point to the restored database.</li></ul><ul id="8564af2b-211e-4b91-85ad-05fa90d8f1c1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The current SQL dump was completely restored.</li></ul><h2 id="c7ea2f5f-6b17-45d0-a253-e5fb06f9e395" class="" dir="auto">Phone cannot reach n8n</h2><p id="799263d8-e81d-477a-9a7c-110cdf6bf961" class="" dir="auto">Check:</p><ul id="efb9df03-dc23-4fad-a457-f36796658f1f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The phone is not using <code>localhost</code>.</li></ul><ul id="e3d79871-aef2-4d10-a65c-012c9a6104b7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The configured URL includes <code>/webhook</code>.</li></ul><ul id="32c17f54-e8c3-451a-b0cc-79b12f67e6bf" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The workflow is active.</li></ul><ul id="f9eae3b4-0f82-4f12-b5e4-d5cc0c34d202" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The phone can reach the server network address.</li></ul><ul id="d3e5be76-04d7-47ce-93a6-65d3ff5c11d8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Windows Firewall permits the connection.</li></ul><ul id="54677339-8b0d-4bed-a71c-d396fc76339b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The HTTPS certificate is valid.</li></ul><ul id="4556145c-e23f-4cb5-ac11-1613bf50cca3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Local HTTP access is allowed in <code>network_security_config.xml</code> when applicable.</li></ul><h2 id="c059cab2-8251-495d-9367-613b177be257" class="" dir="auto">Phone cannot find the watch</h2><p id="69e1f1ff-5b07-4d12-a6bf-bed265a76dab" class="" dir="auto">Check:</p><ul id="01d14648-0ef5-4963-8a37-cf824f5cebb0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Phone and watch are paired.</li></ul><ul id="d3df5963-a796-4430-b985-bffb046f447a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The watch name follows the required format.</li></ul><ul id="e4849781-d92c-41f1-89cf-f9bf3cae114c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The name contains <code>SmartWatchID</code>.</li></ul><ul id="679f710f-7c78-4407-9e48-598428144cff" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Bluetooth permissions are granted.</li></ul><ul id="7f43ad2d-e4c5-4dc2-8516-bd284ba6dabd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The watch app is running.</li></ul><ul id="dc1f3cb0-2edb-4a15-b42a-a1660a221005" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Remove conflicting paired watches during testing.</li></ul><h2 id="3d7241b5-db6e-491a-9ef1-0cebf93437aa" class="" dir="auto">Readings reach n8n but no vibration is returned</h2><p id="3c470420-bfc0-4b5c-a6ac-f5f915b4a8c0" class="" dir="auto">Check:</p><ul id="ec0211f9-3a0e-4726-8227-ecb7ad7d3d7a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Correct participant ID</li></ul><ul id="6f161ecc-eba2-4920-ba3c-42e8b5d2f85f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Correct watch and phone IDs</li></ul><ul id="d728c2cf-ffe5-44f9-a84a-ac91b7cf56f3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active monitoring type</li></ul><ul id="1c1734af-437d-4621-8452-308e4287c842" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active use case</li></ul><ul id="c4b21140-aaeb-455d-ba52-cc200c9d90b0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active mapping assignment</li></ul><ul id="608312f9-6517-4d5e-b56e-0a11940fee2f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Sensor value falls within a configured mapping range</li></ul><ul id="49889009-60e9-4047-80b1-898f4c947c4d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping intensity, pulses, and duration are positive</li></ul><ul id="c91ebd9e-619d-4cea-a973-468726b7efff" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Rate-limit or smoothing behavior</li></ul><ul id="64c7aa5b-4960-43ab-bc24-81e2ca75d992" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Workflow execution errors</li></ul><h2 id="daa0b5ae-6755-4745-ae05-dea4b6be7951" class="" dir="auto">A haptic command is returned but the watch does not vibrate</h2><p id="95371b13-de76-404a-b7ca-607c5fb4c4af" class="" dir="auto">Check:</p><ul id="dea49e15-3bd9-4305-abe9-bab54718e17a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Phone Bluetooth connection</li></ul><ul id="5aaec244-f23c-4e01-941c-370435c939c2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Watch application and foreground service</li></ul><ul id="f7d63a7c-5780-4b2b-8c56-de182cb0c5c7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Watch vibration permission and device settings</li></ul><ul id="1540c04d-c830-4979-b34d-f3b2554c8652" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Haptic intensity is no greater than <code>255</code></li></ul><ul id="eb2190a2-460b-411b-b570-3ffa5e1c416a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Pulses, intensity, and duration are positive</li></ul><ul id="bfcfecb1-c809-408e-90fa-da1ca267083f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Phone log confirms that the <code>Vibrate</code> command was sent</li></ul><h2 id="8152f94a-36a3-4944-bb3c-9bea91bc805c" class="" dir="auto">Participant disappeared from an active view</h2><p id="7f14802b-f1f6-4642-97e9-dc46761ba903" class="" dir="auto">Check:</p><ul id="6bcbd900-bfe4-487b-9fd2-a6e0e7bdf864" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The participant still has an active assignment.</li></ul><ul id="8a671c63-83f3-4fb1-9fb3-c859dda822c6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The assigned mapping is active.</li></ul><ul id="067c8a01-94fe-41d1-be57-e2dc5082a49f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The participant was reassigned when an old mapping was deactivated or deleted.</li></ul><ul id="b6d8d558-ad5e-4799-9fed-e7812c579f30" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Show All and assignment-history views before changing database records manually.</li></ul><h2 id="95d0b2ab-83e5-490c-8056-bdb9b485d32e" class="" dir="auto">AI assistant fails</h2><p id="7baf0468-260a-4993-a159-efc64452d091" class="" dir="auto">Check:</p><ul id="09ebbf4a-9fde-44b9-b8b8-c29c315cfbe8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI credentials</li></ul><ul id="d28fd80f-9d98-49d1-919c-1924e35373a7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Model access and available balance</li></ul><ul id="5552fa23-7a3c-437f-81d7-5c961a97d6be" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Chat Orchestrator</code></li></ul><ul id="959b507f-81a0-4c72-867a-872815d0011e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Agent workflow references</li></ul><ul id="d97b7afc-f32e-4dfa-90a2-8e6d890bbe05" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Required vector-store or context configuration</li></ul><ul id="30162966-151f-4bd1-b7d9-f6d2388ca26e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Failed n8n execution logs</li></ul><h2 id="e8160ccb-d569-43f7-8ea1-75ba33cb80c3" class="" dir="auto">Monitoring-stop email is not received</h2><p id="7be93324-16d2-4f64-920f-877853cf0f7e" class="" dir="auto">Check:</p><ul id="4d25239a-f817-45af-ad40-4157dd19d9ed" class="bulleted-list" dir="auto"><li style="list-style-type:disc">SMTP credentials</li></ul><ul id="15da88b7-b52e-45ca-9b3d-e94368ff8860" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Recipient configuration</li></ul><ul id="5650815d-a0a7-4e77-91fe-43ce02591144" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>DB Manager</code></li></ul><ul id="c90831da-8b12-44d4-ad9d-a2b138e5ba09" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Stopped-monitoring webhook execution</li></ul><ul id="aea4be1b-9ab9-4453-a0ea-8a1095033f92" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Spam folder</li></ul><ul id="1520ac41-65f4-45fa-8cdd-6051989f2f53" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Email provider security restrictions</li></ul><hr id="3a26a244-173d-8098-9c25-ce1e31d1ccbb" dir="auto"/><h1 id="440c7b29-6da8-4f49-8b78-7e8b63387155" class="" dir="auto">14. Maintenance rules</h1><p id="e872444c-2b90-44ab-8cd5-5c29a49e1d4a" class="" dir="auto">Whenever the system changes:</p><ul id="c5de2d4e-faeb-400f-9d60-7ee2b8cab2b9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Backend URL changed:</strong> update the phone application and ResearcherSide configuration.</li></ul><ul id="ad7db9e3-6ec7-4ed3-9fff-0e53473391db" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Phone ID changed:</strong> update both the phone build and database assignment.</li></ul><ul id="a78fa4ab-f2a4-4d2c-964c-1c60863633e8" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Watch or user changed:</strong> update the Bluetooth alias and database records.</li></ul><ul id="c3879263-4e85-4372-9f9b-f00605c51f04" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Workflows imported again:</strong> re-select all workflow references.</li></ul><ul id="27a32733-a649-4955-aebb-e9acde7c4fef" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Database schema changed:</strong> create a new dump and update this page.</li></ul><ul id="c6becbe3-7444-4f85-a39d-960cf4b645d5" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Use case added:</strong> keep its name identical across the database, dictionary, n8n, phone/watch logic, and ResearcherSide.</li></ul><ul id="3b9f79d1-4d39-4f48-a0f3-5b28d076741f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>APK or EXE rebuilt:</strong> archive the old version and update the version manifest.</li></ul><ul id="6c6cee79-3b3d-4026-93d3-d8b6eb175072" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Credentials rotated:</strong> update n8n credentials and rerun the relevant tests.</li></ul><ul id="da82320c-d016-4d0c-96f8-07b61686d8f7" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Tunnel or domain changed:</strong> verify all client applications before the next session.</li></ul><hr id="3a26a244-173d-80b7-8cff-e959bf69b7d9" dir="auto"/><h1 id="e58d29c4-ad7f-4d71-ad0f-31f657df1c25" class="" dir="auto">15. Source repositories and detailed guides</h1><h2 id="1e257801-5cf5-4763-b215-654151037ca9" class="" dir="auto">Source repositories</h2><ul id="6e72d219-e75d-43ba-a693-be08a326c14f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/liranBecher/Smartwatch-Haptic-Workflow">Smartwatch Haptic Workflow Backend</a></li></ul><ul id="a4da89bd-2db8-476a-8138-03c4534f9def" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/TTaliR/ResearcherSideApp-FULL">ResearcherSideApp</a></li></ul><ul id="fac7d26c-0533-438b-b6e5-30ed9d6b1103" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/TTaliR/AndroidPhoneHapticFeedBackApp">Android Phone Haptic Relay</a></li></ul><ul id="db3b2677-3bc5-4ffb-aea8-335cae3c1ea7" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/TTaliR/SmartWatchHapticFeedBackApp1">Smartwatch Haptic App</a></li></ul><h2 id="db98b694-a8af-447f-bcb7-55a8cfb59492" class="" dir="auto">Notion documentation</h2><ul id="28a75977-4c76-44a1-8e26-de95d163febb" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="../Smartwatch%20Haptic%20Feedback%20Hub%206a46a244173d829c88ff81e199649cfe.html">Smartwatch Haptic Feedback Hub</a></li></ul><ul id="64c5bb7d-529a-4310-84b0-0bb4c60e6d65" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Initial%20Installation%20-%20Phone%20&amp;%20Watch%203806a244173d8002838cf8561aaffafd.html">Initial Installation – Phone &amp; Watch</a></li></ul><ul id="f000d2f9-ded3-4484-aa5c-49694f6fa50f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="ResearcherSideApp%2037a6a244173d80af8e1be324e20c3ae8.html">ResearcherSideApp Documentation</a></li></ul><ul id="5738de8b-06aa-481c-8c8e-1b902228450c" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Setting%20Credentials%20On%20n8n%203876a244173d80a696ede0db3852d899.html">Setting Credentials on n8n</a></li></ul><p id="3a26a244-173d-80ee-b541-e36640f9fb84" class="" dir="auto">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,836 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>n8n Workflows Breakdown</title><meta name="data-notion-page-icon" content="💼"/><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%92%BC%3C%2Ftext%3E%3C%2Fsvg%3E"/><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="37a6a244-173d-80cd-8c82-cb7916e6ffa3" class="page sans" data-notion-page-icon="💼"><header><div class="page-header-icon undefined"><span class="icon" data-emoji="💼"></span></div><h1 class="page-title" dir="auto">n8n Workflows Breakdown</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><blockquote id="1c16c8b3-d13e-452b-9ed5-0a4b4101ca82" class="" dir="auto">💼 <strong>Purpose of this page</strong><p id="27d0789a-503c-4d2d-a89a-5146f831809f" class="" dir="auto">This page explains how the n8n workflows in the Smartwatch Haptic Feedback System are divided, how they communicate, which components call them, and which workflows should be edited for different types of changes.</p><p id="2bcb75fc-58e0-4564-ad7c-6375b3ca2776" class="" dir="auto">It is intended as a system-maintenance map. For node-level explanations, installation instructions, or testing procedures, use the linked documentation pages.</p></blockquote><hr id="6affe6ac-b186-4f07-a582-17b2d8304be9" dir="auto"/><h1 id="dd1fcfce-343d-4153-8928-d5ace11942f8" class="" dir="auto">Workflow architecture</h1><p id="b3b735b6-804e-4b58-839e-34b9500087a5" class="" dir="auto">The n8n backend is divided into three layers:</p><ol type="1" id="06caccb2-644e-487a-ab29-631c87843080" class="numbered-list" start="1" dir="auto"><li><strong>Public entrypoint workflows</strong>Receive requests from the Android phone or ResearcherSideApp.</li></ol><ol type="1" id="7f66fa2c-7588-4cd7-a297-1ce2f3f9107b" class="numbered-list" start="2" dir="auto"><li><strong>Internal manager workflows</strong>Perform focused database actions such as managing mappings, schedules, and dictionary entries.</li></ol><ol type="1" id="6ee5e8c5-d0e0-48df-89f0-c1dcbf009519" class="numbered-list" start="3" dir="auto"><li><strong>AI analysis workflows</strong>Answer researcher questions using project documentation, literature, participant data, and mapping information.</li></ol><hr id="3a36a244-173d-80e6-86e7-f245bb35172c" dir="auto"/><h1 id="fe6e389a-193c-4cd9-b3a9-d3650d069a54" class="" dir="auto">Workflow groups</h1><h2 id="85b17535-e7ae-4fbb-b0cf-0f3ce990253e" class="" dir="auto">Public entrypoints</h2><p id="0db37942-910b-4f1b-a0fd-137d23ab705b" class="" dir="auto">These workflows expose production webhooks and must be active for the complete system to operate:</p><ul id="49d31c67-06cb-4e63-aa84-fa9b20f436ee" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Vibration Orchestrator</code></li></ul><ul id="a563c807-f079-4d94-a798-fd17a450202f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>DB Manager</code></li></ul><ul id="b8a3db8c-219c-4188-af99-6475583e6928" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Chat Orchestrator</code></li></ul><h2 id="959ef32f-e5fa-4a49-a572-0b3703adb9ff" class="" dir="auto">Internal manager workflows</h2><p id="5f3625aa-1f35-4a3a-9968-ac40b2399839" class="" dir="auto">These workflows are normally called by another workflow through an <strong>Execute Workflow</strong> node:</p><ul id="d17d5f64-4e36-4a3e-b4a7-e6790aeea4a5" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Mapping Manager</code></li></ul><ul id="72533ad3-fd48-4685-a754-a7083dafd426" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Schedule Manager</code></li></ul><ul id="78105c42-60c9-4a82-8003-85c3df3e6b18" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Dictionary Manager</code></li></ul><ul id="03eb6b25-c7f5-4a70-a312-ec9abc75b08e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Use Case Builder</code></li></ul><p id="955787dd-195c-4131-8659-b4cd9e81ccd0" class="" dir="auto">They should not normally be called directly by the Android applications.</p><h2 id="8d53202a-3a34-4daa-9ff2-be69ce3c9b42" class="" dir="auto">AI workflows</h2><p id="c85a8fb0-6b09-475d-b841-1b55c2fc9441" class="" dir="auto">The current read-only AI analysis system consists of:</p><ul id="8d21f4fe-7db6-453c-bcce-291d863370bc" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Expert Panel Agent</code></li></ul><ul id="c3b2f5d0-b874-4334-bb3c-9e79c896a482" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Agent Expert - Project Context</code></li></ul><ul id="51cc0de5-ad84-41d2-b576-4525536757cc" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Agent Expert - Literature</code></li></ul><ul id="45260744-e521-4139-a543-da222873880e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Agent Expert - Participant Data</code></li></ul><ul id="7b6e5f2c-75e0-45c1-9b3c-96a61a6f6952" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Agent Expert - Mapping Design</code></li></ul><h2 id="b5460994-a05d-42d4-8275-6da1ebc04bf2" class="" dir="auto">Older workflow</h2><ul id="7b01268e-2357-49bc-9ea6-6d2814da6c56" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Knowledge Agent</code></li></ul><p id="8673afa6-3308-4e0c-b859-aa2e20ba8a56" class="" dir="auto">The current <code>Chat Orchestrator</code> routes read-only questions to <code>Expert Panel Agent</code>, not to a separate Knowledge Agent. Treat <code>Knowledge Agent</code> as an older standalone implementation.</p><hr id="3a36a244-173d-801b-ad3e-c37e488f572c" dir="auto"/><h1 id="0b9e824b-8e17-4a0e-9d9b-ce308f8a413e" class="" dir="auto">Quick workflow reference</h1><table id="41867673-227e-4046-9d19-bf47297ef5c0" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="051e7ed3-aa0f-4ee3-ba84-624594eefd9b" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Workflow</th><th id="_nID" class="simple-table-header-color simple-table-header" style="width:141.4px">Primary responsibility</th><th id="g&gt;VU" class="simple-table-header-color simple-table-header" style="width:141.4px">Called by</th><th id="yfNi" class="simple-table-header-color simple-table-header" style="width:141.4px">Main data source</th><th id="R__w" class="simple-table-header-color simple-table-header" style="width:141.4px">Change risk</th></tr></thead><tbody><tr id="8ef50006-87b6-44f8-b582-6778e92861ff" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Vibration Orchestrator</th><td id="_nID" class="" style="width:141.4px">Live sensor processing and haptic decisions</td><td id="g&gt;VU" class="" style="width:141.4px">Android phone</td><td id="yfNi" class="" style="width:141.4px">PostgreSQL and external APIs</td><td id="R__w" class="" style="width:141.4px">High</td></tr><tr id="cf897686-512e-4c42-ad7d-665cd8d8e6a0" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">DB Manager</th><td id="_nID" class="" style="width:141.4px">ResearcherSide dashboard and database endpoints</td><td id="g&gt;VU" class="" style="width:141.4px">ResearcherSide and phone</td><td id="yfNi" class="" style="width:141.4px">PostgreSQL</td><td id="R__w" class="" style="width:141.4px">High</td></tr><tr id="c1a6db40-a0a4-4fa1-95b5-68b709c50d9b" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Chat Orchestrator</th><td id="_nID" class="" style="width:141.4px">Chat validation, context, planning, and routing</td><td id="g&gt;VU" class="" style="width:141.4px">ResearcherSide AI chat</td><td id="yfNi" class="" style="width:141.4px">PostgreSQL and subworkflows</td><td id="R__w" class="" style="width:141.4px">High</td></tr><tr id="975ba815-7a6e-45a9-b094-1b479a4d39ff" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Mapping Manager</th><td id="_nID" class="" style="width:141.4px">Mapping creation, assignment, editing, and history-sensitive actions</td><td id="g&gt;VU" class="" style="width:141.4px">Chat Orchestrator</td><td id="yfNi" class="" style="width:141.4px">Mapping tables and sensor history</td><td id="R__w" class="" style="width:141.4px">Very high</td></tr><tr id="dbd45d2d-0b09-4eaf-9ca5-a130645494cf" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Schedule Manager</th><td id="_nID" class="" style="width:141.4px">Schedule creation and state management</td><td id="g&gt;VU" class="" style="width:141.4px">Chat Orchestrator</td><td id="yfNi" class="" style="width:141.4px"><code>user_schedules</code></td><td id="R__w" class="" style="width:141.4px">Medium</td></tr><tr id="ebac9f49-a62f-4e7f-8268-7405a9d00101" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Dictionary Manager</th><td id="_nID" class="" style="width:141.4px">Use-case parameter dictionary operations</td><td id="g&gt;VU" class="" style="width:141.4px">Chat Orchestrator</td><td id="yfNi" class="" style="width:141.4px"><code>UseCaseDictionary</code> and <code>api_pool</code></td><td id="R__w" class="" style="width:141.4px">Medium</td></tr><tr id="6843322d-7614-4e46-9341-ea9b9270f898" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Use Case Builder</th><td id="_nID" class="" style="width:141.4px">Generates implementation instructions for a new API use case</td><td id="g&gt;VU" class="" style="width:141.4px">Chat Orchestrator</td><td id="yfNi" class="" style="width:141.4px">Dictionary and API metadata</td><td id="R__w" class="" style="width:141.4px">Medium</td></tr><tr id="453666bc-dba6-4225-a786-09aad071c5cb" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Expert Panel Agent</th><td id="_nID" class="" style="width:141.4px">Coordinates grounded read-only analysis</td><td id="g&gt;VU" class="" style="width:141.4px">Chat Orchestrator</td><td id="yfNi" class="" style="width:141.4px">Four expert tools</td><td id="R__w" class="" style="width:141.4px">Medium</td></tr><tr id="b732c3c1-a6b8-44e5-bba6-98b0c4c6a79c" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Project Context Expert</th><td id="_nID" class="" style="width:141.4px">Explains project architecture and implementation</td><td id="g&gt;VU" class="" style="width:141.4px">Expert Panel</td><td id="yfNi" class="" style="width:141.4px">Project documentation</td><td id="R__w" class="" style="width:141.4px">Low</td></tr><tr id="237d91b8-c1cb-414d-88fe-82e2cccc01ad" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Literature Expert</th><td id="_nID" class="" style="width:141.4px">Retrieves academic evidence</td><td id="g&gt;VU" class="" style="width:141.4px">Expert Panel</td><td id="yfNi" class="" style="width:141.4px">Literature vector store</td><td id="R__w" class="" style="width:141.4px">Low</td></tr><tr id="8055d112-c887-4b0a-a1b6-7a37e139177c" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Participant Data Expert</th><td id="_nID" class="" style="width:141.4px">Analyzes participants, readings, assignments, and feedback</td><td id="g&gt;VU" class="" style="width:141.4px">Expert Panel</td><td id="yfNi" class="" style="width:141.4px">PostgreSQL</td><td id="R__w" class="" style="width:141.4px">Medium</td></tr><tr id="a2588410-70f7-44ff-8ecf-e15beb50a9f3" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Mapping Design Expert</th><td id="_nID" class="" style="width:141.4px">Explains mappings or generates advisory proposals</td><td id="g&gt;VU" class="" style="width:141.4px">Expert Panel</td><td id="yfNi" class="" style="width:141.4px">PostgreSQL and design context</td><td id="R__w" class="" style="width:141.4px">Medium</td></tr><tr id="f74022b9-9f19-4264-9a87-ca004fb00d5f" dir="ltr"><th id="Hds&lt;" class="simple-table-header-color simple-table-header" style="width:141.4px">Knowledge Agent</th><td id="_nID" class="" style="width:141.4px">Simplified standalone knowledge answer flow</td><td id="g&gt;VU" class="" style="width:141.4px">Legacy/manual invocation</td><td id="yfNi" class="" style="width:141.4px">PostgreSQL and OpenAI</td><td id="R__w" class="" style="width:141.4px">Low</td></tr></tbody></table><hr id="3a36a244-173d-80be-81a2-cd86798fc439" dir="auto"/><h1 id="ead386d5-16d1-433d-a98b-c5b86272e7ec" class="" dir="auto">1. Vibration Orchestrator</h1><h2 id="82eb8739-63ac-4db4-b43f-6033a1751fe2" class="" dir="auto">Purpose</h2><p id="22f8981d-94dc-43de-95f6-f2795b7020cd" class="" dir="auto">Processes live sensor or external API data and converts it into smartwatch haptic feedback.</p><h2 id="38ede5bf-4e04-450e-8d46-09a700cb2d22" class="" dir="auto">Main entrypoint and responsibilities</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="4c9eff58-e986-4163-bb99-16b29c05a91d" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">POST /webhook/usecase-routing</code></pre><p id="e27177d6-6d25-4439-b174-ee320d433b71" class="" dir="auto">Main responsibilities:</p><ul id="2dc486c3-7800-4df5-9f53-0db93473f9e2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Receive data from the Android phone.</li></ul><ul id="9135032d-457e-435f-af49-60a0b087ad68" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Identify the requested use case.</li></ul><ul id="15e1bfe8-5f95-48dc-8582-095e44043046" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Use the supplied sensor value or retrieve a value from an external API.</li></ul><ul id="ba176614-2731-4b6c-900c-4b6e031ee4a2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Find the participant’s active feedback mapping.</li></ul><ul id="c4ab9984-0c64-46a6-a1f2-c13519a7593e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Calculate pulses, intensity, duration, and interval.</li></ul><ul id="a7711b9a-8037-4ac8-aac6-dab97ba370db" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Store the reading and feedback decision.</li></ul><ul id="0e6adbb7-7b44-4da1-b81d-7471d70cf9b0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Return the haptic command to the phone.</li></ul><h2 id="33ca8ad5-fd07-4c36-b338-a22ae2c90460" class="" dir="auto">Main data flow</h2><pre id="1b513032-58af-42a1-8efb-70c9a6140ffb" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Watch sensor
+→ Android phone
+→ Vibration Orchestrator
+→ Use-case branch
+→ Sensor value or external API
+→ Active mapping
+→ Haptic calculation
+→ Database storage
+→ Android phone
+→ Watch vibration</code></pre><h2 id="0daf9baf-79bd-4bbf-b4e0-39f2056bda9e" class="" dir="auto">Credentials needed</h2><ul id="806f32f8-17d7-45f0-9e5e-50386d643c56" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="970e8d5b-4e71-4637-a4c5-b4d4310171f5" class="bulleted-list" dir="auto"><li style="list-style-type:disc">External API credentials, where required</li></ul><h2 id="0ca92fc7-b805-4af0-a657-129b7b218250" class="" dir="auto">What researchers may edit</h2><p id="ae622286-301d-4490-bc66-0061ea607da3" class="" dir="auto">Researchers should normally edit this workflow only when adding a new use case.</p><p id="533135ad-5aa5-409f-831e-37b792a8e50d" class="" dir="auto">Safe edit areas:</p><ul id="6fa1115b-1b36-4fb2-849b-28df3450b835" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Add a new condition to <code>Route By Sensor Type</code>.</li></ul><ul id="c9d8d800-2b32-4a6e-bdcd-d621f1574089" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Copy and connect the existing use-case template branch.</li></ul><ul id="b034bcd7-88d9-43b7-9856-e7c6dd8de4a9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Change the use-case name.</li></ul><ul id="52e36541-9158-47af-adca-2c8416f05aa0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Configure the API request.</li></ul><ul id="d2a660a1-40c5-4e3e-874d-1008c079c36d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Configure the numeric response-value extraction.</li></ul><ul id="08749b48-4666-4216-b4a8-207859876c11" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Adjust the branch rate limit when required.</li></ul><p id="425545e3-3f35-402b-bec7-af60750a7e49" class="" dir="auto">Researchers should not edit:</p><ul id="b6e3adeb-a137-455f-a7a9-ac13cf43969e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Shared mapping-resolution logic</li></ul><ul id="fc641731-fc42-4458-a091-ef010ed14205" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Database insertion logic</li></ul><ul id="a34b5b50-2cb9-4327-8309-3a9b061aadfa" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Generic response nodes</li></ul><ul id="ba7e7737-4f1c-4d90-9947-8e1f78a716dd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Existing unrelated use-case branches</li></ul><hr id="3a36a244-173d-8073-9c9c-c2c11483a9f6" dir="auto"/><h1 id="37517be5-43f1-4325-9148-5ca23416af0b" class="" dir="auto">2. DB Manager</h1><h2 id="a4ef59cc-4f3b-4c96-875f-794cad9308b9" class="" dir="auto">Purpose</h2><p id="98f99cb7-f243-4792-81da-2e4126f95acd" class="" dir="auto">Provides the backend endpoints used by ResearcherSideApp and several Android phone configuration checks.</p><h2 id="661756da-bb66-4919-8005-4a9c16c716ab" class="" dir="auto">Main responsibilities</h2><ul id="01e5e06a-6481-4011-ad98-98af18a43117" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve participants and devices.</li></ul><ul id="039848e0-320a-4f3b-a627-0e8dcf397d83" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve mappings and current assignments.</li></ul><ul id="2cc3b1fa-2167-429e-90a8-d60d20e5e7c2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve mapping history.</li></ul><ul id="90dc6d07-daed-4e29-b7d4-6bd2fc2ce096" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Manage monitoring state.</li></ul><ul id="27925bf8-cc6a-41af-ac31-853326f371d5" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve sensor readings and feedback events.</li></ul><ul id="bed5898a-71e2-4856-82d5-1712e101102c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Provide available sensor and use-case information.</li></ul><ul id="6bfc79d9-94e9-4884-be50-0c7b0cdc9502" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Handle stopped-monitoring alerts.</li></ul><ul id="2f0be83c-61d7-41a5-a3b6-2d31ecf6b328" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Support ResearcherSide dashboard operations.</li></ul><p id="4cf11a27-3f4f-4439-aaa5-a6ed8f4ed3e9" class="" dir="auto">Example endpoints include:</p><pre id="dacedfc8-30e2-49d9-af97-e979f64c0cdc" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">GET /webhook/get-users
+GET /webhook/current-configurations
+GET /webhook/sensor-data
+GET /webhook/get-sensor-types
+GET /webhook/monitoring-config
+GET /webhook/users-mappings-history
+POST /webhook/stopped-monitoring-alert</code></pre><h2 id="5d06c9bd-f0a5-4c85-a461-72c989e979e6" class="" dir="auto">Main data flows</h2><pre id="f87960b2-6ae5-4467-bde5-e58b3331ba2b" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">ResearcherSide or Android phone
+→ DB Manager webhook
+→ Request validation
+→ PostgreSQL query or update
+→ Response formatting
+→ Calling application</code></pre><h2 id="c95981b1-17a3-4fbf-b92d-9d30fccfc85f" class="" dir="auto">Credentials needed</h2><ul id="508d13b8-fd12-4e66-903a-a49a3cacf885" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="066bbe68-43a2-4d3f-bdc7-5661516ce956" class="bulleted-list" dir="auto"><li style="list-style-type:disc">SMTP, for stopped-monitoring email alerts</li></ul><h2 id="6df00428-e92a-42b3-b0f0-db474e0ceb2b" class="" dir="auto">What researchers may edit</h2><p id="f08324f0-6012-489a-8033-5fa74729c883" class="" dir="auto">Researchers should normally not edit DB Manager.</p><p id="1b30523c-8f32-4719-a411-a2f6cc142af4" class="" dir="auto">A maintainer may edit it when:</p><ul id="5b16df1d-fa2a-4e6e-807a-f0ec1f50867c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">ResearcherSide requires a new endpoint.</li></ul><ul id="b608e2fc-23ab-4be4-9605-8a279339c344" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A new database field must be returned.</li></ul><ul id="8c9e9cd2-c893-47f9-a252-3434ec3848ae" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Monitoring or alert behavior changes.</li></ul><ul id="296811d0-c627-4929-9adb-5b151f9cfa3b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">A dashboard query or response structure is incorrect.</li></ul><ul id="3a36a244-173d-80a9-93ef-fbab5a21636e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Updating the <code>Send Offline Email</code> target email address</li></ul><p id="27eedb70-8d7d-4bd1-a7b3-15e074118a86" class="" dir="auto">Be careful when changing response field names because ResearcherSide depends on the exact JSON structure.</p><hr id="3a36a244-173d-8096-b850-f625ca0b5e3a" dir="auto"/><h1 id="6ea5eb3e-c551-453c-9969-2d084cada71c" class="" dir="auto">3. Chat Orchestrator</h1><h2 id="04fcea37-a59a-468f-a0f6-af0a63f6d877" class="" dir="auto">Purpose</h2><p id="1ac15d8a-1e57-42f5-8b68-c0cdf023a6de" class="" dir="auto">Receives ResearcherSide AI-chat requests, loads the current application context, and routes each request to the correct specialized workflow.</p><h2 id="27022e73-4730-4b0d-881f-2e974a2ee5d8" class="" dir="auto">Main entrypoint and responsibilities</h2><pre id="93e20ea0-8a3f-4bb6-942f-ccb9b7fc05fc" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">POST /webhook/chat</code></pre><p id="08b44c31-86d1-429e-ba96-5beb6e161d5b" class="" dir="auto">Main responsibilities:</p><ul id="84f3a00a-6d51-4808-927e-988e499a2e43" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Validate the chat payload.</li></ul><ul id="d10153ff-aeec-4f8b-82f4-52ffa52ac808" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Load the selected participant, use case, and mapping context.</li></ul><ul id="5c0385ea-102c-4a64-aa70-7dada003dc44" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Maintain the chat session.</li></ul><ul id="57e6e90b-f582-482f-9912-6885ea964767" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Identify the researcher’s intent.</li></ul><ul id="4c5f8b08-dc59-47d4-9626-ef25cabd4a2e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Route the request to one workflow.</li></ul><ul id="9f553efb-c26e-4352-82af-6525dd73d148" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Return the final structured response to ResearcherSide.</li></ul><p id="b3746040-1b92-4e6c-b856-7ed3ab37f9ab" class="" dir="auto">Possible targets:</p><ul id="34ce7ed8-35d7-4898-9b4e-0b05761b89e9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping Manager</li></ul><ul id="fa0a008f-f276-40d1-8aa0-2eee557a778f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Schedule Manager</li></ul><ul id="111583df-2ee8-44d0-8d12-f198f5bbefde" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Dictionary Manager</li></ul><ul id="63aa035d-e38d-4ad7-a660-5ed4c563cbb3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Use Case Builder</li></ul><ul id="41d11624-948d-40b5-81ea-d44c34633658" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Expert Panel Agent</li></ul><ul id="026bee14-3954-4321-8742-9e927d01924d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Clarification response</li></ul><h2 id="4c83784e-6d87-4da1-b83c-492cc21fa010" class="" dir="auto">Main data flow</h2><pre id="94bfa994-052e-4ee0-8b94-d188c305e403" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">ResearcherSide chat
+→ Chat Orchestrator
+→ Validate input
+→ Load session and context
+→ Planner
+→ Selected subworkflow
+→ Structured response
+→ ResearcherSide</code></pre><h2 id="71385274-adfb-4f16-910f-0bea509da6fb" class="" dir="auto">Credentials needed</h2><ul id="292a9e4d-3aa6-40bf-aedd-f233217ab7d4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="1ecee158-fb64-4e55-a63d-34a57f8dd053" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><h2 id="323514b6-10c1-40d9-b186-06fe0cec4ece" class="" dir="auto">What researchers may edit</h2><p id="2a29400a-ef98-421e-93e4-f43aa56c1e35" class="" dir="auto">Researchers should not normally edit this workflow.</p><p id="cf176bce-dca9-417c-bf2a-3a51ef1541e4" class="" dir="auto">Maintainers may edit:</p><ul id="bdbd44dc-fca1-4459-ba51-b7967298d414" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Planner instructions (prompt)</li></ul><ul id="9d66432c-c248-4c68-872a-42fec3dca69e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Routing rules</li></ul><ul id="eeb6cbdb-a3a7-4f9c-b2a2-e2dffcf1737c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Application-context fields</li></ul><ul id="fb5d76f4-d5fb-435c-813d-3561638eb555" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Supported target workflows</li></ul><ul id="0b0fa61c-4e18-4a36-bc45-5def6ee9a56e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Final response formatting</li></ul><p id="f905b243-a49e-4e8b-a938-8f7a805b2341" class="" dir="auto">Changes here can affect every AI feature, so test all major chat intents after editing.</p><hr id="3a36a244-173d-8003-80aa-c42ef8165cae" dir="auto"/><h1 id="7a2f095e-5696-4abc-b4b2-d8202f1d2bce" class="" dir="auto">4. Mapping Manager</h1><h2 id="966d9a0f-4eb8-4e55-9d7d-10727c354497" class="" dir="auto">Purpose</h2><p id="3addbfe8-9b32-4eb0-ba6a-a3168a4c7041" class="" dir="auto">Performs deterministic mapping operations requested through the AI assistant.</p><h2 id="53451740-f207-45f0-b1b4-fd3b02f90949" class="" dir="auto">Main responsibilities</h2><p id="ebf57eeb-124e-4779-929b-0f3be680e338" class="" dir="auto">Supported operations include:</p><ul id="2d06d4e0-530e-439d-ad3e-b820f05954b2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">List active mappings</li></ul><ul id="e38c32ba-0192-4ff3-9dad-247610e610c0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">List all mappings</li></ul><ul id="77d0524a-e24f-4b88-af34-6eb0a9a8ea7c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Add a mapping</li></ul><ul id="3ef27586-acf4-49bf-aeb0-252eb9794483" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Change a mapping</li></ul><ul id="68aff7e3-dcff-4075-b0c5-16e3314d795e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Assign a mapping</li></ul><ul id="fd1ed3d1-b267-4d48-85f4-1f44ffd4518d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Duplicate a mapping for one participant</li></ul><ul id="7519e453-a3ff-41e6-bcc4-1b5e901812e8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Remove or deactivate a mapping</li></ul><ul id="6e7a8c7c-436b-4e97-aba9-8369b018f1f7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Brainstorm new mapping ideas</li></ul><h2 id="51c8df08-8fe4-4a81-b46c-8b2bfd3a2a0b" class="" dir="auto">Main data flow</h2><pre id="f500e51b-9259-4f3c-8617-6b76e82f06a3" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Chat Orchestrator
+→ Mapping Manager
+→ Action router
+→ Validation
+→ PostgreSQL query or update
+→ Formatted response
+→ Chat Orchestrator</code></pre><h2 id="2d1bac56-cbdc-44c5-8391-7d3e54380faa" class="" dir="auto">Credentials needed</h2><ul id="b150db4a-1e2c-41dc-85fb-2de3ce2ee1ce" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="23a43705-b1ef-4638-8745-01b4710b2948" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI, for mapping brainstorming</li></ul><h2 id="da0b5d31-8e09-4775-8ef7-9e190d788f00" class="" dir="auto">What researchers may edit</h2><p id="01dcf62a-62ff-4387-b993-ef29936b0be7" class="" dir="auto">Researchers should not edit this workflow directly.</p><p id="6ce76e32-55be-440c-8b45-0ba99c728fcc" class="" dir="auto">Maintainers may edit it when changing:</p><ul id="57c8a780-b655-4069-9714-4c25f8ecf6de" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping actions</li></ul><ul id="66b28f7e-1461-4830-aea4-999a6c9b9e2d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping validation rules</li></ul><ul id="e2a2c50f-a219-430a-9f0a-58a7d4ceb2d7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Shared versus participant-specific behavior</li></ul><ul id="8697d025-8de7-44c2-884c-df05f745757e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Assignment logic</li></ul><ul id="c6eabb54-0a65-4178-b450-6680e8a20eb3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Deactivation and reassignment behavior</li></ul><ul id="360d328e-1fa6-4f12-85b0-f404e4bb3bfe" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping brainstorm context</li></ul><p id="f170e922-2a2d-43a0-878d-8a9096b1f4ef" class="" dir="auto">This is a high-risk workflow. Always test:</p><ul id="dccf8618-b2af-47b9-98a9-fbe0e5a68f1c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Shared mapping edits</li></ul><ul id="0eef9bc2-0106-4ba5-8e5f-4fd11556afd0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Participant-specific copies</li></ul><ul id="ac648d7e-3c6f-41b8-9814-a4324ebbe993" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Assignment history</li></ul><ul id="fcf01afe-5c74-4d62-a834-6a4543dde6c8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping deactivation</li></ul><ul id="1ab2ca11-8b88-4e1f-8953-b8f0171931c7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Participant reassignment</li></ul><hr id="3a36a244-173d-8014-80ba-ea1689369081" dir="auto"/><h1 id="74081a7e-e5eb-46d5-9879-d86368925d3a" class="" dir="auto">5. Schedule Manager</h1><h2 id="9efe8964-327f-457a-93bc-e0b87fc5b104" class="" dir="auto">Purpose</h2><p id="254e276e-301a-44ba-8550-e1ee3e6db025" class="" dir="auto">Manages participant schedules requested through the AI assistant.</p><h2 id="52d75fcb-c37b-468c-84db-1944239115a2" class="" dir="auto">Main responsibilities</h2><ul id="b5a93b2c-c2ba-4f77-aa31-ee7495d80414" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Add, change, activate and decativate a schedule</li></ul><ul id="01b69754-4c71-4aad-bd3e-d54191c454d5" class="bulleted-list" dir="auto"><li style="list-style-type:disc">List active schedules</li></ul><ul id="36208d50-b11e-4bb4-b270-42e14f170176" class="bulleted-list" dir="auto"><li style="list-style-type:disc">List all schedules</li></ul><p id="1af5482f-c2c8-404a-9bfb-197a00de6c29" class="" dir="auto">Main schedule fields include:</p><ul id="8cfe992e-091f-45fd-af33-5f650326beea" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Participant</li></ul><ul id="85ea4f0f-70e5-4c39-9cf9-514616a82b45" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Interval</li></ul><ul id="97d2a8b4-6307-4f74-99c5-c213d78c821f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Next run date</li></ul><ul id="31504fa2-329b-4331-b034-6f8aff0d60f7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Measure type</li></ul><ul id="b107d33d-e9c1-4aad-be22-2aae3f860578" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Trigger percentage</li></ul><ul id="08e39f89-e9c0-4745-b23a-112988ea2788" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active state</li></ul><h2 id="8b40554c-b694-4b47-a84b-39f7f90fb1a5" class="" dir="auto">Main data flow</h2><pre id="2bc46db2-6658-4b98-a3b0-3d1ee3fc95f5" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Chat Orchestrator
+→ Schedule Manager
+→ Parse schedule parameters
+→ Action router
+→ PostgreSQL query or update
+→ Formatted response</code></pre><h2 id="c60618af-89e6-4ba5-baf9-5a5f9f17a2bf" class="" dir="auto">Credentials needed</h2><ul id="1bf38565-9785-40d2-a481-ca098b8c8cd3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><h2 id="2b958546-7558-4588-b783-d295218ab176" class="" dir="auto">What researchers may edit</h2><p id="b483825a-e606-435b-a5ad-c7b075305651" class="" dir="auto">Researchers should manage schedules through ResearcherSide or the AI assistant rather than editing this workflow.</p><p id="b6e2a7c8-3233-4a62-b15a-8de2bb81e865" class="" dir="auto">Maintainers may edit:</p><ul id="4d14e97f-2572-4eae-881c-7824a27e0a80" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Supported schedule actions</li></ul><ul id="a0a6c045-f77e-4fba-9fff-df9384d64341" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Validation requirements</li></ul><ul id="90c5d668-0a49-4865-9987-fd8974743b22" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Date calculations</li></ul><ul id="f0ce5401-4001-4bf8-a4e4-51a56b005127" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Active/inactive behavior</li></ul><ul id="f6f39d86-2a71-4f41-9e61-0f36e551ca8f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Use-case filtering</li></ul><hr id="c598a307-45fb-4906-b052-550de3872a89" dir="auto"/><h1 id="d322635b-f7a9-4f25-ac8c-607e828e391f" class="" dir="auto">6. Dictionary Manager</h1><h2 id="75a8152d-0f28-4a68-9c1b-4b6418b8090f" class="" dir="auto">Purpose</h2><p id="f2944282-2845-4b3c-b821-2721752ebc9a" class="" dir="auto">Manages the Yellow Book use-case dictionary.</p><h2 id="dc259889-fa13-4baa-843b-9032695548de" class="" dir="auto">Main responsibilities</h2><ul id="18f896a0-a747-4d43-9a9a-70894a9ddd76" class="bulleted-list" dir="auto"><li style="list-style-type:disc">List dictionary entries</li></ul><ul id="9b29e573-6ccd-4f82-adda-4b53f5a47878" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve, add, edit and remove one use case’s parameters</li></ul><ul id="38c44c7a-282d-477b-aa96-f3d0cc956853" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Remove all dictionary entries for a use case</li></ul><p id="3b9c27ef-1af5-4657-adca-3314ae00a99a" class="" dir="auto">The dictionary defines:</p><ul id="1b0acdc3-3f7e-4c7e-9943-7525943d2dc2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Parameter name</li></ul><ul id="5c9bdf2a-385b-414a-967d-415af2415d13" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Parameter format</li></ul><ul id="cbfceb74-8d7f-49ce-94c3-ffe212b07d7f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Whether it is required</li></ul><ul id="ddee5ef0-3b39-46c4-93f7-c59f4f52dd03" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Description</li></ul><ul id="6361b326-3237-40d2-ac0d-ae64e8b1a03a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Fixed value, when applicable</li></ul><ul id="c0f61423-c8b0-4399-a913-620a8adb15e1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Related external API</li></ul><h2 id="cad26636-3fed-4be1-a8cf-b63dc5e4ec9a" class="" dir="auto">Main data flow</h2><pre id="89232a85-28df-425d-ab1b-1acf085f75e8" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Chat Orchestrator
+→ Dictionary Manager
+→ Action router
+→ UseCaseDictionary and api_pool
+→ Formatted response</code></pre><h2 id="756fd638-5214-4095-a073-7e3362538a7c" class="" dir="auto">Credentials needed</h2><ul id="90faf2b7-8268-4ad4-8fef-8f78b1f6bc55" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><h2 id="f625dadf-4b8f-49ac-ad18-ae833a5ac27c" class="" dir="auto">What researchers may edit</h2><p id="f0901d3c-c013-4d1a-b13a-e436b3dc54ad" class="" dir="auto">Researchers should usually manage dictionary entries through ResearcherSide or the AI assistant.</p><p id="7ae48581-5f92-4dda-9f8a-4461e25ee789" class="" dir="auto">Maintainers may edit:</p><ul id="6f0cd765-d91a-4902-a6ff-dbf47cea8500" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Supported dictionary actions</li></ul><ul id="0a78b4ea-d443-40d7-8418-537c2d40ae15" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Parameter validation</li></ul><ul id="87317788-dd04-4d3c-a55c-38e99257586d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">API-pool relationships</li></ul><ul id="3cbd7611-624a-43e8-b7d1-eab6d6b9f13e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Returned dictionary structure</li></ul><p id="d8175b46-d219-4b0b-8b48-ce93928220b6" class="" dir="auto">Keep the use-case name identical across the database, Vibration Orchestrator, ResearcherSide, and device applications.</p><hr id="153afafc-a1df-433e-81ad-e13563bba26c" dir="auto"/><h1 id="719064a8-2fd4-49b4-9543-4b99f2000566" class="" dir="auto">7. Use Case Builder</h1><h2 id="d7158d9b-f2df-465d-b29a-68c48b720200" class="" dir="auto">Purpose</h2><p id="5edeacc1-3274-44b8-965c-cbc1af6cfab9" class="" dir="auto">Generates copy-paste-ready instructions for adding a new external API-based use case to the Vibration Orchestrator.</p><h2 id="096370a8-10d8-410d-91f5-65155f789853" class="" dir="auto">Main responsibilities</h2><ul id="d7c62ec6-c905-43ea-9f46-77a6abb92d2f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Load the selected use case’s dictionary parameters.</li></ul><ul id="3ee18e62-5143-4159-b608-76b0dea90079" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Load matching API metadata.</li></ul><ul id="75e551df-a571-43d9-bdc0-c6dfdb96d765" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Identify the API endpoint.</li></ul><ul id="23f8c176-4b88-4135-abd1-2aca562c15b1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Identify the numeric response path.</li></ul><ul id="3e641b39-8e2a-4e2c-9a79-67100e7398cd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Generate the required template changes.</li></ul><ul id="ca9fee15-355e-48d6-a39a-ea7b35c943e9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain where each generated value should be pasted.</li></ul><p id="adbe9d0a-1a49-444e-bbb3-e00fabc9d383" class="" dir="auto">The builder does not edit or activate the workflow automatically.</p><h2 id="d174eb7d-846c-400a-b6d7-be6c60334be3" class="" dir="auto">Main data flow</h2><pre id="721ad662-b2b6-4e88-bba7-1851be8d7e88" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Chat Orchestrator
+→ Use Case Builder
+→ Dictionary and API metadata
+→ Validate required information
+→ Generate template instructions
+→ Researcher response</code></pre><h2 id="f0a15b1b-9166-44c0-97d6-89a008af1e22" class="" dir="auto">Credentials needed</h2><ul id="33702568-d3e0-44dd-9012-6cebe3bd522f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="be6ebaea-c26e-43e7-aa9d-b1cea3d5ef5f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><h2 id="811c62d8-39ef-475b-a98c-7c709c71f6e5" class="" dir="auto">What researchers may edit</h2><p id="33589fed-ee6a-48b8-8626-c4d26cad0dca" class="" dir="auto">Researchers normally do not edit the Use Case Builder itself.</p><p id="fc3834a3-c013-43f8-bbed-104d2bf7713d" class="" dir="auto">They use its output to edit only the marked template areas inside Vibration Orchestrator:</p><ul id="b37a62c5-ceca-4e94-ba81-23e150b0c04d" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Set type</code></li></ul><ul id="58b7abc8-0359-4897-b1bd-242d7c6f3ae3" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Construct API Request</code></li></ul><ul id="77199157-c978-4ac0-bc73-552940743752" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Extract</code></li></ul><ul id="a006628e-9a1c-4216-8b67-19ad6251adb9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Route By Sensor Type</code></li></ul><ul id="fae9e31f-153a-4525-aa54-8c72f39a119c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Optional rate limit</li></ul><p id="68bc25dc-4960-4dc9-b1a2-3fbe758dbaa4" class="" dir="auto">Maintainers may edit the builder when the Vibration Orchestrator template or generated output format changes.</p><h2 id="af7e1926-dbf3-418c-9de9-ccbc7970690a" class="" dir="auto">Related pages</h2><ul id="a2481f22-087d-44a2-a99d-0e999afee0b9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="../Adding%20a%20New%20Use%20Case%2037a6a244173d81e6b98bf8b7480061cd.html">Adding a New Use Case</a></li></ul><hr id="c48112ba-90cd-476e-ab77-b64ec7bf22ee" dir="auto"/><h1 id="4b67e14d-3180-47dc-9eec-b81b4956fa63" class="" dir="auto">8. Expert Panel Agent</h1><h2 id="e712bb76-2939-4792-96ab-85fc7a2c215c" class="" dir="auto">Purpose</h2><p id="1f48c100-d686-4d69-9b55-31261137eab1" class="" dir="auto">Coordinates read-only analysis by selecting the relevant expert workflows.</p><h2 id="a3097a9d-b684-4f40-b824-2e943623d5c3" class="" dir="auto">Main responsibilities</h2><ul id="9b49187b-0b2f-49a6-8adb-e317ab6194c8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Answer project and architecture questions.</li></ul><ul id="6c21dcda-4f9d-4e5e-b573-ea4317bd6199" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve academic evidence.</li></ul><ul id="a5658353-d3c4-486d-8cd7-29b6a8806120" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Analyze participant and experiment data.</li></ul><ul id="bb423ba8-bc6c-4a61-b0d1-717a637fb245" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain existing mappings.</li></ul><ul id="7b7b53ae-d6cd-4244-91d5-e840a58cb3bb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Generate advisory mapping proposals when explicitly requested.</li></ul><ul id="42a9ad4b-5233-4fb4-9a92-046a00b55416" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Return citations, warnings, findings, and recommendations in a structured format.</li></ul><p id="8cc139f1-29ad-4ee3-ba3f-6b63340821d9" class="" dir="auto">It must never perform database mutations.</p><h2 id="dda84e8c-8455-49ab-82ea-4c54c23dd7d5" class="" dir="auto">Main data flow</h2><pre id="27e7ca77-32c3-440e-8dae-289bfa293ee8" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Chat Orchestrator
+→ Expert Panel Agent
+→ Selected expert tools
+→ Combined grounded response
+→ Chat Orchestrator</code></pre><h2 id="0fefaa97-4f8a-46da-b15e-b309d0c7f8f7" class="" dir="auto">Credentials needed</h2><ul id="d20b025a-ce48-43be-b13a-bddfd00d627f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><ul id="03842a8b-31ea-44e1-b757-f84880641c07" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Credentials required by the connected expert workflows</li></ul><h2 id="b005a79d-23b1-4e39-86f2-af103b9eb895" class="" dir="auto">What researchers may edit</h2><p id="cba9ce2e-9b95-465a-807e-b429f545544b" class="" dir="auto">Researchers should not edit this workflow.</p><p id="3a347e18-65d1-49cf-8aca-4dc6cc23e58c" class="" dir="auto">Maintainers may edit:</p><ul id="0f799855-d453-461c-af6b-1ad7f4b0b16a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Expert-selection rules</li></ul><ul id="c6217f63-8c62-49a4-b4a9-2ddf87ad3777" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Read-only boundaries</li></ul><ul id="c1933613-6fed-43cf-9bcb-798190397232" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Response schema</li></ul><ul id="6fd1bb73-70ed-4ba1-aead-5a0cfe318cb0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Citation handling</li></ul><ul id="7b98a3ba-44d9-4485-842e-94fc2aff4ca6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Proposal-generation rules</li></ul><ul id="827994b4-975a-4f0e-a395-4add663cad7f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Experiment-summary behavior</li></ul><p id="0bb0d2a0-85e4-410a-8634-fa7b3b469fd5" class="" dir="auto">Changing the response schema requires checking ResearcherSide compatibility.</p><h2 id="3a188afa-2ddb-4e19-a28c-680bfd211423" class="" dir="auto">Related pages</h2><ul id="3e27cec5-8d64-41b3-a825-a1eadfce3423" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://app.notion.com/p/Chat-and-Knowledge-Assistant-8bd6a244173d8312a7d20101e9d28617?pvs=21">AI Assistant and Dictionary</a></li></ul><hr id="d710771d-c5a5-4772-ac05-5398177cf5e8" dir="auto"/><h1 id="356af60a-669f-40ac-9afb-316a719827dd" class="" dir="auto">9. Agent Expert – Project Context</h1><h2 id="8a79e5d5-8c58-4309-917c-aa5e9c98d40d" class="" dir="auto">Purpose</h2><p id="729915ac-55db-420d-a126-f8cd296433d6" class="" dir="auto">Answers technical questions about the project and system architecture.</p><h2 id="98a35785-56e6-45f2-9577-2ad4664d7a6c" class="" dir="auto">Main responsibilities</h2><ul id="45dd21e8-5004-474c-9cfe-23e86e85297c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain component responsibilities.</li></ul><ul id="d55f6ca3-cf34-459e-bf66-ae68e2891a26" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain n8n, PostgreSQL, Android, watch, and ResearcherSide integration.</li></ul><ul id="dba96788-c5d2-4f35-a48c-ce61c5a6c7dd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain workflow ownership.</li></ul><ul id="a10c5ef5-84d4-4a08-b9ad-a024de7fb6c4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain supported system behavior.</li></ul><h2 id="c1d1a1a2-3684-4353-8351-6022301d52b2" class="" dir="auto">Credentials needed</h2><ul id="ef5c57f0-4700-4d51-8d49-935e20282507" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><ul id="42c7ea13-cc60-433a-8154-e55418177d0e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Project-context data source or vector store</li></ul><h2 id="236735ac-cc89-413f-aaa0-f7ad403aa1d2" class="" dir="auto">What researchers may edit</h2><p id="d5997847-2c6b-4020-9b6a-c03dd7a7d27f" class="" dir="auto">Researchers should not edit the workflow.</p><p id="4390c024-b500-4f42-975c-6149de155559" class="" dir="auto">Maintainers may update:</p><ul id="f6e5dcc7-8aed-4e60-ba2c-fd6bb085a831" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Project documentation sources</li></ul><ul id="df4eff62-ada5-4879-a70c-a367f6f9ec23" class="bulleted-list" dir="auto"><li style="list-style-type:disc">System instructions</li></ul><ul id="7da306f9-42f4-44d4-8534-c4853834303c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Architecture context</li></ul><ul id="c3da1001-2f08-4eb1-92b2-f90441702109" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Outdated technical facts</li></ul><hr id="84dc7aaf-f59f-45e3-86b2-236cc48110fd" dir="auto"/><h1 id="c70947b3-bf59-4241-b155-a20e96a47d39" class="" dir="auto">10. Agent Expert – Literature</h1><h2 id="ce740962-1833-4a28-a0e3-83085cd56a07" class="" dir="auto">Purpose</h2><p id="98dbcc95-118a-4121-a048-9941be6aa43f" class="" dir="auto">Retrieves and explains academic literature relevant to haptic feedback and sensory substitution.</p><h2 id="d60f1c64-2162-4dc3-b209-654162a0b921" class="" dir="auto">Main responsibilities</h2><ul id="a563eb37-b389-4e6d-9b97-9e2c0664a135" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieve relevant papers.</li></ul><ul id="8f44cd16-9532-464a-b226-5ca2fc0f9397" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain academic concepts.</li></ul><ul id="5792bbf0-027e-4773-b63f-f99bda4a8f16" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Return source information and citations.</li></ul><ul id="399b7770-7762-4c86-8020-58030b963aac" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Distinguish a single retrieved study from broader evidence.</li></ul><h2 id="56f7a438-f21f-442e-823c-cb4bada03f1e" class="" dir="auto">Credentials needed</h2><ul id="07598c2d-e9b9-44df-9640-aba310712dc0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><ul id="90089992-727d-425a-80ba-5bebe055b0eb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Literature vector store or retrieval source</li></ul><h2 id="3212682e-535d-468e-9e84-7f65843fef52" class="" dir="auto">What researchers may edit</h2><p id="d18c8d88-b03f-4451-a398-05fbd882e139" class="" dir="auto">Researchers should not edit the workflow.</p><p id="22993982-bd33-4139-9ccc-4fe0239cfb2c" class="" dir="auto">Maintainers may update:</p><ul id="e522ed9e-3550-4df5-b6fc-c0507b5ac22d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Literature files</li></ul><ul id="878e6f30-b686-4d62-ae3e-776774b12cf3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Vector-store connection</li></ul><ul id="6c6a412e-122f-4e83-b296-665a441ba181" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Retrieval instructions</li></ul><ul id="7098dfb7-62a3-460f-8a69-2b5809c0ed05" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Citation-output format</li></ul><hr id="8bc077cd-ac5b-4349-8b5e-baf260ef4573" dir="auto"/><h1 id="199f090d-f768-478f-8535-4fe849638126" class="" dir="auto">11. Agent Expert – Participant Data</h1><h2 id="4683d166-0961-45c2-b42c-2dd9106978b5" class="" dir="auto">Purpose</h2><p id="67cce4bc-9100-405f-ac65-27051620cc9f" class="" dir="auto">Analyzes participant, sensor, assignment, and feedback data.</p><h2 id="92bf4591-b690-438c-8e37-54be9700522b" class="" dir="auto">Main responsibilities</h2><ul id="df391714-e46a-4da2-befc-40ed82637539" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Summarize participant readings.</li></ul><ul id="3039b299-5adc-4cb7-a9bc-0ba7eca9f6ee" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Analyze a use-case cohort.</li></ul><ul id="e5b18cd4-bdc7-48ca-99fb-f2bc5e658e00" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Review sensor-data coverage.</li></ul><ul id="9c6baf93-36fb-4166-b1c9-f06b9d6dc85c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Review active mappings and assignment history.</li></ul><ul id="138a956e-a7fe-4b91-b38b-e28be1c58d28" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Review feedback or alert activity.</li></ul><ul id="599fd1ee-4435-49b0-b23e-2b711beeafac" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Identify missing or insufficient data.</li></ul><h2 id="ae7bac30-6dba-498b-b31f-eb8d629c665a" class="" dir="auto">Main data flow</h2><pre id="2ea099da-d5bb-494b-9c4e-c5a5a15dbb31" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Expert Panel
+→ Participant Data Expert
+→ PostgreSQL queries
+→ Findings and evidence
+→ Expert Panel</code></pre><h2 id="1bd4ee50-3af5-42b8-8a93-cfc33bba661f" class="" dir="auto">Credentials needed</h2><ul id="1fac1ebc-878e-400e-b0f9-3dbf0355bead" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="6bd99b26-80a0-4ff8-b3a6-28ee5887eeb2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI, when used for interpretation</li></ul><h2 id="a2d3b547-2ce9-43b2-ad35-9590572b2224" class="" dir="auto">What researchers may edit</h2><p id="b9045d20-2110-434a-a87e-e27816b46668" class="" dir="auto">Researchers should not edit this workflow.</p><p id="c2768050-6e30-4b4d-9239-0b40e1ecee49" class="" dir="auto">Maintainers may edit:</p><ul id="c6c5f27d-f0fd-4339-8187-30bc6561dc52" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Analysis queries</li></ul><ul id="765aeb9f-9643-49e2-b1d5-4016a05c5a01" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Supported scopes</li></ul><ul id="85cca991-8642-4e1f-bacc-5f09888695dd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Evidence references</li></ul><ul id="5ac94137-bc0d-4ce0-85f3-aec22f509b02" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Findings structure</li></ul><ul id="7cc63787-a034-4f72-a240-b38c08c6ee42" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Data-quality warnings</li></ul><p id="125abb08-9adc-414d-80ca-95e484287661" class="" dir="auto">Avoid making claims stronger than the available records.</p><hr id="38c2de9f-9e3c-4d82-a0a8-7bcefa75c7b4" dir="auto"/><h1 id="a634ad87-6735-41d0-9a37-c532d6b4d102" class="" dir="auto">12. Agent Expert – Mapping Design</h1><h2 id="90d3a5c9-57a1-4830-a387-564a3542d02a" class="" dir="auto">Purpose</h2><p id="1145a173-9c47-4db8-a3b7-87ef561d3570" class="" dir="auto">Explains current mappings and generates advisory mapping proposals when requested.</p><h2 id="0e68e4f9-1751-44f2-98ba-326f65ab1408" class="" dir="auto">Main responsibilities</h2><p id="16920c79-e886-429e-a291-15b0cd49bb9e" class="" dir="auto">Two modes are supported:</p><h3 id="f64b8b43-0eed-4b91-a3d5-56b2f6932661" class="" dir="auto">Existing-mapping analysis</h3><ul id="04266dbd-0e45-43a0-8ce3-abf4d466961a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Explain current mapping ranges.</li></ul><ul id="da40fe6c-d9e6-40f2-867e-7bf74c988c7b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Compare haptic parameters.</li></ul><ul id="6f887c46-5d29-4421-b9d7-eb6a5d7bbc4c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Describe assignment information.</li></ul><ul id="92f9c074-56b5-4003-8221-3ca43f36dfc3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Discuss likely feedback differences.</li></ul><h3 id="fb03bce6-5777-4167-b326-b833caab31a1" class="" dir="auto">Proposal design</h3><ul id="96c97b1e-5667-4133-87cf-863d91fcdfcd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Brainstorm new mapping options.</li></ul><ul id="08654056-64f6-40d7-8c76-678987c6d9c5" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Suggest gentler or stronger feedback.</li></ul><ul id="d3862215-1428-4dd0-8b50-f4cc81cc3bf4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Suggest participant-specific alternatives.</li></ul><ul id="9c35048f-8c12-4559-8255-863afc84ce16" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Generate advisory parameter proposals.</li></ul><p id="33bf12e4-42b8-4e6b-9628-4c0607851781" class="" dir="auto">Proposals are not automatically saved.</p><h2 id="677d5330-07cb-412c-a38d-607815f01ffb" class="" dir="auto">Credentials needed</h2><ul id="8d2ef674-7e03-4202-8e08-1f7229ca2b01" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="88c86277-88e6-4bfa-b34f-28d6c1c2d0e0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><h2 id="bdb932b7-a03b-455b-9669-d6e32d160b0e" class="" dir="auto">What researchers may edit</h2><p id="c79a2e73-05dc-4c4f-9f30-706ccd71b633" class="" dir="auto">Researchers should not edit the workflow directly.</p><p id="e4ad581a-bd0c-46be-ab5c-cabdc84a9b95" class="" dir="auto">Maintainers may edit:</p><ul id="db382c7a-3086-476e-b3d8-739c2d892af3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Existing-mapping analysis rules</li></ul><ul id="f38d97d4-28da-4808-9a1e-7b46f812eb2a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Proposal requirements</li></ul><ul id="01a72fcc-5d6b-4e6a-92d5-994c51587de1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Haptic parameter constraints</li></ul><ul id="a5610d07-ca9e-415f-93b9-3a571043e5b0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Output structure</li></ul><ul id="980bca2a-caa7-4e7d-b999-bc828f6cc519" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Safety and feedback-burden instructions</li></ul><h2 id="01d0e59e-82d4-459b-b71a-45ba2e19aee6" class="" dir="auto">Related pages</h2><ul id="8820b56b-5d8f-4477-82c0-fda374705ea0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Mapping sections in <a href="../ResearcherSideApp%2037a6a244173d80af8e1be324e20c3ae8.html">ResearcherSideApp Documentation</a></li></ul><hr id="1b14b39f-34de-49a1-8099-1d4d26716b2a" dir="auto"/><h1 id="8a40e9c8-dbc9-45f2-a8fc-6e9b7f31b63e" class="" dir="auto">13. Knowledge Agent</h1><h2 id="f2b3fef8-09f8-4f9c-97e3-855a088789a4" class="" dir="auto">Purpose</h2><p id="6254f479-3311-4ce1-a3ee-77b75de97bbc" class="" dir="auto"><strong>[DEPRECATED]</strong> Provides a simpler knowledge-answer flow using the selected use case and its active mappings.</p><h2 id="20299380-e311-462d-aa2c-6380c201ba22" class="" dir="auto">Main responsibilities</h2><ul id="d3ace0cb-fcf2-4ad2-ab21-429020f4fd18" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Fetch active mappings for a use case.</li></ul><ul id="bd1494d7-1f09-49db-bad7-a4b59dfaf1f3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Add them to the AI context.</li></ul><ul id="ec41b6f4-ebcb-4c34-bf55-29a6ff15cd7a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Answer the researcher’s question.</li></ul><ul id="53fa0543-63c6-4d83-873f-77cd1793fa5d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Return a text response.</li></ul><h2 id="b0bf1bac-7483-4d52-8061-fec6d9ac5a85" class="" dir="auto">Main data flow</h2><pre id="f1ee00b0-af22-4fa8-a9f3-eb144b622b6f" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Manual or legacy workflow call
+→ Fetch active mappings
+→ OpenAI
+→ Text response</code></pre><h2 id="65dd484f-185e-42c7-af4b-5832fcc5f980" class="" dir="auto">Credentials needed</h2><ul id="ff58b815-e068-4321-b756-7c9e4cfbbff6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="e50255ff-8c6d-430d-a07a-cbf010ed502f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><h2 id="d9785e45-3de8-49f2-b243-0f6c06128201" class="" dir="auto">What researchers may edit</h2><p id="0dd42978-d04e-473f-85c1-d694f5a68af4" class="" dir="auto">Researchers should not edit this workflow.</p><p id="4a3ccc95-775b-42c6-ae27-4e505174da1c" class="" dir="auto">The current Chat Orchestrator uses the Expert Panel for read-only analysis. Keep this workflow only for legacy or standalone use unless the routing architecture is intentionally changed.</p><hr id="180653f8-6d46-4971-b64a-381a3a4bf5a9" dir="auto"/><h1 id="da620e83-6753-4d08-b3ae-1e8eb7c396d7" class="" dir="auto">Workflow dependency map</h1><pre id="775a2ba4-337b-4398-ba39-ff0698a8ae56" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">ResearcherSideApp
+├── DB Manager
+└── Chat Orchestrator
+    ├── Mapping Manager
+    ├── Schedule Manager
+    ├── Dictionary Manager
+    ├── Use Case Builder
+    └── Expert Panel Agent
+        ├── Project Context Expert
+        ├── Literature Expert
+        ├── Participant Data Expert
+        └── Mapping Design Expert</code></pre><hr id="8cf034f6-04c2-436e-ba40-2910307ad3d8" dir="auto"/><h1 id="cb768407-3ebd-4414-b808-5b83ca46885b" class="" dir="auto">Important import note</h1><p id="f9556933-0590-4297-98b4-af5896977472" class="" dir="auto">After importing the workflows into a new n8n instance, re-select the target workflow inside every:</p><ul id="b81f1e63-f204-4e42-8df8-90d8c0a407c9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Execute Workflow node</li></ul><ul id="7d46b67b-70a2-46d1-9d28-a75624a3441d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">AI workflow tool node</li></ul><p id="3d6c3f83-184a-4b85-9a48-3fc5b1bea0ad" class="" dir="auto">Exported workflow IDs may not match the IDs assigned in the new n8n environment.</p><hr id="73f9d5e0-36ab-4b44-a005-e09d91bb1cf1" dir="auto"/><h1 id="70a22122-0fb8-4d31-8efe-6df6861f94b6" class="" dir="auto">Related documentation</h1><ul id="17f744a3-ba1d-4db8-9475-dbc7b1d7bf9d" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Getting%20Started%20with%20n8n%2037a6a244173d800b95ebec8b8ea534c1.html">Getting Started with n8n</a></li></ul><ul id="c5224269-645e-4e12-a968-350bc06c4355" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="n8n%20Node%20Types%20Used%20in%20the%20System%2037a6a244173d805e9b6ae92ddfc717b5.html">n8n Node Types Used in the System</a></li></ul><ul id="37535456-34b5-401b-89d8-6b836e802bc8" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="Running%20and%20Testing%20Workflows%2037a6a244173d80eea95fc9b0390d98fa.html">Running and Testing Workflows</a></li></ul><ul id="8b791ed1-8ae5-4a28-a8d3-342a29057fe8" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://app.notion.com/p/n8n-Developer-Reference-9426a244173d83f492a3016fe4167e2e?pvs=21">n8n Developer Reference</a></li></ul><ul id="615ecf94-6c74-45ca-b028-346fcbaa38cc" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="../Setting%20Credentials%20On%20n8n%203876a244173d80a696ede0db3852d899.html">Setting Credentials on n8n</a></li></ul><ul id="d42bb92d-fcea-470d-aecf-466b9ff2dad2" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><a href="https://github.com/liranBecher/Smartwatch-Haptic-Workflow">Smartwatch Haptic Workflow Repository</a></li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

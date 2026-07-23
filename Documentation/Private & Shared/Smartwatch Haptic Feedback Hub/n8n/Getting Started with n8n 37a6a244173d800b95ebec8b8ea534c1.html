@@ -1,0 +1,772 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Getting Started with n8n</title><meta name="data-notion-page-icon" content="💡"/><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%92%A1%3C%2Ftext%3E%3C%2Fsvg%3E"/><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="37a6a244-173d-800b-95eb-ec8b8ea534c1" class="page sans" data-notion-page-icon="💡"><header><div class="page-header-icon undefined"><span class="icon" data-emoji="💡"></span></div><h1 class="page-title" dir="auto">Getting Started with n8n</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><p id="0cb35722-21ed-4e81-a2d3-67a3aadd96e5" class="" dir="auto">n8n is the workflow-automation platform used as the backend layer of the Smartwatch Haptic Feedback System.</p><p id="03613f93-1626-42a3-bdd4-217d254d8f65" class="" dir="auto">It receives requests from the system applications, communicates with the database and external services, processes data, and returns responses to the calling application.</p><p id="2e10f2ea-1e0a-4f64-babe-d75a900a483c" class="" dir="auto">This page provides a basic orientation for people who are unfamiliar with n8n. It does not explain the system’s individual workflows in detail.</p><hr id="8a7f06dd-3306-4f9b-9750-40110378f43e" dir="auto"/><h1 id="a19ba246-5331-4b65-80c5-cd47e9329d59" class="" dir="auto">Opening n8n</h1><p id="4f677c1b-1e45-42e2-a446-7d683c46c2c7" class="" dir="auto">Open the n8n editor using the address configured for the server, the default address is usually:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="84c6bb9f-245d-443c-be59-82f3116a2c27" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">http://localhost:5678</code></pre><p id="3fbd547e-16a5-48c0-98f9-ffb485044ab7" class="" dir="auto">Sign in using the n8n administrator account.</p><p id="c90db4ae-99fb-4703-b487-80b6eab1ee63" class="" dir="auto">After signing in, the main workflow list should appear.</p><blockquote id="7784a64b-e45d-4c63-a05d-3f2a9cb58c3f" class="" dir="auto">If n8n does not open, confirm that the n8n service is running before troubleshooting individual workflows.</blockquote><hr id="c843cbd5-a772-4a78-a8a3-1740941dd224" dir="auto"/><h1 id="5023729a-54b2-4674-b23f-943f16c4b2fc" class="" dir="auto">What is a workflow?</h1><p id="52d61776-aeee-499b-b42e-e550d7586ae7" class="" dir="auto">A workflow is a visual sequence of connected nodes.</p><p id="07ec2f40-7bb8-48a9-a24a-cdbf1727c1f2" class="" dir="auto">Each node performs one task, such as:</p><ul id="de33af3d-33d0-4e30-8be7-1adbdfb31634" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Receiving an HTTP request</li></ul><ul id="c801cda6-7841-4c37-b6b7-98e8beb1e3e1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Validating or transforming data</li></ul><ul id="18d3b1c5-ea7a-43f8-ad02-5c152620952c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Querying PostgreSQL</li></ul><ul id="d4c322db-3882-4a37-9cb2-bf3b14bf5fbe" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Calling an external API</li></ul><ul id="51193273-75a5-4652-aeca-5b7b08880d46" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Running another workflow</li></ul><ul id="2ad66c77-5c47-4fed-9db1-ec1967d0d032" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Using an AI model</li></ul><ul id="857e97ee-545b-48a5-9039-ab2ed18ea2c9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Returning a response</li></ul><p id="345de704-2b6d-4084-a44d-e3142a04599f" class="" dir="auto">Data moves between nodes from left to right along the connections.</p><hr id="0ea4513a-4169-48ef-b7a4-d4d6f0016ac0" dir="auto"/><h1 id="e0c6dd05-d666-4841-a977-d2b3c54d5e74" class="" dir="auto">Main parts of the n8n editor</h1><h2 id="bcb6987a-15d9-478c-a56f-c70435420676" class="" dir="auto">Nodes</h2><p id="3ae89764-b8e4-4c97-821e-538a00f2c8ca" class="" dir="auto">Each node performs a specific operation.</p><p id="d036ca50-eeec-47b8-939e-82139d8be0b3" class="" dir="auto">Selecting a node opens its configuration panel, where you can inspect:</p><ul id="46d2e5aa-d727-4ae7-ad54-773d44a83a8c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Input fields</li></ul><ul id="3f304fed-d65a-4f12-8ac6-74afab719cbf" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Parameters</li></ul><ul id="3b16c3f4-c6f9-4698-9ade-3cf8db41ec41" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Expressions</li></ul><ul id="b78d107f-f4bd-466f-bdc8-27b06a3f9824" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Credentials</li></ul><ul id="2d56dd2c-7f95-461a-9afc-90ed09c9b80c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Output data</li></ul><ul id="f3d64918-0759-4b69-a536-e31e9e195781" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Errors</li></ul><h2 id="6ac54f96-4f74-4cba-8b56-031142a71579" class="" dir="auto">Executions</h2><p id="c0b9beb6-6650-4ce8-87fe-0e902a4bbc91" class="" dir="auto">The Executions view shows previous workflow runs.</p><p id="45f3120f-e0fa-4216-8f27-9c0dba4c4ca7" class="" dir="auto">Use it to inspect:</p><ul id="e4ab4c84-78cd-4f3f-84a5-721b54675cf6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Whether a workflow succeeded or failed</li></ul><ul id="3ca06a68-2c92-4d8c-bef7-e92c05561d08" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Which node failed</li></ul><ul id="edbe592d-76ca-4654-a704-316651acab7d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The input and output of each node</li></ul><ul id="5a1e7547-7e53-4785-8d83-c1dc0383ba7c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Error messages</li></ul><ul id="f8941698-bf06-40ee-ac46-190549fd43e6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Execution time</li></ul><h2 id="3c24568d-be39-4175-b50e-12ef1890b90c" class="" dir="auto">Test and production webhooks</h2><p id="96a68841-7b0a-44b5-a081-f69d4cb15d51" class="" dir="auto">Webhook nodes normally provide two URLs:</p><pre id="4b247b66-837b-4cdc-9ca8-b6522e9ff8b1" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">/webhook-test/...</code></pre><p id="e2ffe93a-176e-4fb5-ba1c-212051790563" class="" dir="auto">Used while manually testing a workflow in the n8n editor.</p><pre id="852bf39d-0c95-4fa1-9c7e-f0baa9c26bdf" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">/webhook/...</code></pre><p id="23e91a3c-b8bb-4e8f-b6cd-184211835a91" class="" dir="auto">Used by the installed applications when the workflow is active.</p><blockquote id="cb2fe63d-338e-4515-bae4-d0db957ec2ef" class="" dir="auto">The Android application and ResearcherSideApp should normally use the production <code>/webhook</code> URL.</blockquote><hr id="76070a3a-0cf2-449c-b311-7c29e430e2a5" dir="auto"/><h1 id="ad39c987-b393-4b91-abca-a407f11b9af6" class="" dir="auto">Running a workflow manually</h1><p id="cd5605ec-b658-4d6d-a879-c8838d7f7f54" class="" dir="auto">To test a workflow:</p><ol type="1" id="e1fdb6a6-acb6-45f6-aa05-c17a8893d36d" class="numbered-list" start="1" dir="auto"><li>Open the workflow.</li></ol><ol type="1" id="c46db363-0ab8-4e28-940f-7111483f9615" class="numbered-list" start="2" dir="auto"><li>Select <strong>Execute Workflow</strong> or <strong>Listen for Test Event</strong>, depending on its trigger.</li></ol><ol type="1" id="9ca5d2a7-d5e8-48fc-bdf3-ea6106604d3d" class="numbered-list" start="3" dir="auto"><li>Send the test request.</li></ol><ol type="1" id="53c07748-e94f-4b67-8b06-feb70411fe2f" class="numbered-list" start="4" dir="auto"><li>Follow the highlighted execution path.</li></ol><ol type="1" id="fa912bae-828f-431b-87d7-2b35e726fc4d" class="numbered-list" start="5" dir="auto"><li>Select each relevant node to inspect its input and output.</li></ol><ol type="1" id="aca3f31f-784f-4722-9c3e-299ab7e2f67b" class="numbered-list" start="6" dir="auto"><li>Confirm that the final response is correct.</li></ol><p id="dc78cfa2-12c5-497f-82a1-4e1c71ede811" class="" dir="auto">A manual test does not always prove that the production webhook works. After testing in the editor, also test the active workflow through its production URL.</p><hr id="4322e960-516f-41b4-8689-210061463461" dir="auto"/><h1 id="293c7d25-f3f1-4ce6-b956-ab2125d954a3" class="" dir="auto">Understanding node data</h1><p id="75952a78-e351-4a1d-b59c-3583a91d6269" class="" dir="auto">Each node receives items containing JSON data.</p><p id="b99d94c8-1687-4b89-97cc-11dbfd305404" class="" dir="auto">A simplified item may look like:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js" integrity="sha512-QXFMVAusM85vUYDaNgcYeU3rzSlc+bTV4JvkfJhjxSHlQEo+ig53BtnGkvFTiNJh8D+wv6uWAQ2vJaVmxe8d3w==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="50b3a252-cd9d-4aa2-9cb6-4b8cd45d5c20" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;userId&quot;: 1,
+  &quot;type&quot;: &quot;HeartRate&quot;,
+  &quot;value&quot;: 82
+}</code></pre><p id="b1574a6c-69c7-467b-95ba-f1aa9a1612b9" class="" dir="auto">Select the <strong>Input</strong> and <strong>Output</strong> tabs inside a node to see how the data changes as it moves through the workflow.</p><p id="7be23c6b-8532-4110-9d5a-22055d74c88f" class="" dir="auto">When debugging, begin at the first node and follow the execution one node at a time until the data becomes incorrect or a node fails.</p><hr id="b74332ea-22e4-41c3-a7b2-2e98799057c4" dir="auto"/><h1 id="15fbe489-5d3a-4fab-a862-8419ee00b2c1" class="" dir="auto">Expressions</h1><p id="d375d681-8f66-4485-9958-c5c37d3fa1fc" class="" dir="auto">n8n expressions allow one node to use data produced by another node.</p><p id="a4d029e9-900f-4fdb-b299-ca711398a3ed" class="" dir="auto">Expressions commonly appear in this form:</p><pre id="603f7216-bd05-4f34-b878-b04883176c8e" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">{{ $json.value }}</code></pre><p id="643f78db-88be-45bb-9ad7-08680bcd4f0d" class="" dir="auto">This reads the <code>value</code> field from the current item.</p><p id="0e2081d4-98f8-4dcd-9794-2e08b57fa2cf" class="" dir="auto">An expression may also reference a named node:</p><pre id="a07e3d7c-4a8b-41a1-a5f8-ec5893b2300d" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">{{ $(&#x27;Node Name&#x27;).first().json.value }}</code></pre><p id="e0070783-d9a1-4e5c-9267-2ef73a146e75" class="" dir="auto">Before changing an expression:</p><ul id="cf6c869a-200a-4641-873f-b5acb7b6460f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Confirm the referenced node name.</li></ul><ul id="938f252c-9221-4839-8c66-8627f4772995" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Confirm that the required field exists.</li></ul><ul id="bedc9d6b-b509-4cf1-9836-9152e524142b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Inspect the node’s actual output.</li></ul><ul id="fb6c6aa0-9901-4f5e-af51-e0b0d3c2078b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Preserve the expected data type.</li></ul><hr id="43068f5e-bb9d-4882-95eb-b70e45c1f2dd" dir="auto"/><h1 id="ea3edd1d-dc2e-4f63-baa0-87b07dfc9d2c" class="" dir="auto">Credentials</h1><p id="d10f5ea9-2e96-4ea6-bf75-18e98680bcca" class="" dir="auto">Credentials store access information for services such as:</p><ul id="4de98d45-a71d-4afc-8b0f-8349e307ce9f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">PostgreSQL</li></ul><ul id="1284e24c-60ba-48ae-8cd8-9d19febfc170" class="bulleted-list" dir="auto"><li style="list-style-type:disc">OpenAI</li></ul><ul id="210444b5-af7e-416e-a085-72a2d0f1dc3d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Email</li></ul><ul id="d08cffa4-08a7-4e20-a9de-dff8b2259ab4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">External APIs</li></ul><p id="c91719dd-42d2-4053-91c0-f8c0703c3f2a" class="" dir="auto">Credentials should be configured through n8n’s credential manager rather than written directly inside nodes.</p><p id="a6011b86-6f14-4da2-b9b3-8023d0a3cc4b" class="" dir="auto">Never place passwords, API keys, or private tokens in:</p><ul id="434dee4a-c340-47a7-bff9-31013f33e361" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Sticky notes</li></ul><ul id="eaeca4fe-c172-48e7-9147-27f28a23e33e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Code nodes</li></ul><ul id="8b8408ad-ffb4-4233-b784-9574a312474c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Exported workflow files</li></ul><ul id="36b66c9a-f5e2-4f81-9a1b-b337920f0580" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Screenshots</li></ul><ul id="2cf86570-3ea9-47f4-ace2-faec87ab4dc0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Public documentation</li></ul><figure id="9037b11a-2a6e-493d-86bd-fe3ec9b16bb0" class="link-to-page"><a href="../Setting%20Credentials%20On%20n8n/For%20credential%20setup,%20open%20the%20Setting%20Credentials%209037b11a2a6e493d86bdfe3ec9b16bb0.html" data-notion-page-id="9037b11a-2a6e-493d-86bd-fe3ec9b16bb0" data-notion-space-id="11e6a244-173d-81e2-91b8-00033177d267">For credential setup, open the Setting Credentials on n8n page.</a></figure><hr id="9eb69021-c783-43cd-bfc7-6c85d3ad440a" dir="auto"/><h1 id="cf86f4f4-65d4-493e-8e51-e0fefbde0e8b" class="" dir="auto">Activating workflows</h1><p id="2235d9b0-ad96-4fe0-bac8-5195117023c6" class="" dir="auto">A webhook workflow must normally be active before another application can call its production URL.</p><p id="7cbbd340-3dac-4aa8-b913-23def060fc32" class="" dir="auto">After changing a workflow:</p><ol type="1" id="55712972-dd81-40df-8ebe-a327b953dd16" class="numbered-list" start="1" dir="auto"><li>Save it.</li></ol><ol type="1" id="a2db1453-7f3e-412a-86dc-7183655494cc" class="numbered-list" start="2" dir="auto"><li>Activate it if it is a public entrypoint.</li></ol><ol type="1" id="5dec02b9-cf9d-4929-b68c-8dd3874c9af3" class="numbered-list" start="3" dir="auto"><li>Confirm that its production webhook is registered.</li></ol><ol type="1" id="5d4398e5-48f2-429e-af32-3a318b04b7cb" class="numbered-list" start="4" dir="auto"><li>Test it from the application that normally calls it.</li></ol><p id="030f19ac-d3a6-498b-a7b1-87434d43972c" class="" dir="auto">Internal workflows may be triggered through <strong>Execute Workflow</strong> nodes rather than public webhooks.</p><hr id="28421bb9-f216-4a0f-8b3c-5890193cf2b9" dir="auto"/><h1 id="bc8074b4-c647-46c7-9426-03125133d33b" class="" dir="auto">Important rule after importing workflows</h1><p id="f89ab35b-c266-4592-85ef-71006c794a2a" class="" dir="auto">Workflow references may not survive a clean import correctly.</p><p id="ddbff25c-e862-4ff4-a379-ca047b49d57e" class="" dir="auto">After importing the system workflows, inspect every:</p><ul id="002f22ad-6a19-4e12-8109-33baa103b0c9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Execute Workflow</strong> node</li></ul><ul id="a31b563a-ab42-49db-a438-5ff002370699" class="bulleted-list" dir="auto"><li style="list-style-type:disc">AI workflow-tool node</li></ul><p id="ccd7296f-1f0f-4180-9466-c739ac25885d" class="" dir="auto">Re-select the intended target workflow from the dropdown and save the workflow.</p><p id="90bf3837-70f3-401f-bc96-8ccd3c0ec62e" class="" dir="auto">A node may show an old workflow name while still containing an invalid internal workflow ID.</p><hr id="631d7c75-98a9-4590-b9e9-c5e1f569c52b" dir="auto"/><h1 id="a1496726-2b07-423f-94e9-96f41c013f20" class="" dir="auto">Safe editing rules</h1><p id="b23be967-8fcf-40e6-b379-a08f7e60bc5f" class="" dir="auto">Before changing a workflow:</p><ol type="1" id="1a793ce4-2c04-441f-aaa1-9b98eaa963ba" class="numbered-list" start="1" dir="auto"><li>Export or duplicate the current working version.</li></ol><ol type="1" id="bdca353e-33e6-40e6-aa3d-43a6671d5379" class="numbered-list" start="2" dir="auto"><li>Use test participants and test data.</li></ol><ol type="1" id="d9a3c003-b9c8-4029-97ef-65414af902e8" class="numbered-list" start="3" dir="auto"><li>Change one logical area at a time.</li></ol><ol type="1" id="06d5ebb2-7838-416e-b399-178aea03fe33" class="numbered-list" start="4" dir="auto"><li>Run the affected branch manually.</li></ol><ol type="1" id="a7f70384-8c76-4050-850e-4023f140c7bf" class="numbered-list" start="5" dir="auto"><li>Inspect the database and final response.</li></ol><ol type="1" id="295e2a8d-86bb-41ec-87a2-eb9f7fe475a1" class="numbered-list" start="6" dir="auto"><li>Test the real calling application.</li></ol><ol type="1" id="3f86ea3b-25f5-40a8-9915-b99e828790e2" class="numbered-list" start="7" dir="auto"><li>Keep the previous export until the new version is validated.</li></ol><p id="fdd815c3-2264-4f00-a065-027f3d328976" class="" dir="auto">Researchers should only edit workflow areas explicitly identified as researcher-editable in the documentation.</p><p id="8af41a74-493b-48b1-b12a-872c08e9bc52" class="" dir="auto">Do not modify shared database logic, participant-assignment behavior, or application response structures without understanding the dependent components.</p><hr id="feb0a1d2-7f4b-4e7a-8c7c-381857e7ae9e" dir="auto"/><h1 id="5b152c9b-8b92-4b51-a6b9-5e84d1e2d90a" class="" dir="auto">Where to continue</h1><p id="41444838-e314-4d3e-9135-c4c8f4d0b4bf" class="" dir="auto">Use the following pages according to your task:</p><ul id="9387e1eb-8248-4b34-aeb2-0952b9d20d76" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="n8n%20Workflows%20Breakdown%2037a6a244173d80cd8c82cb7916e6ffa3.html">n8n Workflows Breakdown</a></strong> — understand the purpose and ownership of each workflow.</li></ul><ul id="dd3fd48b-e479-472d-b1ab-33b9fa346ce2" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="Running%20and%20Testing%20Workflows%2037a6a244173d80eea95fc9b0390d98fa.html">Running and Testing Workflows</a></strong> — test webhooks and inspect executions.</li></ul><ul id="1e6e7ce8-eb74-412c-bdde-d9d9eab9b24d" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="n8n%20Node%20Types%20Used%20in%20the%20System%2037a6a244173d805e9b6ae92ddfc717b5.html">n8n Node Types Used in the System</a></strong> — understand the node types used by the project.</li></ul><ul id="13131d9e-fbca-4794-a9c2-ce888d3328dd" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="../Setting%20Credentials%20On%20n8n%203876a244173d80a696ede0db3852d899.html">Setting Credentials on n8n</a></strong> — configure PostgreSQL, OpenAI, email, and other credentials.</li></ul><ul id="d7923e23-3b00-4602-9e69-00d330d26f86" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="Getting%20Started%20with%20n8n%2037a6a244173d800b95ebec8b8ea534c1.html">Vibration Orchestrator for Researchers</a></strong> — safely connect a new use-case branch.</li></ul><ul id="89ceacd0-22a8-4d9e-9c2c-34628885f635" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="../Adding%20a%20New%20Use%20Case%2037a6a244173d81e6b98bf8b7480061cd.html">Adding a New Use Case</a></strong> — follow the complete use-case creation process.</li></ul><ul id="0a4c0e36-be0e-4db4-b24e-df4bb014ad7f" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong><a href="https://app.notion.com/p/n8n-Developer-Reference-9426a244173d83f492a3016fe4167e2e?pvs=21">n8n Developer Reference</a></strong> — maintain mapping, schedule, AI, and database behavior.</li></ul><aside class="block-color-gray_background callout" data-notion-callout="" data-notion-callout-icon="💡" data-notion-callout-background="gray_background" style="white-space:pre-wrap;display:flex" id="3a36a244-173d-808e-9ff9-c32d497305bf" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="💡"></span></div><div style="width:100%"><blockquote id="ea53f9a6-b016-4f28-bc49-d39db17b14a7" class="" dir="auto">Start with the workflow breakdown before editing any workflow.</blockquote></div></aside><p id="3a36a244-173d-8038-a0ab-daeed9f43e3f" class="" dir="auto">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
