@@ -764,4 +764,163 @@ blockquote.quote-large {
 	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
 }
 	
-</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="37a6a244-173d-807b-89df-fc8701740ba9" class="page sans" data-notion-page-icon="/icons/table_gray.svg"><header><div class="page-header-icon undefined"><img class="icon notion-static-icon" src="https://app.notion.com/icons/table_gray.svg"/></div><h1 class="page-title" dir="auto">Full ERD Schema</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><figure id="37a6a244-173d-807e-9cd1-dd9208206ce9" class="image" data-notion-image="Full%20ERD%20Schema/WhatsApp_Image_2026-06-09_at_20.03.13.jpeg" dir="ltr"><a href="Full%20ERD%20Schema/WhatsApp_Image_2026-06-09_at_20.03.13.jpeg"><img style="width:1440px" src="Full%20ERD%20Schema/WhatsApp_Image_2026-06-09_at_20.03.13.jpeg"/></a></figure></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="37a6a244-173d-807b-89df-fc8701740ba9" class="page sans" data-notion-page-icon="/icons/table_gray.svg"><header><div class="page-header-icon undefined"><img class="icon notion-static-icon" src="https://app.notion.com/icons/table_gray.svg"/></div><h1 class="page-title" dir="auto">Full ERD Schema</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><figure id="3a96a244-173d-805f-9672-e1157cd810f4" class="image" data-notion-image="Full%20ERD%20Schema/ERD26072026.png" dir="ltr"><a href="Full%20ERD%20Schema/ERD26072026.png"><img style="width:1152px" src="Full%20ERD%20Schema/ERD26072026.png"/></a></figure><h4 id="3a96a244-173d-80e8-9c76-c088191161d4" class="" dir="auto">Mermaid format (image below)</h4><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="3a96a244-173d-80fa-822b-cf539d585695" class="code code-wrap" data-notion-code-syntax="mermaid"><code class="language-mermaid" style="white-space:pre-wrap;word-break:break-all">erDiagram
+    User {
+        int userid PK
+        varchar fname
+        varchar lname
+        timestamp lastrequest
+        boolean monitoring_expected
+        boolean offline_alerted
+    }
+
+    Watch {
+        int watchid PK
+    }
+
+    AndroidPhone {
+        int phoneid PK
+    }
+
+    WatchAndroidPhone {
+        int watchid PK, FK
+        int phoneid PK, FK
+    }
+
+    UserWatchAndroidPhone {
+        int userid PK, FK
+        int watchid PK, FK
+        int phoneid PK, FK
+    }
+
+    DeviceSensor {
+        int watchid FK
+        int phoneid FK
+        int userid FK
+        int usecase_id FK
+    }
+
+    UseCase {
+        int usecase_id PK
+        varchar name UK
+        text description
+        time log_interval
+    }
+
+    SensorData {
+        bigint id PK
+        int watchid
+        int phoneid
+        int alertid FK
+        int userid
+        double value
+        timestamp time
+        int usecase_id FK
+    }
+
+    Alert {
+        int alertid PK
+        varchar alertgiven
+        int intensity
+        int pulses
+        int duration
+        int interval
+        varchar type
+        int fbrangeid FK
+        varchar vibration_reason
+    }
+
+    feedback_config_rules {
+        bigint id PK
+        double minvalue
+        double maxvalue
+        varchar type
+        boolean active
+        double minpulses
+        double maxpulses
+        double minintensity
+        double maxintensity
+        double minduration
+        double maxduration
+        double mininterval
+        double maxinterval
+        int usecase_id FK
+    }
+
+    User_UC_Mappings {
+        bigint id PK
+        int user_id FK
+        bigint feedback_config_rule_id FK
+        boolean active
+        timestamptz assigned_at
+        timestamptz deactivated_at
+    }
+
+    user_schedules {
+        int schedule_id PK
+        int user_id FK
+        int interval_days
+        date next_run_date
+        varchar measure_type
+        double trigger_percentage
+        boolean active
+    }
+
+    agent_session {
+        uuid session_id PK
+        text researcher_id
+        int current_usecase_id FK
+        jsonb conversation_history
+        text active_workflow
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    api_pool {
+        int id PK
+        varchar name
+        varchar category
+        text description
+        text endpoint_url
+        varchar method
+        varchar auth_type
+        varchar auth_header
+        jsonb param_schema
+        jsonb sample_response
+        text_array usecase_tags
+        boolean active
+    }
+
+    UseCaseDictionary {
+        int dict_entry PK
+        varchar usecase_name
+        varchar usecase_parameter_name
+        varchar parameter_format
+        boolean is_required
+        text description
+        varchar param_value
+        int api_pool_id FK
+    }
+
+    Watch ||--o{ WatchAndroidPhone : connects
+    AndroidPhone ||--o{ WatchAndroidPhone : connects
+
+    User ||--o{ UserWatchAndroidPhone : owns
+    WatchAndroidPhone ||--o{ UserWatchAndroidPhone : assigned_to
+
+    UserWatchAndroidPhone ||--o{ DeviceSensor : identifies
+    UseCase o|--o{ DeviceSensor : configured_for
+
+    Alert o|--o{ SensorData : generated_for
+    UseCase o|--o{ SensorData : records
+
+    feedback_config_rules o|--o{ Alert : produces
+    UseCase ||--o{ feedback_config_rules : contains
+
+    User ||--o{ User_UC_Mappings : receives
+    feedback_config_rules ||--o{ User_UC_Mappings : assigned_as
+
+    User ||--o{ user_schedules : has
+    UseCase o|--o{ agent_session : session_context
+
+    api_pool ||--o{ UseCaseDictionary : supplies</code></pre></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
