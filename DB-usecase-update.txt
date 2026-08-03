@@ -1,0 +1,50 @@
+BEGIN;
+
+-- 1. Add the new column.
+-- Existing rows initially receive the default of 1 minute.
+ALTER TABLE public."UseCase"
+ADD COLUMN IF NOT EXISTS vibration_interval interval
+DEFAULT '1 minute'::interval;
+
+-- 2. Set the desired vibration interval for existing use cases.
+UPDATE public."UseCase"
+SET vibration_interval =
+    CASE name
+        WHEN 'HeartRate'   THEN '1 minute'::interval
+        WHEN 'MoonAzimuth' THEN '3 minutes'::interval
+        WHEN 'SunAzimuth'  THEN '3 minutes'::interval
+        WHEN 'AirPressure' THEN '5 minutes'::interval
+        WHEN 'Pollution'   THEN '2 minutes'::interval
+        WHEN 'UVIndex'     THEN '5 minutes'::interval
+        ELSE vibration_interval
+    END;
+
+-- 3. Add Humidity if it does not already exist.
+INSERT INTO public."UseCase"
+    (name, description, log_interval, vibration_interval)
+SELECT
+    'Humidity',
+    'Humidity levels by open-meteo',
+    '00:05:00',
+    '1 minute'::interval
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM public."UseCase"
+    WHERE name = 'Humidity'
+);
+
+-- 4. Add Temperature if it does not already exist.
+INSERT INTO public."UseCase"
+    (name, description, log_interval, vibration_interval)
+SELECT
+    'Temperature',
+    'Temperature values by location',
+    NULL,
+    '1 minute'::interval
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM public."UseCase"
+    WHERE name = 'Temperature'
+);
+
+COMMIT;
