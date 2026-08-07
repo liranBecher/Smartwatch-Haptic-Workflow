@@ -822,7 +822,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ {\n  type: $json.type,\n  value: $json.value,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
+        "responseBody": "={{ {\nuserID: $('Normalize weather').first().json.userID,\nwatchID: $('Normalize weather').first().json.watchID,\nphoneID: $('Normalize weather').first().json.phoneID,\n  type: $json.type,\n  value: $json.value,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
         "options": {
           "responseCode": 200
         }

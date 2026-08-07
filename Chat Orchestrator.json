@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const incoming =\n  $input.first().json ?? {};\n\nconst body =\n  incoming.body &&\n  typeof incoming.body === 'object' &&\n  !Array.isArray(incoming.body)\n    ? incoming.body\n    : incoming;\n\nfunction requiredString(\n  value,\n  fieldName\n) {\n  const normalized =\n    String(value ?? '').trim();\n\n  if (!normalized) {\n    throw new Error(\n      `Missing ${fieldName}`\n    );\n  }\n\n  return normalized;\n}\n\nfunction optionalString(value) {\n  const normalized =\n    String(value ?? '').trim();\n\n  return normalized || null;\n}\n\nfunction requiredPositiveInteger(\n  value,\n  fieldName\n) {\n  const number =\n    Number(value);\n\n  if (\n    !Number.isInteger(number) ||\n    number <= 0\n  ) {\n    throw new Error(\n      `Missing or invalid ${fieldName}`\n    );\n  }\n\n  return number;\n}\n\nfunction optionalPositiveInteger(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number =\n    Number(value);\n\n  return (\n    Number.isInteger(number) &&\n    number > 0\n  )\n    ? number\n    : null;\n}\n\nfunction objectValue(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return (\n        parsed &&\n        typeof parsed === 'object' &&\n        !Array.isArray(parsed)\n      )\n        ? parsed\n        : {};\n    } catch {\n      return {};\n    }\n  }\n\n  return {};\n}\n\nfunction arrayValue(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return Array.isArray(parsed)\n        ? parsed\n        : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\n\nconst sessionId =\n  requiredString(\n    body.session_id,\n    'session_id'\n  );\n\nconst usecaseId =\n  requiredPositiveInteger(\n    body.usecase_id,\n    'usecase_id'\n  );\n\nconst message =\n  requiredString(\n    body.message,\n    'message'\n  );\n\nconst usecaseName =\n  optionalString(\n    body.usecase_name\n  );\n\nconst userId =\n  optionalPositiveInteger(\n    body.user_id\n  );\n\nconst userMappingId =\n  optionalPositiveInteger(\n    body.user_mapping_id\n  );\n\nconst userUsecaseId =\n  optionalPositiveInteger(\n    body.user_usecase_id\n  );\n\n/*\n * Distinguish an intentional All Users scope\n * from an accidentally missing user ID.\n */\nconst allUsersSelected =\n  body.all_users_selected === true ||\n  String(\n    body.all_users_selected ?? ''\n  )\n    .trim()\n    .toLowerCase() === 'true';\n\nconst requestedScope =\n  String(\n    body.analysis_scope ?? ''\n  )\n    .trim()\n    .toLowerCase();\n\nconst analysisScope =\n  requestedScope === 'participant' ||\n  requestedScope === 'usecase'\n    ? requestedScope\n    : allUsersSelected\n      ? 'usecase'\n      : 'participant';\n\nconst context =\n  objectValue(\n    body.context\n  );\n\nconst openArtifacts =\n  arrayValue(\n    body.open_artifacts\n  );\n\nreturn [{\n  json: {\n    session_id:\n      sessionId,\n\n    message,\n\n    usecase_id:\n      usecaseId,\n\n    usecase_name:\n      usecaseName,\n\n    user_id:\n      userId,\n\n    user_name:\n      optionalString(\n        body.user_name\n      ),\n\n    user_mapping_id:\n      userMappingId,\n\n    user_usecase_id:\n      userUsecaseId,\n\n    user_usecase_name:\n      optionalString(\n        body.user_usecase_name\n      ),\n\n    all_users_selected:\n      allUsersSelected,\n\n    analysis_scope:\n      analysisScope,\n\n    context,\n\n    open_artifacts:\n      openArtifacts,\n\n    app_context: {\n      selected_usecase_id:\n        usecaseId,\n\n      selected_usecase_name:\n        usecaseName,\n\n      selected_user_id:\n        userId,\n\n      selected_user_name:\n        optionalString(\n          body.user_name\n        ),\n\n      selected_user_mapping_id:\n        userMappingId,\n\n      selected_user_usecase_id:\n        userUsecaseId,\n\n      selected_user_usecase_name:\n        optionalString(\n          body.user_usecase_name\n        ),\n\n      all_users_selected:\n        allUsersSelected,\n\n      analysis_scope:\n        analysisScope\n    }\n  }\n}];"
+        "jsCode": "const incoming =\n  $input.first().json ?? {};\n\nconst body =\n  incoming.body &&\n  typeof incoming.body === 'object' &&\n  !Array.isArray(incoming.body)\n    ? incoming.body\n    : incoming;\n\nfunction requiredString(\n  value,\n  fieldName\n) {\n  const normalized =\n    String(value ?? '').trim();\n\n  if (!normalized) {\n    throw new Error(\n      `Missing ${fieldName}`\n    );\n  }\n\n  return normalized;\n}\n\nfunction optionalString(value) {\n  const normalized =\n    String(value ?? '').trim();\n\n  return normalized || null;\n}\n\nfunction requiredPositiveInteger(\n  value,\n  fieldName\n) {\n  const number =\n    Number(value);\n\n  if (\n    !Number.isInteger(number) ||\n    number <= 0\n  ) {\n    throw new Error(\n      `Missing or invalid ${fieldName}`\n    );\n  }\n\n  return number;\n}\n\nfunction optionalPositiveInteger(value) {\n  if (\n    value === null ||\n    value === undefined ||\n    value === ''\n  ) {\n    return null;\n  }\n\n  const number =\n    Number(value);\n\n  return (\n    Number.isInteger(number) &&\n    number > 0\n  )\n    ? number\n    : null;\n}\n\nfunction objectValue(value) {\n  if (\n    value &&\n    typeof value === 'object' &&\n    !Array.isArray(value)\n  ) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return (\n        parsed &&\n        typeof parsed === 'object' &&\n        !Array.isArray(parsed)\n      )\n        ? parsed\n        : {};\n    } catch {\n      return {};\n    }\n  }\n\n  return {};\n}\n\nfunction arrayValue(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n\n  if (typeof value === 'string') {\n    try {\n      const parsed =\n        JSON.parse(value);\n\n      return Array.isArray(parsed)\n        ? parsed\n        : [];\n    } catch {\n      return [];\n    }\n  }\n\n  return [];\n}\nconst rawSessionId =\n  typeof body.session_id === 'string'\n    ? body.session_id.trim()\n    : '';\n\nconst rawMessage =\n  typeof body.message === 'string'\n    ? body.message.trim()\n    : '';\n\nconst rawUsecaseId =\n  Number(body.usecase_id);\n\nconst uuidPattern =\n  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\n\nconst rejection =\n  !rawSessionId\n    ? {\n        code: 'MISSING_SESSION_ID',\n        error: 'Missing session_id'\n      }\n    : !uuidPattern.test(rawSessionId)\n      ? {\n          code: 'INVALID_SESSION_ID',\n          error: 'session_id must be a UUID'\n        }\n      : !Number.isInteger(rawUsecaseId) ||\n        rawUsecaseId <= 0\n        ? {\n            code: 'INVALID_USECASE_ID',\n            error: 'Missing or invalid usecase_id'\n          }\n        : !rawMessage\n          ? {\n              code: 'EMPTY_MESSAGE',\n              error: 'Message cannot be empty'\n            }\n          : null;\n\nif (rejection) {\n  return [{\n    json: {\n      valid: false,\n      success: false,\n      statusCode: 400,\n      ...rejection\n    }\n  }];\n}\nconst sessionId =\n  requiredString(\n    body.session_id,\n    'session_id'\n  );\n\nconst usecaseId =\n  requiredPositiveInteger(\n    body.usecase_id,\n    'usecase_id'\n  );\n\nconst message =\n  requiredString(\n    body.message,\n    'message'\n  );\n\nconst usecaseName =\n  optionalString(\n    body.usecase_name\n  );\n\nconst userId =\n  optionalPositiveInteger(\n    body.user_id\n  );\n\nconst userMappingId =\n  optionalPositiveInteger(\n    body.user_mapping_id\n  );\n\nconst userUsecaseId =\n  optionalPositiveInteger(\n    body.user_usecase_id\n  );\n\n/*\n * Distinguish an intentional All Users scope\n * from an accidentally missing user ID.\n */\nconst allUsersSelected =\n  body.all_users_selected === true ||\n  String(\n    body.all_users_selected ?? ''\n  )\n    .trim()\n    .toLowerCase() === 'true';\n\nconst requestedScope =\n  String(\n    body.analysis_scope ?? ''\n  )\n    .trim()\n    .toLowerCase();\n\nconst analysisScope =\n  requestedScope === 'participant' ||\n  requestedScope === 'usecase'\n    ? requestedScope\n    : allUsersSelected\n      ? 'usecase'\n      : 'participant';\n\nconst context =\n  objectValue(\n    body.context\n  );\n\nconst openArtifacts =\n  arrayValue(\n    body.open_artifacts\n  );\n\nreturn [{\n  json: {\n      valid: true,\n\n    session_id:\n      sessionId,\n\n    message,\n\n    usecase_id:\n      usecaseId,\n\n    usecase_name:\n      usecaseName,\n\n    user_id:\n      userId,\n\n    user_name:\n      optionalString(\n        body.user_name\n      ),\n\n    user_mapping_id:\n      userMappingId,\n\n    user_usecase_id:\n      userUsecaseId,\n\n    user_usecase_name:\n      optionalString(\n        body.user_usecase_name\n      ),\n\n    all_users_selected:\n      allUsersSelected,\n\n    analysis_scope:\n      analysisScope,\n\n    context,\n\n    open_artifacts:\n      openArtifacts,\n\n    app_context: {\n      selected_usecase_id:\n        usecaseId,\n\n      selected_usecase_name:\n        usecaseName,\n\n      selected_user_id:\n        userId,\n\n      selected_user_name:\n        optionalString(\n          body.user_name\n        ),\n\n      selected_user_mapping_id:\n        userMappingId,\n\n      selected_user_usecase_id:\n        userUsecaseId,\n\n      selected_user_usecase_name:\n        optionalString(\n          body.user_usecase_name\n        ),\n\n      all_users_selected:\n        allUsersSelected,\n\n      analysis_scope:\n        analysisScope\n    }\n  }\n}];"
       },
       "id": "c4940205-8d17-465b-afce-acf1edcf44f9",
       "name": "Validate input",
@@ -122,7 +122,8 @@
         },
         "builtInTools": {},
         "options": {
-          "maxTokens": 250
+          "maxTokens": 250,
+          "reasoningEffort": "low"
         }
       },
       "id": "933988ef-f759-43af-a1b6-c07b1c1b0c99",
@@ -408,7 +409,35 @@
             "message": "={{ $json.message }}"
           },
           "matchingColumns": [],
-          "schema": [],
+          "schema": [
+            {
+              "id": "usecase_name",
+              "displayName": "usecase_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
           "attemptToConvertTypes": true,
           "convertFieldsToString": true
         },
@@ -513,7 +542,44 @@
             "message": "={{ $json.message }}"
           },
           "matchingColumns": [],
-          "schema": [],
+          "schema": [
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": true
         },
@@ -784,6 +850,57 @@
       ],
       "id": "6c02bb8f-41fc-4c86-963c-fcfd81a74c86",
       "name": "Call 'Expert Panel Agent'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "561a267e-fca0-4d92-8664-d0cb6bd0bdb1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2af495f4-4ac3-4ba5-9132-e2fa70397860",
+      "name": "Input valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -6112,
+        4368
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  success: false,\n  error: $json.error,\n  code: $json.code\n} }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "00a3ed20-99fe-4954-a291-43fb2d1d6f22",
+      "name": "Reject invalid input",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -5904,
+        4576
+      ]
     }
   ],
   "pinData": {},
@@ -803,7 +920,7 @@
       "main": [
         [
           {
-            "node": "Session Upsert",
+            "node": "Input valid?",
             "type": "main",
             "index": 0
           }
@@ -993,6 +1110,24 @@
         [
           {
             "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input valid?": {
+      "main": [
+        [
+          {
+            "node": "Session Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject invalid input",
             "type": "main",
             "index": 0
           }

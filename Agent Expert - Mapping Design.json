@@ -163,7 +163,9 @@
           "cachedResultName": "gpt-5.6-luna"
         },
         "builtInTools": {},
-        "options": {}
+        "options": {
+          "reasoningEffort": "low"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,

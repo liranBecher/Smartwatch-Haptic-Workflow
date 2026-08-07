@@ -901,7 +901,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const incoming = $('Validate - assign params').first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst dbMapping = $('DB - Find Mapping').first().json;\nconst assignedId = (dbMapping && dbMapping.id !== null) \n  ? dbMapping.id \n  : $('DB - Insert into mapping-user table1').first().json.id;\n\nconst userId = incoming.user_id;\nconst mappingId = incoming.mapping_id;\n\n// Check if the assignment failed to return any valid ID\nif (assignedId === null || assignedId === undefined) {\n  return [{ json: {\n    reply: `Assignment did not work. Could not map user ${userId} to mapping ID ${mappingId}.`,\n    session_id,\n    success: false\n  }}];\n}\n\n// Generate a targeted response for a successful assignment\nconst reply = `Successfully assigned user ${userId} to mapping ID ${mappingId}.`;\n\nreturn [{ json: { \n  reply, \n  session_id,\n  user_id: userId,\n  mapping_id: mappingId,\n  assigned_record_id: assignedId,\n  success: true\n} }];"
+        "jsCode": "const incoming = $('Validate - assign params').first().json;\nconst session_id = $('Execute Workflow Trigger').first().json.session_id;\n\nconst dbMapping = $('DB - Find Mapping').first().json;\nconst assignedId = (dbMapping && dbMapping.id !== null) \n  ? dbMapping.id \n  : $('DB - insert into mapping-user table1').first().json.id;\n\nconst userId = incoming.user_id;\nconst mappingId = incoming.mapping_id;\n\n// Check if the assignment failed to return any valid ID\nif (assignedId === null || assignedId === undefined) {\n  return [{ json: {\n    reply: `Assignment did not work. Could not map user ${userId} to mapping ID ${mappingId}.`,\n    session_id,\n    success: false\n  }}];\n}\n\n// Generate a targeted response for a successful assignment\nconst reply = `Successfully assigned user ${userId} to mapping ID ${mappingId}.`;\n\nreturn [{ json: { \n  reply, \n  session_id,\n  user_id: userId,\n  mapping_id: mappingId,\n  assigned_record_id: assignedId,\n  success: true\n} }];"
       },
       "id": "f2e8a44e-6bec-47c0-9731-e8eded0afed8",
       "name": "Format - assign mapping",
@@ -982,7 +982,9 @@
           "cachedResultName": "gpt-5.6-luna"
         },
         "builtInTools": {},
-        "options": {}
+        "options": {
+          "reasoningEffort": "medium"
+        }
       },
       "id": "b0949177-34ee-46e2-a90e-417d33c68716",
       "name": "OpenAI Chat Model",

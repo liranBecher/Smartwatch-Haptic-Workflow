@@ -119,7 +119,7 @@
         "nodeCredentialType": "openAiApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n  {\n    model: $json.model,\n    input:\n      \"You are the Project Context Expert for the Smartwatch Haptic system.\\n\\n\" +\n      \"Answer only from the uploaded project documentation. \" +\n      \"Explain uncertainty clearly. Do not invent workflow names, database tables, \" +\n      \"files, citations, or system behavior. You are read-only and must never claim \" +\n      \"that you changed the database or an n8n workflow.\\n\\n\" +\n      \"Question:\\n\" +\n      $json.message,\n\n    tools: [\n      {\n        type: \"file_search\",\n        vector_store_ids: [$json.vector_store_id],\n        max_num_results: 5\n      }\n    ],\n\n    tool_choice: {\n      type: \"file_search\"\n    },\n\n    include: [\n      \"file_search_call.results\"\n    ]\n  }\n}}",
+        "jsonBody": "={{\n  {\n    model: $json.model,\n    input:\n      \"You are the Project Context Expert for the Smartwatch Haptic system.\\n\\n\" +\n      \"Answer only from the uploaded project documentation. \" +\n      \"Explain uncertainty clearly. Do not invent workflow names, database tables, \" +\n      \"files, citations, or system behavior. You are read-only and must never claim \" +\n      \"that you changed the database or an n8n workflow.\\n\\n\" +\n      \"Question:\\n\" +\n      $json.message,\n\n    tools: [\n      {\n        type: \"file_search\",\n        vector_store_ids: [$json.vector_store_id],\n        max_num_results: 3\n      }\n    ],\n\n    tool_choice: {\n      type: \"file_search\"\n    },\n\n    include: []\n  }\n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
