@@ -28,7 +28,7 @@
             {
               "id": "058bcd87-f15f-43e7-86e3-37a344982a48",
               "name": "model",
-              "value": "gpt-4o",
+              "value": "gpt-5.6-luna",
               "type": "string"
             },
             {
