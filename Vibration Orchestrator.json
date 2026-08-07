@@ -822,7 +822,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ {\nuserID: $('Normalize weather').first().json.userID,\nwatchID: $('Normalize weather').first().json.watchID,\nphoneID: $('Normalize weather').first().json.phoneID,\n  type: $json.type,\n  value: $json.value,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
+        "responseBody": "={{ {\n  userID: $('Evaluate weather Feedback Rules').first().json.userID,\n  watchID: $('Evaluate weather Feedback Rules').first().json.watchID,\n  phoneID: $('Evaluate weather Feedback Rules').first().json.phoneID,\n  type: $('Evaluate weather Feedback Rules').first().json.type,\n  value: $('Evaluate weather Feedback Rules').first().json.value,\n  alertGiven: $('Evaluate weather Feedback Rules').first().json.alertGiven,\n  pulses: $('Evaluate weather Feedback Rules').first().json.pulses,\n  intensity: $('Evaluate weather Feedback Rules').first().json.intensity,\n  duration: $('Evaluate weather Feedback Rules').first().json.duration,\n  interval: $('Evaluate weather Feedback Rules').first().json.interval,\n  fbRangeID: $('Evaluate weather Feedback Rules').first().json.fbRangeID,\n  reason: $('Evaluate weather Feedback Rules').first().json.reason\n} }}",
         "options": {
           "responseCode": 200
         }
@@ -830,8 +830,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4272,
-        9936
+        4512,
+        9984
       ],
       "id": "b592cd8b-64ea-4486-ad0f-12f59627a415",
       "name": "Respond to Webhook success weather"
@@ -3263,11 +3263,6 @@
             "node": "Build insert_sensor_data Query for weather",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "Respond to Webhook success weather",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -3277,6 +3272,17 @@
         [
           {
             "node": "Execute insert_sensor_data for weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute insert_sensor_data for weather": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook success weather",
             "type": "main",
             "index": 0
           }
