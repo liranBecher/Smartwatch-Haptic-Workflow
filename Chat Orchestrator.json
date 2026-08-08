@@ -740,7 +740,7 @@
             "message": "={{ $json.message }}",
             "usecase_id": "={{ $json.usecase_id ?? null }}",
             "usecase_name": "={{ $json.usecase_name ?? null }}",
-            "context": "={{\n{\n  ...($json.context ?? {}),\n  global_mappings: $json.global_mappings ?? [],\n  routed_by: 'Chat Orchestrator',\n  planner: {\n    intent: $json.intent,\n    action: $json.action,\n    target_workflow: $json.target_workflow,\n    read_only: $json.read_only\n  }\n}\n}}"
+            "context": "={{\n{\n  ...($json.context ?? {}),\n\n  app_context:\n    $json.app_context ?? {},\n\n  global_mappings:\n    $json.global_mappings ?? [],\n\n  selected_user_id:\n    $json.selected_user_id ?? null,\n\n  selected_user_name:\n    $json.selected_user_name ?? null,\n\n  selected_user_mapping_id:\n    $json.selected_user_mapping_id ?? null,\n\n  selected_user_usecase_id:\n    $json.selected_user_usecase_id ?? null,\n\n  selected_user_usecase_name:\n    $json.selected_user_usecase_name ?? null,\n\n  routed_by:\n    'Chat Orchestrator',\n\n  planner: {\n    intent:\n      $json.intent,\n\n    action:\n      $json.action,\n\n    target_workflow:\n      $json.target_workflow,\n\n    read_only:\n      $json.read_only\n  }\n}\n}}"
           },
           "matchingColumns": [],
           "schema": [
@@ -1141,7 +1141,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "88ff0fa2-2637-4ac2-ace9-b20d8c735b60",
+  "versionId": "7a32742b-4a3c-4182-b737-40a7e6088701",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
