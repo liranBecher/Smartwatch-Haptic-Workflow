@@ -977,14 +977,12 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5.6-luna",
+          "value": "gpt-4o",
           "mode": "list",
-          "cachedResultName": "gpt-5.6-luna"
+          "cachedResultName": "gpt-4o"
         },
         "builtInTools": {},
-        "options": {
-          "reasoningEffort": "medium"
-        }
+        "options": {}
       },
       "id": "b0949177-34ee-46e2-a90e-417d33c68716",
       "name": "OpenAI Chat Model",

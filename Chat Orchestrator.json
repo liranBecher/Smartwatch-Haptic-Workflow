@@ -122,7 +122,7 @@
         },
         "builtInTools": {},
         "options": {
-          "maxTokens": 250,
+          "maxTokens": 800,
           "reasoningEffort": "low"
         }
       },

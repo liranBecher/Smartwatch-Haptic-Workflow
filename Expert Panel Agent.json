@@ -5,9 +5,9 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5.6-luna",
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "cachedResultName": "gpt-5.6-luna"
+          "cachedResultName": "gpt-4o-mini"
         },
         "options": {}
       },
