@@ -158535,6 +158535,57 @@ ALTER TABLE ONLY public.user_schedules
     ADD CONSTRAINT user_schedules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."User"(userid) ON DELETE CASCADE;
 
 
+--
+-- Compatibility update added on 2026-08-03
+--
+
+BEGIN;
+
+ALTER TABLE public."UseCase"
+ADD COLUMN IF NOT EXISTS vibration_interval interval
+DEFAULT '1 minute'::interval;
+
+UPDATE public."UseCase"
+SET vibration_interval =
+    CASE name
+        WHEN 'HeartRate'   THEN '1 minute'::interval
+        WHEN 'MoonAzimuth' THEN '3 minutes'::interval
+        WHEN 'SunAzimuth'  THEN '3 minutes'::interval
+        WHEN 'AirPressure' THEN '5 minutes'::interval
+        WHEN 'Pollution'   THEN '2 minutes'::interval
+        WHEN 'UVIndex'     THEN '5 minutes'::interval
+        ELSE vibration_interval
+    END;
+
+INSERT INTO public."UseCase"
+    (name, description, log_interval, vibration_interval)
+SELECT
+    'Humidity',
+    'Humidity levels by open-meteo',
+    '00:05:00',
+    '1 minute'::interval
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM public."UseCase"
+    WHERE name = 'Humidity'
+);
+
+INSERT INTO public."UseCase"
+    (name, description, log_interval, vibration_interval)
+SELECT
+    'Temperature',
+    'Temperature values by location',
+    NULL,
+    '1 minute'::interval
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM public."UseCase"
+    WHERE name = 'Temperature'
+);
+
+COMMIT;
+
+
 -- Completed on 2026-07-18 00:15:45
 
 --
