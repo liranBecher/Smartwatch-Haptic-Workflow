@@ -1,0 +1,232 @@
+{
+  "name": "Test Mapping",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-mapping",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ac0f40bf-4e6b-465a-bfef-96b635556925",
+      "name": "Test Mapping Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "77ab454b-049a-4d7f-ad72-575c43331d67"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\n\nconst userID = Number(body.userId ?? body.UserID);\nconst watchID = Number(body.smartWatchId ?? body.SmartWatchID);\nconst phoneID = Number(body.androidId ?? body.AndroidID);\nconst type = String(body.sensorType ?? body.type ?? body.MonitoringType ?? '').trim();\nconst value = Number(body.value ?? body.Value ?? body.heartRate);\n\nconst valid = Number.isInteger(userID) && userID > 0 && Number.isInteger(watchID) && watchID > 0 && Number.isInteger(phoneID) && phoneID > 0 && type.length > 0 && Number.isFinite(value);\n\nreturn [{ json: { userID, watchID, phoneID, type, value, valid } }];"
+      },
+      "id": "ecc43fe3-ada0-4052-9f1d-a7a9054f0ccb",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "edb59f24-e72c-4a98-81ad-ba1103614105",
+      "name": "Valid Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT fcr.*, uc.name AS usecase_name\nFROM \"User_UC_Mappings\" uum\nJOIN feedback_config_rules fcr ON fcr.id = uum.feedback_config_rule_id\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nWHERE uum.user_id = $1\n  AND uum.active = TRUE\n  AND fcr.active = TRUE\n  AND LOWER(uc.name) = LOWER($2)\nORDER BY fcr.id\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ [ $(\"Normalize Input\").item.json.userID, $(\"Normalize Input\").item.json.type ] }}"
+        }
+      },
+      "id": "9dde5a46-c915-413f-9815-8af382f40cd0",
+      "name": "Resolve Assigned Mapping",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        784,
+        -96
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $('Normalize Input').first().json;\nconst mapping = $input.first().json ?? {};\nconst mappingId = Number(mapping.id ?? mapping.mapping_id ?? mapping.feedback_config_rule_id ?? 0);\n\nif (!mappingId) {\n  return [{ json: { statusCode: 404, response: { success: false, reason: 'mapping_not_found' } } }];\n}\n\nconst minValue = Number(mapping.minvalue);\nconst maxValue = Number(mapping.maxvalue);\nconst value = request.value;\n\nif (!Number.isFinite(minValue) || !Number.isFinite(maxValue)) {\n  return [{ json: { statusCode: 500, response: { success: false, reason: 'mapping_test_failed' } } }];\n}\n\nif (value < minValue || value > maxValue) {\n  return [{ json: { statusCode: 400, response: { success: false, reason: 'outside_range', minValue, maxValue } } }];\n}\n\nfunction mapValue(input, inMin, inMax, outMin, outMax) {\n  const minimum = Number(outMin ?? 0);\n  const maximum = Number(outMax ?? minimum);\n  if (inMin === inMax) return minimum;\n  return minimum + ((input - inMin) * (maximum - minimum)) / (inMax - inMin);\n}\n\nlet pulses;\nlet intensity = Math.round(mapValue(value, minValue, maxValue, mapping.minintensity, mapping.maxintensity));\nlet duration = Math.round(mapValue(value, minValue, maxValue, mapping.minduration, mapping.maxduration));\nlet interval;\n\nif (request.type.toLowerCase() === 'heartrate') {\n  pulses = 10;\n  interval = Math.max(0, Math.round((60000 / value) - duration));\n} else {\n  pulses = Math.round(mapValue(value, minValue, maxValue, mapping.minpulses, mapping.maxpulses));\n  interval = Math.round(mapValue(value, minValue, maxValue, mapping.mininterval, mapping.maxinterval));\n}\n\nconst response = {\n  intensity,\n  pulses,\n  duration,\n  interval,\n  alertGiven: pulses > 0 ? 'yes' : 'no',\n  fbRangeID: mappingId,\n  monitoringType: request.type,\n  type: request.type,\n  value,\n  userID: request.userID,\n  SmartWatchID: request.watchID,\n  AndroidID: request.phoneID\n};\n\nreturn [{ json: { statusCode: 200, response } }];"
+      },
+      "id": "049c619f-895f-4c21-8086-4220280a7583",
+      "name": "Build Test Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode }}"
+        }
+      },
+      "id": "6af62b8d-ca3d-44fb-8033-c41a4c0396bb",
+      "name": "Respond With Test Result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1312,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"success\":false,\"reason\":\"invalid_request\"}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "a36b616a-b2ea-4070-945c-1537c88a9830",
+      "name": "Respond Invalid Request",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        784,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Test Mapping\nRead-only mapping preview based on the active Vibration Orchestrator schema. It intentionally contains no sensor logging, history lookup, cooldown check, or timestamp update.",
+        "height": 488,
+        "width": 1600,
+        "color": 5
+      },
+      "id": "f49a16e5-3171-43eb-94b8-6511e87d879d",
+      "name": "Sticky Note 72dee3e8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Test Mapping Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Valid Request?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Request?": {
+      "main": [
+        [
+          {
+            "node": "Resolve Assigned Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Invalid Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Assigned Mapping": {
+      "main": [
+        [
+          {
+            "node": "Build Test Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Test Response": {
+      "main": [
+        [
+          {
+            "node": "Respond With Test Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "3ac8d325-7e97-4a93-8ed1-bc79fd41f151",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
+  },
+  "id": "yKaSC09hePthQW8L",
+  "tags": []
+}
