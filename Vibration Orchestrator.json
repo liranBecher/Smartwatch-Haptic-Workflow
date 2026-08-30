@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1328,
-        7936
+        1312,
+        7472
       ],
       "id": "e469e0ad-e925-4cc4-8627-0b5e24baab8d",
       "name": "Sticky Note1"
@@ -32,8 +32,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2032,
-        8624
+        2016,
+        8160
       ],
       "id": "04536b66-d06c-4c4e-a868-cbbbc1414b71",
       "name": "Set type SunAzimuth"
@@ -53,8 +53,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2032,
-        8816
+        2016,
+        8352
       ],
       "id": "6f245467-0617-4a16-9b44-8188c02a81dc",
       "name": "Set type MoonAzimuth"
@@ -66,8 +66,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2928,
-        8720
+        2912,
+        8256
       ],
       "id": "352cb3fb-ed37-46fb-b9e1-3b550e852062",
       "name": "Extract Azimuth"
@@ -80,8 +80,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1824,
-        8496
+        1808,
+        8032
       ],
       "typeVersion": 1,
       "id": "45bf97cf-7d3d-45ea-b0e8-3cd956bf37a9",
@@ -94,8 +94,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2176,
-        9120
+        2160,
+        8656
       ],
       "id": "24d80cdc-bd01-4893-9289-b6e575662fc3",
       "name": "Sticky Note28"
@@ -108,8 +108,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1824,
-        9120
+        1808,
+        8656
       ],
       "id": "f4b40286-901a-4dec-ace6-f11a61ddd3c9",
       "name": "Sticky Note30"
@@ -124,8 +124,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1568,
-        9808
+        1552,
+        9344
       ],
       "id": "cfa75729-f9e1-44c6-8170-2016ca492de7",
       "name": "Webhook temperature",
@@ -142,8 +142,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1568,
-        10000
+        1552,
+        9536
       ],
       "id": "62415049-a10a-41f8-ad97-7c80d80059c2",
       "name": "Webhook humidity",
@@ -160,8 +160,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1568,
-        10192
+        1552,
+        9728
       ],
       "id": "009f24eb-b146-466c-8802-18a9f9f714b9",
       "name": "Webhook precipitation",
@@ -178,8 +178,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1568,
-        10384
+        1552,
+        9920
       ],
       "id": "e781afd0-4a14-43e6-a04e-eadc4fe086a2",
       "name": "Webhook wind speed",
@@ -201,8 +201,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2064,
-        9744
+        2048,
+        9280
       ],
       "id": "0f8ef382-db9d-493f-af43-b9f063c29a01",
       "name": "Set type Temperature"
@@ -222,8 +222,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2032,
-        9936
+        2016,
+        9472
       ],
       "id": "2a3fde2b-3e8d-4e3a-91ff-b8f26d809ce3",
       "name": "Set type Humidity"
@@ -243,8 +243,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2032,
-        10128
+        2016,
+        9664
       ],
       "id": "170f0527-54aa-4594-bd85-be5768cf9a84",
       "name": "Set type Precipitation"
@@ -264,8 +264,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2032,
-        10320
+        2016,
+        9856
       ],
       "id": "dbe7c550-b407-40cd-abc4-82028d319680",
       "name": "Set type Wind Speed"
@@ -277,8 +277,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2256,
-        8720
+        2240,
+        8256
       ],
       "id": "5f20f563-7d0a-421c-9baa-6cc1e78e3757",
       "name": "Normalize sun/moon azimuth"
@@ -290,8 +290,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2480,
-        8720
+        2464,
+        8256
       ],
       "id": "488ad08f-fd35-4306-a405-461c81f022bc",
       "name": "Construct API Request for sun/moon azimuth"
@@ -303,8 +303,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3376,
-        8720
+        3360,
+        8256
       ],
       "id": "16ce7181-1c75-4069-9221-b62ddfea8cb2",
       "name": "Merge Inputs sun/moon azimuth"
@@ -337,8 +337,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3600,
-        8720
+        3584,
+        8256
       ],
       "id": "ca6e4240-7a60-411f-83a1-21b73a248b49",
       "name": "Allowed (timer expired) for sun/moon azimuth?"
@@ -354,8 +354,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3824,
-        8624
+        3808,
+        8160
       ],
       "id": "8105e6de-b148-4b03-be28-21b439a7a79b",
       "name": "Fetch Active sun/moon azimuth Rules",
@@ -374,8 +374,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4048,
-        8624
+        4032,
+        8160
       ],
       "id": "77b0e41b-df87-4dfa-a104-48439367b286",
       "name": "Evaluate sun/moon azimuth Feedback Rules"
@@ -391,8 +391,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4272,
-        8720
+        4256,
+        8256
       ],
       "id": "9c6a92fe-42b7-48e6-9759-b8ec2f784325",
       "name": "Respond to Webhook success sun/moon azimuth"
@@ -404,8 +404,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4272,
-        8528
+        4256,
+        8064
       ],
       "id": "efe95960-5444-4ea1-8663-a181e31142e9",
       "name": "Build insert_sensor_data Query for sun/moon azimuth"
@@ -421,8 +421,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4496,
-        8528
+        4480,
+        8064
       ],
       "id": "0b4ae616-b786-47e5-9f08-d521c845cd6b",
       "name": "Execute insert_sensor_data for sun/moon azimuth",
@@ -440,8 +440,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3824,
-        8816
+        3808,
+        8352
       ],
       "id": "c62d7b61-6165-4cf1-97f3-acfb7979bdcc",
       "name": "Build Rate-Limited Response for sun/moon azimuth"
@@ -457,8 +457,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4048,
-        8816
+        4032,
+        8352
       ],
       "id": "71295c0b-e4a9-481a-b65f-c2e59bf8b466",
       "name": "Respond (rate-limited) sun/moon azimuth"
@@ -473,8 +473,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        2032,
-        9328
+        2016,
+        8864
       ]
     },
     {
@@ -485,8 +485,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2704,
-        8720
+        2688,
+        8256
       ],
       "id": "620ce03f-65d7-4ad5-8a48-52b8543af454",
       "name": "Fetch API data for sun/moon azimuth"
@@ -519,8 +519,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2480,
-        9328
+        2464,
+        8864
       ],
       "id": "e8ee25d8-2678-4743-84ae-9a8ffe496c9a",
       "name": "Allowed (timer expired) for pollution?"
@@ -536,8 +536,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        2704,
-        9136
+        2688,
+        8672
       ],
       "credentials": {
         "postgres": {
@@ -557,8 +557,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        3152,
-        9232
+        3136,
+        8768
       ],
       "credentials": {
         "postgres": {
@@ -576,8 +576,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2928,
-        9136
+        2912,
+        8672
       ]
     },
     {
@@ -591,8 +591,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        3152,
-        9040
+        3136,
+        8576
       ]
     },
     {
@@ -602,8 +602,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2704,
-        9424
+        2688,
+        8960
       ],
       "id": "c7da7f8a-4c74-40a6-a0d7-2f704a4e7807",
       "name": "Build Rate-Limited Response for pollution"
@@ -619,8 +619,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.1,
       "position": [
-        2928,
-        9520
+        2912,
+        9056
       ],
       "credentials": {
         "postgres": {
@@ -640,8 +640,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2928,
-        9328
+        2912,
+        8864
       ],
       "id": "4c427af3-b064-4bda-974a-3ae27fc37280",
       "name": "Respond (rate-limited) pollution"
@@ -653,8 +653,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2256,
-        10032
+        2240,
+        9568
       ],
       "id": "13f75445-4bfb-4821-940e-f248657f29a4",
       "name": "Normalize weather"
@@ -666,8 +666,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2480,
-        10032
+        2464,
+        9568
       ],
       "id": "d85e1cd5-d9b0-4e79-9eae-9bed0b640680",
       "name": "Construct API Request for weather"
@@ -680,8 +680,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2704,
-        10032
+        2688,
+        9568
       ],
       "id": "fa21388e-eaf5-4931-8f9d-136fbefea464",
       "name": "Fetch API data for weather"
@@ -693,8 +693,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2928,
-        10032
+        2912,
+        9568
       ],
       "id": "465c49c5-135d-41dd-be12-9ce6178b95e0",
       "name": "Extract weather data"
@@ -706,8 +706,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3376,
-        10032
+        3360,
+        9568
       ],
       "id": "8298b85b-a9e2-45d9-af48-81050321d758",
       "name": "Merge Inputs weather"
@@ -740,8 +740,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3600,
-        10032
+        3584,
+        9568
       ],
       "id": "a953bedf-8de7-4eab-9d16-51273c95747f",
       "name": "Allowed (timer expired) for weather?"
@@ -757,8 +757,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3824,
-        9840
+        3808,
+        9376
       ],
       "id": "c06891dd-07e2-4119-8e7f-bfc6928b0d65",
       "name": "Fetch Active weather Rules",
@@ -777,8 +777,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4048,
-        9840
+        4032,
+        9376
       ],
       "id": "4cdffa4b-9219-4153-96f6-4ee8aed3ea1c",
       "name": "Evaluate weather Feedback Rules"
@@ -790,8 +790,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4272,
-        9744
+        4256,
+        9280
       ],
       "id": "2a498719-c29e-404c-9285-624759a7b0c3",
       "name": "Build insert_sensor_data Query for weather"
@@ -807,8 +807,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4496,
-        9744
+        4480,
+        9280
       ],
       "id": "5976f955-8e3f-4821-8943-d27e3a271a8b",
       "name": "Execute insert_sensor_data for weather",
@@ -830,8 +830,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4512,
-        9984
+        4496,
+        9520
       ],
       "id": "b592cd8b-64ea-4486-ad0f-12f59627a415",
       "name": "Respond to Webhook success weather"
@@ -843,8 +843,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3824,
-        10224
+        3808,
+        9760
       ],
       "id": "d3829af8-9293-45b6-b003-5dc768c36739",
       "name": "Build Rate-Limited Response for weather"
@@ -860,8 +860,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4048,
-        10320
+        4032,
+        9856
       ],
       "id": "2ed5c7fe-4255-4d07-8c47-885d2f51f3c0",
       "name": "Respond (rate-limited) weather"
@@ -877,8 +877,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4272,
-        10128
+        4256,
+        9664
       ],
       "id": "f5535b8b-54ba-41d7-b4d1-3d767b9c1449",
       "name": "log rate limited for weather",
@@ -896,8 +896,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4048,
-        10128
+        4032,
+        9664
       ],
       "id": "dc12c6c4-e9d2-4a68-87ae-1e56429217e9",
       "name": "Transform weather data to PGSQL db node"
@@ -913,8 +913,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3152,
-        8720
+        3136,
+        8256
       ],
       "id": "1e3ba086-b030-423c-8518-e9a53472c8c9",
       "name": "Rate Limit Guard sun/moon azimuth",
@@ -939,8 +939,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2256,
-        9328
+        2240,
+        8864
       ],
       "id": "9b39ea9b-aaca-41d4-9485-4823888c5704",
       "name": "Rate Limit Guard pollution",
@@ -965,8 +965,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3152,
-        10032
+        3136,
+        9568
       ],
       "id": "c2c09028-295c-4849-ab5d-e73629a76b2c",
       "name": "Rate Limit Guard weather",
@@ -990,8 +990,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1296,
-        8752
+        1280,
+        8288
       ],
       "id": "e91d548e-bcb0-457f-a707-c56e1af5bc04",
       "name": "Sticky Note"
@@ -1006,8 +1006,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1296,
-        9344
+        1280,
+        8880
       ],
       "id": "8e58c5ca-5eae-48e1-9493-5acae8f33542",
       "name": "Sticky Note2"
@@ -1022,8 +1022,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2256,
-        9904
+        2240,
+        9440
       ],
       "id": "db3799b9-a4e1-483a-8268-cd299ee339d5",
       "name": "Sticky Note3"
@@ -1276,6 +1276,52 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a1578ec0-2152-41e7-ad20-286c137e13b2",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "SocialMediaHostility",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e6c95acc-b05e-4457-9329-c2746995e298",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "TrafficSense",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -1316,8 +1362,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        1712,
-        7712
+        1696,
+        7248
       ],
       "id": "96b2d32d-78e3-43c3-90fd-31baf09bf7b8",
       "webhookId": "ab04974b-c683-4224-90a1-cae7a4139bdc",
@@ -1330,8 +1376,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1808,
-        7920
+        1792,
+        7456
       ],
       "id": "0483cb77-1de1-4bac-8928-809eae4b1287",
       "name": "Webhook heart rate"
@@ -1373,8 +1419,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2016,
-        7920
+        2000,
+        7456
       ],
       "id": "e00357d6-3ad1-419a-bd9a-7cb17c4e1197",
       "name": "If heartrate value detected"
@@ -1390,8 +1436,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2240,
-        7824
+        2224,
+        7360
       ],
       "id": "f2efd0d5-b2fe-42e0-b1d0-392516d60338",
       "name": "Empty Respond to Webhook heartrate not detected"
@@ -1403,8 +1449,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2240,
-        8016
+        2224,
+        7552
       ],
       "id": "a52e3a15-a415-4a3b-be68-df3f94dd173b",
       "name": "Calculate heartrate Trend"
@@ -1436,8 +1482,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2464,
-        8016
+        2448,
+        7552
       ],
       "id": "d7db229e-7b7e-44fb-911b-706a176f2115",
       "name": "if heartrate trend detected"
@@ -1453,8 +1499,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2912,
-        7728
+        2896,
+        7264
       ],
       "id": "e23b3b08-246e-47ba-952f-ce7ec47b4b0e",
       "name": "Force Update Slot heartrate",
@@ -1476,8 +1522,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2688,
-        8112
+        2672,
+        7648
       ],
       "id": "77a87f29-39ac-4c3a-9db3-4f4ab841fe2f",
       "name": "Rate Limit Guard heartrate",
@@ -1517,8 +1563,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2912,
-        8112
+        2896,
+        7648
       ],
       "id": "a1ef7110-6415-4a60-bdda-ab2b50ef1893",
       "name": "Allowed (timer expired) for heartrate?"
@@ -1531,8 +1577,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        3136,
-        7728
+        3120,
+        7264
       ],
       "id": "e470b5c6-8a11-4983-8367-83c022254bc4"
     },
@@ -1543,8 +1589,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3136,
-        7920
+        3120,
+        7456
       ],
       "id": "bcb0d611-fc5b-4343-953f-012e524bb284",
       "name": "set timer interval reason"
@@ -1556,8 +1602,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3136,
-        8208
+        3120,
+        7744
       ],
       "id": "a353c151-e5da-4ea7-b3ec-f5430035b251",
       "name": "Build Rate-Limited Response for heartrate"
@@ -1573,8 +1619,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3360,
-        8112
+        3344,
+        7648
       ],
       "id": "c1f3a3b0-ea7a-4ec5-aa6d-0579d32f9467",
       "name": "Empty Respond to Webhook heartrate"
@@ -1590,8 +1636,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3360,
-        8304
+        3344,
+        7840
       ],
       "id": "8ac49707-5920-4d10-af4e-2c4b7335ad66",
       "name": "Insert Rate-Limited heartrate Data Log",
@@ -1609,8 +1655,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3360,
-        7824
+        3344,
+        7360
       ],
       "id": "bfd0a11e-0cc2-46a4-a550-3b8461ed69b0",
       "name": "carry heartrate context"
@@ -1627,8 +1673,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 1,
       "position": [
-        3584,
-        7712
+        3568,
+        7248
       ],
       "id": "bcbb7465-1020-45d1-bd95-a24e8e801134",
       "alwaysOutputData": true,
@@ -1647,8 +1693,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        3792,
-        7712
+        3776,
+        7248
       ],
       "id": "35e3c4fa-3c42-428c-9815-dfc4b9f4883e"
     },
@@ -1660,8 +1706,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
       "position": [
-        4256,
-        7712
+        4240,
+        7248
       ],
       "id": "46caa23a-b3de-4518-8241-3afe730980ad"
     },
@@ -1674,8 +1720,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4480,
-        7824
+        4464,
+        7360
       ],
       "id": "619ce53d-c4fc-43b8-993f-84c0f978846d",
       "name": "merge heartrate reason + feedback"
@@ -1692,8 +1738,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        4704,
-        7728
+        4688,
+        7264
       ],
       "id": "92d46eb4-1395-46ea-a142-89979a2a19c2"
     },
@@ -1708,8 +1754,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4704,
-        7920
+        4688,
+        7456
       ],
       "id": "ff7b1f28-81bf-4580-b3d4-294500e9725f",
       "name": "Insert heartrate Data Log",
@@ -1730,8 +1776,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1648,
-        8512
+        1632,
+        8048
       ],
       "id": "d825c8c8-def7-41e3-b251-d120f2882a41",
       "name": "Webhook sun data old",
@@ -1748,8 +1794,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1680,
-        8928
+        1664,
+        8464
       ],
       "id": "12750ed9-3164-448f-91b4-bccec29817d3",
       "name": "Webhook moon data old",
@@ -1763,8 +1809,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        8624
+        1824,
+        8160
       ],
       "id": "ff7c428d-0f86-4107-8a9f-3e79ae048dce",
       "name": "Webhook sun data"
@@ -1776,8 +1822,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        8816
+        1824,
+        8352
       ],
       "id": "96b0abe7-9ab9-43c0-9dff-a8ed6fcf0e92",
       "name": "Webhook moon data"
@@ -1792,8 +1838,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1680,
-        9456
+        1664,
+        8992
       ],
       "id": "eaee65d4-8e31-421a-a0d4-3fa333db14ac",
       "name": "Webhook pollution data old",
@@ -1807,8 +1853,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        9328
+        1824,
+        8864
       ],
       "id": "44071ebf-1c62-4d5c-8821-9c2ad9932db3",
       "name": "Webhook pollution data"
@@ -1820,8 +1866,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1888,
-        9744
+        1872,
+        9280
       ],
       "id": "a9900015-78a2-4629-8f54-8d5551ef6dca",
       "name": "Webhook Temperature data"
@@ -1833,8 +1879,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1872,
-        9936
+        1856,
+        9472
       ],
       "id": "3463061d-623f-4d6a-b585-0f3842e416f7",
       "name": "Webhook Humidity data"
@@ -1846,8 +1892,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1888,
-        10128
+        1872,
+        9664
       ],
       "id": "6fa9bc5e-2bb1-4e89-932b-9ac73547ce52",
       "name": "Webhook Precipitation data"
@@ -1859,8 +1905,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1872,
-        10320
+        1856,
+        9856
       ],
       "id": "d8d4e2cb-6380-4fb0-a00c-fd14bbf47569",
       "name": "Webhook WindSpeed data"
@@ -1872,8 +1918,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
-        10112
+        -192,
+        9824
       ],
       "id": "d14409f2-66ee-45a0-bd54-4b0358fcab8a",
       "name": "fallback parsing"
@@ -1885,8 +1931,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        528,
-        10112
+        16,
+        9824
       ],
       "id": "d747bee5-9ca6-4c7f-8983-e6b8a76c4a35",
       "name": "Fallback Respond to Webhook"
@@ -2284,8 +2330,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4048,
-        10880
+        4032,
+        10416
       ],
       "id": "97aa2988-34b9-4ad1-88de-709c96849e88",
       "name": "Evaluate Feedback Rules template1"
@@ -2297,8 +2343,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        10976
+        1824,
+        10512
       ],
       "id": "fdbfdeec-d746-4d91-851e-2de62416f01d",
       "name": "Adapter use case3"
@@ -2314,8 +2360,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4272,
-        10976
+        4256,
+        10512
       ],
       "id": "bd0fa26b-8bde-4b17-aace-8d3f5ccb0316",
       "name": "Respond to Webhook success1"
@@ -2331,8 +2377,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4496,
-        10784
+        4480,
+        10320
       ],
       "id": "a862f318-1808-4613-9705-7c4cb10639a5",
       "name": "Execute insert_sensor_data for1",
@@ -2350,8 +2396,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4272,
-        10784
+        4256,
+        10320
       ],
       "id": "e7283ef7-4944-42f5-aef5-06deecd789f1",
       "name": "Build insert_sensor_data Query for1"
@@ -2367,8 +2413,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3824,
-        10880
+        3808,
+        10416
       ],
       "id": "a6da399b-fee3-46c1-816d-71191b66aac0",
       "name": "Fetch Active1",
@@ -2395,8 +2441,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2032,
-        10976
+        2016,
+        10512
       ],
       "id": "9a847474-e077-40ca-9278-3ce28f208428",
       "name": "Set type useCase3",
@@ -2431,8 +2477,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3600,
-        10976
+        3584,
+        10512
       ],
       "id": "af8c8c51-e84e-43b4-8e8c-6ff385a534aa",
       "name": "Allowed (timer expired)1"
@@ -2444,8 +2490,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3824,
-        11072
+        3808,
+        10608
       ],
       "id": "a59601c5-a0c7-4f62-a0c2-7d464f7e2198",
       "name": "Build Rate-Limited Response1"
@@ -2461,8 +2507,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4048,
-        11072
+        4032,
+        10608
       ],
       "id": "9dc9aace-a010-46df-bbc8-b63459913d6e",
       "name": "Respond (rate-limited)1"
@@ -2474,8 +2520,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3376,
-        10976
+        3360,
+        10512
       ],
       "id": "342ce15d-f51a-4a38-bcc3-41e3517f35ca",
       "name": "Merge Inputs1"
@@ -2491,8 +2537,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3152,
-        10976
+        3136,
+        10512
       ],
       "id": "912a7739-fac0-4b13-ad73-1d87703100a0",
       "name": "Rate Limit Guard1",
@@ -2513,8 +2559,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2928,
-        10976
+        2912,
+        10512
       ],
       "id": "cd5799da-29aa-41f3-8041-e8370e8a470b",
       "name": "Extract1",
@@ -2529,8 +2575,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2704,
-        10976
+        2688,
+        10512
       ],
       "id": "55073309-4a2d-4e3c-b753-8bc7b9e73d2d",
       "name": "Fetch API data1"
@@ -2542,8 +2588,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2480,
-        10976
+        2464,
+        10512
       ],
       "id": "301510cb-4efb-4ce2-a23f-d3c117cef0b7",
       "name": "Construct API Request1",
@@ -2557,8 +2603,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2256,
-        10976
+        2240,
+        10512
       ],
       "id": "12da42d1-7f8c-479f-b500-25877c309a25",
       "name": "Normalize1"
@@ -2585,8 +2631,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4128,
-        11616
+        4112,
+        11152
       ],
       "id": "970829ca-f841-40e5-a740-0e0822b96655",
       "name": "Evaluate Feedback Rules template2"
@@ -2598,8 +2644,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        11616
+        1904,
+        11152
       ],
       "id": "0e172bdc-dd5d-40e3-8fa0-48f2054f33bb",
       "name": "Adapter use case4"
@@ -2615,8 +2661,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4352,
-        11712
+        4336,
+        11248
       ],
       "id": "0185710c-f224-4883-8c0f-882c22ddd2c3",
       "name": "Respond to Webhook success2"
@@ -2632,8 +2678,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4576,
-        11520
+        4560,
+        11056
       ],
       "id": "62ac3c00-c5c4-4059-91e9-74358d36b6f0",
       "name": "Execute insert_sensor_data for2",
@@ -2651,8 +2697,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4352,
-        11520
+        4336,
+        11056
       ],
       "id": "888526b4-0394-465a-8510-e2f403890573",
       "name": "Build insert_sensor_data Query for2"
@@ -2668,8 +2714,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3904,
-        11616
+        3888,
+        11152
       ],
       "id": "09f6ff30-92fa-452c-91ef-259aec127b6b",
       "name": "Fetch Active2",
@@ -2709,8 +2755,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3680,
-        11712
+        3664,
+        11248
       ],
       "id": "25244bce-492b-4dd2-90f7-d3bbfde576b5",
       "name": "Allowed (timer expired)2"
@@ -2722,8 +2768,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3904,
-        11808
+        3888,
+        11344
       ],
       "id": "239f2879-9829-4397-8512-8cfe99d642d3",
       "name": "Build Rate-Limited Response2"
@@ -2739,8 +2785,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        4128,
-        11808
+        4112,
+        11344
       ],
       "id": "d99bc5bf-a702-4e93-925a-8f5be5ea8833",
       "name": "Respond (rate-limited)2"
@@ -2752,8 +2798,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3456,
-        11712
+        3440,
+        11248
       ],
       "id": "6561121d-e5eb-4137-9402-06776a57a4f6",
       "name": "Merge Inputs2"
@@ -2769,8 +2815,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3232,
-        11712
+        3216,
+        11248
       ],
       "id": "4384a8d8-085f-4b6d-b486-5f917cc3b7e4",
       "name": "Rate Limit Guard2",
@@ -2791,8 +2837,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3008,
-        11712
+        2992,
+        11248
       ],
       "id": "563157eb-b941-4b15-9596-88e8a98cd805",
       "name": "Extract2",
@@ -2807,8 +2853,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2784,
-        11712
+        2768,
+        11248
       ],
       "id": "31c6ce21-bc0c-4ff9-8c5b-dc7c61708bcf",
       "name": "Fetch API data2"
@@ -2820,8 +2866,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2560,
-        11712
+        2544,
+        11248
       ],
       "id": "cde758dc-3c8b-458d-8f07-b32d2c75ed50",
       "name": "Construct API Request2",
@@ -2843,8 +2889,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        2112,
-        11616
+        2096,
+        11152
       ],
       "id": "0e218a27-5048-4f40-821e-034d1fe48140",
       "name": "Set type useCase - UV",
@@ -2858,8 +2904,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2336,
-        11712
+        2320,
+        11248
       ],
       "id": "1fd41eac-9943-437d-8af0-4f3814dbddd9",
       "name": "Normalize2"
@@ -2875,8 +2921,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        4000,
-        7712
+        3984,
+        7248
       ],
       "id": "a57a68f3-33e0-4b66-8f19-c3882e497d71",
       "name": "Get heartrate Config Rules",
@@ -2886,6 +2932,691 @@
           "name": "Postgres account"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{\n  $('Prepare SocialMediaHostility Database Insert')\n    .first()\n    .json\n    .response\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        5136,
+        11776
+      ],
+      "id": "0560baeb-2c5e-4c51-a074-5a6600b57225",
+      "name": "Respond SocialMediaHostility"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " {{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4912,
+        11792
+      ],
+      "id": "31f1c713-1f9f-456d-b501-a5cdc6135b86",
+      "name": "Insert SocialMediaHostility Sensor Data",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $json;\n\nif (\n  !p.userID ||\n  !p.watchID ||\n  !p.phoneID ||\n  !Number.isFinite(Number(p.value))\n) {\n  throw new Error('Invalid SocialMediaHostility measurement');\n}\n\nreturn [{\n  json: {\n    query: `\n      SELECT insert_sensor_data(\n        $1,$2,$3,$4,$5,$6,\n        $7,$8,$9,$10,$11,$12\n      );\n    `,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.value),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      String(p.reason)\n    ],\n    response: {\n      type: p.type,\n      value: p.value,\n      source: p.source,\n      postCount: p.postCount,\n      measuredAt: p.measuredAt,\n      alertGiven: p.alertGiven,\n      pulses: p.pulses,\n      intensity: p.intensity,\n      duration: p.duration,\n      interval: p.interval,\n      fbRangeID: p.fbRangeID,\n      reason: p.reason\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4688,
+        11792
+      ],
+      "id": "89f36a9e-42f0-4597-836b-6619d18119f9",
+      "name": "Prepare SocialMediaHostility Database Insert"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8ae8435f-b6fd-4fed-8441-7f43c9d32d3e",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4448,
+        11808
+      ],
+      "id": "cf130b3a-f658-41d8-b607-ada726869ec4",
+      "name": "SocialMediaHostility Mapping Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nconst rules = $input.all().map(item => item.json);\nconst value = Number(measurement.value);\n\nconst interpolate = (\n  input,\n  inputMin,\n  inputMax,\n  outputMin,\n  outputMax\n) => {\n  if (inputMin === inputMax) return outputMin;\n\n  return outputMin +\n    ((input - inputMin) * (outputMax - outputMin)) /\n    (inputMax - inputMin);\n};\n\nlet matchingRule = null;\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n\n  if (\n    Number.isFinite(minValue) &&\n    Number.isFinite(maxValue) &&\n    value >= minValue &&\n    value <= maxValue\n  ) {\n    matchingRule = rule;\n    break;\n  }\n}\n\nif (!matchingRule) {\n  return [{\n    json: {\n      ...measurement,\n      ok: false,\n      error: 'no_active_mapping'\n    }\n  }];\n}\n\nconst minValue = Number(matchingRule.minvalue);\nconst maxValue = Number(matchingRule.maxvalue);\n\nconst mapField = field =>\n  interpolate(\n    value,\n    minValue,\n    maxValue,\n    Number(matchingRule[`min${field}`]),\n    Number(matchingRule[`max${field}`])\n  );\n\nconst pulses =\n  Math.max(1, Math.round(mapField('pulses')));\n\nconst intensity =\n  Math.min(\n    255,\n    Math.max(1, Math.round(mapField('intensity')))\n  );\n\nconst duration =\n  Math.max(0, Math.round(mapField('duration')));\n\nconst interval =\n  Math.max(0, Math.round(mapField('interval')));\n\nreturn [{\n  json: {\n    ...measurement,\n    ok: true,\n    alertGiven: 'yes',\n    pulses,\n    intensity,\n    duration,\n    interval,\n    fbRangeID: Number(matchingRule.id),\n    reason: 'time_interval'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4240,
+        11808
+      ],
+      "id": "1f3c4f82-151d-4f5a-b153-e2a84cf79e7e",
+      "name": "Evaluate SocialMediaHostility Mapping"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc\n  ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM \"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY\n  CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [   'SocialMediaHostility',   $('Calculate SocialMediaHostility Value').first().json.userID ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4032,
+        11808
+      ],
+      "id": "3088cc60-545f-46b4-9aa7-7814c567fef5",
+      "name": "Fetch Active SocialMediaHostility Rules",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nreturn [{\n  json: {\n    ...measurement,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4432,
+        12016
+      ],
+      "id": "23229976-ca6a-4c5a-aab9-1e10dbe985f4",
+      "name": "Build Rate-Limited SocialMediaHostility Measurement"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "20260d43-9008-40ff-a62c-492e2aebb128",
+              "leftValue": "={{ $json.claimUserid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3824,
+        11904
+      ],
+      "id": "0a9a896c-37b4-4983-a5ba-19fb7ea5c00f",
+      "name": "SocialMediaHostility Vibration Allowed?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\" AS u\nSET \"lastrequest\" = NOW()\nFROM public.\"UseCase\" AS uc\nWHERE u.\"userid\" = $1\n  AND uc.name = $2\n  AND uc.vibration_interval IS NOT NULL\n  AND (\n    u.\"lastrequest\" IS NULL\n    OR NOW() - u.\"lastrequest\" >= uc.vibration_interval\n  )\nRETURNING u.\"userid\", u.\"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [   $('Calculate SocialMediaHostility Value').first().json.userID,   'SocialMediaHostility' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3408,
+        11904
+      ],
+      "id": "33cb7e6b-24c0-4371-91a2-7b886d984a7b",
+      "name": "Claim SocialMediaHostility Vibration Slot",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nconst claim = $json;\n\nreturn [{\n  json: {\n    ...measurement,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3616,
+        11904
+      ],
+      "id": "8130857b-5382-4c53-96a3-5344d568f058",
+      "name": "Merge SocialMediaHostility Value With Claim"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/moderations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "omni-moderation-2024-09-26"
+            },
+            {
+              "name": "input",
+              "value": "={{$('Prepare SocialMediaHostility Posts').first().json.texts}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2656,
+        11936
+      ],
+      "id": "3aff89cb-ecdb-4624-8cc8-635d63f71c9a",
+      "name": "Moderate SocialMediaHostility Posts",
+      "credentials": {
+        "openAiApi": {
+          "id": "4lXIgD9YPBChpCvV",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 502
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        4976,
+        12144
+      ],
+      "id": "a43b16c5-d61b-4b35-a74d-8efcb4ed5f88",
+      "name": "Respond SocialMediaHostility Failure"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json ?? {};\nconst error = input.error;\n\nconst message =\n  error?.description ??\n  error?.message ??\n  input.description ??\n  input.message ??\n  (typeof error === 'string' ? error : null) ??\n  'social_media_hostility_measurement_failed';\n\nreturn [{\n  json: {\n    type: 'SocialMediaHostility',\n    status: 'error',\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    reason: 'external_error',\n    error: String(message).slice(0, 200)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4768,
+        12144
+      ],
+      "id": "6fe0de3f-9495-4be0-bc1b-a541d928a5e1",
+      "name": "Build SocialMediaHostility Failure"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a93afd50-563c-4c50-a178-53d07218a44c",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3184,
+        11920
+      ],
+      "id": "74c61bfd-fbde-4815-a4cf-caac29567387",
+      "name": "SocialMediaHostility Value Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize Generic UseCase Request').first().json;\nconst prepared =\n  $('Prepare SocialMediaHostility Posts').first().json;\n\nconst results = $json.results;\n\nif (\n  !Array.isArray(results) ||\n  results.length !== prepared.texts.length\n) {\n  return [{\n    json: {\n      ok: false,\n      error: 'invalid_moderation_result_count'\n    }\n  }];\n}\n\nconst categories = [\n  'hate',\n  'hate/threatening',\n  'harassment',\n  'harassment/threatening'\n];\n\nconst scores = [];\n\nfor (const result of results) {\n  const values = categories.map(category =>\n    Number(result?.category_scores?.[category])\n  );\n\n  if (values.some(value => !Number.isFinite(value))) {\n    return [{\n      json: {\n        ok: false,\n        error: 'invalid_moderation_scores'\n      }\n    }];\n  }\n\n  scores.push(Math.max(...values));\n}\n\nscores.sort((a, b) => b - a);\n\nconst groups = [\n  { values: scores.slice(0, 3), weight: 0.60 },\n  { values: scores.slice(3, 10), weight: 0.25 },\n  { values: scores.slice(10, 40), weight: 0.15 }\n].filter(group => group.values.length > 0);\n\nlet weightedTotal = 0;\nlet activeWeight = 0;\n\nfor (const group of groups) {\n  const mean =\n    group.values.reduce((sum, value) => sum + value, 0) /\n    group.values.length;\n\n  weightedTotal += mean * group.weight;\n  activeWeight += group.weight;\n}\n\nif (activeWeight === 0) {\n  return [{\n    json: {\n      ok: false,\n      error: 'no_moderation_scores'\n    }\n  }];\n}\n\nconst rawScore = (weightedTotal / activeWeight) * 100;\nconst value = Math.round(\n  Math.min(100, Math.max(0, rawScore)) * 10\n) / 10;\n\nreturn [{\n  json: {\n    ok: true,\n    userID: n.userID,\n    watchID: n.watchID,\n    phoneID: n.phoneID,\n    type: 'SocialMediaHostility',\n    value,\n    source: 'Bluesky',\n    postCount: prepared.postCount,\n    measuredAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2960,
+        11920
+      ],
+      "id": "800bceb5-f055-4970-9d84-904bd58ac788",
+      "name": "Calculate SocialMediaHostility Value"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "066d2a4f-7a41-48b3-9920-748c3a6750be",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2384,
+        11952
+      ],
+      "id": "371f171a-026e-42d4-a407-87107243255b",
+      "name": "SocialMediaHostility Sample Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const firstItem = $input.first()?.json ?? {};\nconst response = firstItem.body ?? firstItem;\nconst feed = Array.isArray(response.feed)\n  ? response.feed\n  : [];\n\nconst seen = new Set();\nconst prepared = [];\n\nfor (const feedItem of feed) {\n  const post = feedItem?.post;\n  const record = post?.record;\n\n  if (!post || !record) continue;\n\n  // Skip reposts and replies.\n  if (feedItem.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {\n    continue;\n  }\n\n  if (record.reply) continue;\n\n  // Keep explicitly English-language posts only.\n  if (\n    !Array.isArray(record.langs) ||\n    !record.langs.includes('en')\n  ) {\n    continue;\n  }\n\n  const id = String(post.uri ?? '').trim();\n\n  const text = String(record.text ?? '')\n    .replace(/\\s+/g, ' ')\n    .trim();\n\n  if (!id || !text || seen.has(id)) continue;\n\n  seen.add(id);\n  prepared.push({ id, text });\n\n  if (prepared.length === 40) break;\n}\n\nif (prepared.length < 10) {\n  return [{\n    json: {\n      ok: false,\n      error: 'insufficient_english_posts',\n      postCount: prepared.length\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    ok: true,\n    texts: prepared.map(post => post.text),\n    postIds: prepared.map(post => post.id),\n    postCount: prepared.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        11952
+      ],
+      "id": "8fe869e9-6e04-49a8-806b-0ecaa07bbe52",
+      "name": "Prepare SocialMediaHostility Posts"
+    },
+    {
+      "parameters": {
+        "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getFeed",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "feed",
+              "value": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept-Language",
+              "value": "en"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1904,
+        11968
+      ],
+      "id": "d487242e-587d-4066-aebd-ce87a7604194",
+      "name": "Fetch SocialMediaHostility Posts",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const lat = Number($json.body?.lat ?? $json.lat);\nconst lon = Number($json.body?.lon ?? $json.lon);\n\nif (!Number.isFinite(lat) || lat < -90 || lat > 90) {\n  throw new Error(\"TrafficSense requires a valid latitude\");\n}\n\nif (!Number.isFinite(lon) || lon < -180 || lon > 180) {\n  throw new Error(\"TrafficSense requires a valid longitude\");\n}\n\nreturn [{\n  json: {\n    ...$json,\n    lat,\n    lon\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        12560
+      ],
+      "id": "fb5d5cca-b112-40cf-a4b1-088aab7a93c0",
+      "name": "Validate Traffic Input"
+    },
+    {
+      "parameters": {
+        "url": "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/18/json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "point",
+              "value": "={{ $json.lat + ',' + $json.lon }}"
+            },
+            {
+              "name": "unit",
+              "value": "kmph"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2144,
+        12560
+      ],
+      "id": "eb73745a-69b3-47a3-9639-bb43dc79f150",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "9zF7r7a7rqrPJJY4",
+          "name": "TomTom Traffic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $(\"Validate Traffic Input\").item.json;\nconst flow = $json.flowSegmentData;\n\nif (!flow) {\n  throw new Error(\"TomTom returned no flowSegmentData\");\n}\n\nconst currentSpeed = Number(flow.currentSpeed);\nconst freeFlowSpeed = Number(flow.freeFlowSpeed);\n\nif (\n  !Number.isFinite(currentSpeed) ||\n  !Number.isFinite(freeFlowSpeed) ||\n  freeFlowSpeed <= 0\n) {\n  throw new Error(\"TomTom returned invalid speed values\");\n}\n\nconst rawScore = flow.roadClosure\n  ? 100\n  : 100 * (1 - currentSpeed / freeFlowSpeed);\n\nconst value = Math.round(\n  Math.max(0, Math.min(100, rawScore)) * 10\n) / 10;\n\nreturn [{\n  json: {\n    ...request,\n    type: \"TrafficSense\",\n    value,\n    currentSpeed,\n    freeFlowSpeed,\n    confidence: Number(flow.confidence),\n    roadClosure: Boolean(flow.roadClosure)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2384,
+        12560
+      ],
+      "id": "17223c56-670a-4985-b8d3-77f63fe83ddd",
+      "name": "Calculate TrafficSense"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\"\nSET \"lastrequest\" = NOW()\nWHERE \"userid\" = $1\n  AND (\n    \"lastrequest\" IS NULL\n    OR NOW() - \"lastrequest\" >= COALESCE(\n      (\n        SELECT vibration_interval\n        FROM public.\"UseCase\"\n        WHERE name = $2\n      ),\n      '1 minute'::interval\n    )\n  )\nRETURNING \"userid\", \"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [ $json.userID, $json.type ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2624,
+        12560
+      ],
+      "id": "b761ec7f-9380-441d-b4b9-d53cc6cb6867",
+      "name": "Claim TrafficSense Vibration Slot",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const traffic = $(\"Calculate TrafficSense\").first().json;\nconst claim = $json;\n\nreturn [{\n  json: {\n    ...traffic,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        12560
+      ],
+      "id": "ae7a0889-2173-4fbf-b2b0-e1c71eb888be",
+      "name": "Merge TrafficSense With Claim"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a645d320-ff9c-41d4-8760-dd7dbb018da6",
+              "leftValue": "={{ $json.claimUserid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3056,
+        12560
+      ],
+      "id": "0ea30df4-b2cc-42d0-8cea-21a7da0003c6",
+      "name": "TrafficSense Vibration Allowed?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc\n  ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM \"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY\n  CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [ $json.type, $json.userID ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3344,
+        12448
+      ],
+      "id": "b705d631-82c1-4bdb-92a5-c24559f6c2c7",
+      "name": "Fetch Active TrafficSense Rules",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const traffic = $(\"Calculate TrafficSense\").first().json;\nconst rules = $input.all().map(item => item.json);\nconst value = Number(traffic.value);\n\nif (!Number.isFinite(value)) {\n  throw new Error(\"TrafficSense value is not numeric\");\n}\n\nfunction interpolate(value, inMin, inMax, outMin, outMax) {\n  const low = Number(outMin ?? 0);\n  const high = Number(outMax ?? low);\n\n  if (inMin === inMax) {\n    return low;\n  }\n\n  return low +\n    ((value - inMin) * (high - low)) /\n    (inMax - inMin);\n}\n\nconst feedback = {\n  ...traffic,\n  alertGiven: \"no\",\n  pulses: 0,\n  intensity: 0,\n  duration: 0,\n  interval: 0,\n  fbRangeID: 0,\n  reason: \"time_interval\"\n};\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n\n  if (!Number.isFinite(minValue) ||\n      !Number.isFinite(maxValue)) {\n    continue;\n  }\n\n  if (value >= minValue && value <= maxValue) {\n    feedback.pulses = Math.round(\n      interpolate(\n        value,\n        minValue,\n        maxValue,\n        rule.minpulses,\n        rule.maxpulses\n      )\n    );\n\n    feedback.intensity = Math.round(\n      interpolate(\n        value,\n        minValue,\n        maxValue,\n        rule.minintensity,\n        rule.maxintensity\n      )\n    );\n\n    feedback.duration = Math.round(\n      interpolate(\n        value,\n        minValue,\n        maxValue,\n        rule.minduration,\n        rule.maxduration\n      )\n    );\n\n    feedback.interval = Math.round(\n      interpolate(\n        value,\n        minValue,\n        maxValue,\n        rule.mininterval,\n        rule.maxinterval\n      )\n    );\n\n    feedback.fbRangeID = Number(rule.id ?? 0);\n    feedback.alertGiven =\n      feedback.pulses > 0 ? \"yes\" : \"no\";\n\n    break;\n  }\n}\n\nreturn [{ json: feedback }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3552,
+        12448
+      ],
+      "id": "b786aa85-13e9-49e6-877a-7d53753cd2d0",
+      "name": "Evaluate TrafficSense Mapping"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  type: $json.type,\n  value: $json.value,\n  currentSpeed: $json.currentSpeed,\n  freeFlowSpeed: $json.freeFlowSpeed,\n  confidence: $json.confidence,\n  roadClosure: $json.roadClosure,\n  alertGiven: $json.alertGiven,\n  pulses: $json.pulses,\n  intensity: $json.intensity,\n  duration: $json.duration,\n  interval: $json.interval,\n  fbRangeID: $json.fbRangeID,\n  reason: $json.reason\n} }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3776,
+        12336
+      ],
+      "id": "abe7602d-1a57-43ca-a477-95825170085a",
+      "name": "Respond TrafficSense"
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json;\n\nif (!payload.userID ||\n    !payload.watchID ||\n    !payload.phoneID) {\n  throw new Error(\"TrafficSense identifiers are missing\");\n}\n\nreturn [{\n  json: {\n    query:\n      \"SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);\",\n    params: [\n      Number(payload.userID),\n      Number(payload.watchID),\n      Number(payload.phoneID),\n      String(payload.type),\n      String(payload.alertGiven),\n      Number(payload.value),\n      Number(payload.pulses),\n      Number(payload.intensity),\n      Number(payload.duration),\n      Number(payload.interval),\n      Number(payload.fbRangeID),\n      String(payload.reason)\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3776,
+        12544
+      ],
+      "id": "60ac52b7-d9a4-45d0-9a47-d7e9444d2ecd",
+      "name": "Prepare TrafficSense Database Insert"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4032,
+        12544
+      ],
+      "id": "9ea82a94-8f42-4f53-b45f-f41de3d55d19",
+      "name": "Insert TrafficSense Sensor Data",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3552,
+        12704
+      ],
+      "id": "fb423f32-1466-4834-89db-e2e5f2939e8c",
+      "name": "Respond (rate-limited)3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const traffic = $(\"Calculate TrafficSense\").first().json;\n\nreturn [{\n  json: {\n    type: traffic.type,\n    userID: traffic.userID,\n    watchID: traffic.watchID,\n    phoneID: traffic.phoneID,\n    value: traffic.value,\n    currentSpeed: traffic.currentSpeed,\n    freeFlowSpeed: traffic.freeFlowSpeed,\n    confidence: traffic.confidence,\n    roadClosure: traffic.roadClosure,\n    alertGiven: \"no\",\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: \"rate_limited\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3328,
+        12704
+      ],
+      "id": "15fdfe62-3cf6-4e9d-8c2e-67cc1577e719",
+      "name": "Build Rate-Limited TrafficSense Response"
     }
   ],
   "pinData": {},
@@ -3278,17 +4009,6 @@
         ]
       ]
     },
-    "Execute insert_sensor_data for weather": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook success weather",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Build Rate-Limited Response for weather": {
       "main": [
         [
@@ -3439,6 +4159,20 @@
         [
           {
             "node": "Adapter use case4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch SocialMediaHostility Posts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate Traffic Input",
             "type": "main",
             "index": 0
           }
@@ -4216,6 +4950,364 @@
           }
         ]
       ]
+    },
+    "Execute insert_sensor_data for weather": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook success weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert SocialMediaHostility Sensor Data": {
+      "main": [
+        [
+          {
+            "node": "Respond SocialMediaHostility",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SocialMediaHostility Database Insert": {
+      "main": [
+        [
+          {
+            "node": "Insert SocialMediaHostility Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Mapping Valid?": {
+      "main": [
+        [
+          {
+            "node": "Prepare SocialMediaHostility Database Insert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate SocialMediaHostility Mapping": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Mapping Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active SocialMediaHostility Rules": {
+      "main": [
+        [
+          {
+            "node": "Evaluate SocialMediaHostility Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Vibration Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active SocialMediaHostility Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited SocialMediaHostility Measurement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim SocialMediaHostility Vibration Slot": {
+      "main": [
+        [
+          {
+            "node": "Merge SocialMediaHostility Value With Claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge SocialMediaHostility Value With Claim": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Vibration Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Moderate SocialMediaHostility Posts": {
+      "main": [
+        [
+          {
+            "node": "Calculate SocialMediaHostility Value",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build SocialMediaHostility Failure": {
+      "main": [
+        [
+          {
+            "node": "Respond SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Value Valid?": {
+      "main": [
+        [
+          {
+            "node": "Claim SocialMediaHostility Vibration Slot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate SocialMediaHostility Value": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Value Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Sample Valid?": {
+      "main": [
+        [
+          {
+            "node": "Moderate SocialMediaHostility Posts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SocialMediaHostility Posts": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Sample Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch SocialMediaHostility Posts": {
+      "main": [
+        [
+          {
+            "node": "Prepare SocialMediaHostility Posts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited SocialMediaHostility Measurement": {
+      "main": [
+        [
+          {
+            "node": "Prepare SocialMediaHostility Database Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Traffic Input": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Calculate TrafficSense",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate TrafficSense": {
+      "main": [
+        [
+          {
+            "node": "Claim TrafficSense Vibration Slot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim TrafficSense Vibration Slot": {
+      "main": [
+        [
+          {
+            "node": "Merge TrafficSense With Claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge TrafficSense With Claim": {
+      "main": [
+        [
+          {
+            "node": "TrafficSense Vibration Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TrafficSense Vibration Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active TrafficSense Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited TrafficSense Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active TrafficSense Rules": {
+      "main": [
+        [
+          {
+            "node": "Evaluate TrafficSense Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate TrafficSense Mapping": {
+      "main": [
+        [
+          {
+            "node": "Prepare TrafficSense Database Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond TrafficSense",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TrafficSense Database Insert": {
+      "main": [
+        [
+          {
+            "node": "Insert TrafficSense Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited TrafficSense Response": {
+      "main": [
+        [
+          {
+            "node": "Respond (rate-limited)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -4226,7 +5318,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": true
   },
-  "versionId": "f445688e-1496-4f02-85a6-5730931b8148",
+  "versionId": "a1fcc011-f1fd-41d5-bb68-ab0436b12fe4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
