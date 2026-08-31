@@ -1322,6 +1322,29 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "41df0227-6536-4ca0-a563-66c331e18551",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "CountdownAwareness",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -3617,6 +3640,196 @@
       ],
       "id": "15fdfe62-3cf6-4e9d-8c2e-67cc1577e719",
       "name": "Build Rate-Limited TrafficSense Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst userID = Number(input.userID);\nconst watchID = Number(input.watchID);\nconst phoneID = Number(input.phoneID);\nconst value = Number(input.value);\n\nif (![userID, watchID, phoneID].every(id => Number.isInteger(id) && id > 0)) {\n  throw new Error('CountdownAwareness identifiers are missing or invalid');\n}\nif (!Number.isFinite(value) || value < 0) {\n  throw new Error('CountdownAwareness remaining seconds must be a non-negative number');\n}\n\nreturn [{ json: { userID, watchID, phoneID, type: 'CountdownAwareness', value } }];"
+      },
+      "id": "e1411b5c-c09f-4cc3-90e6-9f639664bc24",
+      "name": "Normalize CountdownAwareness",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        13120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT NOT EXISTS (\n  SELECT 1\n  FROM public.\"SensorData\" sd\n  JOIN public.\"Alert\" a ON a.alertid = sd.alertid\n  JOIN public.\"UseCase\" uc ON uc.usecase_id = sd.usecase_id\n  WHERE sd.userid = $1\n    AND uc.name = $2\n    AND a.alertgiven = 'yes'\n    AND sd.\"time\" >= NOW() - COALESCE(uc.vibration_interval, '1 minute'::interval)\n) AS allowed;",
+        "options": {
+          "queryReplacement": "={{ [ $(\"Normalize CountdownAwareness\").first().json.userID, \"CountdownAwareness\" ] }}"
+        }
+      },
+      "id": "b2822db4-0b44-442c-af55-7379a3abe57a",
+      "name": "Check CountdownAwareness Rate Limit",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2112,
+        13120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d833dc4b-34a0-4c61-90a1-5ef07f7df271",
+              "leftValue": "={{ $json.allowed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2e0b6c4c-1fc2-4089-9a72-b3d16b11a2cf",
+      "name": "CountdownAwareness Vibration Allowed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2336,
+        13120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM \"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [ \"CountdownAwareness\", $(\"Normalize CountdownAwareness\").first().json.userID ] }}"
+        }
+      },
+      "id": "69bb1df6-d07c-4613-bf1d-d2713350c917",
+      "name": "Fetch Active CountdownAwareness Rules",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2608,
+        13024
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const measurement = $('Normalize CountdownAwareness').first().json;\nconst rules = $input.all().map(item => item.json);\nconst value = measurement.value;\n\nconst interpolate = (input, inputMin, inputMax, outputMin, outputMax) => {\n  const low = Number(outputMin);\n  const high = Number(outputMax);\n  if (![low, high].every(Number.isFinite)) return 0;\n  return inputMin === inputMax\n    ? low\n    : low + ((input - inputMin) * (high - low)) / (inputMax - inputMin);\n};\n\nconst feedback = {\n  ...measurement,\n  alertGiven: 'no',\n  pulses: 0,\n  intensity: 0,\n  duration: 0,\n  interval: 0,\n  fbRangeID: 9999,\n  reason: 'no_matching_rule'\n};\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) ||\n      value < minValue || value > maxValue) continue;\n\n  feedback.pulses = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.minpulses, rule.maxpulses)));\n  feedback.intensity = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.minintensity, rule.maxintensity)));\n  feedback.duration = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.minduration, rule.maxduration)));\n  feedback.interval = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.mininterval, rule.maxinterval)));\n  feedback.fbRangeID = Number(rule.id);\n  feedback.alertGiven = feedback.pulses > 0 ? 'yes' : 'no';\n  feedback.reason = 'time_interval';\n  break;\n}\n\nreturn [{ json: feedback }];"
+      },
+      "id": "f84dd0c3-ad17-44c3-b16f-611a428d7bed",
+      "name": "Evaluate CountdownAwareness Mapping",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        13024
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { type: $json.type, value: $json.value, alertGiven: $json.alertGiven, pulses: $json.pulses, intensity: $json.intensity, duration: $json.duration, interval: $json.interval, fbRangeID: $json.fbRangeID, reason: $json.reason } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "5479b72a-f12d-43e0-bf62-80ee68f90532",
+      "name": "Respond CountdownAwareness",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3072,
+        12928
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json;\nreturn [{ json: {\n  query: 'SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);',\n  params: [payload.userID, payload.watchID, payload.phoneID, payload.type,\n    payload.alertGiven, payload.value, payload.pulses, payload.intensity,\n    payload.duration, payload.interval, payload.fbRangeID, payload.reason]\n} }];"
+      },
+      "id": "72496ef4-63d7-49dd-bbcb-ad72da0c5862",
+      "name": "Prepare CountdownAwareness Database Insert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3072,
+        13088
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "id": "8128e22f-23e6-4822-b9d2-530123bb58e0",
+      "name": "Insert CountdownAwareness Sensor Data",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3312,
+        13088
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const measurement = $('Normalize CountdownAwareness').first().json;\nreturn [{ json: {\n  ...measurement,\n  alertGiven: 'no', pulses: 0, intensity: 0, duration: 0, interval: 0,\n  fbRangeID: 9999, reason: 'rate_limited'\n} }];"
+      },
+      "id": "beb4fc88-9b08-44e6-b523-1bd9f1f6272e",
+      "name": "Build Rate-Limited CountdownAwareness Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2608,
+        13216
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "44a66fb9-f7ea-4c9e-a33f-f202888de9af",
+      "name": "Respond Rate-Limited CountdownAwareness",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2832,
+        13216
+      ]
     }
   ],
   "pinData": {},
@@ -4173,6 +4386,13 @@
         [
           {
             "node": "Validate Traffic Input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize CountdownAwareness",
             "type": "main",
             "index": 0
           }
@@ -5303,6 +5523,95 @@
         [
           {
             "node": "Respond (rate-limited)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize CountdownAwareness": {
+      "main": [
+        [
+          {
+            "node": "Check CountdownAwareness Rate Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check CountdownAwareness Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "CountdownAwareness Vibration Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CountdownAwareness Vibration Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active CountdownAwareness Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited CountdownAwareness Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active CountdownAwareness Rules": {
+      "main": [
+        [
+          {
+            "node": "Evaluate CountdownAwareness Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate CountdownAwareness Mapping": {
+      "main": [
+        [
+          {
+            "node": "Respond CountdownAwareness",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare CountdownAwareness Database Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare CountdownAwareness Database Insert": {
+      "main": [
+        [
+          {
+            "node": "Insert CountdownAwareness Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited CountdownAwareness Response": {
+      "main": [
+        [
+          {
+            "node": "Respond Rate-Limited CountdownAwareness",
             "type": "main",
             "index": 0
           }
