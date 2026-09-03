@@ -920,13 +920,13 @@
       "name": "Rate Limit Guard sun/moon azimuth",
       "alwaysOutputData": true,
       "notesInFlow": true,
+      "notes": "change time interval here",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      },
-      "notes": "change time interval here"
+      }
     },
     {
       "parameters": {
@@ -946,13 +946,13 @@
       "name": "Rate Limit Guard pollution",
       "alwaysOutputData": true,
       "notesInFlow": true,
+      "notes": "change time interval here",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      },
-      "notes": "change time interval here"
+      }
     },
     {
       "parameters": {
@@ -972,13 +972,13 @@
       "name": "Rate Limit Guard weather",
       "alwaysOutputData": true,
       "notesInFlow": true,
+      "notes": "change time interval here",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      },
-      "notes": "change time interval here"
+      }
     },
     {
       "parameters": {
@@ -1333,7 +1333,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "41df0227-6536-4ca0-a563-66c331e18551",
+                    "id": "1cea1310-34c2-4205-abac-3b1e9bc3978d",
                     "leftValue": "={{ $json.type }}",
                     "rightValue": "CountdownAwareness",
                     "operator": {
@@ -2249,13 +2249,13 @@
       "name": "Rate Limit Guard",
       "alwaysOutputData": true,
       "notesInFlow": true,
+      "notes": "change time interval here",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      },
-      "notes": "change time interval here"
+      }
     },
     {
       "parameters": {
@@ -2567,13 +2567,13 @@
       "name": "Rate Limit Guard1",
       "alwaysOutputData": true,
       "notesInFlow": true,
+      "notes": "change time interval here",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      },
-      "notes": "change time interval here"
+      }
     },
     {
       "parameters": {
@@ -2845,13 +2845,13 @@
       "name": "Rate Limit Guard2",
       "alwaysOutputData": true,
       "notesInFlow": true,
+      "notes": "change time interval here",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
           "name": "Postgres account"
         }
-      },
-      "notes": "change time interval here"
+      }
     },
     {
       "parameters": {
@@ -2958,434 +2958,7 @@
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{\n  $('Prepare SocialMediaHostility Database Insert')\n    .first()\n    .json\n    .response\n}}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        5136,
-        11776
-      ],
-      "id": "0560baeb-2c5e-4c51-a074-5a6600b57225",
-      "name": "Respond SocialMediaHostility"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " {{ $json.query }}",
-        "options": {
-          "queryReplacement": "={{ $json.params }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        4912,
-        11792
-      ],
-      "id": "31f1c713-1f9f-456d-b501-a5cdc6135b86",
-      "name": "Insert SocialMediaHostility Sensor Data",
-      "credentials": {
-        "postgres": {
-          "id": "zGIm06RFL9qYW60x",
-          "name": "Postgres account"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "const p = $json;\n\nif (\n  !p.userID ||\n  !p.watchID ||\n  !p.phoneID ||\n  !Number.isFinite(Number(p.value))\n) {\n  throw new Error('Invalid SocialMediaHostility measurement');\n}\n\nreturn [{\n  json: {\n    query: `\n      SELECT insert_sensor_data(\n        $1,$2,$3,$4,$5,$6,\n        $7,$8,$9,$10,$11,$12\n      );\n    `,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.value),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      String(p.reason)\n    ],\n    response: {\n      type: p.type,\n      value: p.value,\n      source: p.source,\n      postCount: p.postCount,\n      measuredAt: p.measuredAt,\n      alertGiven: p.alertGiven,\n      pulses: p.pulses,\n      intensity: p.intensity,\n      duration: p.duration,\n      interval: p.interval,\n      fbRangeID: p.fbRangeID,\n      reason: p.reason\n    }\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4688,
-        11792
-      ],
-      "id": "89f36a9e-42f0-4597-836b-6619d18119f9",
-      "name": "Prepare SocialMediaHostility Database Insert"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "8ae8435f-b6fd-4fed-8441-7f43c9d32d3e",
-              "leftValue": "={{ $json.ok }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        4448,
-        11808
-      ],
-      "id": "cf130b3a-f658-41d8-b607-ada726869ec4",
-      "name": "SocialMediaHostility Mapping Valid?"
-    },
-    {
-      "parameters": {
-        "jsCode": "const measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nconst rules = $input.all().map(item => item.json);\nconst value = Number(measurement.value);\n\nconst interpolate = (\n  input,\n  inputMin,\n  inputMax,\n  outputMin,\n  outputMax\n) => {\n  if (inputMin === inputMax) return outputMin;\n\n  return outputMin +\n    ((input - inputMin) * (outputMax - outputMin)) /\n    (inputMax - inputMin);\n};\n\nlet matchingRule = null;\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n\n  if (\n    Number.isFinite(minValue) &&\n    Number.isFinite(maxValue) &&\n    value >= minValue &&\n    value <= maxValue\n  ) {\n    matchingRule = rule;\n    break;\n  }\n}\n\nif (!matchingRule) {\n  return [{\n    json: {\n      ...measurement,\n      ok: false,\n      error: 'no_active_mapping'\n    }\n  }];\n}\n\nconst minValue = Number(matchingRule.minvalue);\nconst maxValue = Number(matchingRule.maxvalue);\n\nconst mapField = field =>\n  interpolate(\n    value,\n    minValue,\n    maxValue,\n    Number(matchingRule[`min${field}`]),\n    Number(matchingRule[`max${field}`])\n  );\n\nconst pulses =\n  Math.max(1, Math.round(mapField('pulses')));\n\nconst intensity =\n  Math.min(\n    255,\n    Math.max(1, Math.round(mapField('intensity')))\n  );\n\nconst duration =\n  Math.max(0, Math.round(mapField('duration')));\n\nconst interval =\n  Math.max(0, Math.round(mapField('interval')));\n\nreturn [{\n  json: {\n    ...measurement,\n    ok: true,\n    alertGiven: 'yes',\n    pulses,\n    intensity,\n    duration,\n    interval,\n    fbRangeID: Number(matchingRule.id),\n    reason: 'time_interval'\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4240,
-        11808
-      ],
-      "id": "1f3c4f82-151d-4f5a-b153-e2a84cf79e7e",
-      "name": "Evaluate SocialMediaHostility Mapping"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc\n  ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM \"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY\n  CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
-        "options": {
-          "queryReplacement": "={{ [   'SocialMediaHostility',   $('Calculate SocialMediaHostility Value').first().json.userID ] }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        4032,
-        11808
-      ],
-      "id": "3088cc60-545f-46b4-9aa7-7814c567fef5",
-      "name": "Fetch Active SocialMediaHostility Rules",
-      "credentials": {
-        "postgres": {
-          "id": "zGIm06RFL9qYW60x",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "\nconst measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nreturn [{\n  json: {\n    ...measurement,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited'\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4432,
-        12016
-      ],
-      "id": "23229976-ca6a-4c5a-aab9-1e10dbe985f4",
-      "name": "Build Rate-Limited SocialMediaHostility Measurement"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "20260d43-9008-40ff-a62c-492e2aebb128",
-              "leftValue": "={{ $json.claimUserid }}",
-              "rightValue": "",
-              "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        3824,
-        11904
-      ],
-      "id": "0a9a896c-37b4-4983-a5ba-19fb7ea5c00f",
-      "name": "SocialMediaHostility Vibration Allowed?"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE \"User\" AS u\nSET \"lastrequest\" = NOW()\nFROM public.\"UseCase\" AS uc\nWHERE u.\"userid\" = $1\n  AND uc.name = $2\n  AND uc.vibration_interval IS NOT NULL\n  AND (\n    u.\"lastrequest\" IS NULL\n    OR NOW() - u.\"lastrequest\" >= uc.vibration_interval\n  )\nRETURNING u.\"userid\", u.\"lastrequest\";",
-        "options": {
-          "queryReplacement": "={{ [   $('Calculate SocialMediaHostility Value').first().json.userID,   'SocialMediaHostility' ] }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        3408,
-        11904
-      ],
-      "id": "33cb7e6b-24c0-4371-91a2-7b886d984a7b",
-      "name": "Claim SocialMediaHostility Vibration Slot",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "zGIm06RFL9qYW60x",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nconst claim = $json;\n\nreturn [{\n  json: {\n    ...measurement,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3616,
-        11904
-      ],
-      "id": "8130857b-5382-4c53-96a3-5344d568f058",
-      "name": "Merge SocialMediaHostility Value With Claim"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.openai.com/v1/moderations",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "openAiApi",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "model",
-              "value": "omni-moderation-2024-09-26"
-            },
-            {
-              "name": "input",
-              "value": "={{$('Prepare SocialMediaHostility Posts').first().json.texts}}"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "json"
-            }
-          },
-          "timeout": 20000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        2656,
-        11936
-      ],
-      "id": "3aff89cb-ecdb-4624-8cc8-635d63f71c9a",
-      "name": "Moderate SocialMediaHostility Posts",
-      "credentials": {
-        "openAiApi": {
-          "id": "4lXIgD9YPBChpCvV",
-          "name": "OpenAi account"
-        }
-      },
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}",
-        "options": {
-          "responseCode": 502
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        4976,
-        12144
-      ],
-      "id": "a43b16c5-d61b-4b35-a74d-8efcb4ed5f88",
-      "name": "Respond SocialMediaHostility Failure"
-    },
-    {
-      "parameters": {
-        "jsCode": "const input = $input.first()?.json ?? {};\nconst error = input.error;\n\nconst message =\n  error?.description ??\n  error?.message ??\n  input.description ??\n  input.message ??\n  (typeof error === 'string' ? error : null) ??\n  'social_media_hostility_measurement_failed';\n\nreturn [{\n  json: {\n    type: 'SocialMediaHostility',\n    status: 'error',\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    reason: 'external_error',\n    error: String(message).slice(0, 200)\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4768,
-        12144
-      ],
-      "id": "6fe0de3f-9495-4be0-bc1b-a541d928a5e1",
-      "name": "Build SocialMediaHostility Failure"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "a93afd50-563c-4c50-a178-53d07218a44c",
-              "leftValue": "={{ $json.ok }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        3184,
-        11920
-      ],
-      "id": "74c61bfd-fbde-4815-a4cf-caac29567387",
-      "name": "SocialMediaHostility Value Valid?"
-    },
-    {
-      "parameters": {
-        "jsCode": "const n = $('Normalize Generic UseCase Request').first().json;\nconst prepared =\n  $('Prepare SocialMediaHostility Posts').first().json;\n\nconst results = $json.results;\n\nif (\n  !Array.isArray(results) ||\n  results.length !== prepared.texts.length\n) {\n  return [{\n    json: {\n      ok: false,\n      error: 'invalid_moderation_result_count'\n    }\n  }];\n}\n\nconst categories = [\n  'hate',\n  'hate/threatening',\n  'harassment',\n  'harassment/threatening'\n];\n\nconst scores = [];\n\nfor (const result of results) {\n  const values = categories.map(category =>\n    Number(result?.category_scores?.[category])\n  );\n\n  if (values.some(value => !Number.isFinite(value))) {\n    return [{\n      json: {\n        ok: false,\n        error: 'invalid_moderation_scores'\n      }\n    }];\n  }\n\n  scores.push(Math.max(...values));\n}\n\nscores.sort((a, b) => b - a);\n\nconst groups = [\n  { values: scores.slice(0, 3), weight: 0.60 },\n  { values: scores.slice(3, 10), weight: 0.25 },\n  { values: scores.slice(10, 40), weight: 0.15 }\n].filter(group => group.values.length > 0);\n\nlet weightedTotal = 0;\nlet activeWeight = 0;\n\nfor (const group of groups) {\n  const mean =\n    group.values.reduce((sum, value) => sum + value, 0) /\n    group.values.length;\n\n  weightedTotal += mean * group.weight;\n  activeWeight += group.weight;\n}\n\nif (activeWeight === 0) {\n  return [{\n    json: {\n      ok: false,\n      error: 'no_moderation_scores'\n    }\n  }];\n}\n\nconst rawScore = (weightedTotal / activeWeight) * 100;\nconst value = Math.round(\n  Math.min(100, Math.max(0, rawScore)) * 10\n) / 10;\n\nreturn [{\n  json: {\n    ok: true,\n    userID: n.userID,\n    watchID: n.watchID,\n    phoneID: n.phoneID,\n    type: 'SocialMediaHostility',\n    value,\n    source: 'Bluesky',\n    postCount: prepared.postCount,\n    measuredAt: new Date().toISOString()\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2960,
-        11920
-      ],
-      "id": "800bceb5-f055-4970-9d84-904bd58ac788",
-      "name": "Calculate SocialMediaHostility Value"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "066d2a4f-7a41-48b3-9920-748c3a6750be",
-              "leftValue": "={{ $json.ok }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        2384,
-        11952
-      ],
-      "id": "371f171a-026e-42d4-a407-87107243255b",
-      "name": "SocialMediaHostility Sample Valid?"
-    },
-    {
-      "parameters": {
-        "jsCode": "const firstItem = $input.first()?.json ?? {};\nconst response = firstItem.body ?? firstItem;\nconst feed = Array.isArray(response.feed)\n  ? response.feed\n  : [];\n\nconst seen = new Set();\nconst prepared = [];\n\nfor (const feedItem of feed) {\n  const post = feedItem?.post;\n  const record = post?.record;\n\n  if (!post || !record) continue;\n\n  // Skip reposts and replies.\n  if (feedItem.reason?.$type === 'app.bsky.feed.defs#reasonRepost') {\n    continue;\n  }\n\n  if (record.reply) continue;\n\n  // Keep explicitly English-language posts only.\n  if (\n    !Array.isArray(record.langs) ||\n    !record.langs.includes('en')\n  ) {\n    continue;\n  }\n\n  const id = String(post.uri ?? '').trim();\n\n  const text = String(record.text ?? '')\n    .replace(/\\s+/g, ' ')\n    .trim();\n\n  if (!id || !text || seen.has(id)) continue;\n\n  seen.add(id);\n  prepared.push({ id, text });\n\n  if (prepared.length === 40) break;\n}\n\nif (prepared.length < 10) {\n  return [{\n    json: {\n      ok: false,\n      error: 'insufficient_english_posts',\n      postCount: prepared.length\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    ok: true,\n    texts: prepared.map(post => post.text),\n    postIds: prepared.map(post => post.id),\n    postCount: prepared.length\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2176,
-        11952
-      ],
-      "id": "8fe869e9-6e04-49a8-806b-0ecaa07bbe52",
-      "name": "Prepare SocialMediaHostility Posts"
-    },
-    {
-      "parameters": {
-        "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getFeed",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "limit",
-              "value": "100"
-            },
-            {
-              "name": "feed",
-              "value": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept-Language",
-              "value": "en"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "json"
-            }
-          },
-          "timeout": 10000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        1904,
-        11968
-      ],
-      "id": "d487242e-587d-4066-aebd-ce87a7604194",
-      "name": "Fetch SocialMediaHostility Posts",
-      "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "const lat = Number($json.body?.lat ?? $json.lat);\nconst lon = Number($json.body?.lon ?? $json.lon);\n\nif (!Number.isFinite(lat) || lat < -90 || lat > 90) {\n  throw new Error(\"TrafficSense requires a valid latitude\");\n}\n\nif (!Number.isFinite(lon) || lon < -180 || lon > 180) {\n  throw new Error(\"TrafficSense requires a valid longitude\");\n}\n\nreturn [{\n  json: {\n    ...$json,\n    lat,\n    lon\n  }\n}];"
+        "jsCode": "const input = $json.body ?? $json;\n\nconst lat = Number(input.lat);\nconst lon = Number(input.lon ?? input.lng);\n\nif (\n  !Number.isFinite(lat) ||\n  !Number.isFinite(lon) ||\n  lat < -90 ||\n  lat > 90 ||\n  lon < -180 ||\n  lon > 180\n) {\n  throw new Error(\"Valid lat and lon are required\");\n}\n\nreturn [{\n  json: {\n    ...input,\n    lat,\n    lon,\n    type: \"TrafficSense\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -3398,19 +2971,31 @@
     },
     {
       "parameters": {
-        "url": "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/18/json",
+        "url": "={{   'https://api.tomtom.com/routing/1/calculateRoute/' +   $json.lat + ',' + $json.lon +   ':53.10719,8.85348/json' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpQueryAuth",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
             {
-              "name": "point",
-              "value": "={{ $json.lat + ',' + $json.lon }}"
+              "name": "traffic",
+              "value": "true"
             },
             {
-              "name": "unit",
-              "value": "kmph"
+              "name": "computeTravelTimeFor",
+              "value": "all"
+            },
+            {
+              "name": "routeRepresentation",
+              "value": "summaryOnly"
+            },
+            {
+              "name": "travelMode",
+              "value": "car"
+            },
+            {
+              "name": "routeType",
+              "value": "fastest"
             }
           ]
         },
@@ -3439,7 +3024,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const request = $(\"Validate Traffic Input\").item.json;\nconst flow = $json.flowSegmentData;\n\nif (!flow) {\n  throw new Error(\"TomTom returned no flowSegmentData\");\n}\n\nconst currentSpeed = Number(flow.currentSpeed);\nconst freeFlowSpeed = Number(flow.freeFlowSpeed);\n\nif (\n  !Number.isFinite(currentSpeed) ||\n  !Number.isFinite(freeFlowSpeed) ||\n  freeFlowSpeed <= 0\n) {\n  throw new Error(\"TomTom returned invalid speed values\");\n}\n\nconst rawScore = flow.roadClosure\n  ? 100\n  : 100 * (1 - currentSpeed / freeFlowSpeed);\n\nconst value = Math.round(\n  Math.max(0, Math.min(100, rawScore)) * 10\n) / 10;\n\nreturn [{\n  json: {\n    ...request,\n    type: \"TrafficSense\",\n    value,\n    currentSpeed,\n    freeFlowSpeed,\n    confidence: Number(flow.confidence),\n    roadClosure: Boolean(flow.roadClosure)\n  }\n}];"
+        "jsCode": "const request = $(\"Validate Traffic Input\").first().json;\nconst summary = $json.routes?.[0]?.summary;\n\nif (!summary) {\n  throw new Error(\"TomTom returned no route\");\n}\n\nconst duration = Number(summary.travelTimeInSeconds);\nconst staticDuration = Number(\n  summary.noTrafficTravelTimeInSeconds\n);\n\nif (\n  !Number.isFinite(duration) ||\n  !Number.isFinite(staticDuration) ||\n  duration <= 0 ||\n  staticDuration <= 0\n) {\n  throw new Error(\"TomTom returned invalid route durations\");\n}\n\nconst slowdownSeconds = Math.max(\n  0,\n  duration - staticDuration\n);\n\nconst rawValue = 100 * (\n  1 - staticDuration / duration\n);\n\nconst value = Math.round(\n  Math.max(0, Math.min(100, rawValue)) * 10\n) / 10;\n\nreturn [{\n  json: {\n    ...request,\n\n    type: \"TrafficSense\",\n    value,\n\n    durationSeconds: duration,\n    staticDurationSeconds: staticDuration,\n    slowdownSeconds,\n\n    historicDurationSeconds: Number(\n      summary.historicTrafficTravelTimeInSeconds ?? 0\n    ),\n\n    liveDurationSeconds: Number(\n      summary.liveTrafficIncidentsTravelTimeInSeconds ?? duration\n    ),\n\n    reportedTrafficDelaySeconds: Number(\n      summary.trafficDelayInSeconds ?? 0\n    ),\n\n    distanceMeters: Number(\n      summary.lengthInMeters ?? 0\n    ),\n\n    destination: \"University of Bremen\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -3643,33 +3228,34 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst userID = Number(input.userID);\nconst watchID = Number(input.watchID);\nconst phoneID = Number(input.phoneID);\nconst value = Number(input.value);\n\nif (![userID, watchID, phoneID].every(id => Number.isInteger(id) && id > 0)) {\n  throw new Error('CountdownAwareness identifiers are missing or invalid');\n}\nif (!Number.isFinite(value) || value < 0) {\n  throw new Error('CountdownAwareness remaining seconds must be a non-negative number');\n}\n\nreturn [{ json: { userID, watchID, phoneID, type: 'CountdownAwareness', value } }];"
+        "jsCode": "const input = $json;\n\nconst userID = Number(input.userID);\nconst watchID = Number(input.watchID);\nconst phoneID = Number(input.phoneID);\nconst type = String(input.type ?? \"\");\nconst value = Number(input.value);\n\nif (![userID, watchID, phoneID].every(\n  id => Number.isInteger(id) && id > 0\n)) {\n  throw new Error(\n    \"CountdownAwareness identifiers are missing or invalid\"\n  );\n}\n\nif (type !== \"CountdownAwareness\") {\n  throw new Error(\"Invalid CountdownAwareness type\");\n}\n\nif (!Number.isFinite(value) || value < 0) {\n  throw new Error(\n    \"CountdownAwareness remaining seconds must be non-negative\"\n  );\n}\n\nreturn [{\n  json: {\n    userID,\n    watchID,\n    phoneID,\n    type,\n    value\n  }\n}];"
       },
-      "id": "e1411b5c-c09f-4cc3-90e6-9f639664bc24",
-      "name": "Normalize CountdownAwareness",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1888,
+        1904,
         13120
-      ]
+      ],
+      "id": "9d59b230-b988-4c6a-804b-ecc9a49b6b15",
+      "name": "Normalize CountdownAwareness"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT NOT EXISTS (\n  SELECT 1\n  FROM public.\"SensorData\" sd\n  JOIN public.\"Alert\" a ON a.alertid = sd.alertid\n  JOIN public.\"UseCase\" uc ON uc.usecase_id = sd.usecase_id\n  WHERE sd.userid = $1\n    AND uc.name = $2\n    AND a.alertgiven = 'yes'\n    AND sd.\"time\" >= NOW() - COALESCE(uc.vibration_interval, '1 minute'::interval)\n) AS allowed;",
+        "query": "SELECT NOT EXISTS (\n  SELECT 1\n  FROM public.\"SensorData\" sd\n  JOIN public.\"Alert\" a\n    ON a.alertid = sd.alertid\n  JOIN public.\"UseCase\" uc\n    ON uc.usecase_id = sd.usecase_id\n  WHERE sd.userid = $1\n    AND uc.name = $2\n    AND a.alertgiven = 'yes'\n    AND sd.\"time\" >= NOW() - COALESCE(\n      uc.vibration_interval,\n      '1 minute'::interval\n    )\n) AS allowed;",
         "options": {
-          "queryReplacement": "={{ [ $(\"Normalize CountdownAwareness\").first().json.userID, \"CountdownAwareness\" ] }}"
+          "queryReplacement": "={{  [    $(\"Normalize CountdownAwareness\").first().json.userID,    \"CountdownAwareness\"  ]}}"
         }
       },
-      "id": "b2822db4-0b44-442c-af55-7379a3abe57a",
-      "name": "Check CountdownAwareness Rate Limit",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2112,
+        2128,
         13120
       ],
+      "id": "de76afbd-087e-4a75-a1e5-aeac8955ada4",
+      "name": "Check CountdownAwareness Rate Limit",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
@@ -3688,9 +3274,9 @@
           },
           "conditions": [
             {
-              "id": "d833dc4b-34a0-4c61-90a1-5ef07f7df271",
+              "id": "182b2030-d106-4c24-9827-5ae816173c67",
               "leftValue": "={{ $json.allowed }}",
-              "rightValue": true,
+              "rightValue": "",
               "operator": {
                 "type": "boolean",
                 "operation": "true",
@@ -3702,31 +3288,31 @@
         },
         "options": {}
       },
-      "id": "2e0b6c4c-1fc2-4089-9a72-b3d16b11a2cf",
-      "name": "CountdownAwareness Vibration Allowed?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2336,
+        2368,
         13120
-      ]
+      ],
+      "id": "2e79e0cf-7c7a-4a8a-a7c0-9806e669492a",
+      "name": "If"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM \"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
+        "query": "SELECT fcr.*\nFROM public.feedback_config_rules fcr\nJOIN public.\"UseCase\" uc\n  ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN public.\"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = true\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM public.\"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY\n  CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
         "options": {
-          "queryReplacement": "={{ [ \"CountdownAwareness\", $(\"Normalize CountdownAwareness\").first().json.userID ] }}"
+          "queryReplacement": "={{   [     \"CountdownAwareness\",     $(\"Normalize CountdownAwareness\").first().json.userID   ] }}"
         }
       },
-      "id": "69bb1df6-d07c-4613-bf1d-d2713350c917",
-      "name": "Fetch Active CountdownAwareness Rules",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2608,
+        2640,
         13024
       ],
+      "id": "162bed78-e7b4-4c75-b5af-7a845f95bae9",
+      "name": "Fetch Active CountdownAwareness Rules",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
@@ -3737,46 +3323,46 @@
     },
     {
       "parameters": {
-        "jsCode": "const measurement = $('Normalize CountdownAwareness').first().json;\nconst rules = $input.all().map(item => item.json);\nconst value = measurement.value;\n\nconst interpolate = (input, inputMin, inputMax, outputMin, outputMax) => {\n  const low = Number(outputMin);\n  const high = Number(outputMax);\n  if (![low, high].every(Number.isFinite)) return 0;\n  return inputMin === inputMax\n    ? low\n    : low + ((input - inputMin) * (high - low)) / (inputMax - inputMin);\n};\n\nconst feedback = {\n  ...measurement,\n  alertGiven: 'no',\n  pulses: 0,\n  intensity: 0,\n  duration: 0,\n  interval: 0,\n  fbRangeID: 9999,\n  reason: 'no_matching_rule'\n};\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) ||\n      value < minValue || value > maxValue) continue;\n\n  feedback.pulses = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.minpulses, rule.maxpulses)));\n  feedback.intensity = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.minintensity, rule.maxintensity)));\n  feedback.duration = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.minduration, rule.maxduration)));\n  feedback.interval = Math.max(0, Math.round(interpolate(value, minValue, maxValue, rule.mininterval, rule.maxinterval)));\n  feedback.fbRangeID = Number(rule.id);\n  feedback.alertGiven = feedback.pulses > 0 ? 'yes' : 'no';\n  feedback.reason = 'time_interval';\n  break;\n}\n\nreturn [{ json: feedback }];"
+        "jsCode": "const measurement =\n  $(\"Normalize CountdownAwareness\").first().json;\n\nconst rules = $input.all().map(item => item.json);\nconst value = measurement.value;\n\nfunction interpolate(\n  input,\n  inputMin,\n  inputMax,\n  outputMin,\n  outputMax\n) {\n  const low = Number(outputMin);\n  const high = Number(outputMax);\n\n  if (![low, high].every(Number.isFinite)) {\n    return 0;\n  }\n\n  if (inputMin === inputMax) {\n    return low;\n  }\n\n  return low +\n    ((input - inputMin) * (high - low)) /\n    (inputMax - inputMin);\n}\n\nconst feedback = {\n  ...measurement,\n  alertGiven: \"no\",\n  pulses: 0,\n  intensity: 0,\n  duration: 0,\n  interval: 0,\n  fbRangeID: 9999,\n  reason: \"no_matching_rule\"\n};\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n\n  if (\n    !Number.isFinite(minValue) ||\n    !Number.isFinite(maxValue) ||\n    value < minValue ||\n    value > maxValue\n  ) {\n    continue;\n  }\n\n  feedback.pulses = Math.max(\n    0,\n    Math.round(interpolate(\n      value,\n      minValue,\n      maxValue,\n      rule.minpulses,\n      rule.maxpulses\n    ))\n  );\n\n  feedback.intensity = Math.max(\n    0,\n    Math.round(interpolate(\n      value,\n      minValue,\n      maxValue,\n      rule.minintensity,\n      rule.maxintensity\n    ))\n  );\n\n  feedback.duration = Math.max(\n    0,\n    Math.round(interpolate(\n      value,\n      minValue,\n      maxValue,\n      rule.minduration,\n      rule.maxduration\n    ))\n  );\n\n  feedback.interval = Math.max(\n    0,\n    Math.round(interpolate(\n      value,\n      minValue,\n      maxValue,\n      rule.mininterval,\n      rule.maxinterval\n    ))\n  );\n\n  feedback.fbRangeID = Number(rule.id);\n  feedback.alertGiven =\n    feedback.pulses > 0 ? \"yes\" : \"no\";\n  feedback.reason = \"time_interval\";\n  break;\n}\n\nreturn [{ json: feedback }];"
       },
-      "id": "f84dd0c3-ad17-44c3-b16f-611a428d7bed",
-      "name": "Evaluate CountdownAwareness Mapping",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2832,
+        2848,
         13024
-      ]
+      ],
+      "id": "88d1c34c-f36c-4a0d-b207-eed18b838782",
+      "name": "Evaluate CountdownAwareness Mapping"
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { type: $json.type, value: $json.value, alertGiven: $json.alertGiven, pulses: $json.pulses, intensity: $json.intensity, duration: $json.duration, interval: $json.interval, fbRangeID: $json.fbRangeID, reason: $json.reason } }}",
+        "responseBody": "={{\n  {\n    type: $json.type,\n    value: $json.value,\n    alertGiven: $json.alertGiven,\n    pulses: $json.pulses,\n    intensity: $json.intensity,\n    duration: $json.duration,\n    interval: $json.interval,\n    fbRangeID: $json.fbRangeID,\n    reason: $json.reason\n  }\n}}",
         "options": {
           "responseCode": 200
         }
       },
-      "id": "5479b72a-f12d-43e0-bf62-80ee68f90532",
-      "name": "Respond CountdownAwareness",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
+      "typeVersion": 1.5,
       "position": [
-        3072,
-        12928
-      ]
+        3088,
+        12944
+      ],
+      "id": "c6656f59-0907-45c4-9bc1-754f1153cc9a",
+      "name": "Respond to Webhook"
     },
     {
       "parameters": {
-        "jsCode": "const payload = $json;\nreturn [{ json: {\n  query: 'SELECT insert_sensor_data($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);',\n  params: [payload.userID, payload.watchID, payload.phoneID, payload.type,\n    payload.alertGiven, payload.value, payload.pulses, payload.intensity,\n    payload.duration, payload.interval, payload.fbRangeID, payload.reason]\n} }];"
+        "jsCode": "const payload = $json;\n\nreturn [{\n  json: {\n    query:\n      \"SELECT insert_sensor_data(\" +\n      \"$1,$2,$3,$4,$5,$6,\" +\n      \"$7,$8,$9,$10,$11,$12\" +\n      \");\",\n    params: [\n      payload.userID,\n      payload.watchID,\n      payload.phoneID,\n      payload.type,\n      payload.alertGiven,\n      payload.value,\n      payload.pulses,\n      payload.intensity,\n      payload.duration,\n      payload.interval,\n      payload.fbRangeID,\n      payload.reason\n    ]\n  }\n}];"
       },
-      "id": "72496ef4-63d7-49dd-bbcb-ad72da0c5862",
-      "name": "Prepare CountdownAwareness Database Insert",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3072,
-        13088
-      ]
+        3088,
+        13136
+      ],
+      "id": "d4f32122-8de7-4cd6-82ec-9977276d71fe",
+      "name": "Prepare CountdownAwareness Database Insert"
     },
     {
       "parameters": {
@@ -3786,14 +3372,14 @@
           "queryReplacement": "={{ $json.params }}"
         }
       },
-      "id": "8128e22f-23e6-4822-b9d2-530123bb58e0",
-      "name": "Insert CountdownAwareness Sensor Data",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3312,
-        13088
+        3296,
+        13136
       ],
+      "id": "f5e8982a-8a21-48c0-b6be-60b352a8981e",
+      "name": "Insert CountdownAwareness Sensor Data",
       "credentials": {
         "postgres": {
           "id": "zGIm06RFL9qYW60x",
@@ -3803,33 +3389,495 @@
     },
     {
       "parameters": {
-        "jsCode": "const measurement = $('Normalize CountdownAwareness').first().json;\nreturn [{ json: {\n  ...measurement,\n  alertGiven: 'no', pulses: 0, intensity: 0, duration: 0, interval: 0,\n  fbRangeID: 9999, reason: 'rate_limited'\n} }];"
+        "jsCode": "const measurement =\n  $(\"Normalize CountdownAwareness\").first().json;\n\nreturn [{\n  json: {\n    ...measurement,\n    alertGiven: \"no\",\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: \"rate_limited\"\n  }\n}];"
       },
-      "id": "beb4fc88-9b08-44e6-b523-1bd9f1f6272e",
-      "name": "Build Rate-Limited CountdownAwareness Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2608,
-        13216
-      ]
+        2752,
+        13248
+      ],
+      "id": "797981c4-2d93-43c4-a2b0-e0d0d2c9a5d0",
+      "name": "Build Rate-Limited CountdownAwareness Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3088,
+        13344
+      ],
+      "id": "6ddce350-aa30-46d7-94ec-68df44214cd3",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.didDoc.service[0].serviceEndpoint + '/xrpc/app.bsky.feed.getFeed' }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "feed",
+              "value": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept-Language",
+              "value": "en"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $json.accessJwt }}"
+            },
+            {
+              "name": "atproto-proxy",
+              "value": "did:web:api.bsky.app#bsky_appview"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1952,
+        11968
+      ],
+      "id": "d487242e-587d-4066-aebd-ce87a7604194",
+      "name": "Fetch SocialMediaHostility Posts",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const firstItem = $input.first()?.json ?? {};\nconst response = firstItem.body ?? firstItem;\nconst feed = Array.isArray(response.feed)\n  ? response.feed\n  : [];\n\nconst seen = new Set();\nconst prepared = [];\n\nfunction clean(value) {\n  return String(value ?? '')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nfunction addPart(parts, label, value) {\n  const cleaned = clean(value);\n\n  if (cleaned) {\n    parts.push(`${label}: ${cleaned}`);\n  }\n}\n\nfunction collectEmbedText(embed, parts, depth = 0) {\n  if (!embed || typeof embed !== 'object' || depth > 3) {\n    return;\n  }\n\n  // Direct image embed or image media accompanying a quote.\n  if (Array.isArray(embed.images)) {\n    for (const image of embed.images) {\n      addPart(parts, 'Image description', image?.alt);\n    }\n  }\n\n  // External link card.\n  if (embed.external) {\n    addPart(parts, 'Linked content title', embed.external.title);\n    addPart(\n      parts,\n      'Linked content description',\n      embed.external.description\n    );\n  }\n\n  // Media attached alongside a quoted post.\n  if (embed.media) {\n    collectEmbedText(embed.media, parts, depth + 1);\n  }\n\n  // Gallery-style embeds.\n  if (Array.isArray(embed.items)) {\n    for (const item of embed.items) {\n      addPart(parts, 'Image description', item?.alt);\n      collectEmbedText(item, parts, depth + 1);\n    }\n  }\n\n  /*\n   * Plain quote:\n   *   embed.record = ViewRecord\n   *\n   * Quote with media:\n   *   embed.record.record = ViewRecord\n   */\n  const quotedRecord =\n    embed.record?.record ??\n    embed.record ??\n    null;\n\n  if (!quotedRecord || typeof quotedRecord !== 'object') {\n    return;\n  }\n\n  addPart(parts, 'Quoted post', quotedRecord.value?.text);\n\n  // Rendered embeds belonging to the quoted post.\n  if (Array.isArray(quotedRecord.embeds)) {\n    for (const quotedEmbed of quotedRecord.embeds) {\n      collectEmbedText(quotedEmbed, parts, depth + 1);\n    }\n  } else if (quotedRecord.value?.embed) {\n    // Fallback for responses containing only the raw record embed.\n    collectEmbedText(\n      quotedRecord.value.embed,\n      parts,\n      depth + 1\n    );\n  }\n}\n\nfor (const feedItem of feed) {\n  const post = feedItem?.post;\n  const record = post?.record;\n\n  if (!post || !record) continue;\n\n  // Skip reposts and replies.\n  if (\n    feedItem.reason?.$type ===\n    'app.bsky.feed.defs#reasonRepost'\n  ) {\n    continue;\n  }\n\n  if (record.reply) continue;\n\n  // Keep explicitly English-language posts only.\n  if (\n    !Array.isArray(record.langs) ||\n    !record.langs.includes('en')\n  ) {\n    continue;\n  }\n\n  const id = clean(post.uri);\n\n  if (!id || seen.has(id)) continue;\n\n  const contentParts = [];\n\n  addPart(contentParts, 'Post', record.text);\n  collectEmbedText(post.embed, contentParts);\n\n  const text = contentParts.join('\\n');\n\n  if (!text) continue;\n\n  seen.add(id);\n  prepared.push({ id, text });\n\n  if (prepared.length === 40) break;\n}\n\nif (prepared.length < 10) {\n  return [{\n    json: {\n      ok: false,\n      error: 'insufficient_english_posts',\n      postCount: prepared.length\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    ok: true,\n    texts: prepared.map(post => post.text),\n    postIds: prepared.map(post => post.id),\n    postCount: prepared.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        11952
+      ],
+      "id": "8fe869e9-6e04-49a8-806b-0ecaa07bbe52",
+      "name": "Prepare SocialMediaHostility Posts"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "066d2a4f-7a41-48b3-9920-748c3a6750be",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2384,
+        11952
+      ],
+      "id": "371f171a-026e-42d4-a407-87107243255b",
+      "name": "SocialMediaHostility Sample Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $('Normalize Generic UseCase Request').first().json;\nconst prepared =\n  $('Prepare SocialMediaHostility Posts').first().json;\n\nconst results = $json.results;\n\nif (\n  !Array.isArray(results) ||\n  results.length !== prepared.texts.length\n) {\n  return [{\n    json: {\n      ok: false,\n      error: 'invalid_moderation_result_count'\n    }\n  }];\n}\n\nconst categories = [\n  'hate',\n  'hate/threatening',\n  'harassment',\n  'harassment/threatening'\n];\n\nconst scores = [];\n\nfor (const result of results) {\n  const values = categories.map(category =>\n    Number(result?.category_scores?.[category])\n  );\n\n  if (values.some(value => !Number.isFinite(value))) {\n    return [{\n      json: {\n        ok: false,\n        error: 'invalid_moderation_scores'\n      }\n    }];\n  }\n\n  scores.push(Math.max(...values));\n}\n\nscores.sort((a, b) => b - a);\n\nconst groups = [\n  { values: scores.slice(0, 3), weight: 0.45 },\n  { values: scores.slice(3, 10), weight: 0.35 },\n  { values: scores.slice(10, 40), weight: 0.20 }\n].filter(group => group.values.length > 0);\n\nlet weightedTotal = 0;\nlet activeWeight = 0;\n\nfor (const group of groups) {\n  const mean =\n    group.values.reduce((sum, value) => sum + value, 0) /\n    group.values.length;\n\n  weightedTotal += mean * group.weight;\n  activeWeight += group.weight;\n}\n\nif (activeWeight === 0) {\n  return [{\n    json: {\n      ok: false,\n      error: 'no_moderation_scores'\n    }\n  }];\n}\n\nconst rawScore = (weightedTotal / activeWeight) * 100;\nconst value = Math.round(\n  Math.min(100, Math.max(0, rawScore)) * 10\n) / 10;\n\nreturn [{\n  json: {\n    ok: true,\n    userID: n.userID,\n    watchID: n.watchID,\n    phoneID: n.phoneID,\n    type: 'SocialMediaHostility',\n    value,\n    source: 'Bluesky',\n    postCount: prepared.postCount,\n    measuredAt: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2960,
+        11920
+      ],
+      "id": "800bceb5-f055-4970-9d84-904bd58ac788",
+      "name": "Calculate SocialMediaHostility Value"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a93afd50-563c-4c50-a178-53d07218a44c",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3184,
+        11920
+      ],
+      "id": "74c61bfd-fbde-4815-a4cf-caac29567387",
+      "name": "SocialMediaHostility Value Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json ?? {};\nconst error = input.error;\n\nconst message =\n  error?.description ??\n  error?.message ??\n  input.description ??\n  input.message ??\n  (typeof error === 'string' ? error : null) ??\n  'social_media_hostility_measurement_failed';\n\nreturn [{\n  json: {\n    type: 'SocialMediaHostility',\n    status: 'error',\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    reason: 'external_error',\n    error: String(message).slice(0, 200)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4768,
+        12144
+      ],
+      "id": "6fe0de3f-9495-4be0-bc1b-a541d928a5e1",
+      "name": "Build SocialMediaHostility Failure"
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ $json }}",
         "options": {
-          "responseCode": 200
+          "responseCode": 502
         }
       },
-      "id": "44a66fb9-f7ea-4c9e-a33f-f202888de9af",
-      "name": "Respond Rate-Limited CountdownAwareness",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
+      "typeVersion": 1.5,
       "position": [
-        2832,
-        13216
-      ]
+        4976,
+        12144
+      ],
+      "id": "a43b16c5-d61b-4b35-a74d-8efcb4ed5f88",
+      "name": "Respond SocialMediaHostility Failure"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/moderations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "omni-moderation-2024-09-26"
+            },
+            {
+              "name": "input",
+              "value": "={{$('Prepare SocialMediaHostility Posts').first().json.texts}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2656,
+        11936
+      ],
+      "id": "3aff89cb-ecdb-4624-8cc8-635d63f71c9a",
+      "name": "Moderate SocialMediaHostility Posts",
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "openAiApi": {
+          "id": "4lXIgD9YPBChpCvV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nconst claim = $json;\n\nreturn [{\n  json: {\n    ...measurement,\n    claimUserid: claim.userid ?? null,\n    claimLastrequest: claim.lastrequest ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3616,
+        11904
+      ],
+      "id": "8130857b-5382-4c53-96a3-5344d568f058",
+      "name": "Merge SocialMediaHostility Value With Claim"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE \"User\" AS u\nSET \"lastrequest\" = NOW()\nFROM public.\"UseCase\" AS uc\nWHERE u.\"userid\" = $1\n  AND uc.name = $2\n  AND uc.vibration_interval IS NOT NULL\n  AND (\n    u.\"lastrequest\" IS NULL\n    OR NOW() - u.\"lastrequest\" >= uc.vibration_interval\n  )\nRETURNING u.\"userid\", u.\"lastrequest\";",
+        "options": {
+          "queryReplacement": "={{ [   $('Calculate SocialMediaHostility Value').first().json.userID,   'SocialMediaHostility' ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3408,
+        11904
+      ],
+      "id": "33cb7e6b-24c0-4371-91a2-7b886d984a7b",
+      "name": "Claim SocialMediaHostility Vibration Slot",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "20260d43-9008-40ff-a62c-492e2aebb128",
+              "leftValue": "={{ $json.claimUserid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3824,
+        11904
+      ],
+      "id": "0a9a896c-37b4-4983-a5ba-19fb7ea5c00f",
+      "name": "SocialMediaHostility Vibration Allowed?"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nreturn [{\n  json: {\n    ...measurement,\n    alertGiven: 'no',\n    pulses: 0,\n    intensity: 0,\n    duration: 0,\n    interval: 0,\n    fbRangeID: 9999,\n    reason: 'rate_limited'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4432,
+        12016
+      ],
+      "id": "23229976-ca6a-4c5a-aab9-1e10dbe985f4",
+      "name": "Build Rate-Limited SocialMediaHostility Measurement"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT fcr.*\nFROM feedback_config_rules fcr\nJOIN \"UseCase\" uc\n  ON uc.usecase_id = fcr.usecase_id\nLEFT JOIN \"User_UC_Mappings\" uum\n  ON uum.feedback_config_rule_id = fcr.id\n AND uum.user_id = $2\n AND uum.active = true\nWHERE fcr.active = TRUE\n  AND uc.name = $1\n  AND (\n    uum.user_id IS NOT NULL\n    OR NOT EXISTS (\n      SELECT 1\n      FROM \"User_UC_Mappings\" existing\n      WHERE existing.user_id = $2\n        AND existing.active = true\n    )\n  )\nORDER BY\n  CASE WHEN uum.user_id IS NOT NULL THEN 0 ELSE 1 END,\n  fcr.minvalue,\n  fcr.maxvalue;",
+        "options": {
+          "queryReplacement": "={{ [   'SocialMediaHostility',   $('Calculate SocialMediaHostility Value').first().json.userID ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4032,
+        11808
+      ],
+      "id": "3088cc60-545f-46b4-9aa7-7814c567fef5",
+      "name": "Fetch Active SocialMediaHostility Rules",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const measurement =\n  $('Calculate SocialMediaHostility Value').first().json;\n\nconst rules = $input.all().map(item => item.json);\nconst value = Number(measurement.value);\n\nconst interpolate = (\n  input,\n  inputMin,\n  inputMax,\n  outputMin,\n  outputMax\n) => {\n  if (inputMin === inputMax) return outputMin;\n\n  return outputMin +\n    ((input - inputMin) * (outputMax - outputMin)) /\n    (inputMax - inputMin);\n};\n\nlet matchingRule = null;\n\nfor (const rule of rules) {\n  const minValue = Number(rule.minvalue);\n  const maxValue = Number(rule.maxvalue);\n\n  if (\n    Number.isFinite(minValue) &&\n    Number.isFinite(maxValue) &&\n    value >= minValue &&\n    value <= maxValue\n  ) {\n    matchingRule = rule;\n    break;\n  }\n}\n\nif (!matchingRule) {\n  return [{\n    json: {\n      ...measurement,\n      ok: false,\n      error: 'no_active_mapping'\n    }\n  }];\n}\n\nconst minValue = Number(matchingRule.minvalue);\nconst maxValue = Number(matchingRule.maxvalue);\n\nconst mapField = field =>\n  interpolate(\n    value,\n    minValue,\n    maxValue,\n    Number(matchingRule[`min${field}`]),\n    Number(matchingRule[`max${field}`])\n  );\n\nconst pulses =\n  Math.max(1, Math.round(mapField('pulses')));\n\nconst intensity =\n  Math.min(\n    255,\n    Math.max(1, Math.round(mapField('intensity')))\n  );\n\nconst duration =\n  Math.max(0, Math.round(mapField('duration')));\n\nconst interval =\n  Math.max(0, Math.round(mapField('interval')));\n\nreturn [{\n  json: {\n    ...measurement,\n    ok: true,\n    alertGiven: 'yes',\n    pulses,\n    intensity,\n    duration,\n    interval,\n    fbRangeID: Number(matchingRule.id),\n    reason: 'time_interval'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4240,
+        11808
+      ],
+      "id": "1f3c4f82-151d-4f5a-b153-e2a84cf79e7e",
+      "name": "Evaluate SocialMediaHostility Mapping"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8ae8435f-b6fd-4fed-8441-7f43c9d32d3e",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4448,
+        11808
+      ],
+      "id": "cf130b3a-f658-41d8-b607-ada726869ec4",
+      "name": "SocialMediaHostility Mapping Valid?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $json;\n\nif (\n  !p.userID ||\n  !p.watchID ||\n  !p.phoneID ||\n  !Number.isFinite(Number(p.value))\n) {\n  throw new Error('Invalid SocialMediaHostility measurement');\n}\n\nreturn [{\n  json: {\n    query: `\n      SELECT insert_sensor_data(\n        $1,$2,$3,$4,$5,$6,\n        $7,$8,$9,$10,$11,$12\n      );\n    `,\n    params: [\n      Number(p.userID),\n      Number(p.watchID),\n      Number(p.phoneID),\n      String(p.type),\n      String(p.alertGiven),\n      Number(p.value),\n      Number(p.pulses),\n      Number(p.intensity),\n      Number(p.duration),\n      Number(p.interval),\n      Number(p.fbRangeID),\n      String(p.reason)\n    ],\n    response: {\n      type: p.type,\n      value: p.value,\n      source: p.source,\n      postCount: p.postCount,\n      measuredAt: p.measuredAt,\n      alertGiven: p.alertGiven,\n      pulses: p.pulses,\n      intensity: p.intensity,\n      duration: p.duration,\n      interval: p.interval,\n      fbRangeID: p.fbRangeID,\n      reason: p.reason\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4688,
+        11792
+      ],
+      "id": "89f36a9e-42f0-4597-836b-6619d18119f9",
+      "name": "Prepare SocialMediaHostility Database Insert"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " {{ $json.query }}",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        4912,
+        11792
+      ],
+      "id": "31f1c713-1f9f-456d-b501-a5cdc6135b86",
+      "name": "Insert SocialMediaHostility Sensor Data",
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "postgres": {
+          "id": "zGIm06RFL9qYW60x",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{\n  $('Prepare SocialMediaHostility Database Insert')\n    .first()\n    .json\n    .response\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        5136,
+        11776
+      ],
+      "id": "0560baeb-2c5e-4c51-a074-5a6600b57225",
+      "name": "Respond SocialMediaHostility"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bsky.social/xrpc/com.atproto.server.createSession",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "identifier",
+              "value": "haptic-system.bsky.social"
+            },
+            {
+              "name": "password",
+              "value": "__REDACTED_IN_GIT__"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1696,
+        11968
+      ],
+      "id": "df4b4ba9-50ea-44ec-9e0b-ab570d65e31c",
+      "name": "Create Bluesky Session"
     }
   ],
   "pinData": {},
@@ -4378,7 +4426,7 @@
         ],
         [
           {
-            "node": "Fetch SocialMediaHostility Posts",
+            "node": "Create Bluesky Session",
             "type": "main",
             "index": 0
           }
@@ -5182,231 +5230,6 @@
         ]
       ]
     },
-    "Insert SocialMediaHostility Sensor Data": {
-      "main": [
-        [
-          {
-            "node": "Respond SocialMediaHostility",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare SocialMediaHostility Database Insert": {
-      "main": [
-        [
-          {
-            "node": "Insert SocialMediaHostility Sensor Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SocialMediaHostility Mapping Valid?": {
-      "main": [
-        [
-          {
-            "node": "Prepare SocialMediaHostility Database Insert",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Evaluate SocialMediaHostility Mapping": {
-      "main": [
-        [
-          {
-            "node": "SocialMediaHostility Mapping Valid?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Active SocialMediaHostility Rules": {
-      "main": [
-        [
-          {
-            "node": "Evaluate SocialMediaHostility Mapping",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SocialMediaHostility Vibration Allowed?": {
-      "main": [
-        [
-          {
-            "node": "Fetch Active SocialMediaHostility Rules",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build Rate-Limited SocialMediaHostility Measurement",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Claim SocialMediaHostility Vibration Slot": {
-      "main": [
-        [
-          {
-            "node": "Merge SocialMediaHostility Value With Claim",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge SocialMediaHostility Value With Claim": {
-      "main": [
-        [
-          {
-            "node": "SocialMediaHostility Vibration Allowed?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Moderate SocialMediaHostility Posts": {
-      "main": [
-        [
-          {
-            "node": "Calculate SocialMediaHostility Value",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build SocialMediaHostility Failure": {
-      "main": [
-        [
-          {
-            "node": "Respond SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SocialMediaHostility Value Valid?": {
-      "main": [
-        [
-          {
-            "node": "Claim SocialMediaHostility Vibration Slot",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Calculate SocialMediaHostility Value": {
-      "main": [
-        [
-          {
-            "node": "SocialMediaHostility Value Valid?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SocialMediaHostility Sample Valid?": {
-      "main": [
-        [
-          {
-            "node": "Moderate SocialMediaHostility Posts",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare SocialMediaHostility Posts": {
-      "main": [
-        [
-          {
-            "node": "SocialMediaHostility Sample Valid?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch SocialMediaHostility Posts": {
-      "main": [
-        [
-          {
-            "node": "Prepare SocialMediaHostility Posts",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Build SocialMediaHostility Failure",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build Rate-Limited SocialMediaHostility Measurement": {
-      "main": [
-        [
-          {
-            "node": "Prepare SocialMediaHostility Database Insert",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Validate Traffic Input": {
       "main": [
         [
@@ -5544,14 +5367,14 @@
       "main": [
         [
           {
-            "node": "CountdownAwareness Vibration Allowed?",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "CountdownAwareness Vibration Allowed?": {
+    "If": {
       "main": [
         [
           {
@@ -5584,16 +5407,21 @@
       "main": [
         [
           {
-            "node": "Respond CountdownAwareness",
+            "node": "Prepare CountdownAwareness Database Insert",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Prepare CountdownAwareness Database Insert",
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
       ]
     },
     "Prepare CountdownAwareness Database Insert": {
@@ -5611,7 +5439,248 @@
       "main": [
         [
           {
-            "node": "Respond Rate-Limited CountdownAwareness",
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare CountdownAwareness Database Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch SocialMediaHostility Posts": {
+      "main": [
+        [
+          {
+            "node": "Prepare SocialMediaHostility Posts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SocialMediaHostility Posts": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Sample Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Sample Valid?": {
+      "main": [
+        [
+          {
+            "node": "Moderate SocialMediaHostility Posts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate SocialMediaHostility Value": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Value Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Value Valid?": {
+      "main": [
+        [
+          {
+            "node": "Claim SocialMediaHostility Vibration Slot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build SocialMediaHostility Failure": {
+      "main": [
+        [
+          {
+            "node": "Respond SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Moderate SocialMediaHostility Posts": {
+      "main": [
+        [
+          {
+            "node": "Calculate SocialMediaHostility Value",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim SocialMediaHostility Vibration Slot": {
+      "main": [
+        [
+          {
+            "node": "Merge SocialMediaHostility Value With Claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge SocialMediaHostility Value With Claim": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Vibration Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Vibration Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active SocialMediaHostility Rules",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Rate-Limited SocialMediaHostility Measurement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active SocialMediaHostility Rules": {
+      "main": [
+        [
+          {
+            "node": "Evaluate SocialMediaHostility Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate SocialMediaHostility Mapping": {
+      "main": [
+        [
+          {
+            "node": "SocialMediaHostility Mapping Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialMediaHostility Mapping Valid?": {
+      "main": [
+        [
+          {
+            "node": "Prepare SocialMediaHostility Database Insert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Rate-Limited SocialMediaHostility Measurement": {
+      "main": [
+        [
+          {
+            "node": "Prepare SocialMediaHostility Database Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SocialMediaHostility Database Insert": {
+      "main": [
+        [
+          {
+            "node": "Insert SocialMediaHostility Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert SocialMediaHostility Sensor Data": {
+      "main": [
+        [
+          {
+            "node": "Respond SocialMediaHostility",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build SocialMediaHostility Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Bluesky Session": {
+      "main": [
+        [
+          {
+            "node": "Fetch SocialMediaHostility Posts",
             "type": "main",
             "index": 0
           }
@@ -5627,18 +5696,10 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": true
   },
-  "versionId": "a1fcc011-f1fd-41d5-bb68-ab0436b12fe4",
+  "versionId": "79f41f5a-1533-4f20-b811-c6f8b7f0ea2b",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "9e871c23d93eceb29bf8abad810b08b4574a70ba4e0e27b89fbbcb614b60b3ad"
+    "templateCredsSetupCompleted": true
   },
   "id": "LEUe34OhBgH0KKM3",
-  "tags": [
-    {
-      "updatedAt": "2026-01-21T19:59:18.648Z",
-      "createdAt": "2026-01-21T19:59:18.648Z",
-      "id": "xfcCGLbzmD7Ohw9h",
-      "name": "main"
-    }
-  ]
+  "tags": []
 }
